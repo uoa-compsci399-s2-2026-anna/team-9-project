@@ -840,6 +840,10 @@ video {
   padding: 0.25rem;
 }
 
+.p-2 {
+  padding: 0.5rem;
+}
+
 .align-middle {
   vertical-align: middle;
 }
@@ -958,6 +962,11 @@ video {
 
 .hover\:fill-white:hover {
   fill: #fff;
+}
+
+.hover\:text-zinc-900:hover {
+  --tw-text-opacity: 1;
+  color: rgb(24 24 27 / var(--tw-text-opacity, 1));
 }
 
 @media (min-width: 640px) {
