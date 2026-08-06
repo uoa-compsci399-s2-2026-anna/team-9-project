@@ -732,6 +732,10 @@ video {
   justify-content: stretch;
 }
 
+.justify-items-center {
+  justify-items: center;
+}
+
 .gap-4 {
   gap: 1rem;
 }
@@ -834,6 +838,10 @@ video {
 
 .p-1 {
   padding: 0.25rem;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .text-3xl {
