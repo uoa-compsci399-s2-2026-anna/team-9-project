@@ -775,6 +775,11 @@ video {
   background-color: rgb(15 23 42 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-zinc-900:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:fill-red-500:hover {
   fill: #ef4444;
 }
@@ -800,5 +805,13 @@ video {
   .dark\:text-white {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+  }
+
+  .hover\:dark\:fill-slate-900:hover {
+    fill: #0f172a;
+  }
+
+  .hover\:dark\:fill-zinc-900:hover {
+    fill: #18181b;
   }
 }
