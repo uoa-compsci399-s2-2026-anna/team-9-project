@@ -574,6 +574,10 @@ video {
   display: block;
 }
 
+.inline {
+  display: inline;
+}
+
 .flex {
   display: flex;
 }
@@ -710,6 +714,66 @@ video {
   background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
 }
 
+.bg-\[\] {
+  background-color: ;
+}
+
+.bg-\[url\(\)\] {
+  background-image: url();
+}
+
+.bg-\[url\(background-placeholder\.png\)\] {
+  background-image: url(background-placeholder.png);
+}
+
+.bg-\[url\(\'background-placeholder\.png\'\)\] {
+  background-image: url('background-placeholder.png');
+}
+
+.bg-\[url\(\'assets\/background-placeholder\.png\'\)\] {
+  background-image: url('assets/background-placeholder.png');
+}
+
+.bg-\[url\(\'src\/assets\/background-placeholder\.png\'\)\] {
+  background-image: url('src/assets/background-placeholder.png');
+}
+
+.bg-\[url\(\'\/src\/assets\/background-placeholder\.png\'\)\] {
+  background-image: url('/src/assets/background-placeholder.png');
+}
+
+.bg-\[url\(\'\/assets\/background-placeholder\.png\'\)\] {
+  background-image: url('/assets/background-placeholder.png');
+}
+
+.bg-\[url\(\'\/background-placeholder\.png\'\)\] {
+  background-image: url('/background-placeholder.png');
+}
+
+.bg-\[url\(assets\/background-placeholder\.png\)\] {
+  background-image: url(assets/background-placeholder.png);
+}
+
+.bg-\[url\(\.\.\/assets\/background-placeholder\.png\)\] {
+  background-image: url(../assets/background-placeholder.png);
+}
+
+.bg-\[url\(\.\.\/src\/assets\/background-placeholder\.png\)\] {
+  background-image: url(../src/assets/background-placeholder.png);
+}
+
+.bg-\[url\(\.\.\/src\/assets\/back\)\] {
+  background-image: url(../src/assets/back);
+}
+
+.bg-\[url\(\.\.\/src\/assets\/background-placeholder-inverted\.png\)\] {
+  background-image: url(../src/assets/background-placeholder-inverted.png);
+}
+
+.bg-cover {
+  background-size: cover;
+}
+
 .fill-zinc-900 {
   fill: #18181b;
 }
@@ -821,6 +885,10 @@ video {
   .dark\:bg-zinc-900 {
     --tw-bg-opacity: 1;
     background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
+  }
+
+  .dark\:bg-\[url\(\.\.\/src\/assets\/background-placeholder\.png\)\] {
+    background-image: url(../src/assets/background-placeholder.png);
   }
 
   .dark\:fill-white {
