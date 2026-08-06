@@ -35,7 +35,7 @@
         Simulation goes here
     </div>
 
-    <div class="grid grid-cols-3">
+    <div class="grid grid-cols-3 w-full">
         <div class="flex items-start flex-wrap justify-self-start gap-1">
             <button class="hover:bg-zinc-900 hover:fill-white rounded-md p-1 transition-colors duration-200 hover:dark:fill-zinc-900 hover:dark:bg-white">
                 <svg class="size-10" viewBox="0 0 24 24">
@@ -67,8 +67,13 @@
             </button>
         </div>
 
-        <div class="justify-self-end">
-            Speed adjuster
+        <div class="justify-self-end w-3/4 md:w-1/2 ">
+            <input class="w-full accent-white" type="range" value="300" min="0" max="1000" oninput=""/>
+
+            <div class="-mt-2 flex w-full justify-between">
+                <span class="text-sm text-white">1 d/s</span>
+                <span class="text-sm text-white">1 y/s</span>
+            </div>
         </div>
     </div>
 
