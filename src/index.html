@@ -8,13 +8,16 @@
 </head>
 <body class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white fill-zinc-900 dark:fill-white">
 <div class="flex flex-col h-screen p-6">
+    <!-- Navigation bar -->
     <nav class="flex items-center justify-between flex-wrap">
+        <!-- System information -->
         <hgroup class="items-center flex-grow">
             <h1 class="text-3xl font-bold">Solar System</h1>
             <p>8 planets</p>
         </hgroup>
 
         <div class="flex gap-4">
+            <!-- Fullscreen button -->
             <button class="hover:bg-zinc-900 hover:fill-white rounded-md p-1 transition-colors duration-200 hover:dark:fill-zinc-900 hover:dark:bg-white">
                 <svg class="size-7" viewBox="0 0 24 24">
                     <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
@@ -22,6 +25,7 @@
                 </svg>
             </button>
 
+            <!-- Settings button -->
             <button class="hover:bg-zinc-900 hover:fill-white rounded-md p-1 transition-colors duration-200 hover:dark:fill-zinc-900 hover:dark:bg-white">
                 <svg class="size-7" viewBox="0 0 24 24">
                     <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
@@ -31,11 +35,14 @@
         </div>
     </nav>
 
+    <!-- Simulation (main content; temporary) -->
     <div class="flex flex-1 items-center">
         Simulation goes here
     </div>
 
+    <!-- Bottom controls -->
     <div class="flex flex-col items-center gap-4 md:grid md:grid-cols-3 md:w-full">
+        <!-- Playback controls -->
         <div class="flex items-start flex-wrap justify-self-start gap-1">
             <button class="hover:bg-zinc-900 hover:fill-white rounded-md p-1 transition-colors duration-200 hover:dark:fill-zinc-900 hover:dark:bg-white">
                 <svg class="size-10" viewBox="0 0 24 24">
@@ -57,6 +64,7 @@
             </button>
         </div>
 
+        <!-- Simulation timestamp -->
         <div class="justify-self-center">
             <button class="flex gap-3 hover:bg-zinc-900 hover:fill-white rounded-md p-2 transition-colors duration-200 hover:dark:fill-zinc-900 hover:dark:bg-white hover:text-white dark:hover:text-zinc-900 ">
                 <svg class="size-7" viewBox="0 0 24 24">
@@ -67,6 +75,7 @@
             </button>
         </div>
 
+        <!-- Simulation speed adjuster -->
         <div class="justify-self-end w-3/4 md:w-1/2 ">
             <input class="w-full accent-zinc-900 dark:accent-white" type="range" value="300" min="0" max="1000" oninput=""/>
 
