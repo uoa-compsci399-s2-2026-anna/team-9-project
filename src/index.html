@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -43,6 +43,7 @@
           <!-- Light/dark mode button -->
           <div class="group relative inline-block">
             <button
+              id="dark-mode-toggle-button"
               class="rounded-md p-1 transition-colors duration-100 hover:bg-zinc-100 dark:hover:bg-white dark:hover:fill-zinc-900"
             >
               <svg class="size-7" viewBox="0 0 24 24">
@@ -52,6 +53,17 @@
                 />
               </svg>
             </button>
+
+            <script>
+              const html = document.documentElement;
+              const button = document.querySelector("#dark-mode-toggle-button");
+
+              button.addEventListener("click", () => {
+                const isDark = html.getAttribute("data-theme") === "dark";
+
+                html.setAttribute("data-theme", isDark ? "light" : "dark");
+              });
+            </script>
 
             <!-- Tooltip -->
             <div
