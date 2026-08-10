@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+import uvicorn
 
 app = FastAPI()
 
@@ -12,3 +13,10 @@ async def read_root():
         </body>
     </html>
     """
+
+if __name__ == "__main__":
+    url = "127.0.0.1"
+    port = 5000
+    print(f"http://{url}:{port}")
+
+    uvicorn.run("main:app", host=url, port=port, reload=True)
