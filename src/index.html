@@ -160,19 +160,30 @@
           </div>
 
           <!-- Simulation speed adjuster -->
-          <div class="w-3/4 justify-self-end md:w-1/2">
+          <div class="flex items-center justify-self-end">
+            <label class="pr-3">speed</label>
             <input
-              class="w-full accent-zinc-900 dark:accent-white"
-              type="range"
-              value="300"
-              min="0"
-              max="1000"
-              oninput=""
+              type="text"
+              class="mr-3 w-18 rounded-md pl-1 outline-1 outline-zinc-900 dark:outline-zinc-500"
+              value="20"
             />
 
-            <div class="-mt-2 flex w-full justify-between">
-              <span class="text-sm">1 d/s</span>
-              <span class="text-sm">1 y/s</span>
+            <p class="pr-3">d/s</p>
+
+            <div class="px-3">
+              <input
+                class="w-full accent-zinc-900 dark:accent-white"
+                type="range"
+                value="300"
+                min="0"
+                max="1000"
+                oninput=""
+              />
+
+              <div class="-mt-2 flex w-full justify-between">
+                <span class="text-sm">1 d/s</span>
+                <span class="text-sm">1 y/s</span>
+              </div>
             </div>
           </div>
         </div>
