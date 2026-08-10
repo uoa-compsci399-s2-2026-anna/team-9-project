@@ -2,6 +2,13 @@
 COMPSCI 399 project repository for Team 9 - JEDEJ
 
 # Running the Python Web-server
+## Installing the Packages
+```sh
+uv sync
+```
+Will install all dependencies (not this is unecessary if using `uv` to run the
+program).
+
 ## Development Mode
 ```sh
 uv run fastapi dev
