@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-import uvicorn
 
 app = FastAPI()
 
@@ -24,6 +23,9 @@ if __name__ == "__main__":
     Entry point when run using "py", "python" or "python3" 
     This is where the program will enter from the Electron application
     """
+
+    # uvicorn is the web server that fastapi is built on
+    import uvicorn
 
     # Constant values of url and port
     url = "127.0.0.1"
