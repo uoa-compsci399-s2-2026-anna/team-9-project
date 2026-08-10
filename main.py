@@ -1,7 +1,14 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"status": "running", "managed_by": "uv"}
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
+    return """
+    <html>
+        <body>
+            <h1>Hello, world!</h1>
+        </body>
+    </html>
+    """
