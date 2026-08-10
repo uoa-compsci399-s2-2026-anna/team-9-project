@@ -25,6 +25,27 @@
         <div class="grow"></div>
 
         <div class="flex gap-4">
+          <!-- Help button -->
+          <div class="group relative inline-block">
+            <button
+              class="rounded-md p-1 outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M12.838 17.638q.362-.363.362-.888t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362t.888-.363M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m.1-14.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Help
+            </div>
+          </div>
+
           <!-- Fullscreen button -->
           <div class="group relative inline-block">
             <button
@@ -104,7 +125,21 @@
       </nav>
 
       <!-- Simulation (main content; temporary) -->
-      <div class="flex flex-1 items-center"></div>
+      <div class="flex flex-1 items-center dark:text-zinc-400">
+        <div
+          class="flex flex-col rounded-md p-6 outline-1 dark:bg-black dark:outline-zinc-500"
+        >
+          <span>
+            <input type="checkbox" /><label class="px-3">Show orbits</label>
+          </span>
+          <span>
+            <input type="checkbox" /><label class="px-3">Show ecliptic</label>
+          </span>
+          <span>
+            <input type="checkbox" /><label class="px-3">Show labels</label>
+          </span>
+        </div>
+      </div>
 
       <!-- Bottom controls -->
       <div
