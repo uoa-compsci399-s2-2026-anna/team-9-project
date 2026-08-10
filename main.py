@@ -1,6 +1,7 @@
-def main():
-    print("Hello from team-9-project!")
+from fastapi import FastAPI
 
+app = FastAPI()
 
-if __name__ == "__main__":
-    main()
+@app.get("/")
+def read_root():
+    return {"status": "running", "managed_by": "uv"}
