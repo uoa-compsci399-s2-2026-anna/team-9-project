@@ -8,5 +8,8 @@
     "dev": "node index.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^43.3.0"
+  }
 }
