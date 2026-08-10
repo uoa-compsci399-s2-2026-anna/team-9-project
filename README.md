@@ -19,3 +19,7 @@ Linux/MacOS
 source .venv/bin/activate
 python3 main.py
 ```
+
+# Useful Links
+- [`uv` Python Package Manager](https://github.com/astral-sh/uv)
+- [`fastapi` Reference Docs](https://fastapi.tiangolo.com/)
