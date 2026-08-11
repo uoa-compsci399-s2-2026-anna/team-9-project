@@ -79,6 +79,14 @@ async function createWindow(python_url) {
     mainWindow.loadURL(url);
 }
 
+// Handle the application quitting
+app.on('will-quit', () => {
+    // Print that it is quitting
+    console.log('App is quitting...');
+    // Kill the python process to ensure the port is freed
+    pythonProcess.kill();
+});
+
 const url = new Promise(spawn_python_process);
 // Wait for electron to be ready, then create the window
 app.whenReady().then(() => createWindow(url));
