@@ -18,6 +18,17 @@ function spawn_python_process(resolve, reject) {
     pythonProcess.stdout.setEncoding('utf8');
     pythonProcess.stderr.setEncoding('utf8');
 
+    // Capture standard output from python process
+    pythonProcess.stdout.on('data', (data) => {
+        console.log(`Python: ${data}`);
+    });
+
+    // Capture standard error from pthon process
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`Python Error: ${data}`);
+    });
+
+    // Reject after 1 second
     setTimeout(reject, 1000);
 }
 
