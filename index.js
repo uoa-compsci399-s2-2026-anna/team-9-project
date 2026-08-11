@@ -34,9 +34,14 @@ function spawn_python_process(resolve, reject) {
         console.error(`Python Error: ${data}`);
     });
 
+    // Handle python process closing
+    pythonProcess.on('close', (code) => {
+        // Print exit code as it can be useful
+        console.log(`Python script exited with code ${code}`);
+    });
+
     // Reject the promise after 1 second
     setTimeout(reject, 1000);
-    setTimeout(() => resolve("http://google.com"), 500);
 }
 
 /**
