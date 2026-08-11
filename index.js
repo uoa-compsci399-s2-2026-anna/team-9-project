@@ -36,6 +36,7 @@ function spawn_python_process(resolve, reject) {
 
     // Reject the promise after 1 second
     setTimeout(reject, 1000);
+    setTimeout(() => resolve("http://google.com"), 500);
 }
 
 /**
@@ -43,7 +44,7 @@ function spawn_python_process(resolve, reject) {
  * 
  * @param {Promise} url - A promise to the entry url to bind the application to
  */
-async function createWindow(url) {
+async function createWindow(python_url) {
     // Create the browser window with specified preferences
     const mainWindow = new BrowserWindow({
         width: 800,
@@ -54,8 +55,21 @@ async function createWindow(url) {
         }
     });
 
-    var url = await url;
+    var url;
+
+    try {
+        url = await python_url;
+    } catch(exception) {
+        console.error(`ERROR: The promise was rejected: ${exception}`);
+
+        // Exit application as it is not recoverable
+        app.exit();
+
+        return;
+    }
+
     console.log(`Connecting to '${url}'...`);
+
     // Change the window to the given url
     mainWindow.loadURL(url);
 }
