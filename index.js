@@ -21,6 +21,12 @@ function spawn_python_process(resolve, reject) {
     // Capture standard output from python process
     pythonProcess.stdout.on('data', (data) => {
         console.log(`Python: ${data}`);
+
+        // If the data captured is the url to the application
+        if (data.toString().startsWith("http://")) {
+            // Resolve the promise with the url (with no excess whitespace)
+            resolve(data.toString().trim());
+        }
     });
 
     // Capture standard error from pthon process
@@ -28,7 +34,7 @@ function spawn_python_process(resolve, reject) {
         console.error(`Python Error: ${data}`);
     });
 
-    // Reject after 1 second
+    // Reject the promise after 1 second
     setTimeout(reject, 1000);
 }
 
@@ -48,7 +54,7 @@ async function createWindow(url) {
         }
     });
 
-    let url = await url;
+    var url = await url;
     console.log(`Connecting to '${url}'...`);
     // Change the window to the given url
     mainWindow.loadURL(url);
