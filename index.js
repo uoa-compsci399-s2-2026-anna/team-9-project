@@ -14,6 +14,10 @@ function spawn_python_process(resolve, reject) {
     // Pass the command, script path, and arguments as an array
     pythonProcess = spawn('python3', ['-u', 'index.py']);
 
+    // Set python output channels to utf8 encoding
+    pythonProcess.stdout.setEncoding('utf8');
+    pythonProcess.stderr.setEncoding('utf8');
+
     setTimeout(reject, 1000);
 }
 
