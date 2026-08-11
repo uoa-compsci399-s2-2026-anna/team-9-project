@@ -20,9 +20,9 @@ function spawn_python_process(resolve, reject) {
 /**
  * Creates the electron window and binds itself to the given url
  * 
- * @param {string} url - The entry url to bind the application to
+ * @param {Promise} url - A promise to the entry url to bind the application to
  */
-function createWindow(url) {
+async function createWindow(url) {
     // Create the browser window with specified preferences
     const mainWindow = new BrowserWindow({
         width: 800,
@@ -33,11 +33,12 @@ function createWindow(url) {
         }
     });
 
+    let url = await url;
     console.log(`Connecting to '${url}'...`);
     // Change the window to the given url
     mainWindow.loadURL(url);
 }
 
-const url = "http://google.com";
+const url = new Promise(spawn_python_process);
 // Wait for electron to be ready, then create the window
 app.whenReady().then(() => createWindow(url));
