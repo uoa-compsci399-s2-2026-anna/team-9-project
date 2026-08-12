@@ -10,6 +10,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         # Send the HTTP status code (200 OK)
         self.send_response(200)
 
+        # Set headers to tell the browser what content to expect
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+
 
 if __name__ == "__main__":
     # Define host and port
