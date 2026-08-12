@@ -14,6 +14,14 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
+        # Write the actual HTML response body
+        _ = self.wfile.write(
+            b"<!DOCTYPE html><html><head><title>Python Server</title></head>"
+        )
+        _ = self.wfile.write(
+            b"<body><h1>Hello world from Python Web Server!</h1></body></html>"
+        )
+
 
 if __name__ == "__main__":
     # Define host and port
