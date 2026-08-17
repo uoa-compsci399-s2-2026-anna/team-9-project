@@ -54,6 +54,7 @@ async function createWindow(python_url) {
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
+        show: false,    
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true
@@ -77,6 +78,10 @@ async function createWindow(python_url) {
 
     // Change the window to the given url
     mainWindow.loadURL(url);
+
+    // Maximise the window and then show it
+    mainWindow.maximize();
+    mainWindow.show();
 }
 
 // Handle the application quitting
