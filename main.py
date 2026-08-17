@@ -36,5 +36,5 @@ if __name__ == "__main__":
 
     # Re-run the main application with the specified url and port so it is
     # consistent and predictable
-    uvicorn.run("main:app", host=url, port=port, reload=True)
+    uvicorn.run("main:app", host=url, port=port)
 
