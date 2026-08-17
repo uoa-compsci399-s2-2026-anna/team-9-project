@@ -1,7 +1,7 @@
 [project]
 name = "team-9-project"
 version = "0.1.0"
-description = "Add your description here"
+description = "OPIS: Orbital Planetary Interactive Simulator—A project for the ASTRO 100/G Lab"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
