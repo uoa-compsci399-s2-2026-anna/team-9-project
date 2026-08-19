@@ -10,6 +10,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^43.3.0"
+    "electron": "^43.3.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "tailwindcss": "^4.3.3"
+  },
+  "scripts": {
+    "watch": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch"
   }
 }

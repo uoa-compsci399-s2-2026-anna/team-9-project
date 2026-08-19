@@ -1,35 +1,39 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+
+app = FastAPI()
 
 
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        """
-        Handles incoming GET requests.
-        Writes text/html response
-        """
-        # Send the HTTP status code (200 OK)
-        self.send_response(200)
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
+    """
+    Root ("/") directory response handler.
+    Returns an HTML (string) response
+    """
 
-        # Set headers to tell the browser what content to expect
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-
-        # Write the actual HTML response body
-        _ = self.wfile.write(
-            b"<!DOCTYPE html><html><head><title>Python Server</title></head>"
-        )
-        _ = self.wfile.write(
-            b"<body><h1>Hello world from Python Web Server!</h1></body></html>"
-        )
+    return """
+    <html>
+        <body>
+            <h1>Hello, world!</h1>
+        </body>
+    </html>
+    """
 
 
 if __name__ == "__main__":
-    # Define host and port
-    server_address = ("localhost", 8080)
+    """
+    Entry point when run using "py", "python" or "python3" 
+    This is where the program will enter from the Electron application
+    """
 
-    # Initialize and start the web server
-    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
-    print("http://localhost:8080")
+    # uvicorn is the web server that fastapi is built on
+    import uvicorn
 
-    # Serve the server
-    httpd.serve_forever()
+    # Constant values of url and port
+    url = "127.0.0.1"
+    # Auto-assign the port
+    port = 0
+
+    # Re-run the main application with the specified url and port so it is
+    # consistent and predictable
+    uvicorn.run("main:app", host=url, port=port)
