@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "COMPSCI 399 project repository for Team 9 - JEDEJ",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "electron ."
-  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -16,6 +12,8 @@
     "tailwindcss": "^4.3.3"
   },
   "scripts": {
-    "watch": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch"
+    "watch": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "electron ."
   }
 }
