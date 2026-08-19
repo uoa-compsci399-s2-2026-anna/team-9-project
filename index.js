@@ -41,7 +41,7 @@ function spawn_python_process(resolve, reject) {
     });
 
     // Reject the promise after 1 second
-    setTimeout(reject, 1000);
+    setTimeout(reject, 5000);
 }
 
 /**
