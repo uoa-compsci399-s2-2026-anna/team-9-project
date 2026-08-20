@@ -24,3 +24,18 @@
     cursor: pointer;
   }
 }
+
+@layer base {
+  body,
+  div,
+  header,
+  nav,
+  footer,
+  p,
+  h1,
+  h2,
+  h3,
+  span {
+    @apply transition-colors duration-200 ease-in-out;
+  }
+}
