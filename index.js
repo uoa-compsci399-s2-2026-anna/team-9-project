@@ -11,8 +11,15 @@ var pythonProcess = null;
  * @param {*} reject Promise reject handle, will reject after 1 second (failed to launch)
  */
 function spawn_python_process(resolve, reject) {
+    const platform = process.platform;
+
     // Pass the command, script path, and arguments as an array
-    pythonProcess = spawn('python3', ['-u', 'main.py']);
+    // OS Dependent
+    if (platform == "win32") {
+        pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
+    } else if (platform == "darwin" || platform == "linux") {
+        pythonProcess = spawn('./.venv/bin/python', ['-u', 'main.py']);
+    }
 
     // Set python output channels to utf8 encoding
     pythonProcess.stdout.setEncoding('utf8');
