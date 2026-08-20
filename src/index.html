@@ -275,7 +275,7 @@
       <!-- Settings overlay -->
       <div
         id="settings-overlay"
-        class="fixed inset-0 z-40 h-full w-full bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
+        class="pointer-events-none fixed inset-0 z-40 h-full w-full bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
       >
         <div class="h-full bg-blue-500 p-6 md:mx-[30%]">
           <h1 class="p-2 text-3xl font-bold">Settings</h1>
@@ -302,6 +302,7 @@
       settingsButton.addEventListener("click", () => {
         settingsOverlay.classList.toggle("opacity-0");
         settingsOverlay.classList.toggle("opacity-100");
+        settingsOverlay.classList.toggle("pointer-events-none");
 
         systemInformationButton.classList.toggle("opacity-0");
         systemInformationButton.classList.toggle("opacity-100");
