@@ -11,7 +11,7 @@
       class="flex h-screen flex-col bg-white bg-[url(../src/assets/background-placeholder-inverted.png)] bg-cover bg-center fill-zinc-900 text-zinc-900 dark:bg-zinc-900 dark:bg-[url(../src/assets/background-placeholder.png)] dark:fill-white dark:text-white"
     >
       <!-- Navigation bar -->
-      <nav class="flex flex-wrap items-center justify-between p-6">
+      <nav class="z-50 flex flex-wrap items-center justify-between p-6">
         <!-- System information -->
         <button
           class="items-center rounded-md p-2 text-left hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
@@ -90,9 +90,9 @@
           </div>
 
           <!-- Settings button -->
-          <!-- Light/dark mode button -->
           <div class="group relative inline-flex">
             <button
+              id="settings-button"
               class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
             >
               <svg class="size-7" viewBox="0 0 24 24">
@@ -281,6 +281,24 @@
           </div>
         </div>
       </div>
+
+      <!-- Settings overlay -->
+      <div
+        id="settings-overlay"
+        class="fixed inset-0 z-40 h-full w-full bg-red-500 opacity-0 transition-opacity duration-200 ease-in-out"
+      >
+        Settings
+      </div>
     </div>
+
+    <script>
+      const settingsButton = document.querySelector("#settings-button");
+      const settingsOverlay = document.querySelector("#settings-overlay");
+
+      settingsButton.addEventListener("click", () => {
+        settingsOverlay.classList.toggle("opacity-0");
+        settingsOverlay.classList.toggle("opacity-100");
+      });
+    </script>
   </body>
 </html>
