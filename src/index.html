@@ -14,7 +14,8 @@
       <nav class="z-50 flex flex-wrap items-center justify-between p-6">
         <!-- System information -->
         <button
-          class="items-center rounded-md p-2 text-left hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+          id="system-information-button"
+          class="items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
         >
           <hgroup>
             <span class="flex items-center">
@@ -274,9 +275,11 @@
       <!-- Settings overlay -->
       <div
         id="settings-overlay"
-        class="fixed inset-0 z-40 h-full w-full bg-red-500 opacity-0 transition-opacity duration-200 ease-in-out"
+        class="fixed inset-0 z-40 h-full w-full bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
       >
-        Settings
+        <div class="h-full bg-blue-500 p-6 md:mx-[30%]">
+          <h1 class="p-2 text-3xl font-bold">Settings</h1>
+        </div>
       </div>
     </div>
 
@@ -292,10 +295,16 @@
 
       const settingsButton = document.querySelector("#settings-button");
       const settingsOverlay = document.querySelector("#settings-overlay");
+      const systemInformationButton = document.querySelector(
+        "#system-information-button",
+      );
 
       settingsButton.addEventListener("click", () => {
         settingsOverlay.classList.toggle("opacity-0");
         settingsOverlay.classList.toggle("opacity-100");
+
+        systemInformationButton.classList.toggle("opacity-0");
+        systemInformationButton.classList.toggle("opacity-100");
       });
     </script>
   </body>
