@@ -298,18 +298,50 @@
             </div>
           </div>
 
-          <h2 class="text-lg font-bold">General</h2>
+          <!-- General settings -->
+          <div class="mb-4">
+            <h2 class="text-lg font-bold">General</h2>
 
-          <label>
-            Time zone
-            <select name="time-zone">
-              <label>
-                Test
+            <label class="flex">
+              <span class="w-32">Time zone</span>
+              <select name="time-zone">
                 <option value="">Coordinated Universal Time (UTC)</option>
                 <option value="">New Zealand Time (NZT)</option>
-              </label>
-            </select>
-          </label>
+              </select>
+            </label>
+          </div>
+
+          <!-- Accessibility settings -->
+          <div class="mb-4 flex flex-col">
+            <h2 class="text-lg font-bold">Accessibility</h2>
+
+            <!-- Font selection -->
+            <label class="flex">
+              <span class="w-32">Font</span>
+              <select name="font">
+                <option value="">Default</option>
+                <option value="">OpenDyslexic</option>
+              </select>
+            </label>
+
+            <!-- Text size -->
+            <label class="flex">
+              <span class="w-32">Text size</span>
+              <select name="text-size">
+                <option value="">Default</option>
+                <option value="">Larger</option>
+              </select>
+            </label>
+
+            <!-- Orbit lines -->
+            <label class="flex">
+              <span class="w-32">Orbit lines</span>
+              <select name="">
+                <option value="">Differentiate by colour</option>
+                <option value="">Differentiate by stroke</option>
+              </select>
+            </label>
+          </div>
         </div>
       </div>
     </div>
