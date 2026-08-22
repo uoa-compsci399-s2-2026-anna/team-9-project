@@ -278,8 +278,21 @@
         id="settings-overlay"
         class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
       >
-        <div class="h-full w-full max-w-prose bg-blue-500 p-6">
-          <h1 class="p-2 text-3xl font-bold">Settings</h1>
+        <div class="h-full w-full max-w-prose bg-blue-500 p-8">
+          <h1 class="mb-4 text-3xl font-bold">Settings</h1>
+
+          <h2 class="text-lg font-bold">General</h2>
+
+          <label>
+            Time zone
+            <select name="time-zone">
+              <label>
+                Test
+                <option value="">Coordinated Universal Time (UTC)</option>
+                <option value="">New Zealand Time (NZT)</option>
+              </label>
+            </select>
+          </label>
         </div>
       </div>
     </div>
