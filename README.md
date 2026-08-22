@@ -19,23 +19,10 @@ To run the program use:
 npm run dev
 ```
 
-# Useful Links
+## Useful Links
 - [node version manager](https://www.nvmnode.com/)
 - [`electron` Reference Docs](https://www.electronjs.org/docs/latest/)
 
-# Building the Frontend
-
-Install required packages from `package.json`
-
-```
-npm install
-```
-
-Run Tailwind CLI to build CSS files
-
-```
-npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css
-```
 # Running the Python Web-server
 ## Installing the Packages
 ```sh
@@ -62,6 +49,38 @@ source .venv/bin/activate
 python3 main.py
 ```
 
-# Useful Links
+## Useful Links
 - [`uv` Python Package Manager](https://github.com/astral-sh/uv)
 - [`fastapi` Reference Docs](https://fastapi.tiangolo.com/)
+
+# Building Everything
+## Linux/MacOS
+Note: MacOS is currently untested
+```sh
+uv sync
+npm run package-py-unix
+npm run make
+```
+
+## Windows
+Note: This is untested currently
+```sh
+uv sync
+npm run package-py-win
+npm run make
+```
+
+
+# Building the Frontend
+
+Install required packages from `package.json`
+
+```
+npm install
+```
+
+Run Tailwind CLI to build CSS files
+
+```
+npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css
+```
