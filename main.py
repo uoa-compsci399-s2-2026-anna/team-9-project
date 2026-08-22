@@ -1,24 +1,4 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 import uvicorn
-
-app = FastAPI()
-
-
-@app.get("/", response_class=HTMLResponse)
-async def read_root():
-    """
-    Root ("/") directory response handler.
-    Returns an HTML (string) response
-    """
-
-    return """
-    <html>
-        <body>
-            <h1>Hello, world!</h1>
-        </body>
-    </html>
-    """
 
 
 def server_started(server):
@@ -30,7 +10,7 @@ def server_started(server):
     for server in server.servers:
         for socket in server.sockets:
             ip, port = socket.getsockname()
-            print(f"http://{ip}:{port}")
+            print(f"http://{ip}:{port}", flush=True)
 
 
 def main():
@@ -40,7 +20,7 @@ def main():
     """
 
     # Configure the app and set the server object up
-    config = uvicorn.Config("main:app", port=0)
+    config = uvicorn.Config("app:app", port=0)
     server = uvicorn.Server(config)
 
     # Get the log started message event listenter
