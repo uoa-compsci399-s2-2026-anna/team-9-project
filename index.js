@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const { app, BrowserWindow } = require('electron');
+const path = require('path');
 
 // The python web-server sub-process
 var pythonProcess = null;
@@ -22,13 +23,21 @@ function spawn_python_process(resolve, reject) {
         if (is_dev) {
             pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
         } else {
-            pythonProcess = spawn('.\\dist\\main.exe');
+            let proc_name = '.\\dist\\main.exe';
+            if (app.isPackaged) {
+                proc_name = path.join(process.resourcesPath, 'main.exe');
+            }
+            pythonProcess = spawn(proc_name);
         }
     } else if (platform == "darwin" || platform == "linux") {
         if (is_dev) {
             pythonProcess = spawn('./.venv/bin/python', ['-u', 'main.py']);
         } else {
-            pythonProcess = spawn('./dist/main');
+            let proc_name = './dist/main';
+            if (app.isPackaged) {
+                proc_name = path.join(process.resourcesPath, 'main');
+            }
+            pythonProcess = spawn(proc_name);
         }
     }
 
