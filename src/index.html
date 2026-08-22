@@ -366,6 +366,7 @@
         settingsOverlay.classList.toggle("opacity-0");
         settingsOverlay.classList.toggle("opacity-100");
         settingsOverlay.classList.toggle("pointer-events-none");
+        document.body.classList.toggle("settings-menu-open");
       }
 
       settingsButton.addEventListener("click", toggleSettingsMenu);
@@ -375,6 +376,14 @@
       );
 
       closeSettingsMenuButton.addEventListener("click", toggleSettingsMenu);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (document.body.classList.contains("settings-menu-open")) {
+            toggleSettingsMenu();
+          }
+        }
+      });
     </script>
   </body>
 </html>
