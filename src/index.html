@@ -105,6 +105,7 @@
           <!-- Fullscreen button -->
           <div class="group relative inline-flex">
             <button
+              id="fullscreen-button"
               class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
             >
               <svg class="size-7" viewBox="0 0 24 24">
@@ -397,6 +398,23 @@
         if (e.key === "Escape") {
           if (document.body.classList.contains("settings-menu-open")) {
             toggleSettingsMenu();
+          }
+        }
+      });
+
+      const fullscreenButton = document.querySelector("#fullscreen-button");
+      fullscreenButton.addEventListener("click", () => {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else {
+          if (html.requestFullscreen) {
+            html.requestFullscreen();
+          } else if (html.webkitRequestFullscreen) {
+            // Safari
+            html.webkitRequestFullscreen();
+          } else if (html.msRequestFullscreen) {
+            // IE11
+            html.msRequestFullscreen();
           }
         }
       });
