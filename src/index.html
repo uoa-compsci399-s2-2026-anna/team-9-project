@@ -11,11 +11,11 @@
       class="flex h-screen flex-col bg-white bg-[url(../src/assets/background-placeholder-inverted.png)] bg-cover bg-center fill-zinc-900 text-zinc-900 dark:bg-zinc-900 dark:bg-[url(../src/assets/background-placeholder.png)] dark:fill-white dark:text-white"
     >
       <!-- Navigation bar -->
-      <nav class="z-50 flex flex-wrap items-start justify-between p-6">
+      <nav class="flex flex-wrap items-start justify-between p-6">
         <!-- System information -->
         <button
           id="system-information-button"
-          class="items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+          class="z-30 items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
         >
           <hgroup>
             <span class="flex items-center">
@@ -35,7 +35,8 @@
 
         <div class="grow"></div>
 
-        <div class="flex gap-4">
+        <!-- Controls on RHS -->
+        <div class="z-50 flex gap-4">
           <!-- Help button -->
           <div class="group relative inline-flex">
             <button
@@ -304,8 +305,8 @@
         settingsOverlay.classList.toggle("opacity-100");
         settingsOverlay.classList.toggle("pointer-events-none");
 
-        systemInformationButton.classList.toggle("opacity-0");
-        systemInformationButton.classList.toggle("opacity-100");
+        // systemInformationButton.classList.toggle("opacity-0");
+        // systemInformationButton.classList.toggle("opacity-100");
       });
     </script>
   </body>
