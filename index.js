@@ -22,7 +22,7 @@ function spawn_python_process(resolve, reject) {
         if (is_dev) {
             pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
         } else {
-            pythonProcess = spawn('.\\dist\\main\\main.exe');
+            pythonProcess = spawn('.\\dist\\main.exe');
         }
     } else if (platform == "darwin" || platform == "linux") {
         if (is_dev) {
