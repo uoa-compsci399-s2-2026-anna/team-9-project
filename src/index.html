@@ -428,6 +428,13 @@
         updateDarkModeIcon();
       }
 
+      // Check if system theme is dark mode
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        html.setAttribute("data-theme", "dark");
+      } else {
+        html.setAttribute("data-theme", "light");
+      }
+
       // Update icons to ensure they are initially shown correctly depending on
       // theme on startup
       updateDarkModeIcon();
