@@ -24,9 +24,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "electron . dev",
     "bin": "electron .",
-    "make-unix": "source .venv/bin/activate && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --paths ./.venv/lib/python3.13/site-packages/ main.py && touch ./dist/main.exe",
-    "make-win": ".\\.venv\\Scripts\\activate.bat && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --paths .\\.venv\\Lib\\site-packages\\ main.py && touch .\\dist\\main",
-    "make-pkg": "electron-forge make"
+    "package-py-unix": "source .venv/bin/activate && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --paths ./.venv/lib/python3.13/site-packages/ main.py && touch ./dist/main.exe",
+    "package-py-win": ".\\.venv\\Scripts\\activate.bat && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --paths .\\.venv\\Lib\\site-packages\\ main.py && touch .\\dist\\main",
+    "make": "electron-forge make"
   },
   "dependencies": {
     "@electron-forge/cli": "^7.11.2",
