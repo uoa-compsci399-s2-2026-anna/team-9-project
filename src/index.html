@@ -387,6 +387,11 @@
       );
 
       closeSettingsMenuButton.addEventListener("click", toggleSettingsMenu);
+      settingsOverlay.addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) {
+          toggleSettingsMenu();
+        }
+      });
 
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
