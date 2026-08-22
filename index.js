@@ -4,6 +4,9 @@ const { app, BrowserWindow } = require('electron');
 // The python web-server sub-process
 var pythonProcess = null;
 
+// Whether the dev parameter was passed or not
+const is_dev = process.argv[2] == "dev";
+
 /**
  * Creates the python web-server process and gets url
  * 
@@ -16,9 +19,17 @@ function spawn_python_process(resolve, reject) {
     // Pass the command, script path, and arguments as an array
     // OS Dependent
     if (platform == "win32") {
-        pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
+        if (is_dev) {
+            pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
+        } else {
+            pythonProcess = spawn('.\\dist\\main\\main.exe');
+        }
     } else if (platform == "darwin" || platform == "linux") {
-        pythonProcess = spawn('./.venv/bin/python', ['-u', 'main.py']);
+        if (is_dev) {
+            pythonProcess = spawn('./.venv/bin/python', ['-u', 'main.py']);
+        } else {
+            pythonProcess = spawn('./dist/main');
+        }
     }
 
     // Set python output channels to utf8 encoding
@@ -32,7 +43,8 @@ function spawn_python_process(resolve, reject) {
         // If the data captured is the url to the application
         if (data.toString().startsWith("http://")) {
             // Resolve the promise with the url (with no excess whitespace)
-            resolve(data.toString().trim());
+            let url = data.toString().split("\n")[0].trim();
+            resolve(url);
         }
     });
 
