@@ -278,8 +278,25 @@
         id="settings-overlay"
         class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
       >
-        <div class="h-full w-full max-w-prose bg-blue-500 p-8">
-          <h1 class="mb-4 text-3xl font-bold">Settings</h1>
+        <div class="h-full w-full max-w-prose bg-blue-500 p-6">
+          <div class="flex items-start">
+            <h1 class="mb-4 flex-1 text-3xl font-bold">Settings</h1>
+
+            <!-- Help button -->
+            <div>
+              <button
+                id="close-settings-menu-button"
+                class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+              >
+                <svg class="size-7" viewBox="0 0 24 24">
+                  <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                  <path
+                    d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
 
           <h2 class="text-lg font-bold">General</h2>
 
@@ -313,14 +330,19 @@
         "#system-information-button",
       );
 
-      settingsButton.addEventListener("click", () => {
+      function toggleSettingsMenu() {
         settingsOverlay.classList.toggle("opacity-0");
         settingsOverlay.classList.toggle("opacity-100");
         settingsOverlay.classList.toggle("pointer-events-none");
+      }
 
-        // systemInformationButton.classList.toggle("opacity-0");
-        // systemInformationButton.classList.toggle("opacity-100");
-      });
+      settingsButton.addEventListener("click", toggleSettingsMenu);
+
+      const closeSettingsMenuButton = document.querySelector(
+        "#close-settings-menu-button",
+      );
+
+      closeSettingsMenuButton.addEventListener("click", toggleSettingsMenu);
     </script>
   </body>
 </html>
