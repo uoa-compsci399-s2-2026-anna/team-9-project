@@ -7,6 +7,12 @@ module.exports = {
     extraResource: [
       './dist/main',
       './dist/main.exe'
+    ],
+    ignore: [
+      /^\/\.git/,
+      /^\/\.gitignore/,
+      /^\/\.venv/,
+      /^\/\.node_modules/,
     ]
   },
   rebuildConfig: {},
