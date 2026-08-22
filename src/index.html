@@ -238,6 +238,7 @@
 
           <!-- Playback controls -->
           <div class="flex flex-wrap items-start gap-1 justify-self-center">
+            <!-- Step back button -->
             <button
               class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
             >
@@ -248,16 +249,30 @@
                 />
               </svg>
             </button>
+
+            <!-- Play/pause button -->
             <button
+              id="play-pause-button"
               class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
             >
-              <svg class="size-10" viewBox="0 0 24 24">
+              <!-- Play icon -->
+              <svg id="play-icon" class="size-10" viewBox="0 0 24 24">
                 <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
                 <path
                   d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82"
                 />
               </svg>
+
+              <!-- Pause icon -->
+              <svg id="pause-icon" class="hidden size-10" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M16 19q-.825 0-1.412-.587T14 17V7q0-.825.588-1.412T16 5t1.413.588T18 7v10q0 .825-.587 1.413T16 19m-8 0q-.825 0-1.412-.587T6 17V7q0-.825.588-1.412T8 5t1.413.588T10 7v10q0 .825-.587 1.413T8 19"
+                />
+              </svg>
             </button>
+
+            <!-- Step forward button -->
             <button
               class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
             >
@@ -506,6 +521,15 @@
             html.msRequestFullscreen();
           }
         }
+      });
+
+      const playPauseButton = document.querySelector("#play-pause-button");
+      const playIcon = document.querySelector("#play-icon");
+      const pauseIcon = document.querySelector("#pause-icon");
+
+      playPauseButton.addEventListener("click", () => {
+        playIcon.classList.toggle("hidden");
+        pauseIcon.classList.toggle("hidden");
       });
     </script>
   </body>
