@@ -21,20 +21,26 @@ function spawnPythonProcess(resolve, reject) {
     // OS Dependent
     if (platform == "win32") {
         if (isDev) {
+            // If the dev flag is set (and should run using python venv)
             pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
         } else {
+            // If we are running an executable
             let proc_name = '.\\dist\\main.exe';
             if (app.isPackaged) {
+                // Path to resources folder
                 proc_name = path.join(process.resourcesPath, 'main.exe');
             }
             pythonProcess = spawn(proc_name);
         }
     } else if (platform == "darwin" || platform == "linux") {
         if (isDev) {
+            // If the dev flag is set (and should run using python venv)
             pythonProcess = spawn('./.venv/bin/python', ['-u', 'main.py']);
         } else {
+            // If we are runnning an executable
             let proc_name = './dist/main';
             if (app.isPackaged) {
+                // Path to resources folder
                 proc_name = path.join(process.resourcesPath, 'main');
             }
             pythonProcess = spawn(proc_name);
