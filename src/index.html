@@ -215,7 +215,7 @@
       </nav>
 
       <div class="flex flex-1 items-end gap-4 p-6">
-        <div class="flex w-52 flex-col gap-2">
+        <div class="flex w-64 flex-col gap-2">
           <!-- Objects side panel -->
           <div
             class="rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
@@ -253,7 +253,18 @@
               id="objects"
               class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
             >
-              <div class="flex flex-col overflow-hidden">Examples</div>
+              <div class="flex flex-col overflow-hidden">
+                <div class="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Search objects"
+                    class="min-w-0 flex-1 rounded-md pl-1 outline-1 outline-zinc-900 dark:outline-zinc-500"
+                    value=""
+                  />
+
+                  <button>Add</button>
+                </div>
+              </div>
             </div>
           </div>
 
