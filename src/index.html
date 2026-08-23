@@ -155,41 +155,46 @@
       <div class="flex flex-1 items-end gap-4 p-6">
         <!-- View settings side panel -->
         <div
-          class="rounded-md bg-white outline-1 dark:bg-black dark:outline-zinc-500"
+          class="w-48 rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
         >
           <!-- "View settings" header and hide panel button -->
-          <span class="flex items-center pt-3 pr-3 pl-6 font-bold">
-            <div class="flex-1">View settings</div>
-            <button
-              class="rounded-md p-1 outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-            >
-              <svg class="size-7" viewBox="0 0 24 24">
-                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                <path
-                  d="m10.8 12l3.9 3.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.212-.325T8.425 12t.063-.375t.212-.325l4.6-4.6q.275-.275.7-.275t.7.275t.275.7t-.275.7z"
-                />
-              </svg>
-            </button>
-          </span>
+          <button
+            id="view-settings-button"
+            class="flex w-full items-center font-bold"
+          >
+            <span class="flex-1 text-left">View settings</span>
+
+            <svg class="size-7" viewBox="0 0 24 24">
+              <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+              <path
+                d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
+              />
+            </svg>
+          </button>
 
           <!-- View settings controls -->
-          <div class="flex flex-col px-6 pb-6">
-            <span>
-              <input type="checkbox" /><label class="px-3"
-                >Habitable zone</label
-              >
-            </span>
-            <span>
-              <input type="checkbox" /><label class="px-3">Orbits</label>
-            </span>
-            <span>
-              <input type="checkbox" /><label class="px-3"
-                >Reference grid</label
-              >
-            </span>
-            <span>
-              <input type="checkbox" /><label class="px-3">Labels</label>
-            </span>
+          <div
+            id="view-settings"
+            class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
+          >
+            <div class="flex flex-col overflow-hidden">
+              <span>
+                <input type="checkbox" /><label class="pl-3"
+                  >Habitable zone</label
+                >
+              </span>
+              <span>
+                <input type="checkbox" /><label class="pl-3">Orbits</label>
+              </span>
+              <span>
+                <input type="checkbox" /><label class="pl-3"
+                  >Reference grid</label
+                >
+              </span>
+              <span>
+                <input type="checkbox" /><label class="pl-3">Labels</label>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -530,6 +535,16 @@
       playPauseButton.addEventListener("click", () => {
         playIcon.classList.toggle("hidden");
         pauseIcon.classList.toggle("hidden");
+      });
+
+      const viewSettingsButton = document.querySelector(
+        "#view-settings-button",
+      );
+      const viewSettings = document.querySelector("#view-settings");
+
+      viewSettingsButton.addEventListener("click", () => {
+        viewSettings.classList.toggle("grid-rows-[0fr]");
+        viewSettings.classList.toggle("grid-rows-[1fr]");
       });
     </script>
   </body>
