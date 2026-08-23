@@ -68,7 +68,7 @@ function spawn_python_process(resolve, reject) {
         console.log(`Python script exited with code ${code}`);
     });
 
-    // Reject the promise after 1 second
+    // Reject the promise after 5 seconds
     setTimeout(reject, 5000);
 }
 
