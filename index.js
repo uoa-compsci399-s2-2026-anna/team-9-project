@@ -6,7 +6,7 @@ const path = require('path');
 var pythonProcess = null;
 
 // Whether the dev parameter was passed or not
-const is_dev = process.argv[2] == "dev";
+const isDev = process.argv[2] == "dev";
 
 /**
  * Creates the python web-server process and gets url
@@ -14,13 +14,13 @@ const is_dev = process.argv[2] == "dev";
  * @param {*} resolve Promise resolve handle, will return the url of the python server
  * @param {*} reject Promise reject handle, will reject after 5 seconds (failed to launch)
  */
-function spawn_python_process(resolve, reject) {
+function spawnPythonProcess(resolve, reject) {
     const platform = process.platform;
 
     // Pass the command, script path, and arguments as an array
     // OS Dependent
     if (platform == "win32") {
-        if (is_dev) {
+        if (isDev) {
             pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
         } else {
             let proc_name = '.\\dist\\main.exe';
@@ -30,7 +30,7 @@ function spawn_python_process(resolve, reject) {
             pythonProcess = spawn(proc_name);
         }
     } else if (platform == "darwin" || platform == "linux") {
-        if (is_dev) {
+        if (isDev) {
             pythonProcess = spawn('./.venv/bin/python', ['-u', 'main.py']);
         } else {
             let proc_name = './dist/main';
@@ -69,7 +69,7 @@ function spawn_python_process(resolve, reject) {
     });
 
     // Reject the promise after 5 seconds
-    setTimeout(() => reject(new Error("Python server failed to launch"), 5000);
+    setTimeout(() => reject(new Error("Python server failed to launch")), 5000);
 }
 
 /**
@@ -120,6 +120,6 @@ app.on('will-quit', () => {
     pythonProcess.kill();
 });
 
-const url = new Promise(spawn_python_process);
+const url = new Promise(spawnPythonProcess);
 // Wait for electron to be ready, then create the window
 app.whenReady().then(() => createWindow(url));
