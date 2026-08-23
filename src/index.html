@@ -300,8 +300,11 @@
 
       <!-- Bottom controls -->
       <div
-        class="bg-linear-to-t from-white via-white via-80% to-transparent px-6 pt-12 pb-6 dark:from-black dark:via-black dark:via-80%"
+        class="flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 pt-12 pb-6 dark:from-black dark:via-black dark:via-80%"
       >
+        <!-- Simulation timestamp (narrow screens) -->
+        <span class="self-center text-sm sm:hidden">06-08-2026 15:45 NZT</span>
+
         <div class="grid w-full grid-cols-3 items-center gap-4">
           <!-- Simulation timestamp / date picker -->
           <div class="justify-self-start">
