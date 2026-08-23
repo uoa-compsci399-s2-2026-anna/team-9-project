@@ -69,7 +69,7 @@ function spawn_python_process(resolve, reject) {
     });
 
     // Reject the promise after 5 seconds
-    setTimeout(reject, 5000);
+    setTimeout(() => reject(new Error("Python server failed to launch"), 5000);
 }
 
 /**
