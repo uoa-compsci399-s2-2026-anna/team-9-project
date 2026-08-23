@@ -668,6 +668,9 @@
 
     <script>
       const html = document.documentElement;
+
+      // DARK/LIGHT MODE
+
       const darkModeToggleButton = document.querySelector(
         "#dark-mode-toggle-button",
       );
@@ -714,6 +717,8 @@
 
       darkModeToggleButton.addEventListener("click", toggleDarkMode);
 
+      // SETTINGS MENU OVERLAY
+
       const settingsButton = document.querySelector("#settings-button");
       const settingsOverlay = document.querySelector("#settings-overlay");
       const systemInformationButton = document.querySelector(
@@ -737,6 +742,7 @@
       );
 
       closeSettingsMenuButton.addEventListener("click", toggleSettingsMenu);
+
       settingsOverlay.addEventListener("click", (e) => {
         // Close settings menu only when the user clicks outside of the main
         // settings menu panel
@@ -753,6 +759,8 @@
           }
         }
       });
+
+      // FULLSCREEN BUTTON
 
       const fullscreenButton = document.querySelector("#fullscreen-button");
       const enterFullscreenIcon = document.querySelector(
@@ -781,6 +789,8 @@
         }
       });
 
+      // PLAY/PAUSE BUTTON
+
       const playPauseButton = document.querySelector("#play-pause-button");
       const playIcon = document.querySelector("#play-icon");
       const pauseIcon = document.querySelector("#pause-icon");
@@ -789,6 +799,8 @@
         playIcon.classList.toggle("hidden");
         pauseIcon.classList.toggle("hidden");
       });
+
+      // VIEW SETTINGS SIDE PANEL
 
       const viewSettingsButton = document.querySelector(
         "#view-settings-button",
@@ -808,6 +820,8 @@
         viewSettingsShowIcon.classList.toggle("hidden");
         viewSettingsHideIcon.classList.toggle("hidden");
       });
+
+      // OBJECTS SIDE PANEL
 
       const objectsButton = document.querySelector("#objects-button");
       const objects = document.querySelector("#objects");
