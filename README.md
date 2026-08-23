@@ -13,8 +13,11 @@ npm install
 Run Tailwind CLI to build CSS files
 
 ```
-npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css
+npm run watch
 ```
+
+This runs `npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch`
+
 # Running the Python Web-server
 ## Installing the Packages
 ```sh
