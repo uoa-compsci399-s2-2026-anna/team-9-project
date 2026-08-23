@@ -214,11 +214,14 @@
         </div>
       </nav>
 
-      <div class="flex flex-1 items-end gap-4 p-6">
-        <div class="flex w-64 flex-col gap-2">
+      <!-- Center controls -->
+      <div class="flex min-h-0 flex-1 items-end gap-4 p-6">
+        <!-- Left sidebar -->
+        <div class="flex h-full min-h-0 w-64 flex-col gap-2">
+          <div class="flex-1"></div>
           <!-- Objects side panel -->
           <div
-            class="rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
+            class="flex min-h-0 flex-col rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
           >
             <!-- "Objects" header and hide panel button -->
             <button
@@ -266,52 +269,54 @@
                   <button>Add</button>
                 </div>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Mercury</span>
-                </label>
+                <div class="min-h-0 flex-1 overflow-y-auto">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Mercury</span>
+                  </label>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Venus</span>
-                </label>
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Venus</span>
+                  </label>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Earth</span>
-                </label>
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Earth</span>
+                  </label>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Mars</span>
-                </label>
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Mars</span>
+                  </label>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Jupiter</span>
-                </label>
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Jupiter</span>
+                  </label>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Saturn</span>
-                </label>
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Saturn</span>
+                  </label>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Uranus</span>
-                </label>
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Uranus</span>
+                  </label>
 
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" checked />
-                  <span>Neptune</span>
-                </label>
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span>Neptune</span>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- View settings side panel -->
           <div
-            class="rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
+            class="shrink-0 rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
           >
             <!-- "View settings" header and hide panel button -->
             <button
