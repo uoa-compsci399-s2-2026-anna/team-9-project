@@ -12,7 +12,7 @@ const is_dev = process.argv[2] == "dev";
  * Creates the python web-server process and gets url
  * 
  * @param {*} resolve Promise resolve handle, will return the url of the python server
- * @param {*} reject Promise reject handle, will reject after 1 second (failed to launch)
+ * @param {*} reject Promise reject handle, will reject after 5 seconds (failed to launch)
  */
 function spawn_python_process(resolve, reject) {
     const platform = process.platform;
