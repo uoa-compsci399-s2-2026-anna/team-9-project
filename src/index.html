@@ -12,7 +12,7 @@
     >
       <!-- Navigation bar -->
       <nav class="z-30 flex flex-wrap items-start justify-between gap-4 p-6">
-        <button id="opis-button" class="self-center">
+        <button id="opis-button" class="self-center max-sm:hidden">
           <svg
             viewBox="0 0 436.72 166.27"
             class="h-14 -translate-y-1 fill-zinc-800 dark:fill-white"
@@ -57,6 +57,48 @@
 
         <!-- Controls on RHS -->
         <div class="flex gap-4">
+          <!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
+          <div class="group relative inline-flex sm:hidden">
+            <button
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Home
+            </div>
+          </div>
+
+          <!-- Switch planetary system button (only shown at max-sm) -->
+          <div class="group relative inline-flex sm:hidden">
+            <button
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-7 sm:hidden" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M5.825 16L7.7 17.875q.275.275.275.688t-.275.712q-.3.3-.712.3t-.713-.3L2.7 15.7q-.15-.15-.213-.325T2.426 15t.063-.375t.212-.325l3.6-3.6q.3-.3.7-.287t.7.312q.275.3.288.7t-.288.7L5.825 14H12q.425 0 .713.288T13 15t-.288.713T12 16zm12.35-6H12q-.425 0-.712-.288T11 9t.288-.712T12 8h6.175L16.3 6.125q-.275-.275-.275-.687t.275-.713q.3-.3.713-.3t.712.3L21.3 8.3q.15.15.212.325t.063.375t-.063.375t-.212.325l-3.6 3.6q-.3.3-.7.288t-.7-.313q-.275-.3-.288-.7t.288-.7z"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Change planetary system
+            </div>
+          </div>
+
           <!-- Help button -->
           <div class="group relative inline-flex">
             <button
