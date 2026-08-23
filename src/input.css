@@ -35,6 +35,7 @@
   h1,
   h2,
   h3,
+  svg,
   span {
     @apply transition-colors duration-200 ease-in-out;
   }
