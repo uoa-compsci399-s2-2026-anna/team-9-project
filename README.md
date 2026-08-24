@@ -57,16 +57,22 @@ python3 main.py
 ## Linux/MacOS
 Note: MacOS is currently untested
 ```sh
+npm run clean
 uv sync
 npm run package-py-unix
+npm install
+npm run tailwind
 npm run make
 ```
 
 ## Windows
 Note: This is untested currently
 ```sh
+npm run clean
 uv sync
 npm run package-py-win
+npm install
+npm run tailwind
 npm run make
 ```
 
