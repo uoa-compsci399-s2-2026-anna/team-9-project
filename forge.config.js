@@ -10,9 +10,15 @@ module.exports = {
     ],
     ignore: [
       /^\/\.git/,
-      /^\/\.gitignore/,
+      /^\/\.github/,
       /^\/\.venv/,
+      /^\/__pycache__/,
       /^\/\.node_modules/,
+      /^\/\.gitignore/,
+      /^\/\.prettierrc/,
+      /^\/\.python-version/,
+      /^\/pyproject\.toml/,
+      /^\/uv\.lock/,
     ]
   },
   rebuildConfig: {},
