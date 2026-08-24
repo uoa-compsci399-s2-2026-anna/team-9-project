@@ -460,7 +460,16 @@
         class="flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 py-6 dark:from-black dark:via-black dark:via-80%"
       >
         <!-- Simulation timestamp (narrow screens) -->
-        <span class="self-center text-sm sm:hidden">06-08-2026 15:45 NZT</span>
+        <span class="self-center text-sm sm:hidden">
+          <input
+            type="datetime-local"
+            id="meeting-time"
+            name="meeting-time"
+            value="2018-06-12T19:30"
+            min="2018-06-07T00:00"
+            max="2018-06-14T00:00"
+          />
+        </span>
 
         <div class="grid w-full grid-cols-3 items-center gap-4">
           <!-- Simulation timestamp / date picker -->
