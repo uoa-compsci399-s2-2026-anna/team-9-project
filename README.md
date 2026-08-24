@@ -54,27 +54,30 @@ python3 main.py
 - [`fastapi` Reference Docs](https://fastapi.tiangolo.com/)
 
 # Building Everything
+The final executable lives in the `./out/team-9-project-OS-ARCH/` folder **not** the `./dist/` folder.
+
 ## Linux/MacOS
 Note: MacOS is currently untested
 ```sh
-npm run clean
+rm -rf build dist out
 uv sync
 npm run package-py-unix
 npm install
 npm run tailwind
 npm run make
 ```
+Example output executable path: `./out/team-9-project-linux-x64/team-9-project`
 
 ## Windows
-Note: This is untested currently
 ```sh
-npm run clean
+rd /s /q build dist out
 uv sync
 npm run package-py-win
 npm install
 npm run tailwind
 npm run make
 ```
+Example output executable path: `./out/team-9-project-win32-x64/team-9-project.exe`
 
 
 # Building the Frontend
