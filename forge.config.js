@@ -1,12 +1,14 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const path = require('path');
+const fs = require('fs');
 
 module.exports = {
   packagerConfig: {
     asar: true,
     extraResource: [
-      './dist/main',
-      './dist/main.exe'
+      './dist/',
+      './src/'
     ],
     ignore: [
       /^\/\.git/,

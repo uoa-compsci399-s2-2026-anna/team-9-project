@@ -19,33 +19,38 @@ function spawnPythonProcess(resolve, reject) {
 
     // Pass the command, script path, and arguments as an array
     // OS Dependent
+    let processPath = "";
+    let args = [];
     if (platform == "win32") {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
-            pythonProcess = spawn('.\\.venv\\Scripts\\python.exe', ['-u', 'main.py']);
+            processPath = '.\\.venv\\Scripts\\python.exe';
+            args = ['-u', 'main.py'];
         } else {
             // If we are running an executable
-            let proc_name = '.\\dist\\main.exe';
+            processPath = '.\\dist\\main.exe';
             if (app.isPackaged) {
                 // Path to resources folder
-                proc_name = path.join(process.resourcesPath, 'main.exe');
+                processPath = path.join(process.resourcesPath, '/dist/main.exe');
+                args = ['packaged'];
             }
-            pythonProcess = spawn(proc_name);
         }
     } else if (platform == "darwin" || platform == "linux") {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
-            pythonProcess = spawn('./.venv/bin/python', ['-u', 'main.py']);
+            processPath = './.venv/bin/python';
+            args = ['-u', 'main.py'];
         } else {
             // If we are runnning an executable
-            let proc_name = './dist/main';
+            processPath = './dist/main';
             if (app.isPackaged) {
                 // Path to resources folder
-                proc_name = path.join(process.resourcesPath, 'main');
+                processPath = path.join(process.resourcesPath, '/dist/main');
+                args = ['packaged'];
             }
-            pythonProcess = spawn(proc_name);
         }
     }
+    pythonProcess = spawn(processPath, args);
 
     // Set python output channels to utf8 encoding
     pythonProcess.stdout.setEncoding('utf8');
