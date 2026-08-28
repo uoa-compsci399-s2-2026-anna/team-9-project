@@ -33,7 +33,7 @@ program).
 
 ## Development Mode
 ```sh
-uv run fastapi dev
+uv run main.py
 ```
 
 ## Python Only (with URL Override)
