@@ -11,16 +11,3 @@ playPauseButton.addEventListener("click", () => {
         bus.publish(EVENTS.SIM_START);
     }
 });
-
-
-// TEMP FOR TESTING
-
-bus.subscribe(EVENTS.SIM_START, () => {
-    console.log("Started simulation");
-    state.setRunning(true);
-})
-
-bus.subscribe(EVENTS.SIM_STOP, () => {
-    console.log("Stopped simulation");
-    state.setRunning(false);
-})
