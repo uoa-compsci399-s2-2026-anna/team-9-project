@@ -23,8 +23,8 @@
     "tar": "7.5.21"
   },
   "scripts": {
-    "tailwind": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css",
-    "watch": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch",
+    "tailwind": "npx @tailwindcss/cli -i ./src/ui/input.css -o ./dist/output.css",
+    "watch": "npx @tailwindcss/cli -i ./src/ui/input.css -o ./dist/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "electron . dev",
     "bin": "electron .",
