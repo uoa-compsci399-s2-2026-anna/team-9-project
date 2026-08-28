@@ -473,32 +473,26 @@
           </div>
 
           <!-- Simulation speed adjuster -->
-          <div class="flex items-center justify-self-end max-sm:hidden">
-            <label class="pr-3">speed</label>
+          <div class="flex items-center gap-3 justify-self-end max-sm:hidden">
+            <label class="">speed</label>
             <input
-              type="text"
-              class="mr-3 w-18 rounded-md pl-1 outline-1 outline-zinc-900 dark:outline-zinc-500"
+              type="number"
+              min="0"
+              class="h-9 w-18 rounded-md pl-2 outline-1 outline-zinc-900 dark:outline-zinc-500"
               value="20"
             />
 
-            <p class="pr-3">d/s</p>
+            <select
+              class="h-9 w-18 rounded-md outline-1 outline-zinc-900 dark:outline-zinc-500"
+            >
+              <option>hour</option>
+              <option>day</option>
+              <option>week</option>
+              <option>month</option>
+              <option>year</option>
+            </select>
 
-            <!-- Slider -->
-            <div class="px-3 max-lg:hidden">
-              <input
-                class="w-full accent-zinc-900 dark:accent-white"
-                type="range"
-                value="300"
-                min="0"
-                max="1000"
-                oninput=""
-              />
-
-              <div class="-mt-2 flex w-full justify-between">
-                <span class="text-sm">1 d/s</span>
-                <span class="text-sm">1 y/s</span>
-              </div>
-            </div>
+            <p class="pr-3">per second</p>
           </div>
 
           <!-- Simulation speed adjustor (small; only shown on narrow screens) -->
