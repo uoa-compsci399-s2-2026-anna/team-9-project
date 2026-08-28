@@ -30,13 +30,13 @@ async def kill():
 
 
 @app.get("/system")
-async def get_system_data(name: str = "", t: int = -1):
+async def get_system_data(name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
 
     # Catch poor input
-    if t == -1 or name.lower() not in valid_systems:
+    if name.lower() not in valid_systems:
         raise HTTPException(status.HTTP_400_BAD_REQUEST)
 
     # Init state if empty
@@ -44,7 +44,7 @@ async def get_system_data(name: str = "", t: int = -1):
         init_solar()
 
     # Set time
-    sim.integrate(float(t))
+    sim.integrate(t)
 
     # Gather positions
     positions = {}
