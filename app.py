@@ -5,8 +5,27 @@ from fastapi.staticfiles import StaticFiles
 import sys
 import rebound
 import os
+import json
 
 app = FastAPI()
+
+# Load the config file
+with open("config.json") as f:
+    config = json.load(f)
+
+# Get the list of systems from the config
+systems = config["systems"]
+
+# Get the IDs of all the enabled systems
+valid_systems = [
+    system["id"]
+    for system in systems
+    if system["enabled"]
+]
+
+# Test output
+print(systems)
+print(valid_systems)
 
 if sys.argv[-1] == "packaged":
     app.mount("/src", StaticFiles(directory="resources/src"), name="src")
@@ -16,7 +35,7 @@ else:
     app.mount("/dist", StaticFiles(directory="dist"), name="dist")
 
 sim = None
-valid_systems = ["solar system"]
+# valid_systems = ["solar system"]
 objects = []
 
 
@@ -30,28 +49,38 @@ async def kill():
 
 
 @app.get("/system")
-async def get_system_data(name: str = "", t: float = 0.0):
+async def get_system_data(system_id: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
 
     # Catch poor input
-    if name.lower() not in valid_systems:
+    if system_id not in valid_systems:
         raise HTTPException(status.HTTP_400_BAD_REQUEST)
 
-    # Init state if empty
-    if sim is None:
-        init_solar()
+    # Find the next requested system 
+    system = next(
+        system
+        for system in systems
+        if system["id"] == system_id
+    )
 
-    # Set time
-    sim.integrate(t)
+    # Hardcode Solar System
+    if system_id == "solar-system":
 
-    # Gather positions
-    positions = {}
-    for i, p in enumerate(sim.particles):
-        positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+        # Init state if empty
+        if sim is None:
+            init_solar()
 
-    return {"positions": positions}
+        # Set time
+        sim.integrate(t)
+
+        # Gather positions
+        positions = {}
+        for i, p in enumerate(sim.particles):
+            positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+
+        return {"positions": positions}
 
 
 def init_solar():
