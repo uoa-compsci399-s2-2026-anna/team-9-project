@@ -16,8 +16,8 @@ else:
     app.mount("/dist", StaticFiles(directory="dist"), name="dist")
 
 sim = None
-valid_systems = ["solar"]
-planets = []
+valid_systems = ["solar system"]
+objects = []
 
 
 @app.get("/kill")
@@ -25,6 +25,7 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
+    sim.stop()
     os.kill(os.getpid(), signal.SIGINT)
 
 
@@ -33,8 +34,6 @@ async def get_system_data(name: str = "", t: int = -1):
     """
     GET /system endpoint
     """
-    global sim
-    global planet
 
     # Catch poor input
     if t == -1 or name.lower() not in valid_systems:
@@ -50,7 +49,7 @@ async def get_system_data(name: str = "", t: int = -1):
     # Gather positions
     positions = {}
     for i, p in enumerate(sim.particles):
-        positions[planets[i]] = {"x": p.x, "y": p.y, "z": p.z}
+        positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
 
     return {"positions": positions}
 
@@ -60,7 +59,7 @@ def init_solar():
     Initialise solar system function
     """
     global sim
-    global planets
+    global objects
 
     # Initialise the simulation
     sim = rebound.Simulation()
@@ -74,7 +73,7 @@ def init_solar():
     sim.move_to_com()
 
     # Add and set all planets
-    planets = [
+    objects = [
         "Sun",
         "Mercury",
         "Venus",
@@ -86,5 +85,5 @@ def init_solar():
         "Neptune",
     ]
 
-    for planet in planets[1:]:
+    for planet in objects[1:]:
         sim.add(planet)
