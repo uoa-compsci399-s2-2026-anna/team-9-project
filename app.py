@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 import sys
 
@@ -10,3 +10,14 @@ if sys.argv[-1] == "packaged":
 else:
     app.mount("/src", StaticFiles(directory="src"), name="src")
     app.mount("/dist", StaticFiles(directory="dist"), name="dist")
+
+cached_system = ""
+valid_systems = ["solar"]
+
+
+@app.get("/system")
+async def get_system_data(name: str = "", t: int = -1):
+    if t == -1 or name.lower() not in valid_systems:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+
+    return {"positions": []}
