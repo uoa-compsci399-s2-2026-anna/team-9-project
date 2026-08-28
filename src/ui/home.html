@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="/dist/output.css" rel="stylesheet" />
     <title>Home</title>
+    <script src="script.js" defer></script>
   </head>
   <body>
     <div
@@ -214,86 +215,5 @@
         </div>
       </div>
     </div>
-
-    <script>
-      const html = document.documentElement;
-
-      // DARK/LIGHT MODE
-
-      const darkModeToggleButton = document.querySelector(
-        "#dark-mode-toggle-button",
-      );
-      const darkModeIcon = document.querySelector("#dark-mode-icon");
-      const lightModeIcon = document.querySelector("#light-mode-icon");
-
-      /**
-       * Updates the icon (SVG) of the dark/light mode toggle button to be the
-       * correct icon based on the current theme.
-       */
-      function updateDarkModeIcon() {
-        const isDark = html.getAttribute("data-theme") === "dark";
-
-        if (isDark) {
-          lightModeIcon.classList.remove("hidden");
-          darkModeIcon.classList.add("hidden");
-        } else {
-          lightModeIcon.classList.add("hidden");
-          darkModeIcon.classList.remove("hidden");
-        }
-      }
-
-      /**
-       * Toggles dark/light mode and updates the icon (SVG) of the dark/light
-       * mode toggle button.
-       */
-      function toggleDarkMode() {
-        const isDark = html.getAttribute("data-theme") === "dark";
-
-        html.setAttribute("data-theme", isDark ? "light" : "dark");
-        updateDarkModeIcon();
-      }
-
-      // Check if system theme is dark mode
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        html.setAttribute("data-theme", "dark");
-      } else {
-        html.setAttribute("data-theme", "light");
-      }
-
-      // Update icons to ensure they are initially shown correctly depending on
-      // theme on startup
-      updateDarkModeIcon();
-
-      darkModeToggleButton.addEventListener("click", toggleDarkMode);
-
-      // FULLSCREEN BUTTON
-
-      const fullscreenButton = document.querySelector("#fullscreen-button");
-      const enterFullscreenIcon = document.querySelector(
-        "#enter-fullscreen-icon",
-      );
-      const exitFullscreenIcon = document.querySelector(
-        "#exit-fullscreen-icon",
-      );
-
-      fullscreenButton.addEventListener("click", () => {
-        enterFullscreenIcon.classList.toggle("hidden");
-        exitFullscreenIcon.classList.toggle("hidden");
-
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
-        } else {
-          if (html.requestFullscreen) {
-            html.requestFullscreen();
-          } else if (html.webkitRequestFullscreen) {
-            // Safari
-            html.webkitRequestFullscreen();
-          } else if (html.msRequestFullscreen) {
-            // IE11
-            html.msRequestFullscreen();
-          }
-        }
-      });
-    </script>
   </body>
 </html>
