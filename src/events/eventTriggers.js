@@ -6,9 +6,9 @@ const playPauseButton = document.getElementById("play-pause-button");
 
 playPauseButton.addEventListener("click", () => {
     if (state.running) {
-        bus.emit(EVENTS.SIM_STOP);
+        bus.publish(EVENTS.SIM_STOP);
     } else {
-        bus.emit(EVENTS.SIM_START);
+        bus.publish(EVENTS.SIM_START);
     }
 });
 

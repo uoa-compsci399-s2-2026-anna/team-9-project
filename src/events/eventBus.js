@@ -1,5 +1,5 @@
 class EventBus extends EventTarget {
-    emit(name, detail) {
+    publish(name, detail) {
         this.dispatchEvent(new CustomEvent(name, { detail }));
     }
 
