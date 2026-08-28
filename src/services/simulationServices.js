@@ -2,7 +2,7 @@
  * Fetches the backend for star system data at a specified time
  * 
  * @param {string} name Star system name
- * @param {number} t Simulation time relative to app startup time
+ * @param {number} t Simulation time relative to simulation initialisation time
  */
 export async function getSystemData(name, t) {
     const params = new URLSearchParams({
