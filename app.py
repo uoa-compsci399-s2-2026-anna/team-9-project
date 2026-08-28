@@ -69,10 +69,10 @@ def init_solar():
     # Add the sun at current position
     sim.add("Sun")
 
-    # Move to COM of planets
+    # Move to COM of the sun
     sim.move_to_com()
 
-    # Add and set all planets
+    # Add and set all objects in the solar system
     objects = [
         "Sun",
         "Mercury",
