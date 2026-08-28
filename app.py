@@ -1,6 +1,10 @@
+import signal
+import time
 from fastapi import FastAPI, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 import sys
+import rebound
+import os
 
 app = FastAPI()
 
