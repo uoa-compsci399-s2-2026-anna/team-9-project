@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="../dist/output.css" rel="stylesheet" />
+    <link href="/dist/output.css" rel="stylesheet" />
     <title>Orbit Viewer</title>
+    <script src="script.js" defer></script>
   </head>
   <body>
     <div
@@ -250,121 +251,60 @@
               class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
             >
               <div class="flex flex-col overflow-hidden">
-                <!-- Search objects field -->
-                <div class="my-3 flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Search objects"
-                    class="min-w-0 flex-1 rounded-md pl-1 outline-1 outline-zinc-900 dark:outline-zinc-500"
-                    value=""
-                  />
-
-                  <button>Add</button>
-                </div>
-
                 <div class="min-h-0 flex-1 overflow-y-auto">
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Mercury</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
                   </label>
 
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Venus</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
                   </label>
 
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Earth</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
                   </label>
 
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Mars</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
                   </label>
 
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Jupiter</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
                   </label>
 
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Saturn</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
                   </label>
 
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Uranus</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
                   </label>
 
                   <label class="flex items-center gap-2">
                     <input type="checkbox" checked />
                     <span class="flex-1">Neptune</span>
-                    <button>
-                      <svg class="size-5" viewBox="0 0 24 24">
-                        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-                        <path
-                          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-                        />
-                      </svg>
-                    </button>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span class="flex-1">Pluto</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span class="flex-1">1P/Halley</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span class="flex-1">3I/ATLAS</span>
                   </label>
                 </div>
               </div>
@@ -661,176 +601,5 @@
         </div>
       </div>
     </div>
-
-    <script>
-      const html = document.documentElement;
-
-      // DARK/LIGHT MODE
-
-      const darkModeToggleButton = document.querySelector(
-        "#dark-mode-toggle-button",
-      );
-      const darkModeIcon = document.querySelector("#dark-mode-icon");
-      const lightModeIcon = document.querySelector("#light-mode-icon");
-
-      /**
-       * Updates the icon (SVG) of the dark/light mode toggle button to be the
-       * correct icon based on the current theme.
-       */
-      function updateDarkModeIcon() {
-        const isDark = html.getAttribute("data-theme") === "dark";
-
-        if (isDark) {
-          lightModeIcon.classList.remove("hidden");
-          darkModeIcon.classList.add("hidden");
-        } else {
-          lightModeIcon.classList.add("hidden");
-          darkModeIcon.classList.remove("hidden");
-        }
-      }
-
-      /**
-       * Toggles dark/light mode and updates the icon (SVG) of the dark/light
-       * mode toggle button.
-       */
-      function toggleDarkMode() {
-        const isDark = html.getAttribute("data-theme") === "dark";
-
-        html.setAttribute("data-theme", isDark ? "light" : "dark");
-        updateDarkModeIcon();
-      }
-
-      // Check if system theme is dark mode
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        html.setAttribute("data-theme", "dark");
-      } else {
-        html.setAttribute("data-theme", "light");
-      }
-
-      // Update icons to ensure they are initially shown correctly depending on
-      // theme on startup
-      updateDarkModeIcon();
-
-      darkModeToggleButton.addEventListener("click", toggleDarkMode);
-
-      // SETTINGS MENU OVERLAY
-
-      const settingsButton = document.querySelector("#settings-button");
-      const settingsOverlay = document.querySelector("#settings-overlay");
-      const systemInformationButton = document.querySelector(
-        "#system-information-button",
-      );
-
-      /**
-       * Toggles the visibility of the settings menu overlay.
-       */
-      function toggleSettingsMenu() {
-        settingsOverlay.classList.toggle("opacity-0");
-        settingsOverlay.classList.toggle("opacity-100");
-        settingsOverlay.classList.toggle("pointer-events-none");
-        document.body.classList.toggle("settings-menu-open");
-      }
-
-      settingsButton.addEventListener("click", toggleSettingsMenu);
-
-      const closeSettingsMenuButton = document.querySelector(
-        "#close-settings-menu-button",
-      );
-
-      closeSettingsMenuButton.addEventListener("click", toggleSettingsMenu);
-
-      settingsOverlay.addEventListener("click", (e) => {
-        // Close settings menu only when the user clicks outside of the main
-        // settings menu panel
-        if (e.target === e.currentTarget) {
-          toggleSettingsMenu();
-        }
-      });
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          // Close settings menu if open and user presses escape
-          if (document.body.classList.contains("settings-menu-open")) {
-            toggleSettingsMenu();
-          }
-        }
-      });
-
-      // FULLSCREEN BUTTON
-
-      const fullscreenButton = document.querySelector("#fullscreen-button");
-      const enterFullscreenIcon = document.querySelector(
-        "#enter-fullscreen-icon",
-      );
-      const exitFullscreenIcon = document.querySelector(
-        "#exit-fullscreen-icon",
-      );
-
-      fullscreenButton.addEventListener("click", () => {
-        enterFullscreenIcon.classList.toggle("hidden");
-        exitFullscreenIcon.classList.toggle("hidden");
-
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
-        } else {
-          if (html.requestFullscreen) {
-            html.requestFullscreen();
-          } else if (html.webkitRequestFullscreen) {
-            // Safari
-            html.webkitRequestFullscreen();
-          } else if (html.msRequestFullscreen) {
-            // IE11
-            html.msRequestFullscreen();
-          }
-        }
-      });
-
-      // PLAY/PAUSE BUTTON
-
-      const playPauseButton = document.querySelector("#play-pause-button");
-      const playIcon = document.querySelector("#play-icon");
-      const pauseIcon = document.querySelector("#pause-icon");
-
-      playPauseButton.addEventListener("click", () => {
-        playIcon.classList.toggle("hidden");
-        pauseIcon.classList.toggle("hidden");
-      });
-
-      // VIEW SETTINGS SIDE PANEL
-
-      const viewSettingsButton = document.querySelector(
-        "#view-settings-button",
-      );
-      const viewSettings = document.querySelector("#view-settings");
-      const viewSettingsShowIcon = document.querySelector(
-        "#view-settings-show-icon",
-      );
-      const viewSettingsHideIcon = document.querySelector(
-        "#view-settings-hide-icon",
-      );
-
-      viewSettingsButton.addEventListener("click", () => {
-        viewSettings.classList.toggle("grid-rows-[0fr]");
-        viewSettings.classList.toggle("grid-rows-[1fr]");
-
-        viewSettingsShowIcon.classList.toggle("hidden");
-        viewSettingsHideIcon.classList.toggle("hidden");
-      });
-
-      // OBJECTS SIDE PANEL
-
-      const objectsButton = document.querySelector("#objects-button");
-      const objects = document.querySelector("#objects");
-      const objectsShowIcon = document.querySelector("#objects-show-icon");
-      const objectsHideIcon = document.querySelector("#objects-hide-icon");
-
-      objectsButton.addEventListener("click", () => {
-        objects.classList.toggle("grid-rows-[0fr]");
-        objects.classList.toggle("grid-rows-[1fr]");
-
-        objectsShowIcon.classList.toggle("hidden");
-        objectsHideIcon.classList.toggle("hidden");
-      });
-    </script>
   </body>
 </html>

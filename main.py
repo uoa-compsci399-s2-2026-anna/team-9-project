@@ -1,40 +1,45 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-
-app = FastAPI()
+import uvicorn
 
 
-@app.get("/", response_class=HTMLResponse)
-async def read_root():
+def server_started(server):
     """
-    Root ("/") directory response handler.
-    Returns an HTML (string) response
+    On server started event.
+    Prints the ip and port for electron to use.
+    Only 1 server is spun up.
     """
-
-    return """
-    <html>
-        <body>
-            <h1>Hello, world!</h1>
-        </body>
-    </html>
-    """
+    for server in server.servers:
+        for socket in server.sockets:
+            ip, port = socket.getsockname()
+            print(f"http://{ip}:{port}", flush=True)
 
 
-if __name__ == "__main__":
+def main():
     """
-    Entry point when run using "py", "python" or "python3" 
+    Entry point when run using "py", "python" or "python3"
     This is where the program will enter from the Electron application
     """
 
-    # uvicorn is the web server that fastapi is built on
-    import uvicorn
+    # Configure the app and set the server object up
+    config = uvicorn.Config("app:app", port=0)
+    server = uvicorn.Server(config)
 
-    # Constant values of url and port
-    url = "127.0.0.1"
-    # Auto-assign the port
-    port = 0
+    # Get the log started message event listenter
+    orig_log_started_message = server._log_started_message
 
-    # Re-run the main application with the specified url and port so it is
-    # consistent and predictable
-    uvicorn.run("main:app", host=url, port=port)
+    def patch_log_started_message(listeners):
+        """
+        Event that triggers when the started server message is logged.
+        Triggers a print out (into STDOUT) of the server ip and port.
+        """
+        orig_log_started_message(listeners)
+        # Print the server ip and port
+        server_started(server)
 
+    # Attach the event listener to the event
+    server._log_started_message = patch_log_started_message
+
+    server.run()
+
+
+if __name__ == "__main__":
+    main()
