@@ -68,8 +68,7 @@ def init_solar():
     sim.units = ("AU", "s", "Msun")
 
     # Add the sun at current position
-    current_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    sim.add("Sun", date=current_date)
+    sim.add("Sun")
 
     # Move to COM of planets
     sim.move_to_com()
