@@ -85,5 +85,5 @@ def init_solar():
         "Neptune",
     ]
 
-    for planet in objects[1:]:
-        sim.add(planet)
+    for obj in objects[1:]:
+        sim.add(obj)
