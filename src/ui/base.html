@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="/dist/output.css" rel="stylesheet" />
     <title>{% block title %} {% endblock %}</title>
-	  <script type="module" src="../events/eventTriggers.js" defer></script>
-    <script type="module" src="../rendering/simulationManager.js" defer></script>
+	<script type="module" src="/src/events/eventTriggers.js" defer></script>
+    <script type="module" src="/src/rendering/simulationManager.js" defer></script>
     <script src="/src/ui/script.js" defer></script>
   </head>
 
@@ -39,7 +39,7 @@
 						>
 							<hgroup class="max-sm:hidden">
 								<span class="flex items-center">
-									<h1 class="pr-2 text-3xl font-bold">xx</h1>
+									<h1 class="pr-2 text-3xl font-bold">{% block system_name %} {% endblock %}</h1>
 
 									<!-- Dropdown chevron -->
 									<svg class="size-7" viewBox="0 0 24 24">
@@ -49,9 +49,17 @@
 										/>
 									</svg>
 								</span>
-								<p class="text-s italic dark:text-zinc-400">xx</p>
+								<p class="text-s italic dark:text-zinc-400">{% block object_num %} {% endblock %}</p>
 							</hgroup>
 						</button>
+
+						<div id="system-dropdown" style="display: none;">
+							{% for system in dropdown_systems %}
+								<a href="/simulation/{{ system.id}}">
+									{{ system.name }}
+							</a>
+						{% endfor %}
+						</div>
 					</div>
 
 					<div class="grow"></div>
