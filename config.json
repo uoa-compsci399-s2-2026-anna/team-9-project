@@ -2,18 +2,15 @@
     "systems": [
         {
             "id": "solar-system",
-            "name": "Solar System",
-            "enabled": true
+            "name": "Solar System"
         },
         {
             "id": "kepler-16",
-            "name": "Kepler-16",
-            "enabled": true
+            "name": "Kepler-16"
         },
         {
             "id": "trappist-1",
-            "name": "TRAPPIST-1",
-            "enabled": true
+            "name": "TRAPPIST-1"
         }
     ]
 }
