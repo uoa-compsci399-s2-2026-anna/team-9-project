@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 
 {% block title %}
-Orbit Viewer
+    {{ current_system.name }} Viewer
+{% endblock %}
+
+{% block system_name %}
+    {{ current_system.name }}
+{% endblock %}
+
+{% block object_num %}
+    Placeholder
 {% endblock %}
 
 {% block content %}
