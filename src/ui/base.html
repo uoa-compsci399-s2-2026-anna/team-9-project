@@ -16,10 +16,12 @@
     	>
 
 			<!-- COMPONENT: Navigation bar -->
-			 {% if navbar %}
+			 {% if navigation_bar %}
 				<nav class="z-30 flex flex-wrap items-start justify-between gap-4 p-6">
-					<!-- Hidden content to maintain consistient toolbar position -->
-					<div class = "flex items-start gap-4" {% if not show_lhs_info %} style="visibility: hidden;" {% endif %}>
+
+					<!-- COMPONENT: LHS System dropdown -->
+					<!-- Hidden setting to maintain consistient toolbar position -->
+					<div class = "flex items-start gap-4" {% if not system_dropdown %} style="visibility: hidden;" {% endif %}>
 						<!-- OPIS logo -->
 						<a href="/" class="self-center max-sm:hidden">
 							<svg
@@ -225,8 +227,8 @@
 				</nav>
 			{% endif %}
 
-			<!-- COMPONENT: Logos -->
-			{% if logos %}
+			<!-- COMPONENT: Main logo -->
+			{% if logo %}
 				<div class="flex w-full justify-center pt-0.5">
 					<img
 						src="/src/assets/logo-purple.svg"
@@ -241,12 +243,12 @@
 				</div>
 			{% endif %}
 
-			<!-- COMPONENT: Main content -->
+			<!-- COMPONENT: Content -->
 			{% block content %}
 			{% endblock %}
 
-      		<!-- COMPONENT: FLoating controls -->
-			{% if floating %}
+      		<!-- COMPONENT: Sidebar settings -->
+			{% if sidebar_settings %}
 				<div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
 					<!-- Left sidebar -->
 					<div class="flex h-full min-h-0 w-48 flex-col gap-2">
@@ -436,8 +438,8 @@
 				</div>
 			{% endif %}
 
-			<!-- COMPONENT: Bottom controls -->
-			{% if bottom %}
+			<!-- COMPONENT: Simulation controls -->
+			{% if simulation_controls %}
 				<div
 					class="flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 py-6 dark:from-black dark:via-black dark:via-80%"
 				>
@@ -559,7 +561,7 @@
 			{% endif %}
 
 			<!-- COMPONENT: Settings overlay -->
-      		{% if overlay %}
+      		{% if settings_overlay %}
 				<div
 					id="settings-overlay"
 					class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"

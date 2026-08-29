@@ -47,12 +47,13 @@ async def home(request: Request):
             "systems": all_systems,
             "dropdown_systems": all_systems,
 
-            "navbar": True,
-            "show_lhs_info": False,
-            "logos": True,
-            "floating": False,
-            "bottom": False,
-            "overlay": True
+            # Control which components are rendered on the html page
+            "navigation_bar": True,
+            "system_dropdown": False,
+            "logo": True,
+            "sidebar_settings": False,
+            "simulation_controls": False,
+            "settings_overlay": True
         }
     )
 
@@ -81,12 +82,13 @@ async def simulation(request: Request, system_id: str):
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
 
-            "navbar": True,
-            "show_lhs_info": True,
-            "logos": False,
-            "floating": True,
-            "bottom": True,
-            "overlay": True
+            # Control which components are rendered on the html page
+            "navigation_bar": True,
+            "system_dropdown": True,
+            "logo": False,
+            "sidebar_settings": True,
+            "simulation_controls": True,
+            "settings_overlay": True
         }
     )
 
