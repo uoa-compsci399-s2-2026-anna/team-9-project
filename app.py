@@ -1,13 +1,15 @@
 import signal
 import time
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import sys
 import rebound
 import os
 import json
 
 app = FastAPI()
+templates = Jinja2Templates(directory = "ui")
 
 # Load the config file
 with open("config.json") as f:
