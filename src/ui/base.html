@@ -12,10 +12,10 @@
 
 	<body>
 		<div
-      class="flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 text-zinc-800 dark:bg-zinc-900 dark:fill-white dark:text-white"
-    >
+      		class="flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 text-zinc-800 dark:bg-zinc-900 dark:fill-white dark:text-white"
+    	>
 
-			<!-- Component 1: Navigation bar -->
+			<!-- COMPONENT: Navigation bar -->
 			 {% if navbar %}
 				<nav class="z-30 flex flex-wrap items-start justify-between gap-4 p-6">
 					<!-- Hidden content to maintain consistient toolbar position -->
@@ -55,7 +55,7 @@
 
 						<div id="system-dropdown" style="display: none;">
 							{% for system in dropdown_systems %}
-								<a href="/simulation/{{ system.id}}">
+								<a href="/simulation/{{ system.id }}">
 									{{ system.name }}
 							</a>
 						{% endfor %}
@@ -225,7 +225,7 @@
 				</nav>
 			{% endif %}
 
-			<!-- Component 2: Logos -->
+			<!-- COMPONENT: Logos -->
 			{% if logos %}
 				<div class="flex w-full justify-center pt-0.5">
 					<img
@@ -241,11 +241,11 @@
 				</div>
 			{% endif %}
 
-			<!-- Component 3: Main content -->
+			<!-- COMPONENT: Main content -->
 			{% block content %}
 			{% endblock %}
 
-      <!-- Component 4: FLoating controls -->
+      		<!-- COMPONENT: FLoating controls -->
 			{% if floating %}
 				<div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
 					<!-- Left sidebar -->
@@ -436,7 +436,7 @@
 				</div>
 			{% endif %}
 
-			<!-- Component 5: Bottom controls -->
+			<!-- COMPONENT: Bottom controls -->
 			{% if bottom %}
 				<div
 					class="flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 py-6 dark:from-black dark:via-black dark:via-80%"
@@ -558,8 +558,8 @@
 				</div>
 			{% endif %}
 
-			<!-- Component 5: Settings overlay -->
-      {% if overlay %}
+			<!-- COMPONENT: Settings overlay -->
+      		{% if overlay %}
 				<div
 					id="settings-overlay"
 					class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
