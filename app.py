@@ -8,12 +8,8 @@ import os
 
 app = FastAPI()
 
-if sys.argv[-1] == "packaged":
-    app.mount("/src", StaticFiles(directory="src"), name="src")
-    app.mount("/dist", StaticFiles(directory="dist"), name="dist")
-else:
-    app.mount("/src", StaticFiles(directory="src"), name="src")
-    app.mount("/dist", StaticFiles(directory="dist"), name="dist")
+app.mount("/src", StaticFiles(directory="src"), name="src")
+app.mount("/dist", StaticFiles(directory="dist"), name="dist")
 
 sim = None
 valid_systems = ["solar system"]
