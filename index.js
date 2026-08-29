@@ -50,7 +50,9 @@ function spawnPythonProcess(resolve, reject) {
             }
         }
     }
-    pythonProcess = spawn(processPath, args);
+    pythonProcess = spawn(processPath, args, {
+        cwd: app.isPackaged ? process.resourcesPath : __dirname
+    });
 
     // Set python output channels to utf8 encoding
     pythonProcess.stdout.setEncoding('utf8');
