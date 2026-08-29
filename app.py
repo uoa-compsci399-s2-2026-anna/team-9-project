@@ -25,6 +25,12 @@ valid_systems = [
     if system["enabled"]
 ]
 
+enabled_systems = [
+    system
+    for system in systems
+    if system["enabled"]
+]
+
 # Test output
 print(systems)
 print(valid_systems)
@@ -46,6 +52,7 @@ async def home(request: Request):
         "home.html",
         {
             "request": request,
+            "systems": enabled_systems,
             "navbar": True,
             "show_lhs_info": False,
             "logos": True,
