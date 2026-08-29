@@ -47,9 +47,10 @@ async def home(request: Request):
         {
             "request": request,
             "navbar": True,
+            "logos": True,
             "floating": False,
             "bottom": False,
-            "overlay": True
+            "overlay": True,
         }
     )
 
@@ -61,6 +62,7 @@ async def simulation(request: Request, system_id: str):
             "request": request,
             "system_id": system_id,
             "navbar": True,
+            "logos": False,
             "floating": True,
             "bottom": True,
             "overlay": True
