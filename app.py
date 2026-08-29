@@ -68,9 +68,9 @@ async def simulation(request: Request, system_id: str):
 
     # Get all other systems, except the current system
     dropdown_systems = [
-        s
-        for s in all_systems
-        if s["id"] != current_system["id"]
+        system
+        for system in all_systems
+        if system["id"] != current_system["id"]
     ]
 
     return templates.TemplateResponse(
