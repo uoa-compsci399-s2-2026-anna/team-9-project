@@ -28,7 +28,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "electron . dev",
     "bin": "electron .",
-"package-py-unix": "source .venv/bin/activate && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound --paths ./.venv/lib/python3.13/site-packages/ main.py && touch ./dist/main.exe",
+"package-py-unix": ". .venv/bin/activate && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound --paths ./.venv/lib/python3.13/site-packages/ main.py && touch ./dist/main.exe",
 "package-py-win": ".\\.venv\\Scripts\\activate.bat && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound --paths .\\.venv\\Lib\\site-packages\\ main.py && echo \"\" > .\\dist\\main",
     "make": "electron-forge make"
   },
