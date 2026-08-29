@@ -56,7 +56,7 @@
 						<!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
 						<div class="group relative inline-flex">
 							<a
-								href="./home.html"
+								href="src/ui/home.html"
 								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
 							>
 								<svg class="size-7" viewBox="0 0 24 24">
@@ -212,11 +212,27 @@
 				</nav>
 			{% endif %}
 
-			<!-- Component 2: Main content -->
+			<!-- Component 2: Logos -->
+			{% if logos %}
+				<div class="flex w-full justify-center pt-0.5">
+					<img
+						src="/src/assets/logo-purple.svg"
+						class="h-auto w-55 dark:hidden"
+						alt="Logo"
+					/>
+					<img
+						src="/src/assets/logo-white.svg"
+						class="hidden h-auto w-55 dark:block"
+						alt="Logo"
+					/>
+				</div>
+			{% endif %}
+
+			<!-- Component 3: Main content -->
 			{% block content %}
 			{% endblock %}
 
-      <!-- Component 3: FLoating controls -->
+      <!-- Component 4: FLoating controls -->
 			{% if floating %}
 				<div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
 					<!-- Left sidebar -->
@@ -407,7 +423,7 @@
 				</div>
 			{% endif %}
 
-			<!-- Component 4: Bottom controls -->
+			<!-- Component 5: Bottom controls -->
 			{% if bottom %}
 				<div
 					class="flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 py-6 dark:from-black dark:via-black dark:via-80%"
