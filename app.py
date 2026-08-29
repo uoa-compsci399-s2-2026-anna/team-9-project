@@ -53,6 +53,7 @@ async def home(request: Request):
         {
             "request": request,
             "systems": enabled_systems,
+            "dropdown_systems": enabled_systems,
             "navbar": True,
             "show_lhs_info": False,
             "logos": True,
@@ -64,11 +65,26 @@ async def home(request: Request):
 
 @app.get("/simulation/{system_id}")
 async def simulation(request: Request, system_id: str):
+
+    system = next(
+        system
+        for system in enabled_systems
+        if system["id"] == system_id
+    )
+
+    dropdown_systems = [
+        s
+        for s in enabled_systems
+        if s["id"] != system["id"]
+    ]
+
     return templates.TemplateResponse(
         "simulation.html",
         {
             "request": request,
-            "system_id": system_id,
+            "current_system": system,
+            "systems": enabled_systems,
+            "dropdown_systems": dropdown_systems,
             "navbar": True,
             "show_lhs_info": True,
             "logos": False,
