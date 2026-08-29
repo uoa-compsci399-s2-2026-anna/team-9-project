@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
+<!-- Tab title -->
 {% block title %}
-    Home
+  Home
 {% endblock %}
 
+<!-- Available systems -->
 {% block content %}
-
-    {% for system in systems %}
-        <a href="/simulation/{{ system.id }}">
-            {{ system.name }}
-        </a>
-    {% endfor %}
-
+  {% for system in systems %}
+    <a href="/simulation/{{ system.id }}">
+      {{ system.name }}
+    </a>
+  {% endfor %}
 {% endblock %}
