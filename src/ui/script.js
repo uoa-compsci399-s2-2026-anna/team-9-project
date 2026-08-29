@@ -46,6 +46,22 @@ updateDarkModeIcon();
 
 darkModeToggleButton.addEventListener("click", toggleDarkMode);
 
+// SYSTEMS DROPDOWN
+
+const systemButton = document.getElementById("system-information-button");
+const systemDropdown = document.getElementById("system-dropdown");
+
+if (systemButton && systemDropdown) {
+  systemButton.addEventListener("click", () => {
+    if (systemDropdown.style.display === "none") {
+      systemDropdown.style.display = "block";
+    } else {
+      systemDropdown.style.display= "none";
+    }
+  });
+}
+
+
 // SETTINGS MENU OVERLAY
 
 const settingsButton = document.querySelector("#settings-button");
