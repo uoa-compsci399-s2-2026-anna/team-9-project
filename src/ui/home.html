@@ -6,6 +6,10 @@
 
 {% block content %}
 
-Content
+    {% for system in systems %}
+        <a href="/simulation/{{ system.id }}">
+            {{ system.name }}
+        </a>
+    {% endfor %}
 
 {% endblock %}
