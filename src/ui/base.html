@@ -16,38 +16,41 @@
 			<!-- Component 1: Navigation bar -->
 			 {% if navbar %}
 				<nav class="z-30 flex flex-wrap items-start justify-between gap-4 p-6">
-					<!-- OPIS logo -->
-					<a href="src/ui/home.html" class="self-center max-sm:hidden">
-						<svg
-							viewBox="0 0 150 166.27"
-							class="h-14 -translate-y-1 fill-zinc-800 dark:fill-white"
+					<!-- Hidden content to maintain consistient toolbar position -->
+					<div class = "flex items-start gap-4" {% if not show_lhs_info %} style="visibility: hidden;" {% endif %}>
+						<!-- OPIS logo -->
+						<a href="/" class="self-center max-sm:hidden">
+							<svg
+								viewBox="0 0 150 166.27"
+								class="h-14 -translate-y-1 fill-zinc-800 dark:fill-white"
+							>
+								<path
+									d="M128.11,42.14c-13.86-12.43-28-14.88-43.6-14.88a94.57,94.57,0,0,0-16.35,1.36L77.51,0,50.56,27.16,15.1,15.57,41.85,42.11l-11.41,35L56.33,51,92.07,62.71l-24.13-24a31.27,31.27,0,0,1,14.41-2.6c15.82,0,39.37,22.61,32.83,63.86-2.44,15.44-15.31,57.45-50.15,57.45-15.22,0-39.27-16.25-33.51-61.57-7,12.48-16.2,19.8-24.71,18.22A13.87,13.87,0,0,1,0,110.54C.13,131.7,9.61,147.2,19.79,154c13.42,9.22,29.33,12.24,42.33,12.24,29.76,0,47.56-11.3,62.22-26.56,11.88-13.18,18.48-27.5,20.65-41.25C149.11,72.47,140.63,53.44,128.11,42.14Z"
+								/>
+							</svg>
+						</a>
+
+						<!-- System information -->
+						<button
+							id="system-information-button"
+							class="items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
 						>
-							<path
-								d="M128.11,42.14c-13.86-12.43-28-14.88-43.6-14.88a94.57,94.57,0,0,0-16.35,1.36L77.51,0,50.56,27.16,15.1,15.57,41.85,42.11l-11.41,35L56.33,51,92.07,62.71l-24.13-24a31.27,31.27,0,0,1,14.41-2.6c15.82,0,39.37,22.61,32.83,63.86-2.44,15.44-15.31,57.45-50.15,57.45-15.22,0-39.27-16.25-33.51-61.57-7,12.48-16.2,19.8-24.71,18.22A13.87,13.87,0,0,1,0,110.54C.13,131.7,9.61,147.2,19.79,154c13.42,9.22,29.33,12.24,42.33,12.24,29.76,0,47.56-11.3,62.22-26.56,11.88-13.18,18.48-27.5,20.65-41.25C149.11,72.47,140.63,53.44,128.11,42.14Z"
-							/>
-						</svg>
-					</a>
+							<hgroup class="max-sm:hidden">
+								<span class="flex items-center">
+									<h1 class="pr-2 text-3xl font-bold">xx</h1>
 
-					<!-- System information -->
-					<button
-						id="system-information-button"
-						class="items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-					>
-						<hgroup class="max-sm:hidden">
-							<span class="flex items-center">
-								<h1 class="pr-2 text-3xl font-bold">xx</h1>
-
-								<!-- Dropdown chevron -->
-								<svg class="size-7" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
-									/>
-								</svg>
-							</span>
-							<p class="text-s italic dark:text-zinc-400">xx</p>
-						</hgroup>
-					</button>
+									<!-- Dropdown chevron -->
+									<svg class="size-7" viewBox="0 0 24 24">
+										<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+										<path
+											d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
+										/>
+									</svg>
+								</span>
+								<p class="text-s italic dark:text-zinc-400">xx</p>
+							</hgroup>
+						</button>
+					</div>
 
 					<div class="grow"></div>
 
@@ -56,7 +59,7 @@
 						<!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
 						<div class="group relative inline-flex">
 							<a
-								href="src/ui/home.html"
+								href="/"
 								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
 							>
 								<svg class="size-7" viewBox="0 0 24 24">
