@@ -61,7 +61,6 @@ if (systemButton && systemDropdown) {
   });
 }
 
-
 // SETTINGS MENU OVERLAY
 
 const settingsButton = document.querySelector("#settings-button");
