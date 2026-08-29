@@ -15,25 +15,18 @@ templates = Jinja2Templates(directory = "src/ui")
 with open("config.json") as f:
     config = json.load(f)
 
-# Get the list of systems from the config
-systems = config["systems"]
+# Get the systems in the config 
+all_systems = config["systems"]
 
-# Get the IDs of all the enabled systems
-valid_systems = [
+# Get the IDs of the systems
+system_ids = [
     system["id"]
-    for system in systems
-    if system["enabled"]
-]
-
-enabled_systems = [
-    system
-    for system in systems
-    if system["enabled"]
+    for system in all_systems
 ]
 
 # Test output
-print(systems)
-print(valid_systems)
+print(all_systems)
+print(system_ids)
 
 if sys.argv[-1] == "packaged":
     app.mount("/src", StaticFiles(directory="resources/src"), name="src")
@@ -43,7 +36,6 @@ else:
     app.mount("/dist", StaticFiles(directory="dist"), name="dist")
 
 sim = None
-# valid_systems = ["solar system"]
 objects = []
 
 @app.get("/")
@@ -52,8 +44,9 @@ async def home(request: Request):
         "home.html",
         {
             "request": request,
-            "systems": enabled_systems,
-            "dropdown_systems": enabled_systems,
+            "systems": all_systems,
+            "dropdown_systems": all_systems,
+
             "navbar": True,
             "show_lhs_info": False,
             "logos": True,
@@ -66,25 +59,28 @@ async def home(request: Request):
 @app.get("/simulation/{system_id}")
 async def simulation(request: Request, system_id: str):
 
-    system = next(
+    # Get the current system
+    current_system = next(
         system
-        for system in enabled_systems
+        for system in all_systems
         if system["id"] == system_id
     )
 
+    # Get all other systems, except the current system
     dropdown_systems = [
         s
-        for s in enabled_systems
-        if s["id"] != system["id"]
+        for s in all_systems
+        if s["id"] != current_system["id"]
     ]
 
     return templates.TemplateResponse(
         "simulation.html",
         {
             "request": request,
-            "current_system": system,
-            "systems": enabled_systems,
+            "systems": all_systems,
+            "current_system": current_system,
             "dropdown_systems": dropdown_systems,
+
             "navbar": True,
             "show_lhs_info": True,
             "logos": False,
@@ -110,13 +106,13 @@ async def get_system_data(system_id: str = "", t: float = 0.0):
     """
 
     # Catch poor input
-    if system_id not in valid_systems:
+    if system_id not in system_ids:
         raise HTTPException(status.HTTP_400_BAD_REQUEST)
 
     # Find the next requested system 
     system = next(
         system
-        for system in systems
+        for system in all_systems
         if system["id"] == system_id
     )
 
