@@ -9,7 +9,7 @@ import os
 import json
 
 app = FastAPI()
-templates = Jinja2Templates(directory = "ui")
+templates = Jinja2Templates(directory = "src/ui")
 
 # Load the config file
 with open("config.json") as f:
@@ -40,6 +40,32 @@ sim = None
 # valid_systems = ["solar system"]
 objects = []
 
+@app.get("/")
+async def home(request: Request):
+    return templates.TemplateResponse(
+        "home.html",
+        {
+            "request": request,
+            "navbar": True,
+            "floating": False,
+            "bottom": False,
+            "overlay": True
+        }
+    )
+
+@app.get("/simulation/{system_id}")
+async def simulation(request: Request, system_id: str):
+    return templates.TemplateResponse(
+        "simulation.html",
+        {
+            "request": request,
+            "system_id": system_id,
+            "navbar": True,
+            "floating": True,
+            "bottom": True,
+            "overlay": True
+        }
+    )
 
 @app.get("/kill")
 async def kill():
