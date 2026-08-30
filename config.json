@@ -1,0 +1,13 @@
+{
+    "systems": [
+        {
+            "name": "Solar System"
+        },
+        {
+            "name": "Kepler-16"
+        },
+        {
+            "name": "TRAPPIST-1"
+        }
+    ]
+}

@@ -66,7 +66,7 @@ function spawnPythonProcess(resolve, reject) {
         if (data.toString().startsWith("http://")) {
             // Resolve the promise with the url (with no excess whitespace)
             let url = data.toString().split("\n")[0].trim();
-            resolve(url + '/src/ui/index.html');
+            resolve(url);
         }
     });
 

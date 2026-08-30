@@ -1,20 +1,84 @@
 import signal
 import time
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import sys
 import rebound
 import os
+import json
 
 app = FastAPI()
+templates = Jinja2Templates(directory = "src/ui")
+
+# Load the config file
+with open("config.json") as f:
+    config = json.load(f)
+
+# Get the systems in the config 
+all_systems = config["systems"]
 
 app.mount("/src", StaticFiles(directory="src"), name="src")
 app.mount("/dist", StaticFiles(directory="dist"), name="dist")
 
 sim = None
-valid_systems = ["solar system"]
 objects = []
 
+@app.get("/")
+async def home(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="home.html",
+        context=
+        {
+            "systems": all_systems,
+            "dropdown_systems": all_systems,
+
+            # Control which components are rendered on the html page
+            "navigation_bar": True,
+            "system_dropdown": False,
+            "logo": True,
+            "sidebar_settings": False,
+            "simulation_controls": False,
+            "settings_overlay": True
+        }
+    )
+
+@app.get("/simulation/{system_name}")
+async def simulation(request: Request, system_name: str):
+
+    # Get the current system
+    current_system = next(
+        system
+        for system in all_systems
+        if system["name"] == system_name
+    )
+
+    # Get all other systems, except the current system
+    dropdown_systems = [
+        system
+        for system in all_systems
+        if system["name"] != current_system["name"]
+    ]
+
+    return templates.TemplateResponse(
+        request=request,
+        name="simulation.html",
+        context=
+        {
+            "systems": all_systems,
+            "current_system": current_system,
+            "dropdown_systems": dropdown_systems,
+
+            # Control which components are rendered on the html page
+            "navigation_bar": True,
+            "system_dropdown": True,
+            "logo": False,
+            "sidebar_settings": True,
+            "simulation_controls": True,
+            "settings_overlay": True
+        }
+    )
 
 @app.get("/kill")
 async def kill():
@@ -26,28 +90,40 @@ async def kill():
 
 
 @app.get("/system")
-async def get_system_data(name: str = "", t: float = 0.0):
+async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
 
     # Catch poor input
-    if name.lower() not in valid_systems:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+    if not any(
+        system["name"] == system_name
+        for system in all_systems):
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Init state if empty
-    if sim is None:
-        init_solar()
+    # Find the next requested system 
+    system = next(
+        system
+        for system in all_systems
+        if system["name"] == system_name
+    )
 
-    # Set time
-    sim.integrate(t)
+    # Hardcode Solar System
+    if system_name == "Solar System":
 
-    # Gather positions
-    positions = {}
-    for i, p in enumerate(sim.particles):
-        positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+        # Init state if empty
+        if sim is None:
+            init_solar()
 
-    return {"positions": positions}
+        # Set time
+        sim.integrate(t)
+
+        # Gather positions
+        positions = {}
+        for i, p in enumerate(sim.particles):
+            positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+
+        return {"positions": positions}
 
 
 def init_solar():
