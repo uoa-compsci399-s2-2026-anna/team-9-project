@@ -27,10 +27,9 @@ const objectColour = 0xFFFFFF; // White
 export function init(name) {
     currentSimulationTime = 0;
     currentSystem = name;
-    console.log(name);
 
     const canvas = document.getElementById("simulation-canvas");
-    // TODO: decide on AA or not
+
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
     const fov = 45;
@@ -45,7 +44,6 @@ export function init(name) {
     const controlsMax = 100;
 
     const controls = new OrbitControls(camera, canvas);
-    // TODO: consider controls.enableDamping = true;
     controls.target.set(0, 0, 0); // Look at the sun
     controls.minDistance = controlsMin; 
     controls.maxDistance = controlsMax;
@@ -62,7 +60,6 @@ export function init(name) {
     labelRenderer.domElement.style.left = "0px";
     labelRenderer.domElement.style.pointerEvents = "none";
     canvas.parentElement.appendChild(labelRenderer.domElement);
-    // TODO: use timer to avoid the simuation breaking when tabbing out (page visibility API)
 }
 
 /**
@@ -145,10 +142,6 @@ export async function render() {
     for (const [name, position] of positionMap) {
         createOrUpdateMesh(name, position);
     }
-    console.log(systemData);
-    console.log();
-
-    console.log(deltaTime);
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
