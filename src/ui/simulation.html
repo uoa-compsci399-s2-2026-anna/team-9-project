@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+<!-- Page title -->
+{% block title %}
+  {{ current_system.name }} Viewer
+{% endblock %}
+
+<!-- System dropdown reference -->
+{% block system_name %}
+  {{ current_system.name }}
+{% endblock %}
+
+{% block object_num %}
+  Placeholder
+{% endblock %}
+
+<!-- Simulation content-->
+{% block content %}
+	<!-- <canvas id="simulation-canvas"></canvas> -->
+{% endblock %}
+
+<!-- Scripts block -->
+{% block scripts %}
+  <script src="/src/ui/script.js"></script>
+{% endblock %}
