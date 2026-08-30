@@ -105,7 +105,7 @@ async def get_system_data(system_id: str = "", t: float = 0.0):
 
     # Catch poor input
     if system_id not in system_ids:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Find the next requested system 
     system = next(
