@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark" class="scheme-light dark:scheme-dark">
   <head>
     <meta charset="UTF-8" />
@@ -7,652 +7,662 @@
     <title>{% block title %} {% endblock %}</title>
   </head>
 
-	<body>
-		<div
-      		class="flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 text-zinc-800 dark:bg-zinc-900 dark:fill-white dark:text-white select-none"
-    	>
-			<!-- COMPONENT: Navigation bar -->
-			 {% if navigation_bar %}
-				<nav class="z-30 flex flex-wrap items-start justify-between gap-4 p-6">
-
-					<!-- COMPONENT: System dropdown -->
-					<!-- Hidden setting to maintain consistient toolbar position -->
-					<div class = "flex items-start gap-4" {% if not system_dropdown %} style="visibility: hidden;" {% endif %}>
-						<!-- OPIS logo -->
-						<a href="/" class="self-center max-sm:hidden">
-							<svg
-								viewBox="0 0 150 166.27"
-								class="h-14 -translate-y-1 fill-zinc-800 dark:fill-white"
-							>
-								<path
-									d="M128.11,42.14c-13.86-12.43-28-14.88-43.6-14.88a94.57,94.57,0,0,0-16.35,1.36L77.51,0,50.56,27.16,15.1,15.57,41.85,42.11l-11.41,35L56.33,51,92.07,62.71l-24.13-24a31.27,31.27,0,0,1,14.41-2.6c15.82,0,39.37,22.61,32.83,63.86-2.44,15.44-15.31,57.45-50.15,57.45-15.22,0-39.27-16.25-33.51-61.57-7,12.48-16.2,19.8-24.71,18.22A13.87,13.87,0,0,1,0,110.54C.13,131.7,9.61,147.2,19.79,154c13.42,9.22,29.33,12.24,42.33,12.24,29.76,0,47.56-11.3,62.22-26.56,11.88-13.18,18.48-27.5,20.65-41.25C149.11,72.47,140.63,53.44,128.11,42.14Z"
-								/>
-							</svg>
-						</a>
-
-						<!-- System information -->
-						<button
-							id="system-information-button"
-							class="items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-						>
-							<hgroup class="max-sm:hidden">
-								<span class="flex items-center">
-									<h1 class="pr-2 text-3xl font-bold">{% block system_name %} {% endblock %}</h1>
-
-									<!-- Dropdown chevron -->
-									<svg class="size-7" viewBox="0 0 24 24">
-										<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-										<path
-											d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
-										/>
-									</svg>
-								</span>
-								<p class="text-s italic dark:text-zinc-400">{% block object_num %} {% endblock %}</p>
-							</hgroup>
-						</button>
-
-						<div id="system-dropdown" style="display: none;">
-							{% for system in dropdown_systems %}
-								<a href="/simulation/{{ system.name }}">
-									{{ system.name }}
-							</a>
-						{% endfor %}
-						</div>
-					</div>
-
-					<div class="grow"></div>
-
-					<!-- Controls on RHS -->
-					<div class="flex gap-4">
-						<!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
-						<div class="group relative inline-flex">
-							<a
-								href="/"
-								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<svg class="size-7" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19"
-									/>
-								</svg>
-							</a>
-
-							<!-- Tooltip -->
-							<div
-								class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-							>
-								Home
-							</div>
-						</div>
-
-						<!-- Switch planetary system button (only shown at max-sm) -->
-						<div class="group relative inline-flex sm:hidden">
-							<button
-								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<svg class="size-7 sm:hidden" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M5.825 16L7.7 17.875q.275.275.275.688t-.275.712q-.3.3-.712.3t-.713-.3L2.7 15.7q-.15-.15-.213-.325T2.426 15t.063-.375t.212-.325l3.6-3.6q.3-.3.7-.287t.7.312q.275.3.288.7t-.288.7L5.825 14H12q.425 0 .713.288T13 15t-.288.713T12 16zm12.35-6H12q-.425 0-.712-.288T11 9t.288-.712T12 8h6.175L16.3 6.125q-.275-.275-.275-.687t.275-.713q.3-.3.713-.3t.712.3L21.3 8.3q.15.15.212.325t.063.375t-.063.375t-.212.325l-3.6 3.6q-.3.3-.7.288t-.7-.313q-.275-.3-.288-.7t.288-.7z"
-									/>
-								</svg>
-							</button>
-
-							<!-- Tooltip -->
-							<div
-								class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-							>
-								Change planetary system
-							</div>
-						</div>
-
-						<!-- Help button -->
-						<div class="group relative inline-flex">
-							<button
-								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<svg class="size-7" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M12.838 17.638q.362-.363.362-.888t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362t.888-.363M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m.1-14.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
-									/>
-								</svg>
-							</button>
-
-							<!-- Tooltip -->
-							<div
-								class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-							>
-								Help
-							</div>
-						</div>
-
-						<!-- Light/dark mode button -->
-						<div class="group relative inline-flex">
-							<button
-								id="dark-mode-toggle-button"
-								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<!-- Dark mode icon -->
-								<svg id="dark-mode-icon" class="size-7" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M14 22q-2.075 0-3.9-.788t-3.175-2.137T4.788 15.9T4 12t.788-3.9t2.137-3.175T10.1 2.788T14 2q.875 0 1.75.175t1.675.525q.3.125.45.387t.15.538q0 .225-.088.425t-.287.35q-1.75 1.375-2.7 3.375T14 12q0 2.25.925 4.25t2.7 3.35q.2.15.288.363T18 20.4q0 .275-.15.538t-.45.387q-.8.35-1.662.513T14 22"
-									/>
-								</svg>
-
-								<!-- Light mode icon -->
-								<svg id="light-mode-icon" class="size-7" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M11.288 4.713Q11 4.425 11 4V2q0-.425.288-.712T12 1t.713.288T13 2v2q0 .425-.288.713T12 5t-.712-.288M16.95 7.05q-.275-.275-.275-.687t.275-.713l1.4-1.425q.3-.3.712-.3t.713.3q.275.275.275.7t-.275.7L18.35 7.05q-.275.275-.7.275t-.7-.275M20 13q-.425 0-.713-.288T19 12t.288-.712T20 11h2q.425 0 .713.288T23 12t-.288.713T22 13zm-8.712 9.713Q11 22.425 11 22v-2q0-.425.288-.712T12 19t.713.288T13 20v2q0 .425-.288.713T12 23t-.712-.288M5.65 7.05l-1.425-1.4q-.3-.3-.3-.725t.3-.7q.275-.275.7-.275t.7.275L7.05 5.65q.275.275.275.7t-.275.7q-.3.275-.7.275t-.7-.275m12.7 12.725l-1.4-1.425q-.275-.3-.275-.712t.275-.688t.688-.275t.712.275l1.425 1.4q.3.275.288.7t-.288.725q-.3.3-.725.3t-.7-.3M2 13q-.425 0-.712-.288T1 12t.288-.712T2 11h2q.425 0 .713.288T5 12t-.288.713T4 13zm2.225 6.775q-.275-.275-.275-.7t.275-.7L5.65 16.95q.275-.275.687-.275t.713.275q.3.3.3.713t-.3.712l-1.4 1.4q-.3.3-.725.3t-.7-.3M7.75 16.25Q6 14.5 6 12t1.75-4.25T12 6t4.25 1.75T18 12t-1.75 4.25T12 18t-4.25-1.75"
-									/>
-								</svg>
-							</button>
-
-							<!-- Tooltip -->
-							<div
-								class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-							>
-								View in dark mode
-							</div>
-						</div>
-
-						<!-- Settings button -->
-						<div class="group relative inline-flex">
-							<button
-								id="settings-button"
-								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<svg class="size-7" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M19.5 12c0-.23-.01-.45-.03-.68l1.86-1.41c.4-.3.51-.86.26-1.3l-1.87-3.23a.987.987 0 0 0-1.25-.42l-2.15.91c-.37-.26-.76-.49-1.17-.68l-.29-2.31c-.06-.5-.49-.88-.99-.88h-3.73c-.51 0-.94.38-1 .88l-.29 2.31c-.41.19-.8.42-1.17.68l-2.15-.91c-.46-.2-1-.02-1.25.42L2.41 8.62c-.25.44-.14.99.26 1.3l1.86 1.41a7.3 7.3 0 0 0 0 1.35l-1.86 1.41c-.4.3-.51.86-.26 1.3l1.87 3.23c.25.44.79.62 1.25.42l2.15-.91c.37.26.76.49 1.17.68l.29 2.31c.06.5.49.88.99.88h3.73c.5 0 .93-.38.99-.88l.29-2.31c.41-.19.8-.42 1.17-.68l2.15.91c.46.2 1 .02 1.25-.42l1.87-3.23c.25-.44.14-.99-.26-1.3l-1.86-1.41c.03-.23.04-.45.04-.68m-7.46 3.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5s-1.57 3.5-3.5 3.5"
-									/>
-								</svg>
-							</button>
-
-							<!-- Tooltip -->
-							<div
-								class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-							>
-								Settings
-							</div>
-						</div>
-
-						<!-- Fullscreen button -->
-						<div class="group relative inline-flex">
-							<button
-								id="fullscreen-button"
-								class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<!-- Enter fullscreen icon -->
-								<svg
-									id="enter-fullscreen-icon"
-									class="size-7"
-									viewBox="0 0 24 24"
-								>
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M6 14c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1H7v-2c0-.55-.45-1-1-1m0-4c.55 0 1-.45 1-1V7h2c.55 0 1-.45 1-1s-.45-1-1-1H6c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1m11 7h-2c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1s-1 .45-1 1zM14 6c0 .55.45 1 1 1h2v2c0 .55.45 1 1 1s1-.45 1-1V6c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1"
-									/>
-								</svg>
-
-								<!-- Exit fullscreen icon -->
-								<svg
-									id="exit-fullscreen-icon"
-									class="hidden size-7"
-									viewBox="0 0 24 24"
-								>
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M6 18H4q-.425 0-.712-.288T3 17t.288-.712T4 16h3q.425 0 .713.288T8 17v3q0 .425-.288.713T7 21t-.712-.288T6 20zm12 0v2q0 .425-.288.713T17 21t-.712-.288T16 20v-3q0-.425.288-.712T17 16h3q.425 0 .713.288T21 17t-.288.713T20 18zM6 6V4q0-.425.288-.712T7 3t.713.288T8 4v3q0 .425-.288.713T7 8H4q-.425 0-.712-.288T3 7t.288-.712T4 6zm12 0h2q.425 0 .713.288T21 7t-.288.713T20 8h-3q-.425 0-.712-.288T16 7V4q0-.425.288-.712T17 3t.713.288T18 4z"
-									/>
-								</svg>
-							</button>
-
-							<!-- Tooltip -->
-							<div
-								class="pointer-events-none absolute top-full right-0 block translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-							>
-								Enter fullscreen
-							</div>
-						</div>
-					</div>
-				</nav>
-			{% endif %}
-
-			<!-- COMPONENT: Main logo -->
-			{% if logo %}
-				<div class="flex w-full justify-center pt-0.5">
-					<img
-						src="/src/assets/logo-purple.svg"
-						class="h-auto w-55 dark:hidden"
-						alt="Logo"
-					/>
-					<img
-						src="/src/assets/logo-white.svg"
-						class="hidden h-auto w-55 dark:block"
-						alt="Logo"
-					/>
-				</div>
-			{% endif %}
-
-			<!-- COMPONENT: Content -->
-			{% block content %}
-			{% endblock %}
-
-      		<!-- COMPONENT: Sidebar settings -->
-			{% if sidebar_settings %}
-				<div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
-					<!-- Left sidebar -->
-					<div class="flex h-full min-h-0 w-48 flex-col gap-2">
-						<div class="flex-1"></div>
-						<!-- Objects side panel -->
-						<div
-							class="flex min-h-0 flex-col rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
-						>
-							<!-- "Objects" header and hide panel button -->
-							<button
-								id="objects-button"
-								class="flex w-full items-center font-bold"
-							>
-								<span class="flex-1 text-left">Objects</span>
-
-								<!-- Objects show icon -->
-								<svg id="objects-show-icon" class="size-7" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
-									/>
-								</svg>
-
-								<!-- Objects hide icon -->
-								<svg
-									id="objects-hide-icon"
-									class="hidden size-7"
-									viewBox="0 0 24 24"
-								>
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-									/>
-								</svg>
-							</button>
-
-							<!-- Objects controls -->
-							<div
-								id="objects"
-								class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
-							>
-								<div class="flex flex-col overflow-hidden">
-									<div class="min-h-0 flex-1 overflow-y-auto">
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Mercury</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Venus</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Earth</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Mars</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Jupiter</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Saturn</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Uranus</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" checked />
-											<span class="flex-1">Neptune</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" />
-											<span class="flex-1">Pluto</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" />
-											<span class="flex-1">1P/Halley</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" />
-											<span class="flex-1">3I/ATLAS</span>
-										</label>
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<!-- View settings side panel -->
-						<div
-							class="shrink-0 rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
-						>
-							<!-- "View settings" header and hide panel button -->
-							<button
-								id="view-settings-button"
-								class="flex w-full items-center font-bold"
-							>
-								<span class="flex-1 text-left">View settings</span>
-
-								<!-- View settings show icon -->
-								<svg
-									id="view-settings-show-icon"
-									class="size-7"
-									viewBox="0 0 24 24"
-								>
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
-									/>
-								</svg>
-
-								<!-- View settings hide icon -->
-								<svg
-									id="view-settings-hide-icon"
-									class="hidden size-7"
-									viewBox="0 0 24 24"
-								>
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-									/>
-								</svg>
-							</button>
-
-							<!-- View settings controls -->
-							<div
-								id="view-settings"
-								class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
-							>
-								<div class="flex flex-col overflow-hidden">
-									<div class="mt-3">
-										<label class="flex items-center gap-2">
-											<input type="checkbox" />
-											<span>Habitable zone</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" />
-											<span>Orbits</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" />
-											<span>Reference grid</span>
-										</label>
-
-										<label class="flex items-center gap-2">
-											<input type="checkbox" />
-											<span>Labels</span>
-										</label>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Spacer -->
-					<div class="flex-1"></div>
-
-					<!-- Reset view button -->
-					<button
-						class="flex items-center gap-3 rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-					>
-						Reset view
-					</button>
-
-					<!-- Compare to solar system button -->
-					<button
-						class="flex items-center gap-3 self-end rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-					>
-						Compare to Solar System
-					</button>
-				</div>
-			{% endif %}
-
-			<!-- COMPONENT: Simulation controls -->
-			{% if simulation_controls %}
-				<div
-					class="flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 py-6 dark:from-black dark:via-black dark:via-80%"
-				>
-					<!-- Simulation timestamp (narrow screens) -->
-					<span class="self-center text-sm sm:hidden">
-						<input
-							type="datetime-local"
-							id="meeting-time"
-							name="meeting-time"
-							value="2018-06-12T19:30"
-							min="2018-06-07T00:00"
-							max="2018-06-14T00:00"
-						/>
-					</span>
-
-					<div class="grid w-full grid-cols-3 items-center gap-4">
-						<!-- Simulation timestamp / date picker -->
-						<div class="justify-self-start">
-							<div class="text-left max-sm:hidden">
-								<p class="text-lg">
-									<input
-										type="datetime-local"
-										id="meeting-time"
-										name="meeting-time"
-										value="2018-06-12T19:30"
-										min="2018-06-07T00:00"
-										max="2018-06-14T00:00"
-									/>
-								</p>
-								<p class="text-s italic dark:text-zinc-400">32 days from now</p>
-							</div>
-						</div>
-
-						<!-- Playback controls -->
-						<div class="flex flex-nowrap items-start gap-1 justify-self-center">
-							<!-- Step back button -->
-							<button
-								class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<svg class="size-10" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1m3.66 6.82l5.77 4.07c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-5.77 4.07a1 1 0 0 0 0 1.64"
-									/>
-								</svg>
-							</button>
-
-							<!-- Play/pause button -->
-							<button
-								id="play-pause-button"
-								class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<!-- Play icon -->
-								<svg id="play-icon" class="size-10" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82"
-									/>
-								</svg>
-
-								<!-- Pause icon -->
-								<svg id="pause-icon" class="hidden size-10" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M16 19q-.825 0-1.412-.587T14 17V7q0-.825.588-1.412T16 5t1.413.588T18 7v10q0 .825-.587 1.413T16 19m-8 0q-.825 0-1.412-.587T6 17V7q0-.825.588-1.412T8 5t1.413.588T10 7v10q0 .825-.587 1.413T8 19"
-									/>
-								</svg>
-							</button>
-
-							<!-- Step forward button -->
-							<button
-								class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-							>
-								<svg class="size-10" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="m7.58 16.89l5.77-4.07c.56-.4.56-1.24 0-1.63L7.58 7.11C6.91 6.65 6 7.12 6 7.93v8.14c0 .81.91 1.28 1.58.82M16 7v10c0 .55.45 1 1 1s1-.45 1-1V7c0-.55-.45-1-1-1s-1 .45-1 1"
-									/>
-								</svg>
-							</button>
-						</div>
-
-						<!-- Simulation speed adjuster -->
-						<div class="flex items-center gap-3 justify-self-end max-sm:hidden">
-							<label class="">speed</label>
-							<input
-								type="number"
-								min="0"
-								class="h-9 w-18 rounded-md pl-2 outline-1 outline-zinc-900 dark:outline-zinc-500"
-								value="20"
-							/>
-
-							<select
-								class="h-9 w-18 rounded-md outline-1 outline-zinc-900 dark:outline-zinc-500"
-							>
-								<option>hour</option>
-								<option>day</option>
-								<option>week</option>
-								<option>month</option>
-								<option>year</option>
-							</select>
-
-							<p class="pr-3">per second</p>
-						</div>
-
-						<!-- Simulation speed adjustor (small; only shown on narrow screens) -->
-						<button
-							class="justify-self-end rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 sm:hidden dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-						>
-							<svg class="size-10" viewBox="0 0 24 24">
-								<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-								<path
-									d="M13.55 15.5q.65-.65.613-1.525T13.4 12.6l-3.15-2.1L7.1 8.4q-.35-.225-.65.063t-.075.637q1.05 1.575 2.112 3.15T10.6 15.4q.475.725 1.375.75t1.575-.65M5.125 20q-.55 0-1.012-.238t-.738-.712q-.7-1.2-1.05-2.512t-.35-2.688q.025-2 .85-3.787t2.2-3.138T8.2 4.788T12 4q2.075 0 3.888.788t3.174 2.15t2.15 3.175T22 14q0 1.35-.35 2.625t-1 2.425q-.275.475-.75.713t-1 .237z"
-								/>
-							</svg>
-						</button>
-					</div>
-				</div>
-			{% endif %}
-
-			<!-- COMPONENT: Settings overlay -->
-      		{% if settings_overlay %}
-				<div
-					id="settings-overlay"
-					class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
-				>
-					<div
-						class="h-full w-full max-w-prose bg-white p-6 shadow-2xl shadow-black/50 dark:bg-zinc-900"
-					>
-						<div class="flex items-start">
-							<h1 class="mb-4 flex-1 text-3xl font-bold">Settings</h1>
-
-							<!-- Close button -->
-							<div>
-								<button
-									id="close-settings-menu-button"
-									class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-								>
-									<svg class="size-7" viewBox="0 0 24 24">
-										<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-										<path
-											d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
-										/>
-									</svg>
-								</button>
-							</div>
-						</div>
-
-						<!-- General settings -->
-						<div class="mb-4 flex flex-col gap-2">
-							<h2 class="text-lg font-bold">General</h2>
-
-							<label class="flex">
-								<span class="flex-1">Time zone</span>
-								<select name="time-zone" class="flex-1">
-									<option value="">UTC</option>
-									<option value="">NZT</option>
-								</select>
-							</label>
-						</div>
-
-						<!-- Accessibility settings -->
-						<div class="mb-4 flex flex-col gap-2">
-							<div class="flex items-center gap-2">
-								<h2 class="text-lg font-bold">Accessibility</h2>
-
-								<svg class="size-6" viewBox="0 0 24 24">
-									<!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-									<path
-										d="M10.588 5.413Q10 4.825 10 4t.588-1.412T12 2t1.413.588T14 4t-.587 1.413T12 6t-1.412-.587M9 21V9q-1.225-.1-2.475-.275t-2.45-.45q-.425-.1-.687-.475T3.25 7t.525-.625t.85-.1q1.75.375 3.638.55T12 7t3.738-.175t3.637-.55q.45-.1.85.1T20.75 7t-.137.8t-.688.475q-1.2.275-2.45.45T15 9v12q0 .425-.287.713T14 22t-.712-.288T13 21v-5h-2v5q0 .425-.288.713T10 22t-.712-.288T9 21"
-									/>
-								</svg>
-							</div>
-
-							<!-- Font selection -->
-							<label class="flex">
-								<span class="flex-1">Font</span>
-								<select name="font" class="flex-1">
-									<option value="">Default</option>
-									<option value="">OpenDyslexic</option>
-								</select>
-							</label>
-
-							<!-- Text size -->
-							<label class="flex">
-								<span class="flex-1">Text size</span>
-								<select name="text-size" class="flex-1">
-									<option value="">Default</option>
-									<option value="">Larger</option>
-								</select>
-							</label>
-
-							<!-- Object marker size -->
-							<label class="flex">
-								<span class="flex-1">Object marker size</span>
-								<select name="" class="flex-1">
-									<option value="">Default</option>
-									<option value="">Larger</option>
-								</select>
-							</label>
-
-							<!-- Orbit lines -->
-							<label class="flex">
-								<span class="flex-1">Orbit lines</span>
-								<select name="" class="flex-1">
-									<option value="">Differentiate by colour</option>
-									<option value="">Differentiate by stroke</option>
-								</select>
-							</label>
-						</div>
-					</div>
-				</div>
-			</div>
-		{% endif %}
-
-	<!-- COMPONENT: Scripts block -->
-	{% block scripts %} {% endblock %}
-
+  <body>
+    <div
+      class="flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 text-zinc-800 select-none dark:bg-zinc-900 dark:fill-white dark:text-white"
+    >
+      <!-- COMPONENT: Navigation bar -->
+      {% if navigation_bar %}
+      <nav class="z-30 flex flex-wrap items-start justify-between gap-4 p-6">
+        <!-- COMPONENT: System dropdown -->
+        <!-- Hidden setting to maintain consistient toolbar position -->
+        <div
+          class="flex items-start gap-4"
+          {%
+          if
+          not
+          system_dropdown
+          %}
+          style="visibility: hidden"
+          {%
+          endif
+          %}
+        >
+          <!-- OPIS logo -->
+          <a href="/" class="self-center max-sm:hidden">
+            <svg
+              viewBox="0 0 150 166.27"
+              class="h-14 -translate-y-1 fill-zinc-800 dark:fill-white"
+            >
+              <path
+                d="M128.11,42.14c-13.86-12.43-28-14.88-43.6-14.88a94.57,94.57,0,0,0-16.35,1.36L77.51,0,50.56,27.16,15.1,15.57,41.85,42.11l-11.41,35L56.33,51,92.07,62.71l-24.13-24a31.27,31.27,0,0,1,14.41-2.6c15.82,0,39.37,22.61,32.83,63.86-2.44,15.44-15.31,57.45-50.15,57.45-15.22,0-39.27-16.25-33.51-61.57-7,12.48-16.2,19.8-24.71,18.22A13.87,13.87,0,0,1,0,110.54C.13,131.7,9.61,147.2,19.79,154c13.42,9.22,29.33,12.24,42.33,12.24,29.76,0,47.56-11.3,62.22-26.56,11.88-13.18,18.48-27.5,20.65-41.25C149.11,72.47,140.63,53.44,128.11,42.14Z"
+              />
+            </svg>
+          </a>
+
+          <!-- System information -->
+          <button
+            id="system-information-button"
+            class="items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+          >
+            <hgroup class="max-sm:hidden">
+              <span class="flex items-center">
+                <h1 class="pr-2 text-3xl font-bold">
+                  {% block system_name %} {% endblock %}
+                </h1>
+
+                <!-- Dropdown chevron -->
+                <svg class="size-7" viewBox="0 0 24 24">
+                  <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                  <path
+                    d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
+                  />
+                </svg>
+              </span>
+              <p class="text-s italic dark:text-zinc-400">
+                {% block object_num %} {% endblock %}
+              </p>
+            </hgroup>
+          </button>
+
+          <div id="system-dropdown" style="display: none">
+            {% for system in dropdown_systems %}
+            <a href="/simulation/{{ system.name }}"> {{ system.name }} </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="grow"></div>
+
+        <!-- Controls on RHS -->
+        <div class="flex gap-4">
+          <!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
+          <div class="group relative inline-flex">
+            <a
+              href="/"
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19"
+                />
+              </svg>
+            </a>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Home
+            </div>
+          </div>
+
+          <!-- Switch planetary system button (only shown at max-sm) -->
+          <div class="group relative inline-flex sm:hidden">
+            <button
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-7 sm:hidden" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M5.825 16L7.7 17.875q.275.275.275.688t-.275.712q-.3.3-.712.3t-.713-.3L2.7 15.7q-.15-.15-.213-.325T2.426 15t.063-.375t.212-.325l3.6-3.6q.3-.3.7-.287t.7.312q.275.3.288.7t-.288.7L5.825 14H12q.425 0 .713.288T13 15t-.288.713T12 16zm12.35-6H12q-.425 0-.712-.288T11 9t.288-.712T12 8h6.175L16.3 6.125q-.275-.275-.275-.687t.275-.713q.3-.3.713-.3t.712.3L21.3 8.3q.15.15.212.325t.063.375t-.063.375t-.212.325l-3.6 3.6q-.3.3-.7.288t-.7-.313q-.275-.3-.288-.7t.288-.7z"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Change planetary system
+            </div>
+          </div>
+
+          <!-- Help button -->
+          <div class="group relative inline-flex">
+            <button
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M12.838 17.638q.362-.363.362-.888t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362t.888-.363M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m.1-14.3q.625 0 1.088.4t.462 1q0 .55-.337.975t-.763.8q-.575.5-1.012 1.1t-.438 1.35q0 .35.263.588t.612.237q.375 0 .638-.25t.337-.625q.1-.525.45-.937t.75-.788q.575-.55.988-1.2t.412-1.45q0-1.275-1.037-2.087T12.1 6q-.95 0-1.812.4T8.975 7.625q-.175.3-.112.638t.337.512q.35.2.725.125t.625-.425q.275-.375.688-.575t.862-.2"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Help
+            </div>
+          </div>
+
+          <!-- Light/dark mode button -->
+          <div class="group relative inline-flex">
+            <button
+              id="dark-mode-toggle-button"
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <!-- Dark mode icon -->
+              <svg id="dark-mode-icon" class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M14 22q-2.075 0-3.9-.788t-3.175-2.137T4.788 15.9T4 12t.788-3.9t2.137-3.175T10.1 2.788T14 2q.875 0 1.75.175t1.675.525q.3.125.45.387t.15.538q0 .225-.088.425t-.287.35q-1.75 1.375-2.7 3.375T14 12q0 2.25.925 4.25t2.7 3.35q.2.15.288.363T18 20.4q0 .275-.15.538t-.45.387q-.8.35-1.662.513T14 22"
+                />
+              </svg>
+
+              <!-- Light mode icon -->
+              <svg id="light-mode-icon" class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M11.288 4.713Q11 4.425 11 4V2q0-.425.288-.712T12 1t.713.288T13 2v2q0 .425-.288.713T12 5t-.712-.288M16.95 7.05q-.275-.275-.275-.687t.275-.713l1.4-1.425q.3-.3.712-.3t.713.3q.275.275.275.7t-.275.7L18.35 7.05q-.275.275-.7.275t-.7-.275M20 13q-.425 0-.713-.288T19 12t.288-.712T20 11h2q.425 0 .713.288T23 12t-.288.713T22 13zm-8.712 9.713Q11 22.425 11 22v-2q0-.425.288-.712T12 19t.713.288T13 20v2q0 .425-.288.713T12 23t-.712-.288M5.65 7.05l-1.425-1.4q-.3-.3-.3-.725t.3-.7q.275-.275.7-.275t.7.275L7.05 5.65q.275.275.275.7t-.275.7q-.3.275-.7.275t-.7-.275m12.7 12.725l-1.4-1.425q-.275-.3-.275-.712t.275-.688t.688-.275t.712.275l1.425 1.4q.3.275.288.7t-.288.725q-.3.3-.725.3t-.7-.3M2 13q-.425 0-.712-.288T1 12t.288-.712T2 11h2q.425 0 .713.288T5 12t-.288.713T4 13zm2.225 6.775q-.275-.275-.275-.7t.275-.7L5.65 16.95q.275-.275.687-.275t.713.275q.3.3.3.713t-.3.712l-1.4 1.4q-.3.3-.725.3t-.7-.3M7.75 16.25Q6 14.5 6 12t1.75-4.25T12 6t4.25 1.75T18 12t-1.75 4.25T12 18t-4.25-1.75"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              View in dark mode
+            </div>
+          </div>
+
+          <!-- Settings button -->
+          <div class="group relative inline-flex">
+            <button
+              id="settings-button"
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M19.5 12c0-.23-.01-.45-.03-.68l1.86-1.41c.4-.3.51-.86.26-1.3l-1.87-3.23a.987.987 0 0 0-1.25-.42l-2.15.91c-.37-.26-.76-.49-1.17-.68l-.29-2.31c-.06-.5-.49-.88-.99-.88h-3.73c-.51 0-.94.38-1 .88l-.29 2.31c-.41.19-.8.42-1.17.68l-2.15-.91c-.46-.2-1-.02-1.25.42L2.41 8.62c-.25.44-.14.99.26 1.3l1.86 1.41a7.3 7.3 0 0 0 0 1.35l-1.86 1.41c-.4.3-.51.86-.26 1.3l1.87 3.23c.25.44.79.62 1.25.42l2.15-.91c.37.26.76.49 1.17.68l.29 2.31c.06.5.49.88.99.88h3.73c.5 0 .93-.38.99-.88l.29-2.31c.41-.19.8-.42 1.17-.68l2.15.91c.46.2 1 .02 1.25-.42l1.87-3.23c.25-.44.14-.99-.26-1.3l-1.86-1.41c.03-.23.04-.45.04-.68m-7.46 3.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5s-1.57 3.5-3.5 3.5"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Settings
+            </div>
+          </div>
+
+          <!-- Fullscreen button -->
+          <div class="group relative inline-flex">
+            <button
+              id="fullscreen-button"
+              class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <!-- Enter fullscreen icon -->
+              <svg
+                id="enter-fullscreen-icon"
+                class="size-7"
+                viewBox="0 0 24 24"
+              >
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M6 14c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1H7v-2c0-.55-.45-1-1-1m0-4c.55 0 1-.45 1-1V7h2c.55 0 1-.45 1-1s-.45-1-1-1H6c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1m11 7h-2c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1s-1 .45-1 1zM14 6c0 .55.45 1 1 1h2v2c0 .55.45 1 1 1s1-.45 1-1V6c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1"
+                />
+              </svg>
+
+              <!-- Exit fullscreen icon -->
+              <svg
+                id="exit-fullscreen-icon"
+                class="hidden size-7"
+                viewBox="0 0 24 24"
+              >
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M6 18H4q-.425 0-.712-.288T3 17t.288-.712T4 16h3q.425 0 .713.288T8 17v3q0 .425-.288.713T7 21t-.712-.288T6 20zm12 0v2q0 .425-.288.713T17 21t-.712-.288T16 20v-3q0-.425.288-.712T17 16h3q.425 0 .713.288T21 17t-.288.713T20 18zM6 6V4q0-.425.288-.712T7 3t.713.288T8 4v3q0 .425-.288.713T7 8H4q-.425 0-.712-.288T3 7t.288-.712T4 6zm12 0h2q.425 0 .713.288T21 7t-.288.713T20 8h-3q-.425 0-.712-.288T16 7V4q0-.425.288-.712T17 3t.713.288T18 4z"
+                />
+              </svg>
+            </button>
+
+            <!-- Tooltip -->
+            <div
+              class="pointer-events-none absolute top-full right-0 block translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+            >
+              Enter fullscreen
+            </div>
+          </div>
+        </div>
+      </nav>
+      {% endif %}
+
+      <!-- COMPONENT: Main logo -->
+      {% if logo %}
+      <div class="flex w-full justify-center pt-0.5">
+        <img
+          src="/src/assets/logo-purple.svg"
+          class="h-auto w-55 dark:hidden"
+          alt="Logo"
+        />
+        <img
+          src="/src/assets/logo-white.svg"
+          class="hidden h-auto w-55 dark:block"
+          alt="Logo"
+        />
+      </div>
+      {% endif %}
+
+      <!-- COMPONENT: Content -->
+      {% block content %} {% endblock %}
+
+      <!-- COMPONENT: Sidebar settings -->
+      {% if sidebar_settings %}
+      <div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
+        <!-- Left sidebar -->
+        <div class="flex h-full min-h-0 w-48 flex-col gap-2">
+          <div class="flex-1"></div>
+          <!-- Objects side panel -->
+          <div
+            class="flex min-h-0 flex-col rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
+          >
+            <!-- "Objects" header and hide panel button -->
+            <button
+              id="objects-button"
+              class="flex w-full items-center font-bold"
+            >
+              <span class="flex-1 text-left">Objects</span>
+
+              <!-- Objects show icon -->
+              <svg id="objects-show-icon" class="size-7" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
+                />
+              </svg>
+
+              <!-- Objects hide icon -->
+              <svg
+                id="objects-hide-icon"
+                class="hidden size-7"
+                viewBox="0 0 24 24"
+              >
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
+                />
+              </svg>
+            </button>
+
+            <!-- Objects controls -->
+            <div
+              id="objects"
+              class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
+            >
+              <div class="flex flex-col overflow-hidden">
+                <div class="min-h-0 flex-1 overflow-y-auto">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Mercury</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Venus</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Earth</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Mars</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Jupiter</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Saturn</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Uranus</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" checked />
+                    <span class="flex-1">Neptune</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span class="flex-1">Pluto</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span class="flex-1">1P/Halley</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span class="flex-1">3I/ATLAS</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- View settings side panel -->
+          <div
+            class="shrink-0 rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
+          >
+            <!-- "View settings" header and hide panel button -->
+            <button
+              id="view-settings-button"
+              class="flex w-full items-center font-bold"
+            >
+              <span class="flex-1 text-left">View settings</span>
+
+              <!-- View settings show icon -->
+              <svg
+                id="view-settings-show-icon"
+                class="size-7"
+                viewBox="0 0 24 24"
+              >
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
+                />
+              </svg>
+
+              <!-- View settings hide icon -->
+              <svg
+                id="view-settings-hide-icon"
+                class="hidden size-7"
+                viewBox="0 0 24 24"
+              >
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
+                />
+              </svg>
+            </button>
+
+            <!-- View settings controls -->
+            <div
+              id="view-settings"
+              class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
+            >
+              <div class="flex flex-col overflow-hidden">
+                <div class="mt-3">
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span>Habitable zone</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span>Orbits</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span>Reference grid</span>
+                  </label>
+
+                  <label class="flex items-center gap-2">
+                    <input type="checkbox" />
+                    <span>Labels</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spacer -->
+        <div class="flex-1"></div>
+
+        <!-- Reset view button -->
+        <button
+          class="flex items-center gap-3 rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+        >
+          Reset view
+        </button>
+
+        <!-- Compare to solar system button -->
+        <button
+          class="flex items-center gap-3 self-end rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+        >
+          Compare to Solar System
+        </button>
+      </div>
+      {% endif %}
+
+      <!-- COMPONENT: Simulation controls -->
+      {% if simulation_controls %}
+      <div
+        class="flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 py-6 dark:from-black dark:via-black dark:via-80%"
+      >
+        <!-- Simulation timestamp (narrow screens) -->
+        <span class="self-center text-sm sm:hidden">
+          <input
+            type="datetime-local"
+            id="meeting-time"
+            name="meeting-time"
+            value="2018-06-12T19:30"
+            min="2018-06-07T00:00"
+            max="2018-06-14T00:00"
+          />
+        </span>
+
+        <div class="grid w-full grid-cols-3 items-center gap-4">
+          <!-- Simulation timestamp / date picker -->
+          <div class="justify-self-start">
+            <div class="text-left max-sm:hidden">
+              <p class="text-lg">
+                <input
+                  type="datetime-local"
+                  id="meeting-time"
+                  name="meeting-time"
+                  value="2018-06-12T19:30"
+                  min="2018-06-07T00:00"
+                  max="2018-06-14T00:00"
+                />
+              </p>
+              <p class="text-s italic dark:text-zinc-400">32 days from now</p>
+            </div>
+          </div>
+
+          <!-- Playback controls -->
+          <div class="flex flex-nowrap items-start gap-1 justify-self-center">
+            <!-- Step back button -->
+            <button
+              class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-10" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1m3.66 6.82l5.77 4.07c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-5.77 4.07a1 1 0 0 0 0 1.64"
+                />
+              </svg>
+            </button>
+
+            <!-- Play/pause button -->
+            <button
+              id="play-pause-button"
+              class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <!-- Play icon -->
+              <svg id="play-icon" class="size-10" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82"
+                />
+              </svg>
+
+              <!-- Pause icon -->
+              <svg id="pause-icon" class="hidden size-10" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M16 19q-.825 0-1.412-.587T14 17V7q0-.825.588-1.412T16 5t1.413.588T18 7v10q0 .825-.587 1.413T16 19m-8 0q-.825 0-1.412-.587T6 17V7q0-.825.588-1.412T8 5t1.413.588T10 7v10q0 .825-.587 1.413T8 19"
+                />
+              </svg>
+            </button>
+
+            <!-- Step forward button -->
+            <button
+              class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            >
+              <svg class="size-10" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="m7.58 16.89l5.77-4.07c.56-.4.56-1.24 0-1.63L7.58 7.11C6.91 6.65 6 7.12 6 7.93v8.14c0 .81.91 1.28 1.58.82M16 7v10c0 .55.45 1 1 1s1-.45 1-1V7c0-.55-.45-1-1-1s-1 .45-1 1"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Simulation speed adjuster -->
+          <div class="flex items-center gap-3 justify-self-end max-sm:hidden">
+            <label class="">speed</label>
+            <input
+              type="number"
+              min="0"
+              class="h-9 w-18 rounded-md pl-2 outline-1 outline-zinc-900 dark:outline-zinc-500"
+              value="20"
+            />
+
+            <select
+              class="h-9 w-18 rounded-md outline-1 outline-zinc-900 dark:outline-zinc-500"
+            >
+              <option>hour</option>
+              <option>day</option>
+              <option>week</option>
+              <option>month</option>
+              <option>year</option>
+            </select>
+
+            <p class="pr-3">per second</p>
+          </div>
+
+          <!-- Simulation speed adjustor (small; only shown on narrow screens) -->
+          <button
+            class="justify-self-end rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 sm:hidden dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+          >
+            <svg class="size-10" viewBox="0 0 24 24">
+              <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+              <path
+                d="M13.55 15.5q.65-.65.613-1.525T13.4 12.6l-3.15-2.1L7.1 8.4q-.35-.225-.65.063t-.075.637q1.05 1.575 2.112 3.15T10.6 15.4q.475.725 1.375.75t1.575-.65M5.125 20q-.55 0-1.012-.238t-.738-.712q-.7-1.2-1.05-2.512t-.35-2.688q.025-2 .85-3.787t2.2-3.138T8.2 4.788T12 4q2.075 0 3.888.788t3.174 2.15t2.15 3.175T22 14q0 1.35-.35 2.625t-1 2.425q-.275.475-.75.713t-1 .237z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- COMPONENT: Settings overlay -->
+      {% if settings_overlay %}
+      <div
+        id="settings-overlay"
+        class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
+      >
+        <div
+          class="h-full w-full max-w-prose bg-white p-6 shadow-2xl shadow-black/50 dark:bg-zinc-900"
+        >
+          <div class="flex items-start">
+            <h1 class="mb-4 flex-1 text-3xl font-bold">Settings</h1>
+
+            <!-- Close button -->
+            <div>
+              <button
+                id="close-settings-menu-button"
+                class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+              >
+                <svg class="size-7" viewBox="0 0 24 24">
+                  <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                  <path
+                    d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- General settings -->
+          <div class="mb-4 flex flex-col gap-2">
+            <h2 class="text-lg font-bold">General</h2>
+
+            <label class="flex">
+              <span class="flex-1">Time zone</span>
+              <select name="time-zone" class="flex-1">
+                <option value="">UTC</option>
+                <option value="">NZT</option>
+              </select>
+            </label>
+          </div>
+
+          <!-- Accessibility settings -->
+          <div class="mb-4 flex flex-col gap-2">
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-bold">Accessibility</h2>
+
+              <svg class="size-6" viewBox="0 0 24 24">
+                <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+                <path
+                  d="M10.588 5.413Q10 4.825 10 4t.588-1.412T12 2t1.413.588T14 4t-.587 1.413T12 6t-1.412-.587M9 21V9q-1.225-.1-2.475-.275t-2.45-.45q-.425-.1-.687-.475T3.25 7t.525-.625t.85-.1q1.75.375 3.638.55T12 7t3.738-.175t3.637-.55q.45-.1.85.1T20.75 7t-.137.8t-.688.475q-1.2.275-2.45.45T15 9v12q0 .425-.287.713T14 22t-.712-.288T13 21v-5h-2v5q0 .425-.288.713T10 22t-.712-.288T9 21"
+                />
+              </svg>
+            </div>
+
+            <!-- Font selection -->
+            <label class="flex">
+              <span class="flex-1">Font</span>
+              <select name="font" class="flex-1">
+                <option value="">Default</option>
+                <option value="">OpenDyslexic</option>
+              </select>
+            </label>
+
+            <!-- Text size -->
+            <label class="flex">
+              <span class="flex-1">Text size</span>
+              <select name="text-size" class="flex-1">
+                <option value="">Default</option>
+                <option value="">Larger</option>
+              </select>
+            </label>
+
+            <!-- Object marker size -->
+            <label class="flex">
+              <span class="flex-1">Object marker size</span>
+              <select name="" class="flex-1">
+                <option value="">Default</option>
+                <option value="">Larger</option>
+              </select>
+            </label>
+
+            <!-- Orbit lines -->
+            <label class="flex">
+              <span class="flex-1">Orbit lines</span>
+              <select name="" class="flex-1">
+                <option value="">Differentiate by colour</option>
+                <option value="">Differentiate by stroke</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- COMPONENT: Scripts block -->
+    {% block scripts %} {% endblock %}
   </body>
 </html>
