@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="/dist/output.css" rel="stylesheet" />
     <title>{% block title %} {% endblock %}</title>
-	<script type="module" src="/src/events/eventTriggers.js" defer></script>
-    <script type="module" src="/src/rendering/simulationManager.js" defer></script>
-    <script src="/src/ui/script.js" defer></script>
   </head>
 
 	<body>
 		<div
       		class="flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 text-zinc-800 dark:bg-zinc-900 dark:fill-white dark:text-white"
     	>
-
 			<!-- COMPONENT: Navigation bar -->
 			 {% if navigation_bar %}
 				<nav class="z-30 flex flex-wrap items-start justify-between gap-4 p-6">
@@ -654,6 +650,9 @@
 				</div>
 			</div>
 		{% endif %}
+
+	<!-- COMPONENT: Scripts block -->
+	{% block scripts %} {% endblock %}
 
   </body>
 </html>
