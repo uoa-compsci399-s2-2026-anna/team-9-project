@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import * as state from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
@@ -10,6 +11,7 @@ let currentSystem;
 let scene;
 let camera;
 let renderer;
+let labelRenderer;
 
 const objectMeshes = new Map();
 
@@ -33,22 +35,33 @@ export function init(name) {
 
     const fov = 45;
     const aspect = 2;
-    const near = 0.01;
-    const far = 500;
-    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    const cameraNear = 0.01;
+    const cameraFar = 200;
+    camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.position.set(0, 35, 55);
+
+    // Avoid buggy behaviour when the camera is near the clipping plane
+    const controlsMin = 1;
+    const controlsMax = 100;
 
     const controls = new OrbitControls(camera, canvas);
     // TODO: consider controls.enableDamping = true;
-    controls.target.set(0, 0, 0);
-    controls.minDistance = near;
-    controls.maxDistance = far;
+    controls.target.set(0, 0, 0); // Look at the sun
+    controls.minDistance = controlsMin; 
+    controls.maxDistance = controlsMax;
     controls.update();
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color('black');
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
+    labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.top = "0px";
+    labelRenderer.domElement.style.left = "0px";
+    labelRenderer.domElement.style.pointerEvents = "none";
+    canvas.parentElement.appendChild(labelRenderer.domElement);
     // TODO: use timer to avoid the simuation breaking when tabbing out (page visibility API)
 }
 
@@ -69,6 +82,17 @@ function createOrUpdateMesh(name, position) {
         mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
         objectMeshes.set(name, mesh);
+
+        const labelDiv = document.createElement("div");
+        labelDiv.className = "planet-label";
+        labelDiv.textContent = name;
+        labelDiv.style.color = "white";
+        labelDiv.style.fontSize = "12px";
+        labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
+
+        const label = new CSS2DObject(labelDiv);
+        label.position.set(0, 0, 0);
+        mesh.add(label);
     }
 
     mesh.position.set(position.x, position.y, position.z);
@@ -86,6 +110,7 @@ function resizeRendererToDisplaySize() {
 
     if (needResize) {
         renderer.setSize(width, height, false);
+        labelRenderer.setSize(width, height);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
     }
@@ -93,6 +118,9 @@ function resizeRendererToDisplaySize() {
     return needResize;
 }
 
+/**
+ * Render the meshes and objects on every animation frame
+ */
 export async function render() {
     resizeRendererToDisplaySize();
 
@@ -123,6 +151,7 @@ export async function render() {
     console.log(deltaTime);
 
     renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
 
     // Invoke render() on the next frame
     if (state.running) {
