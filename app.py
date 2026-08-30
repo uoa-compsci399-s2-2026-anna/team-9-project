@@ -37,9 +37,10 @@ objects = []
 @app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse(
-        "home.html",
+        request=request,
+        name="home.html",
+        context=
         {
-            "request": request,
             "systems": all_systems,
             "dropdown_systems": all_systems,
 
@@ -71,9 +72,10 @@ async def simulation(request: Request, system_id: str):
     ]
 
     return templates.TemplateResponse(
-        "simulation.html",
+        request=request,
+        name="simulation.html",
+        context=
         {
-            "request": request,
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
