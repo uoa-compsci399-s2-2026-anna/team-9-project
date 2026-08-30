@@ -23,12 +23,16 @@ settingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.FREEZE);
 });
 
-closeSettingsMenuButton.addEventListener("click", bus.publish(EVENTS.SIM.UNFREEZE));
+function closeSettingsMenu() {
+    bus.publish(EVENTS.SIM.UNFREEZE);
+}
+
+closeSettingsMenuButton.addEventListener("click", closeSettingsMenu);
 
 settingsOverlay.addEventListener("click", (e) => {
     // Close settings menu only when the user clicks outside of the main settings menu panel
     if (e.target === e.currentTarget) {
-        bus.publish(EVENTS.SIM.UNFREEZE);
+        closeSettingsMenu();
     }
 });
 
@@ -36,7 +40,7 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         // Close settings menu if open and user presses escape
         if (document.body.classList.contains("settings-menu-open")) {
-            bus.publish(EVENTS.SIM.UNFREEZE);
+            closeSettingsMenu();
         }
     }
 });
