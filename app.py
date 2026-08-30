@@ -117,8 +117,6 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         if sim is None:
             init_solar()
 
-        print(t);
-
         # Set time
         sim.integrate(t)
 
@@ -127,7 +125,6 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         for i, p in enumerate(sim.particles):
             positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
 
-        print(positions)
         return {"positions": positions}
 
 

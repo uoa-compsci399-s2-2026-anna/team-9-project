@@ -14,7 +14,7 @@ let renderer;
 const objectMeshes = new Map();
 
 // Default size and colour of all the objects
-const objectSize = 0.1;
+const objectSize = 0.05;
 const objectColour = 0xFFFFFF; // White
 
 /**
@@ -103,6 +103,7 @@ export async function render() {
     const currentTime = Date.now();
     // Measure the change in time in seconds
     const deltaTime = (currentTime - lastRenderTime) / 1000;
+
     lastRenderTime = currentTime;
 
     currentSimulationTime += state.simulationSpeed * deltaTime;
