@@ -37,10 +37,8 @@ settingsOverlay.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-        // Close settings menu if open and user presses escape
-        if (document.body.classList.contains("settings-menu-open")) {
-            closeSettingsMenu();
-        }
+    // Close settings menu if open and user presses escape
+    if (e.key === "Escape" && document.body.classList.contains("settings-menu-open")) {
+        closeSettingsMenu();
     }
 });
