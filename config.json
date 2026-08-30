@@ -1,15 +1,12 @@
 {
     "systems": [
         {
-            "id": "solar-system",
             "name": "Solar System"
         },
         {
-            "id": "kepler-16",
             "name": "Kepler-16"
         },
         {
-            "id": "trappist-1",
             "name": "TRAPPIST-1"
         }
     ]
