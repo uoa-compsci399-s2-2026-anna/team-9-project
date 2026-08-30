@@ -37,16 +37,18 @@ export function init(name) {
     const cameraNear = 0.01;
     const cameraFar = 200;
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-    camera.position.set(0, 35, 55);
+    camera.position.set(0, 0, 50);
 
     // Avoid buggy behaviour when the camera is near the clipping plane
     const controlsMin = 1;
     const controlsMax = 100;
+    const controlsZoomMultiplier = 2.5;
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 0, 0); // Look at the sun
     controls.minDistance = controlsMin; 
     controls.maxDistance = controlsMax;
+    controls.zoomSpeed = controlsZoomMultiplier;
     controls.update();
 
     scene = new THREE.Scene();
@@ -116,7 +118,9 @@ function resizeRendererToDisplaySize() {
 }
 
 /**
- * Render the meshes and objects on every animation frame
+ * Render the meshes and objects on every animation frame.
+ * 
+ * TODO: Rendering on every animation frame leads to high CPU usage.
  */
 export async function render() {
     resizeRendererToDisplaySize();
@@ -132,8 +136,6 @@ export async function render() {
     lastRenderTime = currentTime;
 
     currentSimulationTime += state.simulationSpeed * deltaTime;
-    
-    // TODO: currently rendering on every frame
 
     // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
     // Fetch data for the current system
