@@ -24,10 +24,6 @@ system_ids = [
     for system in all_systems
 ]
 
-# Test output
-print(all_systems)
-print(system_ids)
-
 if sys.argv[-1] == "packaged":
     app.mount("/src", StaticFiles(directory="resources/src"), name="src")
     app.mount("/dist", StaticFiles(directory="resources/dist"), name="dist")
