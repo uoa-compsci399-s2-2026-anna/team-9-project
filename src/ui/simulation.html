@@ -21,5 +21,8 @@
 
 <!-- Scripts block -->
 {% block scripts %}
-  <script src="/src/ui/script.js"></script>
+  <script type="module" src="/src/events/triggers/sharedTriggers.js" defer></script>
+  <script type="module" src="/src/events/triggers/simulationTriggers.js" defer></script>
+  <script type="module" src="/src/rendering/simulationManager.js" defer></script>
+  <script src="/src/ui/script.js" defer></script>
 {% endblock %}

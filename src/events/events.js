@@ -1,4 +1,12 @@
 export const EVENTS = {
-    SIM_START: "sim:start",
-    SIM_STOP: "sim:stop",
+    SIM: {
+        START: "sim:start",
+        STOP: "sim:stop",
+        FREEZE: "sim:freeze",
+        UNFREEZE: "sim:unfreeze",
+    },
+    FULLSCREEN: {
+        ENTER: "fullscreen:enter",
+        EXIT: "fullscreen:exit",
+    },
 }
