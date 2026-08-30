@@ -1,7 +1,9 @@
 import * as state from "../shared/simulationState.js";
+import { getSystemData } from "../services/simulationServices.js";
 
 let lastRenderTime = null;
 let currentSimulationTime;
+let currentSystem;
 
 /**
  * Initialises the requested system to render
@@ -10,6 +12,7 @@ let currentSimulationTime;
  */
 export function init(name) {
     currentSimulationTime = Date.now();
+    currentSystem = name;
     console.log(name);
 }
 
@@ -19,8 +22,17 @@ export function render() {
     }
 
     const currentTime = Date.now();
-    const deltaTime = currentTime - lastRenderTime;
+    // Measure the change in time in seconds
+    const deltaTime = (currentTime - lastRenderTime) / 1000;
     lastRenderTime = currentTime;
+
+    currentSimulationTime += state.simulationSpeed * deltaTime;
+    
+    // TODO: currently rendering on every frame
+
+    // Fetch data for the current system
+    const systemData = getSystemData(currentSystem, currentSimulationTime);
+    console.log(systemData);
 
     console.log(deltaTime);
 
