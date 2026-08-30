@@ -1,8 +1,4 @@
-export let currentSystem = "";
-
-export function setCurrentSystem(value) {
-    currentSystem = value;
-}
+export let simulationSpeed = 1_000_000 // Around 11.57 days/second
 
 export let running = false;
 

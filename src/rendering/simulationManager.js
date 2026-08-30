@@ -1,15 +1,16 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import * as state from "../shared/simulationState.js";
-import { init } from "./simulationRenderer.js";
+import * as renderer from "./simulationRenderer.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
-init(currentSystem)
+renderer.init(currentSystem)
 
 bus.subscribe(EVENTS.SIM.START, () => {
     console.log("Started simulation");
     state.setRunning(true);
+    renderer.render();
 })
 
 bus.subscribe(EVENTS.SIM.STOP, () => {
