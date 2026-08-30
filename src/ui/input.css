@@ -43,6 +43,6 @@
 
 @layer base {
   select {
-    @apply rounded-md bg-white outline-1 outline-zinc-900 dark:bg-zinc-900 dark:outline-zinc-500;
+    @apply rounded-md bg-white outline-1 outline-zinc-900 dark:bg-black dark:outline-zinc-500;
   }
 }
