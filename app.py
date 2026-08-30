@@ -18,12 +18,6 @@ with open("config.json") as f:
 # Get the systems in the config 
 all_systems = config["systems"]
 
-# Get the IDs of the systems
-system_ids = [
-    system["id"]
-    for system in all_systems
-]
-
 if sys.argv[-1] == "packaged":
     app.mount("/src", StaticFiles(directory="resources/src"), name="src")
     app.mount("/dist", StaticFiles(directory="resources/dist"), name="dist")
@@ -54,21 +48,21 @@ async def home(request: Request):
         }
     )
 
-@app.get("/simulation/{system_id}")
-async def simulation(request: Request, system_id: str):
+@app.get("/simulation/{system_name}")
+async def simulation(request: Request, system_name: str):
 
     # Get the current system
     current_system = next(
         system
         for system in all_systems
-        if system["id"] == system_id
+        if system["name"] == system_name
     )
 
     # Get all other systems, except the current system
     dropdown_systems = [
         system
         for system in all_systems
-        if system["id"] != current_system["id"]
+        if system["name"] != current_system["name"]
     ]
 
     return templates.TemplateResponse(
@@ -100,24 +94,26 @@ async def kill():
 
 
 @app.get("/system")
-async def get_system_data(system_id: str = "", t: float = 0.0):
+async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
 
     # Catch poor input
-    if system_id not in system_ids:
+    if not any(
+        system["name"] == system_name
+        for system in all_systems):
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Find the next requested system 
     system = next(
         system
         for system in all_systems
-        if system["id"] == system_id
+        if system["name"] == system_name
     )
 
     # Hardcode Solar System
-    if system_id == "solar-system":
+    if system_name == "Solar System":
 
         # Init state if empty
         if sim is None:
