@@ -8,6 +8,8 @@ import rebound
 import os
 import json
 
+rebound.horizons.SSL_CONTEXT = 'unverified'
+
 app = FastAPI()
 templates = Jinja2Templates(directory = "src/ui")
 
@@ -115,6 +117,8 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         if sim is None:
             init_solar()
 
+        print(t);
+
         # Set time
         sim.integrate(t)
 
@@ -123,6 +127,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         for i, p in enumerate(sim.particles):
             positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
 
+        print(positions)
         return {"positions": positions}
 
 

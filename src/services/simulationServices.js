@@ -6,11 +6,12 @@
  */
 export async function getSystemData(name, t) {
     const params = new URLSearchParams({
-        name: name,
+        system_name: name,
         t: t,
     });
 
     const response = await fetch(`/system?${params}`);
+    console.log("done?");
     if (!response.ok) {
         throw new Error(`Failed to get system data: ${response.status}`);
     }

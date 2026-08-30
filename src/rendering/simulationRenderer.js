@@ -2,7 +2,7 @@ import * as state from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let lastRenderTime = null;
-let currentSimulationTime;
+let currentSimulationTime = 0;
 let currentSystem;
 
 /**
@@ -11,12 +11,12 @@ let currentSystem;
  * @param {string} name System name
  */
 export function init(name) {
-    currentSimulationTime = Date.now();
+    currentSimulationTime = 0;
     currentSystem = name;
     console.log(name);
 }
 
-export function render() {
+export async function render() {
     if (lastRenderTime === null) {
         lastRenderTime = Date.now();
     }
@@ -30,8 +30,9 @@ export function render() {
     
     // TODO: currently rendering on every frame
 
+    // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
     // Fetch data for the current system
-    const systemData = getSystemData(currentSystem, currentSimulationTime);
+    const systemData = await getSystemData(currentSystem, currentSimulationTime);
     console.log(systemData);
 
     console.log(deltaTime);
