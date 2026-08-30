@@ -5,7 +5,7 @@ import * as renderer from "./simulationRenderer.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
-renderer.init(currentSystem)
+renderer.init(currentSystem);
 
 bus.subscribe(EVENTS.SIM.START, () => {
     console.log("Started simulation");
