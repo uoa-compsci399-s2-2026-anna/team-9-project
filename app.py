@@ -8,6 +8,9 @@ import rebound
 import os
 import json
 
+# Prevent internal server errors when adding objects to the simulation
+rebound.horizons.SSL_CONTEXT = 'unverified'
+
 app = FastAPI()
 templates = Jinja2Templates(directory = "src/ui")
 

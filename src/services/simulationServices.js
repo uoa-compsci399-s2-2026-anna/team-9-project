@@ -6,7 +6,7 @@
  */
 export async function getSystemData(name, t) {
     const params = new URLSearchParams({
-        name: name,
+        system_name: name,
         t: t,
     });
 

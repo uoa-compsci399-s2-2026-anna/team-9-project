@@ -16,7 +16,11 @@
 
 <!-- Simulation content-->
 {% block content %}
-	<!-- <canvas id="simulation-canvas"></canvas> -->
+	<canvas
+		id="simulation-canvas"
+		data-current-system="{{ current_system.name }}"
+		class="absolute inset-0 z-0 h-full w-full pointer-events-auto"
+	></canvas>
 {% endblock %}
 
 <!-- Scripts block -->
