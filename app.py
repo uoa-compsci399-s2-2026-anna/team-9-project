@@ -9,13 +9,13 @@ import os
 import json
 
 app = FastAPI()
-templates = Jinja2Templates(directory = "src/ui")
+templates = Jinja2Templates(directory="src/ui")
 
 # Load the config file
 with open("config.json") as f:
     config = json.load(f)
 
-# Get the systems in the config 
+# Get the systems in the config
 all_systems = config["systems"]
 
 app.mount("/src", StaticFiles(directory="src"), name="src")
@@ -24,61 +24,56 @@ app.mount("/dist", StaticFiles(directory="dist"), name="dist")
 sim = None
 objects = []
 
+
 @app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="home.html",
-        context=
-        {
+        context={
             "systems": all_systems,
             "dropdown_systems": all_systems,
-
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": False,
             "logo": True,
             "sidebar_settings": False,
             "simulation_controls": False,
-            "settings_overlay": True
-        }
+            "settings_overlay": True,
+        },
     )
+
 
 @app.get("/simulation/{system_name}")
 async def simulation(request: Request, system_name: str):
 
     # Get the current system
     current_system = next(
-        system
-        for system in all_systems
-        if system["name"] == system_name
+        system for system in all_systems if system["name"] == system_name
     )
 
     # Get all other systems, except the current system
     dropdown_systems = [
-        system
-        for system in all_systems
-        if system["name"] != current_system["name"]
+        system for system in all_systems if system["name"] != current_system["name"]
     ]
 
     return templates.TemplateResponse(
         request=request,
         name="simulation.html",
-        context=
-        {
+        context={
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
-
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": True,
             "logo": False,
             "sidebar_settings": True,
             "simulation_controls": True,
-            "settings_overlay": True
-        }
+            "settings_overlay": True,
+        },
     )
+
 
 @app.get("/kill")
 async def kill():
@@ -96,21 +91,15 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
 
     # Catch poor input
-    if not any(
-        system["name"] == system_name
-        for system in all_systems):
+    print(system_name)
+    if not any(system["name"] == system_name for system in all_systems):
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Find the next requested system 
-    system = next(
-        system
-        for system in all_systems
-        if system["name"] == system_name
-    )
+    # Find the next requested system
+    system = next(system for system in all_systems if system["name"] == system_name)
 
     # Hardcode Solar System
     if system_name == "Solar System":
-
         # Init state if empty
         if sim is None:
             init_solar()
@@ -118,12 +107,55 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         # Set time
         sim.integrate(t)
 
-        # Gather positions
-        positions = {}
-        for i, p in enumerate(sim.particles):
-            positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+        # Calculate relevant data and return
+        return calculate_simulation_info(sim)
 
-        return {"positions": positions}
+
+def calculate_simulation_info(sim):
+    """
+    Given a REBOUND simulation, calculate:
+    - Particle positions
+    - Barycentric orbital information
+        - Semi-major axis: AU
+        - Eccentricity: -1 – 1
+        - Longitude of the ascending node: radians (0–2pi)
+        - Inclination: radians (0-2pi)
+    """
+    # Gather positions
+    positions = {}
+    for i, p in enumerate(sim.particles):
+        positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+
+    # Total mass of the system
+    total_mass = sum(p.m for p in sim.particles)
+
+    # Gather orbital data excluding
+    orbital_data = {}
+    for i, p in enumerate(sim.particles):
+        # Get the COM of the system
+        com = sim.com()
+
+        # Barycentric reference center, do not double count current particle's mass
+        barycenter_ref = rebound.Particle(
+            m=total_mass - p.m,
+            x=com.x,
+            y=com.y,
+            z=com.z,
+            vx=com.vx,
+            vy=com.vy,
+            vz=com.vz,
+        )
+
+        # Calculate the orbit from the barycenter
+        orbit = sim.particles[i].orbit(primary=barycenter_ref)
+        orbital_data[objects[i]] = {
+            "semi major": orbit.a,  # Longest radius of ellipse
+            "eccentricity": orbit.e,  # Shape of ellipse
+            "ascending longitude": orbit.omega,  # Angle about the center axis
+            "inclination": orbit.inc,  # Amount to tilt
+        }
+
+    return {"positions": positions, "orbital_data": orbital_data}
 
 
 def init_solar():
@@ -139,7 +171,8 @@ def init_solar():
     sim.units = ("AU", "s", "Msun")
 
     # Add the sun at current position
-    sim.add("Sun")
+    # sim.add("Sun")
+    sim.add("solar system")
 
     # Move to COM of the sun
     sim.move_to_com()
@@ -156,6 +189,3 @@ def init_solar():
         "Uranus",
         "Neptune",
     ]
-
-    for obj in objects[1:]:
-        sim.add(obj)
