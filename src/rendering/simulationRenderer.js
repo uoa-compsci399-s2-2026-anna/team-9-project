@@ -4,7 +4,7 @@ import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer
 import * as state from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
-let lastRenderTime;
+let timer;
 let currentSimulationTime = 0;
 let currentSystem;
 
@@ -112,7 +112,8 @@ export function init(name) {
     // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
     // Render the system at t=0 (fetch the system data from the backend and display initial positions)
     updateSimulation();
-    lastRenderTime = Date.now();
+    timer = new THREE.Timer();
+    timer.connect(document); // Use Page Visibility API
 
     // Start rendering frames and updating the simulation
     renderFrame();
@@ -143,14 +144,14 @@ function resizeRendererToDisplaySize() {
  * 
  * TODO: Rendering the system on every animation frame leads to high CPU usage.
  */
-async function renderFrame() {
+async function renderFrame(timestamp) {
     resizeRendererToDisplaySize();
 
-    const currentTime = Date.now();
+    timer.update(timestamp);
 
     if (state.running) {
         // Measure the change in time in seconds since the last frame
-        const deltaTime = (currentTime - lastRenderTime) / 1000;
+        const deltaTime = timer.getDelta();
 
         currentSimulationTime += state.simulationSpeed * deltaTime;
 
@@ -159,8 +160,6 @@ async function renderFrame() {
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
-
-    lastRenderTime = currentTime;
 
     // Invoke render() on the next frame
     requestAnimationFrame(renderFrame);
