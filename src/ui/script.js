@@ -1,5 +1,6 @@
 const html = document.documentElement;
 
+// Disable dragging for all links
 document.querySelectorAll("a").forEach(a => {
   a.setAttribute("draggable", "false");
 })
