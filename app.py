@@ -89,6 +89,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
+    system_name = system_name.lower()
 
     # Catch poor input
     print(system_name)
@@ -99,7 +100,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     system = next(system for system in all_systems if system["name"] == system_name)
 
     # Hardcode Solar System
-    if system_name == "Solar System":
+    if system_name == "solar system":
         # Init state if empty
         if sim is None:
             init_solar()
@@ -188,4 +189,15 @@ def init_solar():
         "Saturn",
         "Uranus",
         "Neptune",
+        "Halley's Comet",
     ]
+
+    sim.add(
+        m=0.0,
+        a=17.8,
+        e=0.967,
+        inc=162.0 * 3.14159 / 180.0,
+        omega=58.4 * 3.14159 / 180.0,
+        Omega=111.9 * 3.14159 / 180.0,
+        M=0.0,
+    )
