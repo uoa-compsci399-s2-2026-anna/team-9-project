@@ -9,7 +9,7 @@
 
 	<body>
 		<div
-      		class="flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 text-zinc-800 dark:bg-zinc-900 dark:fill-white dark:text-white"
+      		class="flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 text-zinc-800 dark:bg-zinc-900 dark:fill-white dark:text-white select-none"
     	>
 			<!-- COMPONENT: Navigation bar -->
 			 {% if navigation_bar %}
@@ -228,12 +228,12 @@
 				<div class="flex w-full justify-center pt-0.5">
 					<img
 						src="/src/assets/logo-purple.svg"
-						class="h-auto w-55 dark:hidden"
+						class="h-auto w-55 dark:hidden pointer-events-none"
 						alt="Logo"
 					/>
 					<img
 						src="/src/assets/logo-white.svg"
-						class="hidden h-auto w-55 dark:block"
+						class="hidden h-auto w-55 dark:block pointer-events-none"
 						alt="Logo"
 					/>
 				</div>
