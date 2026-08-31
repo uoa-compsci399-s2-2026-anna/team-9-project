@@ -1,5 +1,10 @@
 const html = document.documentElement;
 
+// Disable dragging for all links
+document.querySelectorAll("a").forEach(a => {
+  a.setAttribute("draggable", "false");
+})
+
 // DARK/LIGHT MODE
 
 const darkModeToggleButton = document.querySelector("#dark-mode-toggle-button");
