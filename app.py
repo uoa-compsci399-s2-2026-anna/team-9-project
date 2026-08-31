@@ -7,6 +7,7 @@ import sys
 import rebound
 import os
 import json
+import numpy as np
 
 app = FastAPI()
 templates = Jinja2Templates(directory="src/ui")
@@ -147,13 +148,71 @@ def calculate_simulation_info(sim):
             vz=com.vz,
         )
 
-        # Calculate the orbit from the barycenter
-        orbit = sim.particles[i].orbit(primary=barycenter_ref)
+        # Get the orbital elements relative to the primary
+        # This may be inacurrate FIX LATER
+        particle = sim.particles[i]
+        primary = barycenter_ref
+        orbit = particle.orbit(primary=primary)
+
+        # Extract necessary parameters
+        a = orbit.a       # Semi-major axis
+        e = orbit.e       # Eccentricity
+        c = a * e         # Distance from focus to the geometric center
+
+        # Use the pericenter orientation vector (Runge-Lenz vector direction)
+        # REBOUND provides the components of the eccentricity vector (evec)
+        # which points directly from the focus toward the perihelion.
+        ex = orbit.evec[0]
+        ey = orbit.evec[1]
+        ez = orbit.evec[2]
+
+        # Normalize the eccentricity vector to get the direction of perihelion
+        e_norm = np.array([ex, ey, ez]) / e
+
+        # The center is shifted in the OPPOSITE direction of perihelion 
+        # relative to the primary body's position
+        center_offset = -c * e_norm
+
+        # Absolute 3D coordinates of the orbit's geometric center
+        center_x = primary.x + center_offset[0]
+        center_y = primary.y + center_offset[1]
+        center_z = primary.z + center_offset[2]
+
+        """
+        https://rebound.hanno-rein.de/particles/orbitalelements/
+        
+        a 	semi-major axis
+        e 	eccentricity
+        inc 	inclination, in
+        Omega 	longitude of ascending node, in
+        omega 	argument of pericenter, in
+        pomega 	longitude of pericenter, in
+        f 	true anomaly, in
+        M 	mean anomaly, in
+        E 	Eccentric anomaly (in for ; unbounded for ). Because this requires solving Kepler's equation it is only calculated when needed in python and never calculated in C. To get the eccentric anomaly in C, use the function double reb_M_to_E(double e, double M)
+        l 	mean longitude = Omega + omega + M, in
+        theta 	true longitude = Omega + omega + f, in
+        T 	time of pericenter passage
+        rhill 	Hill radius,
+        """
         orbital_data[objects[i]] = {
             "semi major": orbit.a,  # Longest radius of ellipse
             "eccentricity": orbit.e,  # Shape of ellipse
-            "ascending longitude": orbit.omega,  # Angle about the center axis
+            "ascending longitude": orbit.Omega,  # Angle about the center axis
             "inclination": orbit.inc,  # Amount to tilt
+            "pericenter argument": orbit.omega, # Argument of the pericenter
+            "pericenter longitude": orbit.pomega,
+            "true anomaly": orbit.f,
+            "mean anomaly": orbit.M,
+            "eccentric anomaly": orbit.E,
+            "mean longitude": orbit.l,
+            "pericenter passage time": orbit.T,
+            "hill radius": orbit.rhill,
+            "center": {
+                "x": center_x,
+                "y": center_y,
+                "z": center_z,
+            }
         }
 
     return {"positions": positions, "orbital_data": orbital_data}
