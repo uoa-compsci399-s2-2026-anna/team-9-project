@@ -117,8 +117,8 @@ def calculate_simulation_info(sim):
     - Particle positions
     - Barycentric orbital information
         - Semi-major axis: AU
-        - Eccentricity: -1 – 1
-        - Longitude of the ascending node: radians (0–2pi)
+        - Eccentricity: -1 - 1
+        - Longitude of the ascending node: radians (0-2pi)
         - Inclination: radians (0-2pi)
     """
     # Gather positions
