@@ -83,6 +83,7 @@ export function init(name) {
     const cameraNear = 0.01;
     const cameraFar = 200;
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
+    camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
     camera.position.set(0, 0, 50);
 
     // Avoid buggy behaviour when the camera is near the clipping plane
