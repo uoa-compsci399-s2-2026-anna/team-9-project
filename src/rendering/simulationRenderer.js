@@ -52,6 +52,10 @@ function createOrUpdateMesh(name, position) {
     mesh.position.set(position.x, position.y, position.z);
 }
 
+/**
+ * Update the positions of all objects in the current system based on 
+ * the current simulation time.
+ */
 async function updateSimulation() {
     // Fetch data for the current system
     const systemData = await getSystemData(currentSystem, currentSimulationTime);
@@ -150,7 +154,7 @@ async function renderFrame() {
 
         currentSimulationTime += state.simulationSpeed * deltaTime;
 
-        renderAtCurrentTime();
+        updateSimulation();
     }
 
     renderer.render(scene, camera);
