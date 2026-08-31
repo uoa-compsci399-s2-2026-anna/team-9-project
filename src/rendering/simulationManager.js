@@ -1,6 +1,6 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { setRunning } from "../shared/simulationState.js";
+import { setRunning, setFrozen } from "../shared/simulationState.js";
 import { init } from "./simulationRenderer.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -19,10 +19,10 @@ bus.subscribe(EVENTS.SIM.STOP, () => {
 
 bus.subscribe(EVENTS.SIM.UNFREEZE, () => {
     console.log("Unfroze simulation");
-    setRunning(true);
+    setFrozen(false);
 })
 
 bus.subscribe(EVENTS.SIM.FREEZE, () => {
     console.log("Froze simulation");
-    setRunning(false);
+    setFrozen(true);
 })

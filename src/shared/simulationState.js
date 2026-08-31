@@ -5,3 +5,9 @@ export let running = false;
 export function setRunning(value) {
     running = value;
 }
+
+export let frozen = false;
+
+export function setFrozen(value) {
+    frozen = value;
+}
