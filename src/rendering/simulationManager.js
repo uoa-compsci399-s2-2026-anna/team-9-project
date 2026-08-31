@@ -10,7 +10,6 @@ renderer.init(currentSystem);
 bus.subscribe(EVENTS.SIM.START, () => {
     console.log("Started simulation");
     state.setRunning(true);
-    renderer.render();
 })
 
 bus.subscribe(EVENTS.SIM.STOP, () => {

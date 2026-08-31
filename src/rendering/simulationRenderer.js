@@ -4,7 +4,7 @@ import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer
 import * as state from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
-let lastRenderTime = null;
+let lastRenderTime;
 let currentSimulationTime = 0;
 let currentSystem;
 
@@ -18,6 +18,48 @@ const objectMeshes = new Map();
 // Default size and colour of all the objects
 const objectSize = 0.05;
 const objectColour = 0xFFFFFF; // White
+
+/**
+ * If the target object does not exist, then its mesh is created at the given position.
+ * If the target obect does exist, then its position is updated
+ * 
+ * @param {string} name Name of the object
+ * @param {position} position Position of the object
+ */
+function createOrUpdateMesh(name, position) {
+    let mesh = objectMeshes.get(name);
+
+    if (!mesh) {
+        const geometry = new THREE.SphereGeometry(objectSize);
+        const material = new THREE.MeshStandardMaterial({ color: objectColour });
+
+        mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        objectMeshes.set(name, mesh);
+
+        const labelDiv = document.createElement("div");
+        labelDiv.className = "planet-label";
+        labelDiv.textContent = name;
+        labelDiv.style.color = "white";
+        labelDiv.style.fontSize = "12px";
+        labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
+
+        const label = new CSS2DObject(labelDiv);
+        label.position.set(0, 0, 0);
+        mesh.add(label);
+    }
+
+    mesh.position.set(position.x, position.y, position.z);
+}
+
+async function updateSimulation() {
+    // Fetch data for the current system
+    const systemData = await getSystemData(currentSystem, currentSimulationTime);
+    const positionMap = Object.entries(systemData.positions);
+    for (const [name, position] of positionMap) {
+        createOrUpdateMesh(name, position);
+    }
+}
 
 /**
  * Initialises the requested system to render
@@ -62,39 +104,14 @@ export function init(name) {
     labelRenderer.domElement.style.left = "0px";
     labelRenderer.domElement.style.pointerEvents = "none";
     canvas.parentElement.appendChild(labelRenderer.domElement);
-}
 
-/**
- * If the target object does not exist, then its mesh is created at the given position.
- * If the target obect does exist, then its position is updated
- * 
- * @param {string} name Name of the object
- * @param {position} position Position of the object
- */
-function createOrUpdateMesh(name, position) {
-    let mesh = objectMeshes.get(name);
+    // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
+    // Render the system at t=0 (fetch the system data from the backend and display initial positions)
+    updateSimulation();
+    lastRenderTime = Date.now();
 
-    if (!mesh) {
-        const geometry = new THREE.SphereGeometry(objectSize);
-        const material = new THREE.MeshStandardMaterial({ color: objectColour });
-
-        mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
-        objectMeshes.set(name, mesh);
-
-        const labelDiv = document.createElement("div");
-        labelDiv.className = "planet-label";
-        labelDiv.textContent = name;
-        labelDiv.style.color = "white";
-        labelDiv.style.fontSize = "12px";
-        labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
-
-        const label = new CSS2DObject(labelDiv);
-        label.position.set(0, 0, 0);
-        mesh.add(label);
-    }
-
-    mesh.position.set(position.x, position.y, position.z);
+    // Start rendering frames and updating the simulation
+    renderFrame();
 }
 
 /**
@@ -120,36 +137,27 @@ function resizeRendererToDisplaySize() {
 /**
  * Render the meshes and objects on every animation frame.
  * 
- * TODO: Rendering on every animation frame leads to high CPU usage.
+ * TODO: Rendering the system on every animation frame leads to high CPU usage.
  */
-export async function render() {
+async function renderFrame() {
     resizeRendererToDisplaySize();
 
-    if (lastRenderTime === null) {
-        lastRenderTime = Date.now();
-    }
-
     const currentTime = Date.now();
-    // Measure the change in time in seconds
-    const deltaTime = (currentTime - lastRenderTime) / 1000;
 
-    lastRenderTime = currentTime;
+    if (state.running) {
+        // Measure the change in time in seconds since the last frame
+        const deltaTime = (currentTime - lastRenderTime) / 1000;
 
-    currentSimulationTime += state.simulationSpeed * deltaTime;
+        currentSimulationTime += state.simulationSpeed * deltaTime;
 
-    // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
-    // Fetch data for the current system
-    const systemData = await getSystemData(currentSystem, currentSimulationTime);
-    const positionMap = Object.entries(systemData.positions);
-    for (const [name, position] of positionMap) {
-        createOrUpdateMesh(name, position);
+        renderAtCurrentTime();
     }
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
 
+    lastRenderTime = currentTime;
+
     // Invoke render() on the next frame
-    if (state.running) {
-        requestAnimationFrame(render);
-    }
+    requestAnimationFrame(renderFrame);
 }
