@@ -1,5 +1,9 @@
 const html = document.documentElement;
 
+document.querySelectorAll("a").forEach(a => {
+  a.setAttribute("draggable", "false");
+})
+
 // DARK/LIGHT MODE
 
 const darkModeToggleButton = document.querySelector("#dark-mode-toggle-button");
