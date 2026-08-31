@@ -162,9 +162,9 @@ def calculate_simulation_info(sim):
         # Use the pericenter orientation vector (Runge-Lenz vector direction)
         # REBOUND provides the components of the eccentricity vector (evec)
         # which points directly from the focus toward the perihelion.
-        ex = orbit.evec[0]
-        ey = orbit.evec[1]
-        ez = orbit.evec[2]
+        ex = orbit.evec.x
+        ey = orbit.evec.y
+        ez = orbit.evec.z
 
         # Normalize the eccentricity vector to get the direction of perihelion
         e_norm = np.array([ex, ey, ez]) / e
