@@ -2,6 +2,13 @@ const { spawn } = require('child_process');
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
+// Squirrel launches the appplication multiple extra times during install/update/uninstall
+// so it can create/remove the start menu shortcut. This detects those launches,
+// handles the shortcut, and quits the application immediately.
+if (require('electron-squirrel-startup')) {
+    app.quit();
+}
+
 // The python web-server sub-process
 var pythonProcess = null;
 
