@@ -2,6 +2,7 @@ const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 module.exports = {
     packagerConfig: {
