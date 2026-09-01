@@ -5,10 +5,12 @@ const fs = require('fs');
 
 module.exports = {
   packagerConfig: {
+    name: 'team-9-project',
     asar: true,
     extraResource: [
       './dist/',
-      './src/'
+      './src/',
+      './config.json',
     ],
     ignore: [
       /^\/\.git/,
@@ -30,8 +32,8 @@ module.exports = {
       config: {},
     },
     {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      name: '@electron-forge/maker-dmg',
+      config: {},
     },
     {
       name: '@electron-forge/maker-deb',
