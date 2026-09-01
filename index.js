@@ -61,6 +61,10 @@ function spawnPythonProcess(resolve, reject) {
         cwd: app.isPackaged ? process.resourcesPath : __dirname
     });
 
+    pythonProcess.on('error', (err) => {
+        console.error(`Failed to start Python process: ${err.message}`);
+    });
+
     // Set python output channels to utf8 encoding
     pythonProcess.stdout.setEncoding('utf8');
     pythonProcess.stderr.setEncoding('utf8');
@@ -88,8 +92,8 @@ function spawnPythonProcess(resolve, reject) {
         console.log(`Python script exited with code ${code}`);
     });
 
-    // Reject the promise after 5 seconds
-    setTimeout(() => reject(new Error("Python server failed to launch")), 5000);
+    // Reject the promise after 30 seconds
+    setTimeout(() => reject(new Error("Python server failed to launch")), 30000);
 }
 
 /**
