@@ -8,7 +8,7 @@
 <!-- Available systems -->
 {% block content %}
   {% for system in systems %}
-    <a  
+    <a
       id="{{ system.name }}"
       class="system-path-button"
       href="/simulation/{{ system.name }}"
@@ -20,7 +20,15 @@
 
 <!-- Scripts block -->
 {% block scripts %}
-  <script type="module" src="/src/events/triggers/sharedTriggers.js" defer></script>
-  <script type="module" src="/src/events/triggers/homeTriggers.js" defer></script>
+  <script
+    type="module"
+    src="/src/events/triggers/sharedTriggers.js"
+    defer
+  ></script>
+  <script
+    type="module"
+    src="/src/events/triggers/homeTriggers.js"
+    defer
+  ></script>
   <script src="/src/ui/script.js" defer></script>
 {% endblock %}

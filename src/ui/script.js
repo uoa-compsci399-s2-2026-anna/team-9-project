@@ -1,9 +1,9 @@
 const html = document.documentElement;
 
 // Disable dragging for all links
-document.querySelectorAll("a").forEach(a => {
-  a.setAttribute("draggable", "false");
-})
+document.querySelectorAll("a").forEach((a) => {
+    a.setAttribute("draggable", "false");
+});
 
 // DARK/LIGHT MODE
 
@@ -16,15 +16,15 @@ const lightModeIcon = document.querySelector("#light-mode-icon");
  * correct icon based on the current theme.
  */
 function updateDarkModeIcon() {
-  const isDark = html.getAttribute("data-theme") === "dark";
+    const isDark = html.getAttribute("data-theme") === "dark";
 
-  if (isDark) {
-    lightModeIcon.classList.remove("hidden");
-    darkModeIcon.classList.add("hidden");
-  } else {
-    lightModeIcon.classList.add("hidden");
-    darkModeIcon.classList.remove("hidden");
-  }
+    if (isDark) {
+        lightModeIcon.classList.remove("hidden");
+        darkModeIcon.classList.add("hidden");
+    } else {
+        lightModeIcon.classList.add("hidden");
+        darkModeIcon.classList.remove("hidden");
+    }
 }
 
 /**
@@ -32,17 +32,17 @@ function updateDarkModeIcon() {
  * mode toggle button.
  */
 function toggleDarkMode() {
-  const isDark = html.getAttribute("data-theme") === "dark";
+    const isDark = html.getAttribute("data-theme") === "dark";
 
-  html.setAttribute("data-theme", isDark ? "light" : "dark");
-  updateDarkModeIcon();
+    html.setAttribute("data-theme", isDark ? "light" : "dark");
+    updateDarkModeIcon();
 }
 
 // Check if system theme is dark mode
 if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-  html.setAttribute("data-theme", "dark");
+    html.setAttribute("data-theme", "dark");
 } else {
-  html.setAttribute("data-theme", "light");
+    html.setAttribute("data-theme", "light");
 }
 
 // Update icons to ensure they are initially shown correctly depending on
@@ -57,13 +57,13 @@ const systemButton = document.getElementById("system-information-button");
 const systemDropdown = document.getElementById("system-dropdown");
 
 if (systemButton && systemDropdown) {
-  systemButton.addEventListener("click", () => {
-    if (systemDropdown.style.display === "none") {
-      systemDropdown.style.display = "block";
-    } else {
-      systemDropdown.style.display= "none";
-    }
-  });
+    systemButton.addEventListener("click", () => {
+        if (systemDropdown.style.display === "none") {
+            systemDropdown.style.display = "block";
+        } else {
+            systemDropdown.style.display = "none";
+        }
+    });
 }
 
 // SETTINGS MENU OVERLAY
@@ -71,42 +71,42 @@ if (systemButton && systemDropdown) {
 const settingsButton = document.querySelector("#settings-button");
 const settingsOverlay = document.querySelector("#settings-overlay");
 const systemInformationButton = document.querySelector(
-  "#system-information-button",
+    "#system-information-button",
 );
 
 /**
  * Toggles the visibility of the settings menu overlay.
  */
 function toggleSettingsMenu() {
-  settingsOverlay.classList.toggle("opacity-0");
-  settingsOverlay.classList.toggle("opacity-100");
-  settingsOverlay.classList.toggle("pointer-events-none");
-  document.body.classList.toggle("settings-menu-open");
+    settingsOverlay.classList.toggle("opacity-0");
+    settingsOverlay.classList.toggle("opacity-100");
+    settingsOverlay.classList.toggle("pointer-events-none");
+    document.body.classList.toggle("settings-menu-open");
 }
 
 settingsButton.addEventListener("click", toggleSettingsMenu);
 
 const closeSettingsMenuButton = document.querySelector(
-  "#close-settings-menu-button",
+    "#close-settings-menu-button",
 );
 
 closeSettingsMenuButton.addEventListener("click", toggleSettingsMenu);
 
 settingsOverlay.addEventListener("click", (e) => {
-  // Close settings menu only when the user clicks outside of the main
-  // settings menu panel
-  if (e.target === e.currentTarget) {
-    toggleSettingsMenu();
-  }
+    // Close settings menu only when the user clicks outside of the main
+    // settings menu panel
+    if (e.target === e.currentTarget) {
+        toggleSettingsMenu();
+    }
 });
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    // Close settings menu if open and user presses escape
-    if (document.body.classList.contains("settings-menu-open")) {
-      toggleSettingsMenu();
+    if (e.key === "Escape") {
+        // Close settings menu if open and user presses escape
+        if (document.body.classList.contains("settings-menu-open")) {
+            toggleSettingsMenu();
+        }
     }
-  }
 });
 
 // FULLSCREEN BUTTON
@@ -116,22 +116,22 @@ const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");
 
 fullscreenButton.addEventListener("click", () => {
-  enterFullscreenIcon.classList.toggle("hidden");
-  exitFullscreenIcon.classList.toggle("hidden");
+    enterFullscreenIcon.classList.toggle("hidden");
+    exitFullscreenIcon.classList.toggle("hidden");
 
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  } else {
-    if (html.requestFullscreen) {
-      html.requestFullscreen();
-    } else if (html.webkitRequestFullscreen) {
-      // Safari
-      html.webkitRequestFullscreen();
-    } else if (html.msRequestFullscreen) {
-      // IE11
-      html.msRequestFullscreen();
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        if (html.requestFullscreen) {
+            html.requestFullscreen();
+        } else if (html.webkitRequestFullscreen) {
+            // Safari
+            html.webkitRequestFullscreen();
+        } else if (html.msRequestFullscreen) {
+            // IE11
+            html.msRequestFullscreen();
+        }
     }
-  }
 });
 
 // PLAY/PAUSE BUTTON
@@ -141,8 +141,8 @@ const playIcon = document.querySelector("#play-icon");
 const pauseIcon = document.querySelector("#pause-icon");
 
 playPauseButton.addEventListener("click", () => {
-  playIcon.classList.toggle("hidden");
-  pauseIcon.classList.toggle("hidden");
+    playIcon.classList.toggle("hidden");
+    pauseIcon.classList.toggle("hidden");
 });
 
 // VIEW SETTINGS SIDE PANEL
@@ -153,11 +153,11 @@ const viewSettingsShowIcon = document.querySelector("#view-settings-show-icon");
 const viewSettingsHideIcon = document.querySelector("#view-settings-hide-icon");
 
 viewSettingsButton.addEventListener("click", () => {
-  viewSettings.classList.toggle("grid-rows-[0fr]");
-  viewSettings.classList.toggle("grid-rows-[1fr]");
+    viewSettings.classList.toggle("grid-rows-[0fr]");
+    viewSettings.classList.toggle("grid-rows-[1fr]");
 
-  viewSettingsShowIcon.classList.toggle("hidden");
-  viewSettingsHideIcon.classList.toggle("hidden");
+    viewSettingsShowIcon.classList.toggle("hidden");
+    viewSettingsHideIcon.classList.toggle("hidden");
 });
 
 // OBJECTS SIDE PANEL
@@ -168,9 +168,9 @@ const objectsShowIcon = document.querySelector("#objects-show-icon");
 const objectsHideIcon = document.querySelector("#objects-hide-icon");
 
 objectsButton.addEventListener("click", () => {
-  objects.classList.toggle("grid-rows-[0fr]");
-  objects.classList.toggle("grid-rows-[1fr]");
+    objects.classList.toggle("grid-rows-[0fr]");
+    objects.classList.toggle("grid-rows-[1fr]");
 
-  objectsShowIcon.classList.toggle("hidden");
-  objectsHideIcon.classList.toggle("hidden");
+    objectsShowIcon.classList.toggle("hidden");
+    objectsHideIcon.classList.toggle("hidden");
 });
