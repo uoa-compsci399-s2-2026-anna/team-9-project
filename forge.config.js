@@ -61,5 +61,26 @@ module.exports = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
+  hooks: {
+    // Application crashes on macOS if it is not signed correctly
+    postPackage: async (_forgeConfig, options) => {
+      if (options.platform !== 'darwin') {
+        return;
+      }
+
+      for (const appPath of options.outputPaths) {
+        // Find the .app bundle inside this output directory
+        const appBundle = fs
+          .readdirSync(appPath)
+          .find((f) => f.endsWith('.app'));
+
+        if (appBundle) {
+          const fullPath = path.join(appPath, appBundle);
+          // Sign the application with an ad-hoc signature
+          execSync(`codesign --force --deep --sign - "${fullPath}"`);
+        }
+      }
+    },
+  },
 };
 
