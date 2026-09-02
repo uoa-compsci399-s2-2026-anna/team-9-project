@@ -119,6 +119,7 @@ async function createWindow(python_url) {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
+            // TODO: this may break when the application is packaged on Mac
             preload: path.join(__dirname, 'preload.js'),
         }
     });

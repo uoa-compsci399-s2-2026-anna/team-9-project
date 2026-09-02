@@ -1,18 +1,27 @@
-import { createPersister, loadState } from "./persistentStore.js";
-
 const STORAGE_KEY = "simulationState";
 
 const defaults = {
     simulationSpeed: 1_000_000, // Around 11.57 days/second
 };
 
-const initial = loadState(STORAGE_KEY, sessionStorage, defaults);
+function loadState() {
+    try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        return raw ? { ...defaults, ...JSON.parse(raw) } : { ...defaults };
+    } catch {
+        return { ...defaults };
+    }
+}
+
+function persist() {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        simulationSpeed,
+    }));
+}
+
+const initial = loadState();
 
 export let simulationSpeed = initial.simulationSpeed;
-
-const persist = createPersister(STORAGE_KEY, sessionStorage, () => ({
-    simulationSpeed,
-}));
 
 export function setSimulationSpeed(value) {
     simulationSpeed = value;
