@@ -28,8 +28,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "electron . dev",
     "bin": "electron .",
-    "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound --collect-all=pydantic --collect-all=pydantic_core main.py && touch ./dist/main.exe",
-    "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound --collect-all=pydantic --collect-all=pydantic_core main.py && echo \"\" > .\\dist\\main",
+    "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && touch ./dist/main.exe",
+    "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && echo \"\" > .\\dist\\main",
     "make": "electron-forge make"
   },
   "allowScripts": {
