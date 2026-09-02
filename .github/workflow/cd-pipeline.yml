@@ -67,7 +67,7 @@ jobs:
         run: npm run package-py-win
 
       - name: Install npm packages
-        run: npm install
+        run: npm ci
 
       - name: Build Tailwind CSS
         run: npm run tailwind
