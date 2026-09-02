@@ -1,6 +1,15 @@
 const { spawn } = require('child_process');
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const Store = require('electron-store')
+
+const store = new Store();
+
+// Handle settings saved between run
+ipcMain.handle('settings:get', () => store.get('settings'));
+ipcMain.handle('settings:set', (_event, settings) => {
+    store.set('settings', settings);
+});
 
 // Squirrel launches the appplication multiple extra times during install/update/uninstall
 // so it can create/remove the start menu shortcut. This detects those launches,
@@ -109,7 +118,8 @@ async function createWindow(python_url) {
         show: false,    
         webPreferences: {
             nodeIntegration: false,
-            contextIsolation: true
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js'),
         }
     });
 
