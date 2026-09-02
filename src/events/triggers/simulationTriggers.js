@@ -13,6 +13,14 @@ playPauseButton.addEventListener("click", () => {
     }
 });
 
+// Triggers for the speed adjuster
+const speedAdjuster = document.getElementById("speed-adjuster");
+
+speedAdjuster.addEventListener("input", (event) => {
+    // TODO: need to map this to seconds
+    bus.publish(EVENTS.SIM.ADJUST_SPEED, { speed: event.target.value });
+})
+
 
 // Triggers for the settings menu
 const settingsButton = document.getElementById("settings-button");
@@ -20,7 +28,7 @@ const closeSettingsMenuButton = document.getElementById("close-settings-menu-but
 const settingsOverlay = document.getElementById("settings-overlay");
 
 settingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.FREEZE);
+    bus.publish(EVENTS.SIM.ADJUST_SPEED);
 });
 
 function closeSettingsMenu() {
