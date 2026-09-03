@@ -18,7 +18,7 @@ function loadState() {
 
 function persist() {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        simulationSpeed,
+        simulationSpeed, simulationSpeedUnit,
     }));
 }
 
