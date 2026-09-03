@@ -254,6 +254,7 @@ async function renderFrame(timestamp) {
         updateSimulation();
     }
 
+    // TODO: strongly think about changing to a push based approach to stop checking this on every frame
     for (const [name, object] of objectMeshes) {
         object.visible = !hiddenObjects[currentSystem].includes(name);
     }
