@@ -1,6 +1,6 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { setRunning, setFrozen, setSimulationSpeedUnit } from "../shared/simulationState.js";
+import { setRunning, setFrozen, setSimulationSpeedUnit, setHabitableZoneShown, setOrbitsShown, setReferenceGridShown, setLabelsShown } from "../shared/simulationState.js";
 import { init, stepForward, stepBack, resetView } from "./simulationRenderer.js";
 import { setSimulationSpeed } from "../shared/simulationState.js";
 
@@ -53,3 +53,21 @@ bus.subscribe(EVENTS.SIM.STEP_BACK, () => {
 bus.subscribe(EVENTS.SIM.RESET_VIEW, () => {
     resetView();
 })
+
+// View settings
+
+bus.subscribe(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, (event) => {
+    setHabitableZoneShown(event.detail.value);
+});
+
+bus.subscribe(EVENTS.SIM.ORBITS_TOGGLE, (event) => {
+    setOrbitsShown(event.detail.value);
+});
+
+bus.subscribe(EVENTS.SIM.REFERENCE_GRID_TOGGLE, (event) => {
+    setReferenceGridShown(event.detail.value);
+});
+
+bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
+    setLabelsShown(event.detail.value);
+});

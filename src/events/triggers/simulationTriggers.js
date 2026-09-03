@@ -44,6 +44,33 @@ resetView.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.RESET_VIEW);
 })
 
+// Triggers for view settings
+const viewSettingsToggles = document.getElementById("view-settings-toggles");
+
+viewSettingsToggles.addEventListener("change", (event) => {
+	if (event.target.type !== 'checkbox') {
+        return;
+    }
+
+	const setting = event.target.dataset.toggle;
+	const isEnabled = event.target.checked;
+
+	switch (setting) {
+		case "habitable-zone":
+            bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, { value: isEnabled });
+			break;
+		case "orbits":
+            bus.publish(EVENTS.SIM.ORBITS_TOGGLE, { value: isEnabled });
+			break;
+		case "reference-grid":
+            bus.publish(EVENTS.SIM.REFERENCE_GRID_TOGGLE, { value: isEnabled });
+			break;
+		case "labels":
+            bus.publish(EVENTS.SIM.LABELS_TOGGLE, { value: isEnabled });
+			break;
+	}
+});
+
 // Triggers for the freezing/unfreezing the simulation when the settings menu is opened/closed
 const settingsButton = document.getElementById("settings-button");
 const closeSettingsMenuButton = document.getElementById("close-settings-menu-button");
@@ -56,6 +83,8 @@ settingsButton.addEventListener("click", () => {
 function closeSettingsMenu() {
     bus.publish(EVENTS.SIM.UNFREEZE);
 }
+
+// TODO: This doesn't belong here
 
 closeSettingsMenuButton.addEventListener("click", closeSettingsMenu);
 
