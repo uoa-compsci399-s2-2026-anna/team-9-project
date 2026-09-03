@@ -37,7 +37,14 @@ stepBack.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.STEP_BACK);
 })
 
-// Triggers for the settings menu
+// Trigger for resetting the simulation view
+const resetView = document.getElementById("reset-view");
+
+resetView.addEventListener("click", () => {
+    bus.publish(EVENTS.SIM.RESET_VIEW);
+})
+
+// Triggers for the freezing/unfreezing the simulation when the settings menu is opened/closed
 const settingsButton = document.getElementById("settings-button");
 const closeSettingsMenuButton = document.getElementById("close-settings-menu-button");
 const settingsOverlay = document.getElementById("settings-overlay");

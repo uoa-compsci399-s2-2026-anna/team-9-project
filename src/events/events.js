@@ -8,6 +8,7 @@ export const EVENTS = {
         ADJUST_SPEED_UNIT: "sim:adjust_speed_unit",
         STEP_FORWARD: "sim:step_forward",
         STEP_BACK: "sim:step_back",
+        RESET_VIEW: "sim:reset_view",
     },
     FULLSCREEN: {
         ENTER: "fullscreen:enter",
