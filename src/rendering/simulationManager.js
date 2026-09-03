@@ -1,6 +1,6 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { setRunning, setFrozen } from "../shared/simulationState.js";
+import { setRunning, setFrozen, setSimulationSpeedUnit } from "../shared/simulationState.js";
 import { init } from "./simulationRenderer.js";
 import { simulationSpeed, setSimulationSpeed } from "../shared/simulationState.js";
 
@@ -29,5 +29,9 @@ bus.subscribe(EVENTS.SIM.FREEZE, () => {
 })
 
 bus.subscribe(EVENTS.SIM.ADJUST_SPEED, (event) => {
-    setSimulationSpeed(event.detail.speed)
+    setSimulationSpeed(event.detail.speed);
+})
+
+bus.subscribe(EVENTS.SIM.ADJUST_SPEED_UNIT, (event) => {
+    setSimulationSpeedUnit(event.detail.unit);
 })

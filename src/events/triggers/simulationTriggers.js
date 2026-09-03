@@ -15,10 +15,14 @@ playPauseButton.addEventListener("click", () => {
 
 // Triggers for the speed adjuster
 const speedAdjuster = document.getElementById("speed-adjuster");
+const speedUnitSelector = document.getElementById("speed-unit-selector");
 
 speedAdjuster.addEventListener("input", (event) => {
-    // TODO: need to map this to seconds
     bus.publish(EVENTS.SIM.ADJUST_SPEED, { speed: event.target.value });
+})
+
+speedUnitSelector.addEventListener("change", (event) => {
+    bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 })
 
 
