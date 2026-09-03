@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { running, frozen, simulationSpeed } from "../shared/simulationState.js";
+import { running, frozen, simulationSpeed, simulationSpeedSeconds } from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -223,7 +223,7 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += simulationSpeed * deltaTime;
+        currentSimulationTime += simulationSpeedSeconds * deltaTime;
 
         updateSimulation();
     }
