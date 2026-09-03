@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { running, frozen, simulationSpeedSeconds } from "../shared/simulationState.js";
+import { running, frozen, simulationSpeedSeconds, labelsShown } from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -21,6 +21,7 @@ const cameraDefaults = {
 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
+const objectLabels = new Map();
 
 // Default size and colour of all the objects
 const objectSize = 0.05;
@@ -56,7 +57,9 @@ function createOrUpdateObjectMesh(name, position) {
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
+        label.visible = labelsShown;
         mesh.add(label);
+        objectLabels.set(name, label);
     }
 
     mesh.position.set(position.x, position.y, position.z);
@@ -248,6 +251,10 @@ async function renderFrame(timestamp) {
         currentSimulationTime += simulationSpeedSeconds * deltaTime;
 
         updateSimulation();
+    }
+
+    for (const label of objectLabels.values()) {
+        label.visible = labelsShown;
     }
 
     renderer.render(scene, camera);
