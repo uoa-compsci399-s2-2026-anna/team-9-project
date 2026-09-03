@@ -47,7 +47,6 @@ async def home(request: Request):
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": False,
-            "simulation_controls": False,
             "settings_overlay": True
         }
     )
@@ -81,7 +80,6 @@ async def simulation(request: Request, system_name: str):
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": True,
-            "simulation_controls": True,
             "settings_overlay": True
         }
     )
