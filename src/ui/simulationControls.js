@@ -43,7 +43,7 @@ const viewSettingsValues = {
 };
 
 viewSettingsToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-	checkbox.checked = viewSettingsValues[checkbox.dataset.toggle];
+	checkbox.checked = viewSettingsValues[checkbox.dataset.setting];
 });
 
 // OBJECTS SIDE PANEL
