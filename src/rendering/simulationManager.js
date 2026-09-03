@@ -9,7 +9,14 @@ import {
     setReferenceGridShown, 
     setLabelsShown 
 } from "../shared/simulationState.js";
-import { init, stepForward, stepBack, resetView } from "./simulationRenderer.js";
+import { 
+    init, 
+    stepForward, 
+    stepBack, 
+    resetView, 
+    setLabelsVisibility, 
+    setObjectVisibility 
+} from "./simulationRenderer.js";
 import { setSimulationSpeed, toggleObject } from "../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -77,11 +84,21 @@ bus.subscribe(EVENTS.SIM.REFERENCE_GRID_TOGGLE, (event) => {
 });
 
 bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
-    setLabelsShown(event.detail.value);
+    const { value } = event.detail;
+
+    // Update the persisted state
+    setLabelsShown(value);
+    // Update the simulation to show/hide labels
+    setLabelsVisibility(value);
 });
 
 // Objects
 
 bus.subscribe(EVENTS.SIM.OBJECT_TOGGLE, (event) => {
-    toggleObject(currentSystem, event.detail.object, event.detail.value);
+    const { system, name, value } = event.detail;
+
+    // Update the persisted state
+    toggleObject(system, name, value);
+    // Update the simulation to show/hide the object (if it is in the simulation)
+    setObjectVisibility(name, value);
 })
