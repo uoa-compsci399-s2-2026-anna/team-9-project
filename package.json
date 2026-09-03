@@ -8,6 +8,7 @@
   "devDependencies": {
     "@electron-forge/cli": "^7.11.2",
     "@electron-forge/maker-deb": "^7.11.2",
+    "@electron-forge/maker-dmg": "^7.11.2",
     "@electron-forge/maker-rpm": "^7.11.2",
     "@electron-forge/maker-squirrel": "^7.11.2",
     "@electron-forge/maker-zip": "^7.11.2",
@@ -28,14 +29,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "electron . dev",
     "bin": "electron .",
-    "package-py-unix": ". .venv/bin/activate && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound --paths ./.venv/lib/python3.13/site-packages/ main.py && touch ./dist/main.exe",
-    "package-py-win": ".\\.venv\\Scripts\\activate.bat && uvx pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound --paths .\\.venv\\Lib\\site-packages\\ main.py && echo \"\" > .\\dist\\main",
+    "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && touch ./dist/main.exe",
+    "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && echo \"\" > .\\dist\\main",
     "make": "electron-forge make"
   },
   "allowScripts": {
     "electron-winstaller@5.4.4": true
   },
   "dependencies": {
-    "electron-store": "^8.2.0"
+    "electron-store": "^8.2.0",
+    "electron-squirrel-startup": "^1.0.1"
   }
 }

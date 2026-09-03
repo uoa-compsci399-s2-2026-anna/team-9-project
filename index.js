@@ -11,6 +11,13 @@ ipcMain.handle('settings:set', (_event, settings) => {
     store.set('settings', settings);
 });
 
+// Squirrel launches the appplication multiple extra times during install/update/uninstall
+// so it can create/remove the start menu shortcut. This detects those launches,
+// handles the shortcut, and quits the application immediately.
+if (require('electron-squirrel-startup')) {
+    app.quit();
+}
+
 // The python web-server sub-process
 var pythonProcess = null;
 
@@ -63,6 +70,10 @@ function spawnPythonProcess(resolve, reject) {
         cwd: app.isPackaged ? process.resourcesPath : __dirname
     });
 
+    pythonProcess.on('error', (err) => {
+        console.error(`Failed to start Python process: ${err.message}`);
+    });
+
     // Set python output channels to utf8 encoding
     pythonProcess.stdout.setEncoding('utf8');
     pythonProcess.stderr.setEncoding('utf8');
@@ -90,8 +101,8 @@ function spawnPythonProcess(resolve, reject) {
         console.log(`Python script exited with code ${code}`);
     });
 
-    // Reject the promise after 5 seconds
-    setTimeout(() => reject(new Error("Python server failed to launch")), 5000);
+    // Reject the promise after 30 seconds
+    setTimeout(() => reject(new Error("Python server failed to launch")), 30000);
 }
 
 /**
