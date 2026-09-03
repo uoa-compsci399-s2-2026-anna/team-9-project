@@ -146,6 +146,20 @@ export function resetView() {
     controls.update();
 }
 
+export function setLabelsVisibility(value) {
+    for (const label of objectLabels.values()) {
+        label.visible = value;
+    }
+}
+
+export function setObjectVisibility(name, value) {
+    const mesh = objectMeshes.get(name);
+
+    if (mesh) {
+        mesh.visible = value;
+    }
+}
+
 /**
  * Resize the renderer if the user has resized their screen.
  */
@@ -183,15 +197,6 @@ async function renderFrame(timestamp) {
         currentSimulationTime += simulationSpeedSeconds * deltaTime;
 
         updateSimulation();
-    }
-
-    // TODO: strongly think about changing to a push based approach to stop checking this on every frame
-    for (const [name, object] of objectMeshes) {
-        object.visible = !hiddenObjects[currentSystem].includes(name);
-    }
-
-    for (const label of objectLabels.values()) {
-        label.visible = labelsShown;
     }
 
     renderer.render(scene, camera);

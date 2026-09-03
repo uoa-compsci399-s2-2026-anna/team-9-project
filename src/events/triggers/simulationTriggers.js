@@ -83,10 +83,10 @@ objectsToggles.addEventListener("change", (event) => {
         return;
     }
 
-	const object = event.target.dataset.object;
+	const objectName = event.target.dataset.object;
 	const isEnabled = event.target.checked;
     // TODO: somehow document what each event provides?
-    bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { system: currentSystem, object: object, value: isEnabled });
+    bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { system: currentSystem, name: objectName, value: isEnabled });
 })
 
 // Triggers for the freezing/unfreezing the simulation when the settings menu is opened/closed
