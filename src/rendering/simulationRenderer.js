@@ -10,8 +10,14 @@ let currentSystem;
 
 let scene;
 let camera;
+let controls;
 let renderer;
 let labelRenderer;
+
+const cameraDefaults = {
+    position: new THREE.Vector3(0, 0, 50),
+    target: new THREE.Vector3(0, 0, 0),
+};
 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
@@ -153,15 +159,15 @@ export function init(name) {
     const cameraFar = 200;
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
-    camera.position.set(0, 0, 50);
+    camera.position.copy(cameraDefaults.position);
 
     // Avoid buggy behaviour when the camera is near the clipping plane
     const controlsMin = 1;
     const controlsMax = 100;
     const controlsZoomMultiplier = 2.5;
 
-    const controls = new OrbitControls(camera, canvas);
-    controls.target.set(0, 0, 0); // Look at the sun
+    controls = new OrbitControls(camera, canvas);
+    controls.target.copy(cameraDefaults.target); // Look at the sun
     controls.minDistance = controlsMin; 
     controls.maxDistance = controlsMax;
     controls.zoomSpeed = controlsZoomMultiplier;
@@ -197,6 +203,12 @@ export function stepForward() {
 export function stepBack() {
     currentSimulationTime -= simulationSpeedSeconds;
     updateSimulation();
+}
+
+export function resetView() {
+    camera.position.copy(cameraDefaults.position);
+    controls.target.copy(cameraDefaults.target); // Look at the sun
+    controls.update();
 }
 
 /**

@@ -1,7 +1,7 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { setRunning, setFrozen, setSimulationSpeedUnit } from "../shared/simulationState.js";
-import { init, stepForward, stepBack } from "./simulationRenderer.js";
+import { init, stepForward, stepBack, resetView } from "./simulationRenderer.js";
 import { setSimulationSpeed } from "../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -47,3 +47,9 @@ bus.subscribe(EVENTS.SIM.STEP_FORWARD, () => {
 bus.subscribe(EVENTS.SIM.STEP_BACK, () => {
     stepBack();
 });
+
+// Reset view
+
+bus.subscribe(EVENTS.SIM.RESET_VIEW, () => {
+    resetView();
+})
