@@ -41,14 +41,12 @@ export let simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpe
 export function setSimulationSpeed(speed) {
     simulationSpeed = speed;
     simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit);
-    console.log(simulationSpeedSeconds);
     persist();
 }
 
 export function setSimulationSpeedUnit(unit) {
     simulationSpeedUnit = unit;
     simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit);
-    console.log(simulationSpeedSeconds);
     persist();
 }
 
