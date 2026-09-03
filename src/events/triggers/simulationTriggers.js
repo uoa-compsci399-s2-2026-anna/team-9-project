@@ -52,7 +52,7 @@ viewSettingsToggles.addEventListener("change", (event) => {
         return;
     }
 
-	const setting = event.target.dataset.toggle;
+	const setting = event.target.dataset.setting;
 	const isEnabled = event.target.checked;
 
 	switch (setting) {
