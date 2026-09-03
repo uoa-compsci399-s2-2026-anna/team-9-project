@@ -2,7 +2,7 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { setRunning, setFrozen, setSimulationSpeedUnit, setHabitableZoneShown, setOrbitsShown, setReferenceGridShown, setLabelsShown } from "../shared/simulationState.js";
 import { init, stepForward, stepBack, resetView } from "./simulationRenderer.js";
-import { setSimulationSpeed } from "../shared/simulationState.js";
+import { setSimulationSpeed, toggleObject } from "../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -71,3 +71,9 @@ bus.subscribe(EVENTS.SIM.REFERENCE_GRID_TOGGLE, (event) => {
 bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
     setLabelsShown(event.detail.value);
 });
+
+// Objects
+
+bus.subscribe(EVENTS.SIM.OBJECT_TOGGLE, (event) => {
+    toggleObject(currentSystem, event.detail.object, event.detail.value);
+})

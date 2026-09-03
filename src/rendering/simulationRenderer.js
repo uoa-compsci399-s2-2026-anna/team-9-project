@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { running, frozen, simulationSpeedSeconds, labelsShown } from "../shared/simulationState.js";
+import { running, frozen, simulationSpeedSeconds, labelsShown, hiddenObjects } from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -41,6 +41,7 @@ function createOrUpdateMesh(name, position) {
         const material = new THREE.MeshStandardMaterial({ color: objectColour });
 
         mesh = new THREE.Mesh(geometry, material);
+        mesh.visible = !hiddenObjects[currentSystem].includes(name);
         scene.add(mesh);
         objectMeshes.set(name, mesh);
 
@@ -182,6 +183,10 @@ async function renderFrame(timestamp) {
         currentSimulationTime += simulationSpeedSeconds * deltaTime;
 
         updateSimulation();
+    }
+
+    for (const [name, object] of objectMeshes) {
+        object.visible = !hiddenObjects[currentSystem].includes(name);
     }
 
     for (const label of objectLabels.values()) {
