@@ -6,6 +6,8 @@ export const EVENTS = {
         UNFREEZE: "sim:unfreeze",
         ADJUST_SPEED: "sim:adjust_speed",
         ADJUST_SPEED_UNIT: "sim:adjust_speed_unit",
+        STEP_FORWARD: "sim:step_forward",
+        STEP_BACK: "sim:step_back",
     },
     FULLSCREEN: {
         ENTER: "fullscreen:enter",

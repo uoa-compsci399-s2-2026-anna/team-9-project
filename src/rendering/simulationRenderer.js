@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { running, frozen, simulationSpeed, simulationSpeedSeconds } from "../shared/simulationState.js";
+import { running, frozen, simulationSpeedSeconds } from "../shared/simulationState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -187,6 +187,16 @@ export function init(name) {
 
     // Start rendering frames and updating the simulation
     renderFrame();
+}
+
+export function stepForward() {
+    currentSimulationTime += simulationSpeedSeconds;
+    updateSimulation();
+}
+
+export function stepBack() {
+    currentSimulationTime -= simulationSpeedSeconds;
+    updateSimulation();
 }
 
 /**

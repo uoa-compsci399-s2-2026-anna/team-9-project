@@ -25,6 +25,17 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 })
 
+// Triggers for step back and step forward buttons
+const stepForward = document.getElementById("step-forward");
+const stepBack = document.getElementById("step-back");
+
+stepForward.addEventListener("click", () => {
+    bus.publish(EVENTS.SIM.STEP_FORWARD);
+})
+
+stepBack.addEventListener("click", () => {
+    bus.publish(EVENTS.SIM.STEP_BACK);
+})
 
 // Triggers for the settings menu
 const settingsButton = document.getElementById("settings-button");
