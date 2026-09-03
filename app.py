@@ -11,18 +11,25 @@ import json
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = 'unverified'
 
+# Resolve base path to the packaged resources folder when frozen,
+# or to the script's own directory otherwise
+if getattr(sys, 'frozen', False):
+    base_path = os.path.dirname(os.path.dirname(sys.executable))
+else:
+    base_path = os.path.dirname(os.path.abspath(__file__))
+
 app = FastAPI()
-templates = Jinja2Templates(directory = "src/ui")
+templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
 
 # Load the config file
-with open("config.json") as f:
+with open(os.path.join(base_path, "config.json")) as f:
     config = json.load(f)
 
 # Get the systems in the config 
 all_systems = config["systems"]
 
-app.mount("/src", StaticFiles(directory="src"), name="src")
-app.mount("/dist", StaticFiles(directory="dist"), name="dist")
+app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
+app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 sim = None
 objects = []
