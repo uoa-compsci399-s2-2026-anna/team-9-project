@@ -17,6 +17,7 @@
     "@electron/fuses": "^1.8.0",
     "electron": "^43.3.0",
     "prettier": "^3.9.6",
+    "prettier-plugin-jinja-template": "^2.2.0",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3"
   },
