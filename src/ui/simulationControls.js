@@ -1,3 +1,5 @@
+import { simulationSpeed, simulationSpeedUnit } from "../shared/simulationState.js";
+
 const html = document.documentElement;
 
 // PLAY/PAUSE BUTTON
@@ -40,3 +42,11 @@ objectsButton.addEventListener("click", () => {
     objectsShowIcon.classList.toggle("hidden");
     objectsHideIcon.classList.toggle("hidden");
 });
+
+// SPEED ADJUSTER VALUES
+
+const speedAdjuster = document.getElementById("speed-adjuster");
+const speedUnitSelector = document.getElementById("speed-unit-selector");
+
+speedAdjuster.value = simulationSpeed;
+speedUnitSelector.value = simulationSpeedUnit;
