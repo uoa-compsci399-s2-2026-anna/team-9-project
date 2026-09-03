@@ -95,7 +95,7 @@ const closeSettingsMenuButton = document.getElementById("close-settings-menu-but
 const settingsOverlay = document.getElementById("settings-overlay");
 
 settingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.ADJUST_SPEED);
+    bus.publish(EVENTS.SIM.FREEZE);
 });
 
 function closeSettingsMenu() {
