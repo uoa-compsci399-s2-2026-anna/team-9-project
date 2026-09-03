@@ -8,7 +8,11 @@ const defaults = {
     habitableZoneShown: true,
     orbitsShown: true,
     referenceGridShown: true,
-    labelsShown: true, 
+    labelsShown: true,
+    // TODO: consider whether to do set or array
+    hiddenObjects: {
+        "Solar System": ["Pluto", "1P/Halley", "3I/ATLAS"],
+    }
 };
 
 function loadState() {
@@ -28,6 +32,7 @@ function persist() {
         orbitsShown,
         referenceGridShown,
         labelsShown,
+        hiddenObjects,
     }));
 }
 
@@ -73,6 +78,26 @@ export function setReferenceGridShown(value) {
 
 export function setLabelsShown(value) {
     labelsShown = value;
+    persist();
+}
+
+// Objects
+export let hiddenObjects = initial.hiddenObjects;
+
+export function toggleObject(system, object, showObject) {
+    if (!hiddenObjects[system]) {
+        hiddenObjects[system] = [];
+    }
+
+    if (showObject) {
+        // Unhide the object
+        hiddenObjects[system] = hiddenObjects[system].filter(o => o !== object);
+    } else {
+        if (!hiddenObjects[system].includes(object)) {
+            hiddenObjects[system].push(object);
+        }
+    }
+
     persist();
 }
 

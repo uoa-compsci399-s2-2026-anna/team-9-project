@@ -2,6 +2,10 @@ import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { running } from "../../shared/simulationState.js";
 
+// TODO: this is overused
+const canvas = document.getElementById("simulation-canvas");
+const currentSystem = canvas.dataset.currentSystem;
+
 // Triggers for the play/pause button
 const playPauseButton = document.getElementById("play-pause-button");
 
@@ -48,7 +52,7 @@ resetView.addEventListener("click", () => {
 const viewSettingsToggles = document.getElementById("view-settings-toggles");
 
 viewSettingsToggles.addEventListener("change", (event) => {
-	if (event.target.type !== 'checkbox') {
+	if (event.target.type !== "checkbox") {
         return;
     }
 
@@ -70,6 +74,20 @@ viewSettingsToggles.addEventListener("change", (event) => {
 			break;
 	}
 });
+
+// Triggers for objects
+const objectsToggles = document.getElementById("objects-toggles");
+
+objectsToggles.addEventListener("change", (event) => {
+	if (event.target.type !== "checkbox") {
+        return;
+    }
+
+	const object = event.target.dataset.object;
+	const isEnabled = event.target.checked;
+    // TODO: somehow document what each event provides?
+    bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { system: currentSystem, object: object, value: isEnabled });
+})
 
 // Triggers for the freezing/unfreezing the simulation when the settings menu is opened/closed
 const settingsButton = document.getElementById("settings-button");

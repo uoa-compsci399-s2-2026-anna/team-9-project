@@ -13,6 +13,7 @@ export const EVENTS = {
         ORBITS_TOGGLE: "sim:orbits_toggle",
         REFERENCE_GRID_TOGGLE: "sim:reference_grid_toggle",
         LABELS_TOGGLE: "sim:labels_toggle",
+        OBJECT_TOGGLE: "sim:object_toggle",
     },
     FULLSCREEN: {
         ENTER: "fullscreen:enter",

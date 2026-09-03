@@ -5,7 +5,11 @@ import {
   orbitsShown,
   referenceGridShown,
   labelsShown,
+  hiddenObjects,
 } from "../shared/simulationState.js";
+
+const canvas = document.getElementById("simulation-canvas");
+const currentSystem = canvas.dataset.currentSystem;
 
 // PLAY/PAUSE BUTTON
 
@@ -59,6 +63,13 @@ objectsButton.addEventListener("click", () => {
 
     objectsShowIcon.classList.toggle("hidden");
     objectsHideIcon.classList.toggle("hidden");
+});
+
+const objectToggles = document.getElementById("objects-toggles");
+const currentHiddenObjects = hiddenObjects[currentSystem]; 
+
+objectToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+	checkbox.checked = !currentHiddenObjects.includes(checkbox.dataset.object);
 });
 
 // SPEED ADJUSTER VALUES
