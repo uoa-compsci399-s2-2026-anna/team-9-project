@@ -2,7 +2,8 @@
 
 <!-- Page title -->
 {% block title %}
-  {{ current_system.name }} Viewer
+  {{ current_system.name }}
+  Viewer
 {% endblock %}
 
 <!-- System dropdown reference -->
@@ -16,18 +17,35 @@
 
 <!-- Simulation content-->
 {% block content %}
-	<canvas
-		id="simulation-canvas"
-		data-current-system="{{ current_system.name }}"
-		class="absolute inset-0 z-0 h-full w-full pointer-events-auto"
-	></canvas>
+  <canvas
+    id="simulation-canvas"
+    data-current-system="{{ current_system.name }}"
+    class="pointer-events-auto absolute inset-0 z-0 h-full w-full"
+  ></canvas>
 {% endblock %}
 
 <!-- Scripts block -->
 {% block scripts %}
-  <script type="module" src="/src/events/triggers/sharedTriggers.js" defer></script>
-  <script type="module" src="/src/events/triggers/settingsTriggers.js" defer></script>
-  <script type="module" src="/src/events/triggers/simulationTriggers.js" defer></script>
-  <script type="module" src="/src/rendering/simulationManager.js" defer></script>
-  <script src="/src/ui/script.js" defer></script>
+  <script
+    type="module"
+    src="/src/events/triggers/sharedTriggers.js"
+    defer
+  ></script>
+  <script
+    type="module"
+    src="/src/events/triggers/settingsTriggers.js"
+    defer
+  ></script>
+  <script
+    type="module"
+    src="/src/events/triggers/simulationTriggers.js"
+    defer
+  ></script>
+  <script
+    type="module"
+    src="/src/rendering/simulationManager.js"
+    defer
+  ></script>
+  <script type="module" src="/src/ui/toolbar.js" defer></script>
+  <script type="module" src="/src/ui/simulationControls.js" defer></script>
 {% endblock %}
