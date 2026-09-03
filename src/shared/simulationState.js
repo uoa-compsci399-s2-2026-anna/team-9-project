@@ -1,7 +1,10 @@
+import { timeToSeconds } from "../utils/utils.js";
+
 const STORAGE_KEY = "simulationState";
 
 const defaults = {
-    simulationSpeed: 1_000_000, // Around 11.57 days/second
+    simulationSpeed: 10,
+    simulationSpeedUnit: "day",
 };
 
 function loadState() {
@@ -21,10 +24,22 @@ function persist() {
 
 const initial = loadState();
 
+// Simulation speed
 export let simulationSpeed = initial.simulationSpeed;
+export let simulationSpeedUnit = initial.simulationSpeedUnit;
+export let simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit); 
 
-export function setSimulationSpeed(value) {
-    simulationSpeed = value;
+export function setSimulationSpeed(speed) {
+    simulationSpeed = speed;
+    simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit);
+    console.log(simulationSpeedSeconds);
+    persist();
+}
+
+export function setSimulationSpeedUnit(unit) {
+    simulationSpeedUnit = unit;
+    simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit);
+    console.log(simulationSpeedSeconds);
     persist();
 }
 

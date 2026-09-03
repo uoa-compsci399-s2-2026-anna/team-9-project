@@ -4,8 +4,6 @@ import { setRunning, setFrozen } from "../shared/simulationState.js";
 import { init } from "./simulationRenderer.js";
 import { simulationSpeed, setSimulationSpeed } from "../shared/simulationState.js";
 
-console.log("HERE: " + simulationSpeed);
-
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
 init(currentSystem);
