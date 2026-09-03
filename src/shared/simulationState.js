@@ -5,6 +5,10 @@ const STORAGE_KEY = "simulationState";
 const defaults = {
     simulationSpeed: 10,
     simulationSpeedUnit: "day",
+    habitableZoneShown: true,
+    orbitsShown: true,
+    referenceGridShown: true,
+    labelsShown: true, 
 };
 
 function loadState() {
@@ -18,7 +22,12 @@ function loadState() {
 
 function persist() {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        simulationSpeed, simulationSpeedUnit,
+        simulationSpeed, 
+        simulationSpeedUnit,
+        habitableZoneShown,
+        orbitsShown,
+        referenceGridShown,
+        labelsShown,
     }));
 }
 
@@ -40,6 +49,32 @@ export function setSimulationSpeedUnit(unit) {
     simulationSpeedUnit = unit;
     simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit);
     console.log(simulationSpeedSeconds);
+    persist();
+}
+
+// View settings
+export let habitableZoneShown = initial.habitableZoneShown;
+export let orbitsShown = initial.orbitsShown;
+export let referenceGridShown = initial.referenceGridShown;
+export let labelsShown = initial.labelsShown;
+
+export function setHabitableZoneShown(value) {
+    habitableZoneShown = value;
+    persist();
+}
+
+export function setOrbitsShown(value) {
+    orbitsShown = value;
+    persist();
+}
+
+export function setReferenceGridShown(value) {
+    referenceGridShown = value;
+    persist();
+}
+
+export function setLabelsShown(value) {
+    labelsShown = value;
     persist();
 }
 

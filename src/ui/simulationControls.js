@@ -1,6 +1,11 @@
-import { simulationSpeed, simulationSpeedUnit } from "../shared/simulationState.js";
-
-const html = document.documentElement;
+import {
+  simulationSpeed,
+  simulationSpeedUnit,
+  habitableZoneShown,
+  orbitsShown,
+  referenceGridShown,
+  labelsShown,
+} from "../shared/simulationState.js";
 
 // PLAY/PAUSE BUTTON
 
@@ -26,6 +31,19 @@ viewSettingsButton.addEventListener("click", () => {
 
     viewSettingsShowIcon.classList.toggle("hidden");
     viewSettingsHideIcon.classList.toggle("hidden");
+});
+
+const viewSettingsToggles = document.getElementById("view-settings-toggles");
+
+const viewSettingsValues = {
+	"habitable-zone": habitableZoneShown,
+	"orbits": orbitsShown,
+	"reference-grid": referenceGridShown,
+	"labels": labelsShown,
+};
+
+viewSettingsToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+	checkbox.checked = viewSettingsValues[checkbox.dataset.toggle];
 });
 
 // OBJECTS SIDE PANEL
