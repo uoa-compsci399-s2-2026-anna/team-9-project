@@ -1,11 +1,8 @@
-// src/events/triggers/settingsTriggers.js
-import * as settings from "../../shared/settingsState.js";
+import { bus } from "../eventBus.js";
+import { EVENTS } from "../events.js";
 
-const timeZoneSelect = document.querySelector("select[name='time-zone']");
-
-timeZoneSelect.value = settings.timeZone;
+const timeZoneSelect = document.getElementById("time-zone-select");
 
 timeZoneSelect.addEventListener("change", (e) => {
-    console.log(e.target.value);
-    settings.setTimeZone(e.target.value);
+    bus.publish(EVENTS.SETTINGS.TIME_ZONE_SELECT, { timeZone: e.target.value });
 });

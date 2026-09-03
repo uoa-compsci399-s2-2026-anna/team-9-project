@@ -1,6 +1,14 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { setRunning, setFrozen, setSimulationSpeedUnit, setHabitableZoneShown, setOrbitsShown, setReferenceGridShown, setLabelsShown } from "../shared/simulationState.js";
+import { 
+    setRunning, 
+    setFrozen, 
+    setSimulationSpeedUnit, 
+    setHabitableZoneShown, 
+    setOrbitsShown, 
+    setReferenceGridShown, 
+    setLabelsShown 
+} from "../shared/simulationState.js";
 import { init, stepForward, stepBack, resetView } from "./simulationRenderer.js";
 import { setSimulationSpeed, toggleObject } from "../shared/simulationState.js";
 
