@@ -7,7 +7,7 @@ import {
     setHabitableZoneShown, 
     setOrbitsShown, 
     setReferenceGridShown, 
-    setLabelsShown 
+    setLabelsShown,
 } from "../shared/simulationState.js";
 import { 
     init, 
@@ -15,7 +15,8 @@ import {
     stepBack, 
     resetView, 
     setLabelsVisibility, 
-    setObjectVisibility 
+    setObjectVisibility,
+    setFontSize,
 } from "./simulationRenderer.js";
 import { setSimulationSpeed, toggleObject } from "../shared/simulationState.js";
 
@@ -102,3 +103,9 @@ bus.subscribe(EVENTS.SIM.OBJECT_TOGGLE, (event) => {
     // Update the simulation to show/hide the object (if it is in the simulation)
     setObjectVisibility(name, value);
 })
+
+// TODO: I think having it duplicated is best rather than all invoked from the single subscriber? I mean this is literally leveraging the event pattern
+// Text size
+bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
+    setFontSize(event.detail.textSize);
+});
