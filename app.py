@@ -150,16 +150,16 @@ def calculate_simulation_info(sim):
         
         a 	semi-major axis
         e 	eccentricity
-        inc 	inclination, in
-        Omega 	longitude of ascending node, in
-        omega 	argument of pericenter, in
+        inc 	inclination, in radians
+        Omega 	longitude of ascending node, in radians
+        omega 	argument of pericenter, in radians
         """
         orbital_data[objects[i]] = {
-            "semi major": orbit.a,  # Longest radius of ellipse
-            "eccentricity": orbit.e,  # Shape of ellipse
-            "inclination": orbit.inc,  # Amount to tilt
-            "ascending longitude": orbit.Omega,  # Angle about the center axis
-            "pericenter argument": orbit.omega, # Argument of the pericenter
+            "a": orbit.a,  # Longest radius of ellipse
+            "e": orbit.e,  # Shape of ellipse
+            "inc": orbit.inc,  # Amount to tilt
+            "Omega": orbit.Omega,  # Angle about the center axis
+            "omega": orbit.omega, # Argument of the pericenter
         }
 
     return {"positions": positions, "orbital_data": orbital_data}
