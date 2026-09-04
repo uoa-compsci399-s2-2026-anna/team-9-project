@@ -13,5 +13,6 @@ fullscreenButton.addEventListener("click", () => {
 const darkModeToggleButton = document.getElementById("dark-mode-toggle-button");
 
 darkModeToggleButton.addEventListener("click", () => {
+    console.log(darkMode)
     bus.publish(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, { darkMode: !darkMode })
 })

@@ -1,3 +1,5 @@
+// TODO: This file needs renaming because it is basically just session state
+
 import { timeToSeconds } from "../utils/utils.js";
 
 const STORAGE_KEY = "simulationState";
@@ -25,15 +27,15 @@ function loadState() {
 }
 
 function persist() {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-        simulationSpeed, 
+    window.simulationStateAPI.set({
+        simulationSpeed,
         simulationSpeedUnit,
         habitableZoneShown,
         orbitsShown,
         referenceGridShown,
         labelsShown,
         hiddenObjects,
-    }));
+    });
 }
 
 const initial = loadState();

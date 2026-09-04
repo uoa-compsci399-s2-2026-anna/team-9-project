@@ -35,11 +35,16 @@ objects = []
 
 
 @app.get("/")
-async def home(request: Request):
+async def home(request: Request, settings: str = "{}"):
+    settings_state = json.loads(settings)
+    print(settings_state)
+
     return templates.TemplateResponse(
         request=request,
         name="home.html",
         context={
+            "settings": settings_state,
+
             "systems": all_systems,
             "dropdown_systems": all_systems,
             # Control which components are rendered on the html page
@@ -54,7 +59,12 @@ async def home(request: Request):
 
 
 @app.get("/simulation/{system_name}")
-async def simulation(request: Request, system_name: str):
+async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}"):
+    sim_state = json.loads(state)
+    print(sim_state)
+
+    settings_state = json.loads(settings)
+    print(settings_state)
 
     # Get the current system
     current_system = next(
@@ -70,6 +80,9 @@ async def simulation(request: Request, system_name: str):
         request=request,
         name="simulation.html",
         context={
+            "sim_state": sim_state,
+            "settings": settings_state,
+
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,

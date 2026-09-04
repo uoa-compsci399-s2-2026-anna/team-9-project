@@ -5,10 +5,32 @@ const Store = require('electron-store')
 
 const store = new Store();
 
+// TODO: INITIAL STATE (maybe move)
+let simulationState = {
+    simulationSpeed: 10,
+    simulationSpeedUnit: "day",
+    habitableZoneShown: true,
+    orbitsShown: true,
+    referenceGridShown: true,
+    labelsShown: true,
+    hiddenObjects: { "Solar System": ["Pluto", "1P/Halley", "3I/ATLAS"] },
+};
+
 // Handle settings saved between run
-ipcMain.handle('settings:get', () => store.get('settings'));
-ipcMain.handle('settings:set', (_event, settings) => {
-    store.set('settings', settings);
+ipcMain.handle('settings:get', () => {
+    return store.get('settings');
+});
+
+ipcMain.handle('settings:set', (_event, newSettings) => {
+    store.set('settings', {
+        ...store.get('settings'),
+        ...newSettings
+    });
+});
+
+// TODO
+ipcMain.on('simulationState:set', (_event, newState) => {
+    simulationState = { ...simulationState, ...newState };
 });
 
 // Squirrel launches the appplication multiple extra times during install/update/uninstall
@@ -105,6 +127,13 @@ function spawnPythonProcess(resolve, reject) {
     setTimeout(() => reject(new Error("Python server failed to launch")), 30000);
 }
 
+function buildInitialUrl(baseUrl) {
+    const parsed = new URL(baseUrl);
+    // Use the saved state
+    parsed.searchParams.set('settings', JSON.stringify(store.get('settings') || {}));
+    return parsed.toString();
+}
+
 /**
  * Creates the electron window and binds itself to the given url
  * 
@@ -124,6 +153,20 @@ async function createWindow(python_url) {
         }
     });
 
+    // TEMP PLACEMENT
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        const parsed = new URL(url);
+        event.preventDefault();
+
+        parsed.searchParams.set('settings', JSON.stringify(store.get('settings') || {}));
+
+        if (parsed.pathname.startsWith('/simulation/')) {
+            parsed.searchParams.set('state', JSON.stringify(simulationState));
+        }
+
+        mainWindow.loadURL(parsed.toString());
+    });
+
     var url;
 
     try {
@@ -140,6 +183,12 @@ async function createWindow(python_url) {
     console.log(`Connecting to '${url}'...`);
 
     // Change the window to the given url
+
+    // TODO: check
+    url = buildInitialUrl(url);
+
+    console.log(`Connecting to '${url}'...`);
+
     mainWindow.loadURL(url);
 
     // Maximise the window and then show it

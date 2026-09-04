@@ -1,5 +1,10 @@
 <!doctype html>
-<html lang="en" data-theme="dark" class="scheme-light dark:scheme-dark">
+<html
+  lang="en"
+  data-theme="{{ 'dark' if settings.darkMode else 'light' }}"
+  class="scheme-light dark:scheme-dark"
+>
+<!-- <html lang="en" data-theme="dark" class="scheme-light dark:scheme-dark"> -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

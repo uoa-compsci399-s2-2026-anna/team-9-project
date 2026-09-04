@@ -82,6 +82,7 @@ export function setOrbitLines(value) {
 // Dark mode
 // TODO: I am not sure about whether resetting settings should reset this. Feels slightly out of place.
 export let darkMode = initial.darkMode;
+console.log(initial);
 
 export function toggleDarkMode(value) {
     darkMode = value;

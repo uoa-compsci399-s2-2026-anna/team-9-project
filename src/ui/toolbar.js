@@ -30,10 +30,6 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     toggleDarkMode(darkMode);
 });
 
-// Initial toggle
-// TODO: Try do this via python in the future
-toggleDarkMode(darkMode);
-
 // SETTINGS MENU OVERLAY
 
 const settingsOverlay = document.querySelector("#settings-overlay");
