@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 
 <!-- Page title -->
-{% block title %}
-  Home
-{% endblock %}
+{% block title %} Home {% endblock %} {% block content %}
+
+<!-- Main OPIS logo -->
+<div class="mt-12 flex w-full justify-center pt-0.5">
+  <img
+    src="/src/assets/logo-purple.svg"
+    class="pointer-events-none h-auto w-55 dark:hidden"
+    alt="Logo"
+  />
+  <img
+    src="/src/assets/logo-white.svg"
+    class="pointer-events-none hidden h-auto w-55 dark:block"
+    alt="Logo"
+  />
+</div>
 
 <!-- Available systems -->
-{% block content %}
 <div class="mx-auto mt-18 w-fit">
   <p class="mb-7 text-center">Select a simulation</p>
   <div
