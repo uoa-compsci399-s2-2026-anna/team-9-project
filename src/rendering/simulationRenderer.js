@@ -14,10 +14,14 @@ let renderer;
 let labelRenderer;
 
 const objectMeshes = new Map();
+const orbitalLines = new Map();
 
 // Default size and colour of all the objects
 const objectSize = 0.05;
 const objectColour = 0xFFFFFF; // White
+
+const orbitPoints = 360; // Number of points to approximate the ellipse
+const orbitColour = 0xFFFFFF; // White
 
 /**
  * If the target object does not exist, then its mesh is created at the given position.
@@ -26,7 +30,7 @@ const objectColour = 0xFFFFFF; // White
  * @param {string} name Name of the object
  * @param {position} position Position of the object
  */
-function createOrUpdateMesh(name, position) {
+function createOrUpdateObjectMesh(name, position) {
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -53,6 +57,68 @@ function createOrUpdateMesh(name, position) {
 }
 
 /**
+ * If the target orbit does not exist, then its orbital line is created with the given orbital data.
+ * If the target orbital line does exist, then it is updated.
+ * 
+ * @param {string} name Name of the orbital line
+ * @param {orbitalData} orbitalData Orbital data for the line
+ */
+function createOrUpdateOrbitalLine(name, orbitalData) {
+    let line = orbitalLines.get(name);
+
+    const a = orbitalData.a;
+    const e = orbitalData.e;
+    const inc = orbitalData.inc;
+    const Omega = orbitalData.Omega;
+    const omega = orbitalData.omega;
+
+    if (!line) {
+        const geometry = new THREE.BufferGeometry();
+        const material = new THREE.LineBasicMaterial({ color: orbitColour });
+        line = new THREE.LineLoop(geometry, material);
+
+        scene.add(line);
+        orbitalLines.set(name, line);
+    }
+
+    // Update the geometry of the line to match the orbital parameters
+    const points = [];
+    for (let i = 0; i < orbitPoints; i++) {
+        const theta = (i / orbitPoints) * 2 * Math.PI;
+
+        // Calculate the Cartesian position of the point on the ellipse using the polar equation
+        const r = (a * (1 - e**2)) / (1 + e*Math.cos(theta));
+        const x = r * Math.cos(theta);
+        const y = r * Math.sin(theta);
+        points.push(x, y, 0);
+    }
+
+    const geometry = line.geometry;
+    geometry.setAttribute(
+        'position',
+        new THREE.Float32BufferAttribute(points, 3)
+    );
+
+    // Use Euler angles to rotate the line to match the orbital parameters
+    // R = Rz(Omega) * Rx(inc) * Rz(omega)
+
+    const eulerOmega = new THREE.Euler(0, 0, Omega, 'XYZ');
+    const eulerInc = new THREE.Euler(inc, 0, 0, 'XYZ');
+    const euleromega = new THREE.Euler(0, 0, omega, 'XYZ');
+
+    const rotateOmega = new THREE.Matrix4().makeRotationFromEuler(eulerOmega);
+    const rotateInc   = new THREE.Matrix4().makeRotationFromEuler(eulerInc);
+    const rotateomega = new THREE.Matrix4().makeRotationFromEuler(euleromega);
+
+    const rotationMatrix = new THREE.Matrix4()
+        .multiplyMatrices(rotateOmega, rotateInc)
+        .multiply(rotateomega);
+
+    line.rotation.set(0, 0, 0); // Reset rotation
+    line.applyMatrix4(rotationMatrix);
+};
+
+/**
  * Update the positions of all objects in the current system based on 
  * the current simulation time.
  */
@@ -60,8 +126,13 @@ async function updateSimulation() {
     // Fetch data for the current system
     const systemData = await getSystemData(currentSystem, currentSimulationTime);
     const positionMap = Object.entries(systemData.positions);
+    const orbitalDataMap = Object.entries(systemData.orbital_data);
+
     for (const [name, position] of positionMap) {
-        createOrUpdateMesh(name, position);
+        createOrUpdateObjectMesh(name, position);
+    }
+    for (const [name, orbitalData] of orbitalDataMap) {
+        createOrUpdateOrbitalLine(name, orbitalData);
     }
 }
 
