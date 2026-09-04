@@ -21,7 +21,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
 
 # Load the config file
-with open("config.json") as f:
+with open(os.path.join(base_path, "config.json")) as f:
     config = json.load(f)
 
 # Get the systems in the config
