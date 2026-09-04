@@ -29,6 +29,20 @@ bus.subscribe(EVENTS.SIM.STOP, () => {
     pauseIcon.classList.add("hidden");
 });
 
+// SYSTEMS DROPDOWN
+
+const systemDropdown = document.getElementById("system-dropdown");
+
+bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
+    const { showDropdown } = event.detail;
+
+    if (showDropdown) {
+        systemDropdown.style.display = "block";
+    } else {
+        systemDropdown.style.display = "none";
+    }
+});
+
 // VIEW SETTINGS SIDE PANEL
 
 const viewSettings = document.querySelector("#view-settings");

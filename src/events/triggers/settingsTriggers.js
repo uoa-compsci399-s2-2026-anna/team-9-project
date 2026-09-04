@@ -1,6 +1,35 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 
+// Settings menu
+const settingsButton = document.querySelector("#settings-button");
+const closeSettingsMenuButton = document.getElementById("close-settings-menu-button");
+const settingsOverlay = document.querySelector("#settings-overlay");
+
+settingsButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
+});
+
+closeSettingsMenuButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
+});
+
+settingsOverlay.addEventListener("click", (event) => {
+    // Close settings menu only when the user clicks outside of the main settings menu panel
+    if (event.target === event.currentTarget) {
+            bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        // Close settings menu if open and user presses escape
+        if (document.body.classList.contains("settings-menu-open")) {
+            bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
+        }
+    }
+});
+
 // Time zone
 const timeZoneSelect = document.getElementById("time-zone-select");
 

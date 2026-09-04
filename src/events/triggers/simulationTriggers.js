@@ -105,6 +105,16 @@ objectsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.OBJECTS_PANEL_TOGGLE);
 })
 
+// System dropdown (e.g., for changing between Solar System and Kepler-16)
+const systemButton = document.getElementById("system-information-button");
+const systemDropdown = document.getElementById("system-dropdown");
+
+systemButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, { 
+        showDropdown: systemDropdown.style.display === "none" 
+    });
+});
+
 // Triggers for the freezing/unfreezing the simulation when the settings menu is opened/closed
 const settingsButton = document.getElementById("settings-button");
 const closeSettingsMenuButton = document.getElementById("close-settings-menu-button");
