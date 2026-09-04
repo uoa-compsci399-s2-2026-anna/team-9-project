@@ -1,13 +1,10 @@
 import signal
-import time
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import sys
 import rebound
 import os
 import json
-import numpy as np
 
 app = FastAPI()
 templates = Jinja2Templates(directory="src/ui")
@@ -94,11 +91,11 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     # Catch poor input
     print(system_name)
-    if not any(system["name"] == system_name for system in all_systems):
+    if not any(system["name"].lower() == system_name for system in all_systems):
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Find the next requested system
-    system = next(system for system in all_systems if system["name"] == system_name)
+    system = next(system for system in all_systems if system["name"].lower() == system_name)
 
     # Hardcode Solar System
     if system_name == "solar system":
@@ -137,46 +134,19 @@ def calculate_simulation_info(sim):
         # Get the COM of the system
         com = sim.com()
 
-        # Barycentric reference center, do not double count current particle's mass
-        barycenter_ref = rebound.Particle(
-            m=total_mass - p.m,
-            x=com.x,
-            y=com.y,
-            z=com.z,
-            vx=com.vx,
-            vy=com.vy,
-            vz=com.vz,
-        )
-
         # Get the orbital elements relative to the primary
         # This may be inacurrate FIX LATER
         particle = sim.particles[i]
-        primary = barycenter_ref
+        primary = com
         orbit = particle.orbit(primary=primary)
 
         # Extract necessary parameters
-        a = orbit.a       # Semi-major axis
-        e = orbit.e       # Eccentricity
-        c = a * e         # Distance from focus to the geometric center
-
-        # Use the pericenter orientation vector (Runge-Lenz vector direction)
-        # REBOUND provides the components of the eccentricity vector (evec)
-        # which points directly from the focus toward the perihelion.
-        ex = orbit.evec.x
-        ey = orbit.evec.y
-        ez = orbit.evec.z
-
-        # Normalize the eccentricity vector to get the direction of perihelion
-        e_norm = np.array([ex, ey, ez]) / e
-
-        # The center is shifted in the OPPOSITE direction of perihelion 
-        # relative to the primary body's position
-        center_offset = -c * e_norm
+        c = orbit.a * orbit.e         # Distance from focus to the geometric center
 
         # Absolute 3D coordinates of the orbit's geometric center
-        center_x = primary.x + center_offset[0]
-        center_y = primary.y + center_offset[1]
-        center_z = primary.z + center_offset[2]
+        center_x = primary.x - c * orbit.evec.x / e
+        center_y = primary.y - c * orbit.evec.y / e
+        center_z = primary.z - c * orbit.evec.z / e
 
         """
         https://rebound.hanno-rein.de/particles/orbitalelements/
