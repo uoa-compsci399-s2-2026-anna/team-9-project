@@ -31,7 +31,9 @@
       <hgroup class="max-sm:hidden">
         <span class="flex items-center">
           <h1 class="pr-2 text-3xl font-bold">
-            {% block system_name %}{% endblock %}
+            {% if current_system %}
+              {{ current_system.name }}
+            {% endif %}
           </h1>
 
           <!-- Dropdown chevron -->
