@@ -73,14 +73,14 @@ async def simulation(request: Request, system_name: str):
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
+
+            "object_num": 9, # Temporary; set this programmatically (or have we decided against an object count?)
+
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": True,
-            "logo": False,
-            "sidebar_settings": True,
-            "simulation_controls": True,
-            "settings_overlay": True,
-        },
+            "settings_overlay": True
+        }
     )
 
 
