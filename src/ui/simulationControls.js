@@ -18,15 +18,11 @@ const currentSystem = canvas.dataset.currentSystem;
 const playIcon = document.querySelector("#play-icon");
 const pauseIcon = document.querySelector("#pause-icon");
 
-// TODO: consider making events sim start/stop just a toggle thing
-bus.subscribe(EVENTS.SIM.START, () => {
-    playIcon.classList.add("hidden");
-    pauseIcon.classList.remove("hidden");
-});
+bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
+    const { start } = event.detail;
 
-bus.subscribe(EVENTS.SIM.STOP, () => {
-    playIcon.classList.remove("hidden");
-    pauseIcon.classList.add("hidden");
+    playIcon.classList.toggle("hidden", start);
+    pauseIcon.classList.toggle("hidden", !start);
 });
 
 // SYSTEMS DROPDOWN

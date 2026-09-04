@@ -26,24 +26,12 @@ const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
 init(currentSystem);
 
-bus.subscribe(EVENTS.SIM.START, () => {
-    console.log("Started simulation");
-    setRunning(true);
+bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
+    setRunning(event.detail.start);
 });
 
-bus.subscribe(EVENTS.SIM.STOP, () => {
-    console.log("Stopped simulation");
-    setRunning(false);
-});
-
-bus.subscribe(EVENTS.SIM.UNFREEZE, () => {
-    console.log("Unfroze simulation");
-    setFrozen(false);
-});
-
-bus.subscribe(EVENTS.SIM.FREEZE, () => {
-    console.log("Froze simulation");
-    setFrozen(true);
+bus.subscribe(EVENTS.SIM.FREEZE, (event) => {
+    setFrozen(event.detail.freeze);
 });
 
 // Speed adjuster

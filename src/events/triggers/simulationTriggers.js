@@ -10,11 +10,7 @@ const currentSystem = canvas.dataset.currentSystem;
 const playPauseButton = document.getElementById("play-pause-button");
 
 playPauseButton.addEventListener("click", () => {
-    if (running) {
-        bus.publish(EVENTS.SIM.STOP);
-    } else {
-        bus.publish(EVENTS.SIM.START);
-    }
+    bus.publish(EVENTS.SIM.TOGGLE, { start: !running });
 });
 
 // Triggers for the speed adjuster
@@ -121,11 +117,11 @@ const closeSettingsMenuButton = document.getElementById("close-settings-menu-but
 const settingsOverlay = document.getElementById("settings-overlay");
 
 settingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.FREEZE);
+    bus.publish(EVENTS.SIM.FREEZE, { freeze: true });
 });
 
 function closeSettingsMenu() {
-    bus.publish(EVENTS.SIM.UNFREEZE);
+    bus.publish(EVENTS.SIM.FREEZE, { freeze: false });
 }
 
 // TODO: This doesn't belong here
