@@ -125,9 +125,6 @@ def calculate_simulation_info(sim):
     for i, p in enumerate(sim.particles):
         positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
 
-    # Total mass of the system
-    total_mass = sum(p.m for p in sim.particles)
-
     # Gather orbital data excluding
     orbital_data = {}
     for i, p in enumerate(sim.particles):
