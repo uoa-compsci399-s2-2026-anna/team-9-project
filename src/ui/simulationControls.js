@@ -1,3 +1,5 @@
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
 import {
   simulationSpeed,
   simulationSpeedUnit,
@@ -13,31 +15,34 @@ const currentSystem = canvas.dataset.currentSystem;
 
 // PLAY/PAUSE BUTTON
 
-const playPauseButton = document.querySelector("#play-pause-button");
 const playIcon = document.querySelector("#play-icon");
 const pauseIcon = document.querySelector("#pause-icon");
 
-playPauseButton.addEventListener("click", () => {
-    playIcon.classList.toggle("hidden");
-    pauseIcon.classList.toggle("hidden");
+// TODO: consider making events sim start/stop just a toggle thing
+bus.subscribe(EVENTS.SIM.START, () => {
+    playIcon.classList.add("hidden");
+    pauseIcon.classList.remove("hidden");
+});
+
+bus.subscribe(EVENTS.SIM.STOP, () => {
+    playIcon.classList.remove("hidden");
+    pauseIcon.classList.add("hidden");
 });
 
 // VIEW SETTINGS SIDE PANEL
 
-const viewSettingsButton = document.querySelector("#view-settings-button");
 const viewSettings = document.querySelector("#view-settings");
 const viewSettingsShowIcon = document.querySelector("#view-settings-show-icon");
 const viewSettingsHideIcon = document.querySelector("#view-settings-hide-icon");
 
-viewSettingsButton.addEventListener("click", () => {
+bus.subscribe(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE, () => {
     viewSettings.classList.toggle("grid-rows-[0fr]");
     viewSettings.classList.toggle("grid-rows-[1fr]");
 
     viewSettingsShowIcon.classList.toggle("hidden");
     viewSettingsHideIcon.classList.toggle("hidden");
-});
+})
 
-const viewSettingsToggles = document.getElementById("view-settings-toggles");
 
 const viewSettingsValues = {
 	"habitable-zone": habitableZoneShown,
@@ -46,24 +51,26 @@ const viewSettingsValues = {
 	"labels": labelsShown,
 };
 
+const viewSettingsToggles = document.getElementById("view-settings-toggles");
+
 viewSettingsToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
 	checkbox.checked = viewSettingsValues[checkbox.dataset.setting];
 });
 
 // OBJECTS SIDE PANEL
 
-const objectsButton = document.querySelector("#objects-button");
 const objects = document.querySelector("#objects");
 const objectsShowIcon = document.querySelector("#objects-show-icon");
 const objectsHideIcon = document.querySelector("#objects-hide-icon");
 
-objectsButton.addEventListener("click", () => {
+bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
     objects.classList.toggle("grid-rows-[0fr]");
     objects.classList.toggle("grid-rows-[1fr]");
 
     objectsShowIcon.classList.toggle("hidden");
     objectsHideIcon.classList.toggle("hidden");
 });
+
 
 const objectToggles = document.getElementById("objects-toggles");
 const currentHiddenObjects = hiddenObjects[currentSystem]; 

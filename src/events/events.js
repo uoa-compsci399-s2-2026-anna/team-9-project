@@ -14,6 +14,8 @@ export const EVENTS = {
         REFERENCE_GRID_TOGGLE: "sim:reference_grid_toggle",
         LABELS_TOGGLE: "sim:labels_toggle",
         OBJECT_TOGGLE: "sim:object_toggle",
+        VIEW_SETTINGS_PANEL_TOGGLE: "sim:view_settings_panel_toggle",
+        OBJECTS_PANEL_TOGGLE: "sim:objects_panel_toggle",
     },
     TOOLBAR: {
         FULLSCREEN_TOGGLE: "toolbar:fullscreen_toggle",

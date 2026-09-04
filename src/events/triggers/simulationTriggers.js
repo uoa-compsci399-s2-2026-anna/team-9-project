@@ -87,6 +87,22 @@ objectsToggles.addEventListener("change", (event) => {
 	const isEnabled = event.target.checked;
     // TODO: somehow document what each event provides?
     bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { system: currentSystem, name: objectName, value: isEnabled });
+});
+
+// View settings panel
+const viewSettingsButton = document.getElementById("view-settings-button");
+
+viewSettingsButton.addEventListener("click", () => {
+    // TODO: will need to pass state if we intend to manage this across sessions
+    bus.publish(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE);
+});
+
+// Objects panel
+const objectsButton = document.getElementById("objects-button");
+
+objectsButton.addEventListener("click", () => {
+    // TODO: will need to pass state if we intend to manage this across sessions
+    bus.publish(EVENTS.SIM.OBJECTS_PANEL_TOGGLE);
 })
 
 // Triggers for the freezing/unfreezing the simulation when the settings menu is opened/closed
