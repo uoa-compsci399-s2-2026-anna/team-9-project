@@ -28,7 +28,17 @@
 {% endblock %}
 
 <!-- Scripts block -->
-{% block scripts %}
+{% block scripts %}  
+  <script 
+    type="module" 
+    src="/src/ui/simulationControls.js" 
+    defer
+  ></script>
+  <script 
+    type="module" 
+    src="/src/ui/toolbar.js" 
+    defer
+  ></script>
   <script
     type="module"
     src="/src/events/triggers/sharedTriggers.js"
@@ -57,16 +67,6 @@
   <script
     type="module"
     src="/src/rendering/simulationManager.js"
-    defer
-  ></script>
-  <script 
-    type="module" 
-    src="/src/ui/toolbar.js" 
-    defer
-  ></script>
-  <script 
-    type="module" 
-    src="/src/ui/simulationControls.js" 
     defer
   ></script>
 {% endblock %}
