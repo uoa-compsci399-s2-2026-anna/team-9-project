@@ -174,9 +174,6 @@ def init_solar():
     # sim.add("Sun")
     sim.add("solar system")
 
-    # Move to COM of the sun
-    sim.move_to_com()
-
     # Add and set all objects in the solar system
     objects = [
         "Sun",
@@ -201,3 +198,6 @@ def init_solar():
         Omega=111.9 * 3.14159 / 180.0,
         M=0.0,
     )
+
+    # Move to COM of the system
+    sim.move_to_com()
