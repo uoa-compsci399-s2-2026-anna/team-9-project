@@ -6,22 +6,19 @@
   Viewer
 {% endblock %}
 
-<!-- System dropdown reference -->
-{% block system_name %}
-  {{ current_system.name }}
-{% endblock %}
-
-{% block object_num %}
-  Placeholder
-{% endblock %}
-
-<!-- Simulation content-->
 {% block content %}
+  <!-- Simulation content-->
   <canvas
     id="simulation-canvas"
     data-current-system="{{ current_system.name }}"
     class="pointer-events-auto absolute inset-0 z-0 h-full w-full"
   ></canvas>
+
+  <!-- LHS sidebar settings ('Objects', 'View settings') -->
+  {% include "components/sidebar.html" %}
+
+  <!-- Simulation playback controls -->
+  {% include "components/simulation-playback-controls.html" %}
 {% endblock %}
 
 <!-- Scripts block -->
@@ -29,21 +26,6 @@
   <script
     type="module"
     src="/src/events/triggers/sharedTriggers.js"
-    defer
-  ></script>
-  <script
-    type="module"
-    src="/src/events/triggers/settingsTriggers.js"
-    defer
-  ></script>
-  <script
-    type="module"
-    src="/src/shared/settingsManager.js"
-    defer
-  ></script>
-  <script
-    type="module"
-    src="/src/ui/settings.js"
     defer
   ></script>
   <script
@@ -56,14 +38,6 @@
     src="/src/rendering/simulationManager.js"
     defer
   ></script>
-  <script 
-    type="module" 
-    src="/src/ui/toolbar.js" 
-    defer
-  ></script>
-  <script 
-    type="module" 
-    src="/src/ui/simulationControls.js" 
-    defer
-  ></script>
+  <script type="module" src="/src/ui/toolbar.js" defer></script>
+  <script type="module" src="/src/ui/simulationControls.js" defer></script>
 {% endblock %}

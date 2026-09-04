@@ -1,21 +1,39 @@
 {% extends "base.html" %}
 
 <!-- Page title -->
-{% block title %}
-  Home
-{% endblock %}
-
-<!-- Available systems -->
+{% block title %}Home{% endblock %}
 {% block content %}
-  {% for system in systems %}
-    <a
-      id="{{ system.name }}"
-      class="system-path-button"
-      href="/simulation/{{ system.name }}"
+  <!-- Main OPIS logo -->
+  <div class="mt-12 flex w-full justify-center pt-0.5">
+    <img
+      src="/src/assets/logo-purple.svg"
+      class="pointer-events-none h-auto w-55 dark:hidden"
+      alt="Logo"
+    />
+    <img
+      src="/src/assets/logo-white.svg"
+      class="pointer-events-none hidden h-auto w-55 dark:block"
+      alt="Logo"
+    />
+  </div>
+
+  <!-- Available systems -->
+  <div class="mx-auto mt-18 w-fit">
+    <p class="mb-7 text-center">Select a simulation</p>
+    <div
+      class="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3"
     >
-      {{ system.name }}
-    </a>
-  {% endfor %}
+      {% for system in systems %}
+        <a
+          id="{{ system.name }}"
+          class="system-path-button flex h-35 w-55 flex-col items-center justify-center gap-2 rounded-md bg-white font-semibold outline-1 hover:bg-zinc-100 active:bg-zinc-200 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:active:bg-zinc-700"
+          href="/simulation/{{ system.name }}"
+        >
+          {{ system.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
 {% endblock %}
 
 <!-- Scripts block -->
@@ -27,27 +45,8 @@
   ></script>
   <script
     type="module"
-    src="/src/events/triggers/settingsTriggers.js"
-    defer
-  ></script>
-  <script
-    type="module"
-    src="/src/shared/settingsManager.js"
-    defer
-  ></script>
-  <script
-    type="module"
-    src="/src/ui/settings.js"
-    defer
-  ></script>
-  <script
-    type="module"
     src="/src/events/triggers/homeTriggers.js"
     defer
   ></script>
-  <script 
-    type="module" 
-    src="/src/ui/toolbar.js" 
-    defer
-  ></script>
+  <script type="module" src="/src/ui/toolbar.js" defer></script>
 {% endblock %}

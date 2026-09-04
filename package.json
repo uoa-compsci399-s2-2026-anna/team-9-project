@@ -17,6 +17,7 @@
     "@electron/fuses": "^1.8.0",
     "electron": "^43.3.0",
     "prettier": "^3.9.6",
+    "prettier-plugin-jinja-template": "^2.2.0",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3"
   },
@@ -27,7 +28,7 @@
     "tailwind": "npx @tailwindcss/cli -i ./src/ui/input.css -o ./dist/output.css",
     "watch": "npx @tailwindcss/cli -i ./src/ui/input.css -o ./dist/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "electron . dev",
+    "dev": "npm run tailwind && electron . dev",
     "bin": "electron .",
     "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && touch ./dist/main.exe",
     "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && echo \"\" > .\\dist\\main",

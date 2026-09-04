@@ -1,15 +1,4 @@
-import {
-  simulationSpeed,
-  simulationSpeedUnit,
-  habitableZoneShown,
-  orbitsShown,
-  referenceGridShown,
-  labelsShown,
-  hiddenObjects,
-} from "../shared/simulationState.js";
-
-const canvas = document.getElementById("simulation-canvas");
-const currentSystem = canvas.dataset.currentSystem;
+const html = document.documentElement;
 
 // PLAY/PAUSE BUTTON
 
@@ -37,19 +26,6 @@ viewSettingsButton.addEventListener("click", () => {
     viewSettingsHideIcon.classList.toggle("hidden");
 });
 
-const viewSettingsToggles = document.getElementById("view-settings-toggles");
-
-const viewSettingsValues = {
-	"habitable-zone": habitableZoneShown,
-	"orbits": orbitsShown,
-	"reference-grid": referenceGridShown,
-	"labels": labelsShown,
-};
-
-viewSettingsToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-	checkbox.checked = viewSettingsValues[checkbox.dataset.setting];
-});
-
 // OBJECTS SIDE PANEL
 
 const objectsButton = document.querySelector("#objects-button");
@@ -64,18 +40,3 @@ objectsButton.addEventListener("click", () => {
     objectsShowIcon.classList.toggle("hidden");
     objectsHideIcon.classList.toggle("hidden");
 });
-
-const objectToggles = document.getElementById("objects-toggles");
-const currentHiddenObjects = hiddenObjects[currentSystem]; 
-
-objectToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-	checkbox.checked = !currentHiddenObjects.includes(checkbox.dataset.object);
-});
-
-// SPEED ADJUSTER VALUES
-
-const speedAdjuster = document.getElementById("speed-adjuster");
-const speedUnitSelector = document.getElementById("speed-unit-selector");
-
-speedAdjuster.value = simulationSpeed;
-speedUnitSelector.value = simulationSpeedUnit;
