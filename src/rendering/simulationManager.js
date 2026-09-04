@@ -17,6 +17,7 @@ import {
     setLabelsVisibility, 
     setObjectVisibility,
     setFontSize,
+    setFontFamily,
 } from "./simulationRenderer.js";
 import { setSimulationSpeed, toggleObject } from "../shared/simulationState.js";
 
@@ -102,6 +103,11 @@ bus.subscribe(EVENTS.SIM.OBJECT_TOGGLE, (event) => {
     toggleObject(system, name, value);
     // Update the simulation to show/hide the object (if it is in the simulation)
     setObjectVisibility(name, value);
+})
+
+// Font family
+bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
+    setFontFamily(event.detail.font);
 })
 
 // TODO: I think having it duplicated is best rather than all invoked from the single subscriber? I mean this is literally leveraging the event pattern
