@@ -1,3 +1,7 @@
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
+import { darkMode } from "../shared/settingsState.js";
+
 const html = document.documentElement;
 
 // Disable dragging for all links
@@ -6,50 +10,30 @@ document.querySelectorAll("a").forEach((a) => {
 });
 
 // DARK/LIGHT MODE
-
-const darkModeToggleButton = document.querySelector("#dark-mode-toggle-button");
 const darkModeIcon = document.querySelector("#dark-mode-icon");
 const lightModeIcon = document.querySelector("#light-mode-icon");
 
-/**
- * Updates the icon (SVG) of the dark/light mode toggle button to be the
- * correct icon based on the current theme.
- */
-function updateDarkModeIcon() {
-    const isDark = html.getAttribute("data-theme") === "dark";
-
+function toggleDarkMode(isDark) {
     if (isDark) {
         lightModeIcon.classList.remove("hidden");
         darkModeIcon.classList.add("hidden");
+        html.setAttribute("data-theme", "dark");
     } else {
         lightModeIcon.classList.add("hidden");
         darkModeIcon.classList.remove("hidden");
+        html.setAttribute("data-theme", "light");
     }
 }
 
-/**
- * Toggles dark/light mode and updates the icon (SVG) of the dark/light
- * mode toggle button.
- */
-function toggleDarkMode() {
-    const isDark = html.getAttribute("data-theme") === "dark";
+bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
+    const { darkMode } = event.detail;
 
-    html.setAttribute("data-theme", isDark ? "light" : "dark");
-    updateDarkModeIcon();
-}
+    toggleDarkMode(darkMode);
+});
 
-// Check if system theme is dark mode
-if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    html.setAttribute("data-theme", "dark");
-} else {
-    html.setAttribute("data-theme", "light");
-}
-
-// Update icons to ensure they are initially shown correctly depending on
-// theme on startup
-updateDarkModeIcon();
-
-darkModeToggleButton.addEventListener("click", toggleDarkMode);
+// Initial toggle
+// TODO: Try do this via python in the future
+toggleDarkMode(darkMode);
 
 // SYSTEMS DROPDOWN
 

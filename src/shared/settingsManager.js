@@ -7,7 +7,8 @@ import {
     setObjectMarkerSize, 
     setOrbitLines, 
     setTextSize, 
-    setTimeZone 
+    setTimeZone,
+    toggleDarkMode,
 } from "./settingsState.js";
 
 // Time zone
@@ -33,4 +34,9 @@ bus.subscribe(EVENTS.SETTINGS.OBJECT_MARKER_SIZE_SELECT, (event) => {
 // Orbit lines
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
     setOrbitLines(event.detail.orbitLines);
+});
+
+// Dark mode
+bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
+    toggleDarkMode(event.detail.darkMode);
 });

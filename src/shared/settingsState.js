@@ -1,9 +1,17 @@
+function darkModePreferred() {
+    if (!window.matchMedia) {
+        return true;
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
 const defaults = {
     timeZone: "UTC",
     font: "Default",
     textSize: "Default",
     objectMarkerSize: "Default",
     orbitLines: "Colour",
+    darkMode: darkModePreferred(),
 };
 
 async function loadState() {
@@ -22,7 +30,8 @@ function persist() {
         font, 
         textSize, 
         objectMarkerSize, 
-        orbitLines 
+        orbitLines,
+        darkMode, 
     }).catch((err) => {
         console.error(`Failed to save setting: ${err}`);
     });
@@ -67,5 +76,14 @@ export let orbitLines = initial.orbitLines;
 
 export function setOrbitLines(value) {
     orbitLines = value;
+    persist();
+}
+
+// Dark mode
+// TODO: I am not sure about whether resetting settings should reset this. Feels slightly out of place.
+export let darkMode = initial.darkMode;
+
+export function toggleDarkMode(value) {
+    darkMode = value;
     persist();
 }

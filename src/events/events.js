@@ -15,9 +15,9 @@ export const EVENTS = {
         LABELS_TOGGLE: "sim:labels_toggle",
         OBJECT_TOGGLE: "sim:object_toggle",
     },
-    FULLSCREEN: {
-        ENTER: "fullscreen:enter",
-        EXIT: "fullscreen:exit",
+    TOOLBAR: {
+        FULLSCREEN_TOGGLE: "toolbar:fullscreen_toggle",
+        DARK_MODE_TOGGLE: "toolbar:dark_mode_toggle",
     },
     SETTINGS: {
         TIME_ZONE_SELECT: "settings:time_zone_select",

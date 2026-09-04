@@ -12,7 +12,7 @@ const defaults = {
     // TODO: consider whether to do set or array
     hiddenObjects: {
         "Solar System": ["Pluto", "1P/Halley", "3I/ATLAS"],
-    }
+    },
 };
 
 function loadState() {
