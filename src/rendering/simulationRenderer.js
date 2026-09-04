@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { running, frozen, simulationSpeedSeconds, labelsShown, hiddenObjects } from "../shared/simulationState.js";
-import { font, textSize } from "../shared/settingsState.js";
+import { darkMode, font, textSize } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -31,11 +31,37 @@ const objectColour = 0xFFFFFF; // White
 const orbitPoints = 360; // Number of points to approximate the ellipse
 const orbitColour = 0xFFFFFF; // White
 
+// TODO: reorder defaults (maybe some sort of struct?)
 const defaultFontSize = "12px";
 const largerFontSize = "18px";
 
 const defaultFontFamily = "inherit";
 const openDyslexicFontFamily = "OpenDyslexic";
+
+const lightBackground = new THREE.Color("white");
+const darkBackground = new THREE.Color("black");
+
+const lightModeLabelColour = "black";
+const darkModeLabelColour = "white";
+
+const lightModeTextShadow = "0 0 3px white";
+const darkModeTextShadow = "0 0 3px black";
+
+function getBackgroundColour(isDarkMode) {
+    if (isDarkMode) {
+        return darkBackground;
+    } else {
+        return lightBackground;
+    }
+}
+
+function getFontColour(isDarkMode) {
+    if (isDarkMode) {
+        return darkModeLabelColour;
+    } else {
+        return lightModeLabelColour;
+    }
+}
 
 function getFontSize(size) {
     if (size == "Larger") {
@@ -50,6 +76,14 @@ function getFontFamily(chosenFont) {
         return openDyslexicFontFamily;
     } else {
         return defaultFontFamily;
+    }
+}
+
+function getTextShadow(isDarkMode) {
+    if (isDarkMode) {
+        return darkModeTextShadow;
+    } else {
+        return lightModeTextShadow;
     }
 }
 
@@ -75,10 +109,10 @@ function createOrUpdateObjectMesh(name, position) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = "white";
+        labelDiv.style.color = getFontColour(darkMode);
         labelDiv.style.fontSize = getFontSize(textSize);
         labelDiv.style.fontFamily = getFontFamily(font);
-        labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
+        labelDiv.style.textShadow = getTextShadow(darkMode);
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
@@ -202,7 +236,7 @@ export function init(name) {
     controls.update();
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color("black");
+    scene.background = getBackgroundColour(darkMode);
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
     labelRenderer = new CSS2DRenderer();
@@ -264,6 +298,17 @@ export function setFontFamily(chosenFont) {
     let fontFamily = getFontFamily(chosenFont);
     for (const label of objectLabels.values()) {
         label.element.style.fontFamily = fontFamily;
+    }   
+}
+
+export function toggleSimulationDarkMode(isDarkMode) {
+    scene.background = getBackgroundColour(darkMode);
+
+    let labelColour = getFontColour(isDarkMode);
+    let labelTextShadow = getTextShadow(isDarkMode);
+    for (const label of objectLabels.values()) {
+        label.element.style.color = labelColour;
+        label.element.style.textShadow = labelTextShadow;
     }   
 }
 

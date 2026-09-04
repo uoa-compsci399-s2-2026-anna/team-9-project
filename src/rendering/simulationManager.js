@@ -18,6 +18,7 @@ import {
     setObjectVisibility,
     setFontSize,
     setFontFamily,
+    toggleSimulationDarkMode,
 } from "./simulationRenderer.js";
 import { setSimulationSpeed, toggleObject } from "../shared/simulationState.js";
 
@@ -114,4 +115,9 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
 // Text size
 bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
     setFontSize(event.detail.textSize);
+});
+
+// Dark mode
+bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
+    toggleSimulationDarkMode(event.detail.darkMode);
 });
