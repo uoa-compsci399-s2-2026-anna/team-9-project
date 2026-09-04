@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { running, frozen, simulationSpeedSeconds, labelsShown, hiddenObjects } from "../shared/simulationState.js";
+import { textSize } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -30,6 +31,17 @@ const objectColour = 0xFFFFFF; // White
 const orbitPoints = 360; // Number of points to approximate the ellipse
 const orbitColour = 0xFFFFFF; // White
 
+const defaultFontSize = "12px";
+const largerFontSize = "18px";
+
+function getFontSize(size) {
+    if (size == "Larger") {
+        return largerFontSize;
+    } else {
+        return defaultFontSize;
+    }
+}
+
 /**
  * If the target object does not exist, then its mesh is created at the given position.
  * If the target object does exist, then its position is updated.
@@ -53,7 +65,7 @@ function createOrUpdateObjectMesh(name, position) {
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
         labelDiv.style.color = "white";
-        labelDiv.style.fontSize = "12px";
+        labelDiv.style.fontSize = getFontSize(textSize);
         labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
 
         const label = new CSS2DObject(labelDiv);
@@ -226,6 +238,13 @@ export function setObjectVisibility(name, value) {
 
     if (mesh) {
         mesh.visible = value;
+    }
+}
+
+export function setFontSize(size) {
+    let fontSize = getFontSize(size);
+    for (const label of objectLabels.values()) {
+        label.element.style.fontSize = fontSize;
     }
 }
 
