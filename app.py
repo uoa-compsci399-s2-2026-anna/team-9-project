@@ -221,6 +221,7 @@ def init_solar():
         "Halley's Comet",
     ]
 
+    # Add Halley's comet
     sim.add(
         m=0.0,
         a=17.8,
