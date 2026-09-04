@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { running, frozen, simulationSpeedSeconds, labelsShown, hiddenObjects } from "../shared/simulationState.js";
-import { textSize } from "../shared/settingsState.js";
+import { font, textSize } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -30,11 +30,22 @@ const objectColour = 0xFFFFFF; // White
 const defaultFontSize = "12px";
 const largerFontSize = "18px";
 
+const defaultFontFamily = "inherit";
+const openDyslexicFontFamily = "OpenDyslexic";
+
 function getFontSize(size) {
     if (size == "Larger") {
         return largerFontSize;
     } else {
         return defaultFontSize;
+    }
+}
+
+function getFontFamily(chosenFont) {
+    if (chosenFont == "OpenDyslexic") {
+        return openDyslexicFontFamily;
+    } else {
+        return defaultFontFamily;
     }
 }
 
@@ -62,6 +73,7 @@ function createOrUpdateMesh(name, position) {
         labelDiv.textContent = name;
         labelDiv.style.color = "white";
         labelDiv.style.fontSize = getFontSize(textSize);
+        labelDiv.style.fontFamily = getFontFamily(font);
         labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
 
         const label = new CSS2DObject(labelDiv);
@@ -177,6 +189,13 @@ export function setFontSize(size) {
     for (const label of objectLabels.values()) {
         label.element.style.fontSize = fontSize;
     }
+}
+
+export function setFontFamily(chosenFont) {
+    let fontFamily = getFontFamily(chosenFont);
+    for (const label of objectLabels.values()) {
+        label.element.style.fontFamily = fontFamily;
+    }   
 }
 
 /**
