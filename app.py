@@ -134,19 +134,9 @@ def calculate_simulation_info(sim):
         # Get the COM of the system
         com = sim.com()
 
-        # Get the orbital elements relative to the primary
-        # This may be inacurrate FIX LATER
         particle = sim.particles[i]
         primary = com
         orbit = particle.orbit(primary=primary)
-
-        # Extract necessary parameters
-        c = orbit.a * orbit.e         # Distance from focus to the geometric center
-
-        # Absolute 3D coordinates of the orbit's geometric center
-        center_x = primary.x - c * orbit.evec.x / e
-        center_y = primary.y - c * orbit.evec.y / e
-        center_z = primary.z - c * orbit.evec.z / e
 
         """
         https://rebound.hanno-rein.de/particles/orbitalelements/
@@ -156,33 +146,13 @@ def calculate_simulation_info(sim):
         inc 	inclination, in
         Omega 	longitude of ascending node, in
         omega 	argument of pericenter, in
-        pomega 	longitude of pericenter, in
-        f 	true anomaly, in
-        M 	mean anomaly, in
-        E 	Eccentric anomaly (in for ; unbounded for ). Because this requires solving Kepler's equation it is only calculated when needed in python and never calculated in C. To get the eccentric anomaly in C, use the function double reb_M_to_E(double e, double M)
-        l 	mean longitude = Omega + omega + M, in
-        theta 	true longitude = Omega + omega + f, in
-        T 	time of pericenter passage
-        rhill 	Hill radius,
         """
         orbital_data[objects[i]] = {
             "semi major": orbit.a,  # Longest radius of ellipse
             "eccentricity": orbit.e,  # Shape of ellipse
-            "ascending longitude": orbit.Omega,  # Angle about the center axis
             "inclination": orbit.inc,  # Amount to tilt
+            "ascending longitude": orbit.Omega,  # Angle about the center axis
             "pericenter argument": orbit.omega, # Argument of the pericenter
-            "pericenter longitude": orbit.pomega,
-            "true anomaly": orbit.f,
-            "mean anomaly": orbit.M,
-            "eccentric anomaly": orbit.E,
-            "mean longitude": orbit.l,
-            "pericenter passage time": orbit.T,
-            "hill radius": orbit.rhill,
-            "center": {
-                "x": center_x,
-                "y": center_y,
-                "z": center_z,
-            }
         }
 
     return {"positions": positions, "orbital_data": orbital_data}
