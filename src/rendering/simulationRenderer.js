@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { running, frozen, simulationSpeed } from "../shared/simulationState.js";
+import { running, frozen, simulationSpeedSeconds, labelsShown, hiddenObjects } from "../shared/simulationState.js";
+import { font, textSize } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -10,14 +11,43 @@ let currentSystem;
 
 let scene;
 let camera;
+let controls;
 let renderer;
 let labelRenderer;
 
+const cameraDefaults = {
+    position: new THREE.Vector3(0, 0, 50),
+    target: new THREE.Vector3(0, 0, 0),
+};
+
 const objectMeshes = new Map();
+const objectLabels = new Map();
 
 // Default size and colour of all the objects
 const objectSize = 0.05;
 const objectColour = 0xFFFFFF; // White
+
+const defaultFontSize = "12px";
+const largerFontSize = "18px";
+
+const defaultFontFamily = "inherit";
+const openDyslexicFontFamily = "OpenDyslexic";
+
+function getFontSize(size) {
+    if (size == "Larger") {
+        return largerFontSize;
+    } else {
+        return defaultFontSize;
+    }
+}
+
+function getFontFamily(chosenFont) {
+    if (chosenFont == "OpenDyslexic") {
+        return openDyslexicFontFamily;
+    } else {
+        return defaultFontFamily;
+    }
+}
 
 /**
  * If the target object does not exist, then its mesh is created at the given position.
@@ -34,6 +64,7 @@ function createOrUpdateMesh(name, position) {
         const material = new THREE.MeshStandardMaterial({ color: objectColour });
 
         mesh = new THREE.Mesh(geometry, material);
+        mesh.visible = !hiddenObjects[currentSystem].includes(name);
         scene.add(mesh);
         objectMeshes.set(name, mesh);
 
@@ -41,12 +72,15 @@ function createOrUpdateMesh(name, position) {
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
         labelDiv.style.color = "white";
-        labelDiv.style.fontSize = "12px";
+        labelDiv.style.fontSize = getFontSize(textSize);
+        labelDiv.style.fontFamily = getFontFamily(font);
         labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
+        label.visible = labelsShown;
         mesh.add(label);
+        objectLabels.set(name, label);
     }
 
     mesh.position.set(position.x, position.y, position.z);
@@ -84,15 +118,15 @@ export function init(name) {
     const cameraFar = 200;
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
-    camera.position.set(0, 0, 50);
+    camera.position.copy(cameraDefaults.position);
 
     // Avoid buggy behaviour when the camera is near the clipping plane
     const controlsMin = 1;
     const controlsMax = 100;
     const controlsZoomMultiplier = 2.5;
 
-    const controls = new OrbitControls(camera, canvas);
-    controls.target.set(0, 0, 0); // Look at the sun
+    controls = new OrbitControls(camera, canvas);
+    controls.target.copy(cameraDefaults.target); // Look at the sun
     controls.minDistance = controlsMin; 
     controls.maxDistance = controlsMax;
     controls.zoomSpeed = controlsZoomMultiplier;
@@ -118,6 +152,50 @@ export function init(name) {
 
     // Start rendering frames and updating the simulation
     renderFrame();
+}
+
+export function stepForward() {
+    currentSimulationTime += simulationSpeedSeconds;
+    updateSimulation();
+}
+
+export function stepBack() {
+    currentSimulationTime -= simulationSpeedSeconds;
+    updateSimulation();
+}
+
+export function resetView() {
+    camera.position.copy(cameraDefaults.position);
+    controls.target.copy(cameraDefaults.target); // Look at the sun
+    controls.update();
+}
+
+export function setLabelsVisibility(value) {
+    for (const label of objectLabels.values()) {
+        label.visible = value;
+    }
+}
+
+export function setObjectVisibility(name, value) {
+    const mesh = objectMeshes.get(name);
+
+    if (mesh) {
+        mesh.visible = value;
+    }
+}
+
+export function setFontSize(size) {
+    let fontSize = getFontSize(size);
+    for (const label of objectLabels.values()) {
+        label.element.style.fontSize = fontSize;
+    }
+}
+
+export function setFontFamily(chosenFont) {
+    let fontFamily = getFontFamily(chosenFont);
+    for (const label of objectLabels.values()) {
+        label.element.style.fontFamily = fontFamily;
+    }   
 }
 
 /**
@@ -154,7 +232,7 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += simulationSpeed * deltaTime;
+        currentSimulationTime += simulationSpeedSeconds * deltaTime;
 
         updateSimulation();
     }
