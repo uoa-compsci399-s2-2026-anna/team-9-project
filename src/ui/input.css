@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "OpenDyslexic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/src/fonts/OpenDyslexic-Regular.woff2) format("woff2");
+}
+
+@theme {
+  --font-accessible: "OpenDyslexic";
+}
+
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /*
