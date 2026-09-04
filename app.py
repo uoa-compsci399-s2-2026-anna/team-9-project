@@ -139,9 +139,9 @@ def calculate_simulation_info(sim):
         
         a 	semi-major axis
         e 	eccentricity
-        inc 	inclination, in
-        Omega 	longitude of ascending node, in
-        omega 	argument of pericenter, in
+        inc 	inclination, in radians
+        Omega 	longitude of ascending node, in radians
+        omega 	argument of pericenter, in radians
         """
         orbital_data[objects[i]] = {
             "semi major": orbit.a,  # Longest radius of ellipse
