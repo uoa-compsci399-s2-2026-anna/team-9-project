@@ -26,10 +26,9 @@ const objectLabels = new Map();
 
 // Default size and colour of all the objects
 const objectSize = 0.05;
-const objectColour = 0xFFFFFF; // White
+const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
-const orbitColour = 0xFFFFFF; // White
 
 // TODO: reorder defaults (maybe some sort of struct?)
 const defaultFontSize = "12px";
@@ -46,6 +45,9 @@ const darkModeLabelColour = "white";
 
 const lightModeTextShadow = "0 0 3px white";
 const darkModeTextShadow = "0 0 3px black";
+
+const lightModeOrbitColour = "black";
+const darkModeOrbitColour = "white";
 
 function getBackgroundColour(isDarkMode) {
     if (isDarkMode) {
@@ -84,6 +86,14 @@ function getTextShadow(isDarkMode) {
         return darkModeTextShadow;
     } else {
         return lightModeTextShadow;
+    }
+}
+
+function getOrbitColour(isDarkMode) {
+    if (isDarkMode) {
+        return darkModeOrbitColour;
+    } else {
+        return lightModeOrbitColour;
     }
 }
 
@@ -138,7 +148,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: orbitColour });
+        const material = new THREE.LineBasicMaterial({ color: getOrbitColour(settings.darkMode) });
         line = new THREE.LineLoop(geometry, material);
 
         scene.add(line);
@@ -309,7 +319,12 @@ export function toggleSimulationDarkMode(isDarkMode) {
     for (const label of objectLabels.values()) {
         label.element.style.color = labelColour;
         label.element.style.textShadow = labelTextShadow;
-    }   
+    }
+
+    let orbitColour = getOrbitColour(isDarkMode);
+    for (const orbit of orbitalLines.values()) {
+        orbit.material.color.set(orbitColour);
+    }
 }
 
 /**
