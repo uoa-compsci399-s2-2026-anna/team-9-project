@@ -6,6 +6,7 @@ import rebound
 import os
 import json
 import sys
+from systems import *
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = 'unverified'
@@ -98,6 +99,8 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
+    global sim, objects
+
     system_name = system_name.lower()
 
     # Catch poor input
@@ -112,7 +115,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     if system_name == "solar system":
         # Init state if empty
         if sim is None:
-            init_solar()
+            sim, objects = init_solar()
 
         # Set time
         sim.integrate(t)
@@ -163,48 +166,3 @@ def calculate_simulation_info(sim):
         }
 
     return {"positions": positions, "orbital_data": orbital_data}
-
-
-def init_solar():
-    """
-    Initialise solar system function
-    """
-    global sim
-    global objects
-
-    # Initialise the simulation
-    sim = rebound.Simulation()
-
-    sim.units = ("AU", "s", "Msun")
-
-    # Add the sun at current position
-    # sim.add("Sun")
-    sim.add("solar system")
-
-    # Add and set all objects in the solar system
-    objects = [
-        "Sun",
-        "Mercury",
-        "Venus",
-        "Earth",
-        "Mars",
-        "Jupiter",
-        "Saturn",
-        "Uranus",
-        "Neptune",
-        "Halley's Comet",
-    ]
-
-    # Add Halley's comet
-    sim.add(
-        m=0.0,
-        a=17.8,
-        e=0.967,
-        inc=162.0 * 3.14159 / 180.0,
-        omega=58.4 * 3.14159 / 180.0,
-        Omega=111.9 * 3.14159 / 180.0,
-        M=0.0,
-    )
-
-    # Move to COM of the system
-    sim.move_to_com()
