@@ -93,11 +93,18 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
         points.push(x, y, 0);
     }
 
+    // Create or update the position attribute of the line's geometry
     const geometry = line.geometry;
-    geometry.setAttribute(
-        'position',
-        new THREE.Float32BufferAttribute(points, 3)
-    );
+    const position = geometry.getAttribute('position');
+    if (!position) {
+        geometry.setAttribute(
+            'position',
+            new THREE.Float32BufferAttribute(points, 3)
+        );
+    } else {
+        position.array.set(points);
+        position.needsUpdate = true;
+    }
 
     // Use Euler angles to rotate the line to match the orbital parameters
     // R = Rz(Omega) * Rx(inc) * Rz(omega)
