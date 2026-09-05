@@ -9,11 +9,11 @@ import sys
 from systems import *
 
 # Prevent internal server errors when adding objects to the simulation
-rebound.horizons.SSL_CONTEXT = 'unverified'
+rebound.horizons.SSL_CONTEXT = "unverified"
 
 # Resolve base path to the packaged resources folder when frozen,
 # or to the script's own directory otherwise
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     base_path = os.path.dirname(os.path.dirname(sys.executable))
 else:
     base_path = os.path.dirname(os.path.abspath(__file__))
@@ -74,14 +74,12 @@ async def simulation(request: Request, system_name: str):
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
-
-            "object_num": 9, # Temporary; set this programmatically (or have we decided against an object count?)
-
+            "object_num": 9,  # Temporary; set this programmatically (or have we decided against an object count?)
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": True,
-            "settings_overlay": True
-        }
+            "settings_overlay": True,
+        },
     )
 
 
@@ -109,7 +107,9 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Find the next requested system
-    system = next(system for system in all_systems if system["name"].lower() == system_name)
+    system = next(
+        system for system in all_systems if system["name"].lower() == system_name
+    )
 
     # Hardcode Solar System
     if system_name == "solar system":
@@ -174,7 +174,7 @@ def calculate_simulation_info(sim):
             "e": orbit.e,  # Shape of ellipse
             "inc": orbit.inc,  # Amount to tilt
             "Omega": orbit.Omega,  # Angle about the center axis
-            "omega": orbit.omega, # Argument of the pericenter
+            "omega": orbit.omega,  # Argument of the pericenter
         }
 
     return {"positions": positions, "orbital_data": orbital_data}
