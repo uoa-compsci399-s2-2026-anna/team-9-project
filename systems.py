@@ -50,6 +50,10 @@ def init_solar():
 
 
 def init_kepler_16():
+    """
+    Initialise Kepler-16 function
+    Returns rebound simulation object and objects
+    """
     # Initialise the simulation
     sim = rebound.Simulation()
 
