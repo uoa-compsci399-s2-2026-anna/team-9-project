@@ -69,32 +69,12 @@ def init_kepler_16():
         "kepler-16b",
     ]
 
-    # Binary
-    a_bin = 0.22431
-    e_bin = 0.15944
-    i_bin = deg2rad(90.3401)
-    Omega_bin = deg2rad(0.0)
-    omega_bin = deg2rad(263.464)
-    lambda_bin = deg2rad(92.3520)
-
-    # Planet
-    a_p = 0.7048
-    e_p = 0.0069
-    i_p = deg2rad(90.0322)
-    Omega_p = deg2rad(0.003)
-    omega_p = deg2rad(318.0)
-    lambda_p = deg2rad(106.51)
-
-    # Convert mean longitude to mean anomaly:
-    M_bin = lambda_bin - Omega_bin - omega_bin
-    M_p   = lambda_p   - Omega_p   - omega_p
-
     # Add 16A (First star)
     sim.add(m=0.6897)
     # Add 16B (Second star)
-    sim.add(m=0.20255, a=a_bin, e=e_bin, inc=i_bin, Omega=Omega_bin, omega=omega_bin, M=M_bin)
+    sim.add(m=0.20255, a=0.22431, e=0.15944, inc=1.5767321916, Omega=0.0, omega=4.5983142605, M=-2.9864677897)
     # Add 16b (Planet)
-    sim.add(m=0.0003178778, a=a_p, e=e_p, inc=i_p, Omega=Omega_p, omega=omega_p, M=M_p)
+    sim.add(m=0.0003178778, a=0.7048, e=0.0069, inc=1.5713583228, Omega=0.0000523599, omega=5.5501470213, M=-3.6912491949)
 
     sim.move_to_com()
 
