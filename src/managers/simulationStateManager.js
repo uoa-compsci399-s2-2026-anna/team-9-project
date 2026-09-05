@@ -49,6 +49,7 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
     setRunning(event.detail.start);
 });
 
-bus.subscribe(EVENTS.SIM.FREEZE, (event) => {
-    setFrozen(event.detail.freeze);
+// Freeze the simulation when the settings menu is opened (unfreeze when closed)
+bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
+    setFrozen(event.detail.openMenu);
 });

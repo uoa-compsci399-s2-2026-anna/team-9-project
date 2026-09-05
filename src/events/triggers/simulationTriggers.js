@@ -108,34 +108,3 @@ systemButton.addEventListener("click", () => {
         showDropdown: systemDropdown.style.display === "none" 
     });
 });
-
-// Triggers for the freezing/unfreezing the simulation when the settings menu is opened/closed
-const settingsButton = document.getElementById("settings-button");
-const closeSettingsMenuButton = document.getElementById("close-settings-menu-button");
-const settingsOverlay = document.getElementById("settings-overlay");
-
-settingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.FREEZE, { freeze: true });
-});
-
-function closeSettingsMenu() {
-    bus.publish(EVENTS.SIM.FREEZE, { freeze: false });
-}
-
-// TODO: This doesn't belong here
-
-closeSettingsMenuButton.addEventListener("click", closeSettingsMenu);
-
-settingsOverlay.addEventListener("click", (e) => {
-    // Close settings menu only when the user clicks outside of the main settings menu panel
-    if (e.target === e.currentTarget) {
-        closeSettingsMenu();
-    }
-});
-
-document.addEventListener("keydown", (e) => {
-    // Close settings menu if open and user presses escape
-    if (e.key === "Escape" && document.body.classList.contains("settings-menu-open")) {
-        closeSettingsMenu();
-    }
-});
