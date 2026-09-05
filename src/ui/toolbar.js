@@ -33,7 +33,6 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 
 const settingsOverlay = document.querySelector("#settings-overlay");
 
-// TODO: add some comments here
 bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
     const { openMenu } = event.detail;
 

@@ -6,6 +6,7 @@ import {
     setSimulationState,
     toggleObject,
 } from "../shared/simulationState.js";
+// TODO: consider splitting state and rendering?
 import { 
     init, 
     stepForward, 
@@ -95,7 +96,6 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
     setFontFamily(event.detail.font);
 })
 
-// TODO: I think having it duplicated is best rather than all invoked from the single subscriber? I mean this is literally leveraging the event pattern
 // Text size
 bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
     setFontSize(event.detail.textSize);

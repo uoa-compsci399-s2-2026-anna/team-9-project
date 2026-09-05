@@ -31,7 +31,6 @@
       <label class="flex">
         <span class="flex-1">Time zone</span>
         <select id="time-zone-select" name="time-zone" class="flex-1">
-          <!-- TODO: define these values somewhere else? -->
           {% for option in settings_schema.timeZone.options %}
             <option value="{{ option.value }}" {{ "selected" if option.value == settings.timeZone }}>{{ option.label }}</option>
           {% endfor %}
