@@ -2,7 +2,6 @@ import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { running } from "../../shared/simulationState.js";
 
-// TODO: this is overused
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
 
@@ -81,7 +80,7 @@ objectsToggles.addEventListener("change", (event) => {
 
 	const objectName = event.target.dataset.object;
 	const isEnabled = event.target.checked;
-    // TODO: somehow document what each event provides?
+
     bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { system: currentSystem, name: objectName, value: isEnabled });
 });
 
