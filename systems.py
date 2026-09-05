@@ -69,11 +69,6 @@ def init_kepler_16():
         "kepler-16b",
     ]
 
-    # Masses of the objects in solar masses
-    m_A = 0.6897
-    m_B = 0.20255
-    m_p = 0.333 * 0.000954588  # (0.333 Mjup)
-
     # Binary
     a_bin = 0.22431
     e_bin = 0.15944
@@ -95,11 +90,11 @@ def init_kepler_16():
     M_p   = lambda_p   - Omega_p   - omega_p
 
     # Add 16A (First star)
-    sim.add(m=m_A)
+    sim.add(m=0.6897)
     # Add 16B (Second star)
-    sim.add(m=m_B, a=a_bin, e=e_bin, inc=i_bin, Omega=Omega_bin, omega=omega_bin, M=M_bin)
+    sim.add(m=0.20255, a=a_bin, e=e_bin, inc=i_bin, Omega=Omega_bin, omega=omega_bin, M=M_bin)
     # Add 16b (Planet)
-    sim.add(m=m_p, a=a_p, e=e_p, inc=i_p, Omega=Omega_p, omega=omega_p, M=M_p)
+    sim.add(m=0.0003178778, a=a_p, e=e_p, inc=i_p, Omega=Omega_p, omega=omega_p, M=M_p)
 
     sim.move_to_com()
 
@@ -131,8 +126,7 @@ def init_trappist_1():
     ]
 
     # Trappist-1 
-    m_star = 0.0898  # Mass of Trappist-1 in solar masses
-    sim.add(m=m_star)
+    sim.add(m=0.0898)
 
     # All inclination and Omega are identical
     inc = 1.5707963267948966
