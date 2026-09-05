@@ -1,26 +1,5 @@
-function darkModePreferred() {
-    if (!window.matchMedia) {
-        return true;
-    }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-
-const defaults = {
-    timeZone: "UTC",
-    font: "Default",
-    textSize: "Default",
-    objectMarkerSize: "Default",
-    orbitLine: "Colour",
-    darkMode: darkModePreferred(),
-};
-
 async function loadState() {
-    try {
-        const saved = await window.settingsAPI.get();
-        return { ...defaults, ...saved };
-    } catch {
-        return { ...defaults };
-    }
+    return await window.settingsAPI.get();
 }
 
 function persist() {

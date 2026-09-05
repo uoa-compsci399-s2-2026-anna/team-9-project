@@ -1,9 +1,25 @@
 const { spawn } = require('child_process');
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron');
 const path = require('path');
 const Store = require('electron-store')
 
 const store = new Store();
+
+const DEFAULT_SETTINGS = {
+    timeZone: "UTC",
+    font: "Default",
+    textSize: "Default",
+    objectMarkerSize: "Default",
+    orbitLine: "Colour",
+};
+
+// Initialise the settings store in case of any missing values
+const existingSettings = store.get('settings') || {};
+store.set('settings', {
+    ...DEFAULT_SETTINGS,
+    darkMode: nativeTheme.shouldUseDarkColors,
+    ...existingSettings,
+});
 
 // TODO: INITIAL STATE (maybe move elsewhere... still has to be in the main process)... I just don't like all the settings living here
 let simulationState = {
