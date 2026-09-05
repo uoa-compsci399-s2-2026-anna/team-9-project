@@ -61,24 +61,41 @@ fontSelect.addEventListener("change", (e) => {
 const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");
 
+// bus.subscribe(EVENTS.TOOLBAR.FULLSCREEN_TOGGLE, (event) => {
+//     const { fullScreen } = event.detail;
+
+//     enterFullscreenIcon.classList.toggle("hidden", fullScreen);
+//     exitFullscreenIcon.classList.toggle("hidden", !fullScreen);
+
+//     // User wants to enter fullscreen
+//     if (fullScreen) {
+//         if (html.requestFullscreen) {
+//             html.requestFullscreen();
+//         } else if (html.webkitRequestFullscreen) {
+//             // Safari
+//             html.webkitRequestFullscreen();
+//         } else if (html.msRequestFullscreen) {
+//             // IE11
+//             html.msRequestFullscreen();
+//         }
+//     } else {
+//         document.exitFullscreen();
+//     }
+// });
+function setFullscreenIcons(fullScreen) {
+    enterFullscreenIcon.classList.toggle("hidden", fullScreen);
+    exitFullscreenIcon.classList.toggle("hidden", !fullScreen);
+}
+
+window.fullscreenAPI.get().then(setFullscreenIcons);
+
+// TODO: this doesn't work for F11
+window.fullscreenAPI.onChange(setFullscreenIcons);
+
+// TODO: change event name bc this is only for the button?
 bus.subscribe(EVENTS.TOOLBAR.FULLSCREEN_TOGGLE, (event) => {
     const { fullScreen } = event.detail;
 
-    enterFullscreenIcon.classList.toggle("hidden", fullScreen);
-    exitFullscreenIcon.classList.toggle("hidden", !fullScreen);
-
-    // User wants to enter fullscreen
-    if (fullScreen) {
-        if (html.requestFullscreen) {
-            html.requestFullscreen();
-        } else if (html.webkitRequestFullscreen) {
-            // Safari
-            html.webkitRequestFullscreen();
-        } else if (html.msRequestFullscreen) {
-            // IE11
-            html.msRequestFullscreen();
-        }
-    } else {
-        document.exitFullscreen();
-    }
+    setFullscreenIcons(fullScreen);
+    window.fullscreenAPI.set(fullScreen);
 });

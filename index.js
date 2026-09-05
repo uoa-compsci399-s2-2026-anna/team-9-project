@@ -49,9 +49,20 @@ ipcMain.on('simulationState:set', (_event, newState) => {
     simulationState = { ...simulationState, ...newState };
 });
 
+let mainWindow;
+
+ipcMain.on('fullscreen:set', (_event, value) => {
+    mainWindow?.setFullScreen(value);
+});
+
+ipcMain.handle('fullscreen:get', () => {
+    return mainWindow?.isFullScreen() ?? false;
+});
+
 // Squirrel launches the appplication multiple extra times during install/update/uninstall
 // so it can create/remove the start menu shortcut. This detects those launches,
 // handles the shortcut, and quits the application immediately.
+// TODO: move this up?
 if (require('electron-squirrel-startup')) {
     app.quit();
 }
@@ -157,7 +168,7 @@ function buildInitialUrl(baseUrl) {
  */
 async function createWindow(python_url) {
     // Create the browser window with specified preferences
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         show: false,    
