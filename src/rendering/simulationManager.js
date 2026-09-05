@@ -2,17 +2,14 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { 
     setRunning, 
-    setFrozen, 
-    setSimulationSpeedUnit, 
-    setHabitableZoneShown, 
-    setOrbitsShown, 
-    setReferenceGridShown, 
-    setLabelsShown,
+    setFrozen,
+    setSimulationState,
+    toggleObject,
 } from "../shared/simulationState.js";
 import { 
     init, 
     stepForward, 
-    stepBack, 
+    stepBack,
     resetView, 
     setLabelsVisibility, 
     setObjectVisibility,
@@ -20,7 +17,6 @@ import {
     setFontFamily,
     toggleSimulationDarkMode,
 } from "./simulationRenderer.js";
-import { setSimulationSpeed, toggleObject } from "../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -32,16 +28,6 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
 
 bus.subscribe(EVENTS.SIM.FREEZE, (event) => {
     setFrozen(event.detail.freeze);
-});
-
-// Speed adjuster
-
-bus.subscribe(EVENTS.SIM.ADJUST_SPEED, (event) => {
-    setSimulationSpeed(event.detail.speed);
-});
-
-bus.subscribe(EVENTS.SIM.ADJUST_SPEED_UNIT, (event) => {
-    setSimulationSpeedUnit(event.detail.unit);
 });
 
 // Step forward/Step back
@@ -58,27 +44,37 @@ bus.subscribe(EVENTS.SIM.STEP_BACK, () => {
 
 bus.subscribe(EVENTS.SIM.RESET_VIEW, () => {
     resetView();
-})
+});
+
+// Speed adjuster
+
+bus.subscribe(EVENTS.SIM.ADJUST_SPEED, (event) => {
+    setSimulationState("simulationSpeed", event.detail.speed);
+});
+
+bus.subscribe(EVENTS.SIM.ADJUST_SPEED_UNIT, (event) => {
+    setSimulationState("simulationSpeedUnit", event.detail.unit);
+});
 
 // View settings
 
 bus.subscribe(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, (event) => {
-    setHabitableZoneShown(event.detail.value);
+    setSimulationState("habitableZoneShown", event.detail.value);
 });
 
 bus.subscribe(EVENTS.SIM.ORBITS_TOGGLE, (event) => {
-    setOrbitsShown(event.detail.value);
+    setSimulationState("orbitsShown", event.detail.value);
 });
 
 bus.subscribe(EVENTS.SIM.REFERENCE_GRID_TOGGLE, (event) => {
-    setReferenceGridShown(event.detail.value);
+    setSimulationState("referenceGridShown", event.detail.value);
 });
 
 bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
     const { value } = event.detail;
 
     // Update the persisted state
-    setLabelsShown(value);
+    setSimulationState("labelsShown", value);
     // Update the simulation to show/hide labels
     setLabelsVisibility(value);
 });

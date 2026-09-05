@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { running, frozen, simulationSpeedSeconds, labelsShown, hiddenObjects } from "../shared/simulationState.js";
+import { getSimulationSpeedSeconds, simulationState, running, frozen } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
@@ -102,7 +102,7 @@ function createOrUpdateObjectMesh(name, position) {
         const material = new THREE.MeshStandardMaterial({ color: objectColour });
 
         mesh = new THREE.Mesh(geometry, material);
-        mesh.visible = !hiddenObjects[currentSystem].includes(name);
+        mesh.visible = !simulationState.hiddenObjects[currentSystem].includes(name);
         scene.add(mesh);
         objectMeshes.set(name, mesh);
 
@@ -116,7 +116,7 @@ function createOrUpdateObjectMesh(name, position) {
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
-        label.visible = labelsShown;
+        label.visible = simulationState.labelsShown;
         mesh.add(label);
         objectLabels.set(name, label);
     }
@@ -258,12 +258,12 @@ export function init(name) {
 }
 
 export function stepForward() {
-    currentSimulationTime += simulationSpeedSeconds;
+    currentSimulationTime += getSimulationSpeedSeconds();
     updateSimulation();
 }
 
 export function stepBack() {
-    currentSimulationTime -= simulationSpeedSeconds;
+    currentSimulationTime -= getSimulationSpeedSeconds();
     updateSimulation();
 }
 
@@ -346,7 +346,7 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += simulationSpeedSeconds * deltaTime;
+        currentSimulationTime += getSimulationSpeedSeconds() * deltaTime;
 
         updateSimulation();
     }

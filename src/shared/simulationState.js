@@ -1,5 +1,4 @@
-// TODO: This file needs renaming because it is basically just session state
-
+import simulationStateSchema from "./simulationStateSchema.json" with { type: "json" };
 import { timeToSeconds } from "../utils/utils.js";
 
 function loadState() {
@@ -7,93 +6,50 @@ function loadState() {
     return stateElement ? JSON.parse(stateElement.textContent) : {};
 }
 
+const initialState = loadState();
+
+export const simulationState = { ...initialState };
+
 function persist() {
-    window.simulationStateAPI.set({
-        simulationSpeed,
-        simulationSpeedUnit,
-        habitableZoneShown,
-        orbitsShown,
-        referenceGridShown,
-        labelsShown,
-        hiddenObjects,
-    });
+    window.simulationStateAPI.set(simulationState);
 }
 
-const initial = loadState();
+export function setSimulationState(key, value) {
+    if (!(key in simulationState)) {
+        throw new Error(`Unknown simulation state key: ${key}`);
+    }
 
-// Simulation speed
-export let simulationSpeed = initial.simulationSpeed;
-export let simulationSpeedUnit = initial.simulationSpeedUnit;
-export let simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit); 
-
-export function setSimulationSpeed(speed) {
-    simulationSpeed = speed;
-    simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit);
+    simulationState[key] = value;
     persist();
 }
 
-export function setSimulationSpeedUnit(unit) {
-    simulationSpeedUnit = unit;
-    simulationSpeedSeconds = timeToSeconds(simulationSpeed, simulationSpeedUnit);
-    persist();
+export function getSimulationSpeedSeconds() {
+    return timeToSeconds(simulationState.simulationSpeed, simulationState.simulationSpeedUnit);
 }
-
-// View settings
-export let habitableZoneShown = initial.habitableZoneShown;
-export let orbitsShown = initial.orbitsShown;
-export let referenceGridShown = initial.referenceGridShown;
-export let labelsShown = initial.labelsShown;
-
-export function setHabitableZoneShown(value) {
-    habitableZoneShown = value;
-    persist();
-}
-
-export function setOrbitsShown(value) {
-    orbitsShown = value;
-    persist();
-}
-
-export function setReferenceGridShown(value) {
-    referenceGridShown = value;
-    persist();
-}
-
-export function setLabelsShown(value) {
-    labelsShown = value;
-    persist();
-}
-
-// Objects
-export let hiddenObjects = initial.hiddenObjects;
 
 export function toggleObject(system, object, showObject) {
-    if (!hiddenObjects[system]) {
-        hiddenObjects[system] = [];
+    if (!simulationState.hiddenObjects[system]) {
+        simulationState.hiddenObjects[system] = [];
     }
 
     if (showObject) {
         // Unhide the object
-        hiddenObjects[system] = hiddenObjects[system].filter(o => o !== object);
-    } else {
-        if (!hiddenObjects[system].includes(object)) {
-            hiddenObjects[system].push(object);
-        }
+        simulationState.hiddenObjects[system] = simulationState.hiddenObjects[system].filter(o => o !== object);
+    } else if (!simulationState.hiddenObjects[system].includes(object)) {
+        simulationState.hiddenObjects[system].push(object);
     }
 
     persist();
 }
 
-// Running and frozen states are not persisted
+// Running and Frozen are not persisted in the session
 
 export let running = false;
-
 export function setRunning(value) {
     running = value;
 }
 
 export let frozen = false;
-
 export function setFrozen(value) {
     frozen = value;
 }
