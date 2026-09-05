@@ -91,10 +91,10 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 
     // Create or update the position attribute of the line's geometry
     const geometry = line.geometry;
-    const position = geometry.getAttribute('position');
+    const position = geometry.getAttribute("position");
     if (!position) {
         geometry.setAttribute(
-            'position',
+            "position",
             new THREE.Float32BufferAttribute(points, 3)
         );
     } else {
@@ -168,7 +168,7 @@ export function init(name) {
     controls.update();
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color('black');
+    scene.background = new THREE.Color("black");
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
     labelRenderer = new CSS2DRenderer();
