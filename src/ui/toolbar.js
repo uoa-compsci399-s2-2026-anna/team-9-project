@@ -1,6 +1,5 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { darkMode } from "../shared/settingsState.js";
 
 const html = document.documentElement;
 

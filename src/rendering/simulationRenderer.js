@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { running, frozen, simulationSpeedSeconds, labelsShown, hiddenObjects } from "../shared/simulationState.js";
-import { darkMode, font, textSize } from "../shared/settingsState.js";
+import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -109,10 +109,10 @@ function createOrUpdateObjectMesh(name, position) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = getFontColour(darkMode);
-        labelDiv.style.fontSize = getFontSize(textSize);
-        labelDiv.style.fontFamily = getFontFamily(font);
-        labelDiv.style.textShadow = getTextShadow(darkMode);
+        labelDiv.style.color = getFontColour(settings.darkMode);
+        labelDiv.style.fontSize = getFontSize(settings.textSize);
+        labelDiv.style.fontFamily = getFontFamily(settings.font);
+        labelDiv.style.textShadow = getTextShadow(settings.darkMode);
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
@@ -236,7 +236,7 @@ export function init(name) {
     controls.update();
 
     scene = new THREE.Scene();
-    scene.background = getBackgroundColour(darkMode);
+    scene.background = getBackgroundColour(settings.darkMode);
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
     labelRenderer = new CSS2DRenderer();
@@ -302,7 +302,7 @@ export function setFontFamily(chosenFont) {
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
-    scene.background = getBackgroundColour(darkMode);
+    scene.background = getBackgroundColour(settings.darkMode);
 
     let labelColour = getFontColour(isDarkMode);
     let labelTextShadow = getTextShadow(isDarkMode);

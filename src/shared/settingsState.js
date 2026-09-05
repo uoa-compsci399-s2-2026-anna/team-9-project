@@ -1,69 +1,33 @@
+import settingsSchema from "./settingsSchema.json" with { type: "json" };
+
 async function loadState() {
     return await window.settingsAPI.get();
 }
 
 function persist() {
-    // TODO: extract a settings object? same for simulation state?
-    window.settingsAPI.set({ 
-        timeZone, 
-        font, 
-        textSize, 
-        objectMarkerSize, 
-        orbitLine,
-        darkMode, 
-    }).catch((err) => {
+    window.settingsAPI.set(settings).catch((err) => {
         console.error(`Failed to save setting: ${err}`);
     });
 }
 
+function isValidValue(key, value) {
+    return settingsSchema[key].options.some(option => option.value === value);
+}
+
+// TODO: dark mode is added after (not in the json) which feels a bit strange
 const initial = await loadState();
 
-// Time zone
-export let timeZone = initial.timeZone;
+export const settings = { ...initial };
 
-export function setTimeZone(value) {
-    timeZone = value;
-    persist();
-}
+export function setSetting(key, value) {
+    if (!(key in settings)) {
+        throw new Error(`Unknown setting: ${key}`);
+    }
 
-// Font
-export let font = initial.font;
+    if (!isValidValue(key, value)) {
+        throw new Error(`Invalid value for setting "${key}": ${value}`);
+    }
 
-export function setFont(value) {
-    font = value;
-    persist();
-}
-
-// Text size
-export let textSize = initial.textSize;
-
-export function setTextSize(value) {
-    textSize = value;
-    persist();
-}
-
-// Object marker size
-export let objectMarkerSize = initial.objectMarkerSize;
-
-export function setObjectMarkerSize(value) {
-    objectMarkerSize = value;
-    persist();
-}
-
-// Orbit lines
-export let orbitLine = initial.orbitLine;
-
-export function setOrbitLine(value) {
-    orbitLine = value;
-    persist();
-}
-
-// Dark mode
-// TODO: this isn't done right
-// TODO: I am not sure about whether resetting settings should reset this. Feels slightly out of place.
-export let darkMode = initial.darkMode;
-
-export function toggleDarkMode(value) {
-    darkMode = value;
+    settings[key] = value;
     persist();
 }

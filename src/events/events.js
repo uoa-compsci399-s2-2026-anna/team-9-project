@@ -21,7 +21,7 @@ export const EVENTS = {
         DARK_MODE_TOGGLE: "toolbar:dark_mode_toggle",
     },
     SETTINGS: {
-        MENU_TOGGLE: "settings:toggle",
+        MENU_TOGGLE: "settings:menu_toggle",
         TIME_ZONE_SELECT: "settings:time_zone_select",
         FONT_SELECT: "settings:font_select",
         TEXT_SIZE_SELECT: "settings:text_size_select",
