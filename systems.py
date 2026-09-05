@@ -53,6 +53,9 @@ def init_kepler_16():
     """
     Initialise Kepler-16 function
     Returns rebound simulation object and objects
+
+    Data is taken from Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet", Science, 333, 1602
+    https://arxiv.org/abs/1109.3432
     """
     # Initialise the simulation
     sim = rebound.Simulation()
@@ -103,6 +106,13 @@ def init_kepler_16():
     return sim, objects
 
 def init_trappist_1():
+    """
+    Initialise trappist-1 system function
+    Returns rebound simulation object and objects
+
+    Data is calculated from data given in Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets", The Astrophysical Journal, 922:107
+    https://arxiv.org/abs/2010.01074
+    """
     # Initialise the simulation
     sim = rebound.Simulation()
 
