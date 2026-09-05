@@ -51,8 +51,11 @@ ipcMain.on('simulationState:set', (_event, newState) => {
 
 let mainWindow;
 
-ipcMain.on('fullscreen:set', (_event, value) => {
-    mainWindow?.setFullScreen(value);
+ipcMain.on('fullscreen:toggle', () => {
+    if (!mainWindow) { 
+        return;
+    }
+    mainWindow.setFullScreen(!mainWindow.isFullScreen());
 });
 
 ipcMain.handle('fullscreen:get', () => {
@@ -179,6 +182,9 @@ async function createWindow(python_url) {
             preload: path.join(__dirname, 'preload.js'),
         }
     });
+
+    mainWindow.on('enter-full-screen', () => mainWindow.webContents.send('fullscreen:changed', true));
+    mainWindow.on('leave-full-screen', () => mainWindow.webContents.send('fullscreen:changed', false));
 
     // TEMP PLACEMENT
     mainWindow.webContents.on('will-navigate', (event, url) => {

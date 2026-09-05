@@ -17,7 +17,7 @@ export const EVENTS = {
         SYSTEM_DROPDOWN_TOGGLE: "sim:system_dropdown_toggle",
     },
     TOOLBAR: {
-        FULLSCREEN_TOGGLE: "toolbar:fullscreen_toggle",
+        FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
         DARK_MODE_TOGGLE: "toolbar:dark_mode_toggle",
     },
     SETTINGS: {

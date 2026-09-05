@@ -6,7 +6,7 @@ import { darkMode } from "../../shared/settingsState.js";
 const fullscreenButton = document.getElementById("fullscreen-button");
 
 fullscreenButton.addEventListener("click", () => {
-    bus.publish(EVENTS.TOOLBAR.FULLSCREEN_TOGGLE, { fullScreen: !document.fullscreenElement });
+    bus.publish(EVENTS.TOOLBAR.FULLSCREEN_BUTTON_TOGGLE);
 });
 
 // Triggers for dark/light mode button
