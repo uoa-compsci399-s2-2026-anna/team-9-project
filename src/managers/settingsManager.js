@@ -1,8 +1,6 @@
-// TODO: reconsider where this file should live
-
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { setSetting } from "./settingsState.js";
+import { setSetting } from "../shared/settingsState.js";
 
 // Time zone
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {

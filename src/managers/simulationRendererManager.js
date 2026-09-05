@@ -11,7 +11,7 @@ import {
     setFontSize,
     setFontFamily,
     toggleSimulationDarkMode,
-} from "./simulationRenderer.js";
+} from "../rendering/simulationRenderer.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
