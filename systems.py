@@ -87,8 +87,11 @@ def init_kepler_16():
     M_bin = lambda_bin - Omega_bin - omega_bin
     M_p   = lambda_p   - Omega_p   - omega_p
 
+    # Add 16A (First star)
     sim.add(m=m_A)
+    # Add 16B (Second star)
     sim.add(m=m_B, a=a_bin, e=e_bin, inc=i_bin, Omega=Omega_bin, omega=omega_bin, M=M_bin)
+    # Add 16b (Planet)
     sim.add(m=m_p, a=a_p, e=e_p, inc=i_p, Omega=Omega_p, omega=omega_p, M=M_p)
 
     sim.move_to_com()
