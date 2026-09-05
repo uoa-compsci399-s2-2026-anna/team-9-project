@@ -1,5 +1,3 @@
-import settingsSchema from "./settingsSchema.json" with { type: "json" };
-
 async function loadState() {
     return await window.settingsAPI.get();
 }
@@ -10,7 +8,6 @@ function persist() {
     });
 }
 
-// TODO: dark mode is added after (not in the json) which feels a bit strange
 const initial = await loadState();
 
 export const settings = { ...initial };

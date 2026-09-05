@@ -1,4 +1,3 @@
-import simulationStateSchema from "./simulationStateSchema.json" with { type: "json" };
 import { timeToSeconds } from "../utils/utils.js";
 
 function loadState() {

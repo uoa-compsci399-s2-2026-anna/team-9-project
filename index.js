@@ -19,6 +19,7 @@ const DEFAULT_SIM_STATE = Object.fromEntries(
 const existingSettings = store.get('settings') || {};
 store.set('settings', {
     ...DEFAULT_SETTINGS,
+    // By default, whether dark mode is used depends on the theme of the user's device
     darkMode: nativeTheme.shouldUseDarkColors,
     ...existingSettings,
 });
