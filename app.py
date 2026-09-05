@@ -71,6 +71,8 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
         system for system in all_systems if system["name"] == system_name
     )
 
+    print(current_system)
+
     # Get all other systems, except the current system
     dropdown_systems = [
         system for system in all_systems if system["name"] != current_system["name"]

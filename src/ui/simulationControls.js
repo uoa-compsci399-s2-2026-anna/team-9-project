@@ -1,17 +1,5 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import {
-  simulationSpeed,
-  simulationSpeedUnit,
-  habitableZoneShown,
-  orbitsShown,
-  referenceGridShown,
-  labelsShown,
-  hiddenObjects,
-} from "../shared/simulationState.js";
-
-const canvas = document.getElementById("simulation-canvas");
-const currentSystem = canvas.dataset.currentSystem;
 
 // PLAY/PAUSE BUTTON
 
@@ -53,20 +41,6 @@ bus.subscribe(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE, () => {
     viewSettingsHideIcon.classList.toggle("hidden");
 })
 
-
-const viewSettingsValues = {
-	"habitable-zone": habitableZoneShown,
-	"orbits": orbitsShown,
-	"reference-grid": referenceGridShown,
-	"labels": labelsShown,
-};
-
-const viewSettingsToggles = document.getElementById("view-settings-toggles");
-
-viewSettingsToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-	checkbox.checked = viewSettingsValues[checkbox.dataset.setting];
-});
-
 // OBJECTS SIDE PANEL
 
 const objects = document.querySelector("#objects");
@@ -79,12 +53,4 @@ bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
 
     objectsShowIcon.classList.toggle("hidden");
     objectsHideIcon.classList.toggle("hidden");
-});
-
-
-const objectToggles = document.getElementById("objects-toggles");
-const currentHiddenObjects = hiddenObjects[currentSystem]; 
-
-objectToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-	checkbox.checked = !currentHiddenObjects.includes(checkbox.dataset.object);
 });

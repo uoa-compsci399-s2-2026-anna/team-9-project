@@ -34,60 +34,17 @@
       >
         <div id="objects-toggles" class="flex flex-col overflow-hidden">
           <div class="min-h-0 flex-1 overflow-y-auto">
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Mercury" />
-              <span class="flex-1">Mercury</span>
-            </label>
+            <!-- TEMP -->
+            {% set objects = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "1P/Halley", "3I/ATLAS"] %}
 
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Venus" />
-              <span class="flex-1">Venus</span>
-            </label>
+            {% set hidden = sim_state.hiddenObjects.get(current_system.name, []) %}
 
+            {% for obj in objects %}
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Earth" />
-              <span class="flex-1">Earth</span>
+              <input type="checkbox" data-object="{{ obj }}" {{ "checked" if obj not in hidden }} />
+              <span class="flex-1">{{ obj }}</span>
             </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Mars" />
-              <span class="flex-1">Mars</span>
-            </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Jupiter" />
-              <span class="flex-1">Jupiter</span>
-            </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Saturn" />
-              <span class="flex-1">Saturn</span>
-            </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Uranus" />
-              <span class="flex-1">Uranus</span>
-            </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Neptune" />
-              <span class="flex-1">Neptune</span>
-            </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="Pluto" />
-              <span class="flex-1">Pluto</span>
-            </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="1P/Halley" />
-              <span class="flex-1">1P/Halley</span>
-            </label>
-
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="3I/ATLAS" />
-              <span class="flex-1">3I/ATLAS</span>
-            </label>
+            {% endfor %}
           </div>
         </div>
       </div>
@@ -133,22 +90,22 @@
         <div id="view-settings-toggles" class="flex flex-col overflow-hidden">
           <div class="mt-3">
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="habitable-zone" />
+              <input type="checkbox" data-setting="habitable-zone" {{ "checked" if sim_state.habitableZoneShown }} />
               <span>Habitable zone</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="orbits" />
+              <input type="checkbox" data-setting="orbits" {{ "checked" if sim_state.orbitsShown }} />
               <span>Orbits</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="reference-grid" />
+              <input type="checkbox" data-setting="reference-grid" {{ "checked" if sim_state.referenceGridShown }} />
               <span>Reference grid</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="labels" />
+              <input type="checkbox" data-setting="labels" {{ "checked" if sim_state.labelsShown }} />
               <span>Labels</span>
             </label>
           </div>
