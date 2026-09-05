@@ -121,6 +121,11 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         # Init state if empty
         if sim is None:
             sim, objects = init_kepler_16()
+    # Hardcode TRAPPIST-1
+    elif system_name == "trappist-1":
+        # Init state if empty
+        if sim is None:
+            sim, objects = init_trappist_1()
     else:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
