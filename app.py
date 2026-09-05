@@ -27,6 +27,10 @@ with open(os.path.join(base_path, "config.json")) as f:
 # Get the systems in the config
 all_systems = config["systems"]
 
+# Load the settings schema
+with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
+    settings_schema = json.load(f)
+
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
@@ -44,6 +48,7 @@ async def home(request: Request, settings: str = "{}"):
         name="home.html",
         context={
             "settings": settings_state,
+            "settings_schema": settings_schema,
 
             "systems": all_systems,
             "dropdown_systems": all_systems,
@@ -84,6 +89,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
         context={
             "sim_state": sim_state,
             "settings": settings_state,
+            "settings_schema": settings_schema,
 
             "systems": all_systems,
             "current_system": current_system,

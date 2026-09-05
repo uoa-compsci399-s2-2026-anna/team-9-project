@@ -32,10 +32,8 @@
         <span class="flex-1">Time zone</span>
         <select id="time-zone-select" name="time-zone" class="flex-1">
           <!-- TODO: define these values somewhere else? -->
-          {% set timezones = [("UTC", "UTC"), ("NZT", "New Zealand Time")] %}
-
-          {% for value, label in timezones %}
-            <option value="{{ value }}" {{ "selected" if settings.timeZone == value }}>{{ label }}</option>
+          {% for option in settings_schema.timeZone.options %}
+            <option value="{{ option.value }}" {{ "selected" if option.value == settings.timeZone }}>{{ option.label }}</option>
           {% endfor %}
         </select>
       </label>
@@ -58,10 +56,8 @@
       <label class="flex">
         <span class="flex-1">Font</span>
         <select id="font-select" name="font" class="flex-1">
-          {% set fonts = ["Default", "OpenDyslexic"] %}
-
-          {% for font in fonts %}
-            <option value="{{ font }}" {{ "selected" if settings.font == font }}>{{ font }}</option>
+          {% for option in settings_schema.font.options %}
+            <option value="{{ option.value }}" {{ "selected" if option.value == settings.font }}>{{ option.label }}</option>
           {% endfor %}
         </select>
       </label>
@@ -70,10 +66,8 @@
       <label class="flex">
         <span class="flex-1">Text size</span>
         <select id="text-size-select" name="text-size" class="flex-1">
-          {% set textSizes = ["Default", "Larger"] %}
-
-          {% for textSize in textSizes %}
-            <option value="{{ textSize }}" {{ "selected" if settings.textSize == textSize }}>{{ textSize }}</option>
+          {% for option in settings_schema.textSize.options %}
+            <option value="{{ option.value }}" {{ "selected" if option.value == settings.textSize }}>{{ option.label }}</option>
           {% endfor %}
         </select>
       </label>
@@ -82,10 +76,8 @@
       <label class="flex">
         <span class="flex-1">Object marker size</span>
         <select id="object-marker-size-select" name="object-marker-size" class="flex-1">
-          {% set objectMarkerSizes = ["Default", "Larger"] %}
-
-          {% for objectMarkerSize in objectMarkerSizes %}
-            <option value="{{ objectMarkerSize }}" {{ "selected" if settings.objectMarkerSize == objectMarkerSize }}>{{ objectMarkerSize }}</option>
+          {% for option in settings_schema.objectMarkerSize.options %}
+            <option value="{{ option.value }}" {{ "selected" if option.value == settings.objectMarkerSize }}>{{ option.label }}</option>
           {% endfor %}
         </select>
       </label>
@@ -94,10 +86,8 @@
       <label class="flex">
         <span class="flex-1">Orbit lines</span>
         <select id="orbit-lines-select" name="orbit-lines" class="flex-1">
-          {% set orbitLines = [("Colour", "Differentiate by colour"), ("Stroke", "Differentiate by stroke")] %}
-
-          {% for value, label in orbitLines %}
-            <option value="{{ value }}" {{ "selected" if settings.orbitLine == value }}>{{ label }}</option>
+          {% for option in settings_schema.orbitLine.options %}
+            <option value="{{ option.value }}" {{ "selected" if option.value == settings.orbitLine }}>{{ option.label }}</option>
           {% endfor %}
         </select>
       </label>

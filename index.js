@@ -1,17 +1,14 @@
 const { spawn } = require('child_process');
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron');
 const path = require('path');
-const Store = require('electron-store')
+const Store = require('electron-store');
+const schema = require('./src/shared/settingsSchema.json');
 
 const store = new Store();
 
-const DEFAULT_SETTINGS = {
-    timeZone: "UTC",
-    font: "Default",
-    textSize: "Default",
-    objectMarkerSize: "Default",
-    orbitLine: "Colour",
-};
+const DEFAULT_SETTINGS = Object.fromEntries(
+    Object.entries(schema).map(([key, field]) => [key, field.default])
+);
 
 // Initialise the settings store in case of any missing values
 const existingSettings = store.get('settings') || {};
