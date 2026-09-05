@@ -31,6 +31,10 @@ all_systems = config["systems"]
 with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
     settings_schema = json.load(f)
 
+# Load the sim state schema
+with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")) as f:
+    sim_state_schema = json.load(f)
+
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
@@ -90,6 +94,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "sim_state": sim_state,
             "settings": settings_state,
             "settings_schema": settings_schema,
+            "sim_state_schema": sim_state_schema,
 
             "systems": all_systems,
             "current_system": current_system,

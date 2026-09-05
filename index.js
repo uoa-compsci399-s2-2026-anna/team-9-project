@@ -3,11 +3,16 @@ const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
 const schema = require('./src/shared/settingsSchema.json');
+const simulationStateSchema = require('./src/shared/simulationStateSchema.json');
 
 const store = new Store();
 
 const DEFAULT_SETTINGS = Object.fromEntries(
     Object.entries(schema).map(([key, field]) => [key, field.default])
+);
+
+const DEFAULT_SIM_STATE = Object.fromEntries(
+    Object.entries(simulationStateSchema).map(([key, field]) => [key, structuredClone(field.default)])
 );
 
 // Initialise the settings store in case of any missing values
@@ -18,16 +23,8 @@ store.set('settings', {
     ...existingSettings,
 });
 
-// TODO: INITIAL STATE (maybe move elsewhere... still has to be in the main process)... I just don't like all the settings living here
-let simulationState = {
-    simulationSpeed: 10,
-    simulationSpeedUnit: "day",
-    habitableZoneShown: true,
-    orbitsShown: true,
-    referenceGridShown: true,
-    labelsShown: true,
-    hiddenObjects: { "Solar System": ["Pluto", "1P/Halley", "3I/ATLAS"] },
-};
+// Initialise the simulation state to the default simulation state
+let simulationState = { ...DEFAULT_SIM_STATE };
 
 // Handle settings saved between run
 ipcMain.handle('settings:get', () => {
@@ -180,6 +177,7 @@ async function createWindow(python_url) {
         }
     });
 
+    // Inform the renderer process upon the application entering/exiting fullscreen
     mainWindow.on('enter-full-screen', () => mainWindow.webContents.send('fullscreen:changed', true));
     mainWindow.on('leave-full-screen', () => mainWindow.webContents.send('fullscreen:changed', false));
 

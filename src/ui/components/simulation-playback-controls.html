@@ -97,11 +97,9 @@
         id="speed-unit-selector"
         class="h-9 w-18 rounded-md outline-1 outline-zinc-900 dark:outline-zinc-500"
       >
-        <option {% if sim_state.simulationSpeedUnit == 'hour' %}selected{% endif %}>hour</option>
-        <option {% if sim_state.simulationSpeedUnit == 'day' %}selected{% endif %}>day</option>
-        <option {% if sim_state.simulationSpeedUnit == 'week' %}selected{% endif %}>week</option>
-        <option {% if sim_state.simulationSpeedUnit == 'month' %}selected{% endif %}>month</option>
-        <option {% if sim_state.simulationSpeedUnit == 'year' %}selected{% endif %}>year</option>
+        {% for option in sim_state_schema.simulationSpeedUnit.options %}
+          <option value="{{ option.value }}" {{ "selected" if option.value == sim_state.simulationSpeedUnit }}>{{ option.label }}</option>
+        {% endfor %}
       </select>
 
       <p class="pr-3">per second</p>
