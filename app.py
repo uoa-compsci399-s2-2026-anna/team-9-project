@@ -45,7 +45,6 @@ objects = []
 @app.get("/")
 async def home(request: Request, settings: str = "{}"):
     settings_state = json.loads(settings)
-    print(settings_state)
 
     return templates.TemplateResponse(
         request=request,
@@ -70,17 +69,13 @@ async def home(request: Request, settings: str = "{}"):
 @app.get("/simulation/{system_name}")
 async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}"):
     sim_state = json.loads(state)
-    print(sim_state)
 
     settings_state = json.loads(settings)
-    print(settings_state)
 
     # Get the current system
     current_system = next(
         system for system in all_systems if system["name"] == system_name
     )
-
-    print(current_system)
 
     # Get all other systems, except the current system
     dropdown_systems = [
