@@ -89,7 +89,6 @@ objectsToggles.addEventListener("change", (event) => {
 const viewSettingsButton = document.getElementById("view-settings-button");
 
 viewSettingsButton.addEventListener("click", () => {
-    // TODO: will need to pass state if we intend to manage this across sessions
     bus.publish(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE);
 });
 
@@ -97,7 +96,6 @@ viewSettingsButton.addEventListener("click", () => {
 const objectsButton = document.getElementById("objects-button");
 
 objectsButton.addEventListener("click", () => {
-    // TODO: will need to pass state if we intend to manage this across sessions
     bus.publish(EVENTS.SIM.OBJECTS_PANEL_TOGGLE);
 })
 

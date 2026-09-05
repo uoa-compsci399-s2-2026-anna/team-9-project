@@ -150,6 +150,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
         const geometry = new THREE.BufferGeometry();
         const material = new THREE.LineBasicMaterial({ color: getOrbitColour(settings.darkMode) });
         line = new THREE.LineLoop(geometry, material);
+        line.visible = simulationState.orbitsShown;
 
         scene.add(line);
         orbitalLines.set(name, line);
@@ -286,6 +287,12 @@ export function resetView() {
 export function setLabelsVisibility(value) {
     for (const label of objectLabels.values()) {
         label.visible = value;
+    }
+}
+
+export function setOrbitsVisibility(value) {
+    for (const orbit of orbitalLines.values()) {
+        orbit.visible = value;
     }
 }
 
