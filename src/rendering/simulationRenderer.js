@@ -102,23 +102,18 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
         position.needsUpdate = true;
     }
 
-    // Use Euler angles to rotate the line to match the orbital parameters
+    // Rotate the line to match the orbital parameters
     // R = Rz(Omega) * Rx(inc) * Rz(omega)
 
-    const eulerOmega = new THREE.Euler(0, 0, Omega, 'XYZ');
-    const eulerInc = new THREE.Euler(inc, 0, 0, 'XYZ');
-    const euleromega = new THREE.Euler(0, 0, omega, 'XYZ');
-
-    const rotateOmega = new THREE.Matrix4().makeRotationFromEuler(eulerOmega);
-    const rotateInc   = new THREE.Matrix4().makeRotationFromEuler(eulerInc);
-    const rotateomega = new THREE.Matrix4().makeRotationFromEuler(euleromega);
+    const rotateOmega = new THREE.Matrix4().makeRotationZ(Omega);
+    const rotateInc   = new THREE.Matrix4().makeRotationX(inc);
+    const rotateomega = new THREE.Matrix4().makeRotationZ(omega);
 
     const rotationMatrix = new THREE.Matrix4()
         .multiplyMatrices(rotateOmega, rotateInc)
         .multiply(rotateomega);
 
-    line.rotation.set(0, 0, 0); // Reset rotation
-    line.applyMatrix4(rotationMatrix);
+    line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
 /**
