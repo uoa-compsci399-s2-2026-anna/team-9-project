@@ -2,28 +2,9 @@
 
 import { timeToSeconds } from "../utils/utils.js";
 
-const STORAGE_KEY = "simulationState";
-
-const defaults = {
-    simulationSpeed: 10,
-    simulationSpeedUnit: "day",
-    habitableZoneShown: true,
-    orbitsShown: true,
-    referenceGridShown: true,
-    labelsShown: true,
-    // TODO: consider whether to do set or array
-    hiddenObjects: {
-        "Solar System": ["Pluto", "1P/Halley", "3I/ATLAS"],
-    },
-};
-
 function loadState() {
-    try {
-        const raw = sessionStorage.getItem(STORAGE_KEY);
-        return raw ? { ...defaults, ...JSON.parse(raw) } : { ...defaults };
-    } catch {
-        return { ...defaults };
-    }
+    const stateElement = document.getElementById("sim-state");
+    return stateElement ? JSON.parse(stateElement.textContent) : {};
 }
 
 function persist() {

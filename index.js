@@ -184,7 +184,7 @@ async function createWindow(python_url) {
 
     // Change the window to the given url
 
-    // TODO: check
+    // Include the persisted state in the initial URL
     url = buildInitialUrl(url);
 
     console.log(`Connecting to '${url}'...`);

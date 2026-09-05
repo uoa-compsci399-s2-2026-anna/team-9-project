@@ -13,6 +13,8 @@
 {% endblock %}
 
 {% block content %}
+  <script id="sim-state" type="application/json">{{ sim_state | tojson }}</script>
+
   <!-- Simulation content-->
   <canvas
     id="simulation-canvas"
