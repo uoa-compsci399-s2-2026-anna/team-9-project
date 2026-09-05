@@ -32,6 +32,7 @@ app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="s
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 sim = None
+current_system = None
 objects = []
 
 
@@ -97,7 +98,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
-    global sim, objects
+    global sim, objects, current_system
 
     system_name = system_name.lower()
 
@@ -112,21 +113,21 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     )
 
     # Hardcode Solar System
-    if system_name == "solar system":
+    if system_name == "solar system" and current_system != "solar system":
         # Init state if empty
-        if sim is None:
-            sim, objects = init_solar()
+        sim, objects = init_solar()
+        current_system = system_name
     # Hardcode Kepler-16
-    elif system_name == "kepler-16":
+    elif system_name == "kepler-16" and current_system != "kepler-16":
         # Init state if empty
-        if sim is None:
-            sim, objects = init_kepler_16()
+        sim, objects = init_kepler_16()
+        current_system = system_name
     # Hardcode TRAPPIST-1
-    elif system_name == "trappist-1":
+    elif system_name == "trappist-1" and current_system != "trappist-1":
         # Init state if empty
-        if sim is None:
-            sim, objects = init_trappist_1()
-    else:
+        sim, objects = init_trappist_1()
+        current_system = system_name
+    if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Set time
