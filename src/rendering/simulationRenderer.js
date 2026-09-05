@@ -25,10 +25,10 @@ const orbitColour = 0xFFFFFF; // White
 
 /**
  * If the target object does not exist, then its mesh is created at the given position.
- * If the target obect does exist, then its position is updated
+ * If the target object does exist, then its position is updated.
  * 
  * @param {string} name Name of the object
- * @param {position} position Position of the object
+ * @param {Object} position Position of the object
  */
 function createOrUpdateObjectMesh(name, position) {
     let mesh = objectMeshes.get(name);
@@ -61,7 +61,7 @@ function createOrUpdateObjectMesh(name, position) {
  * If the target orbital line does exist, then it is updated.
  * 
  * @param {string} name Name of the orbital line
- * @param {orbitalData} orbitalData Orbital data for the line
+ * @param {Object} orbitalData Orbital data for the line
  */
 function createOrUpdateOrbitalLine(name, orbitalData) {
     let line = orbitalLines.get(name);
