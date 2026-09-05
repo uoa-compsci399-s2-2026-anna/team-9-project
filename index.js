@@ -5,7 +5,13 @@ const Store = require('electron-store');
 const schema = require('./src/shared/settingsSchema.json');
 const simulationStateSchema = require('./src/shared/simulationStateSchema.json');
 
-const store = new Store();
+// Squirrel launches the appplication multiple extra times during install/update/uninstall
+// so it can create/remove the start menu shortcut. This detects those launches,
+// handles the shortcut, and quits the application immediately.
+if (require('electron-squirrel-startup')) {
+    app.quit();
+    return;
+}
 
 const DEFAULT_SETTINGS = Object.fromEntries(
     Object.entries(schema).map(([key, field]) => [key, field.default])
@@ -14,6 +20,8 @@ const DEFAULT_SETTINGS = Object.fromEntries(
 const DEFAULT_SIM_STATE = Object.fromEntries(
     Object.entries(simulationStateSchema).map(([key, field]) => [key, structuredClone(field.default)])
 );
+
+const store = new Store();
 
 // Initialise the settings store in case of any missing values
 const existingSettings = store.get('settings') || {};
@@ -56,14 +64,6 @@ ipcMain.on('fullscreen:toggle', () => {
 ipcMain.handle('fullscreen:get', () => {
     return mainWindow?.isFullScreen() ?? false;
 });
-
-// Squirrel launches the appplication multiple extra times during install/update/uninstall
-// so it can create/remove the start menu shortcut. This detects those launches,
-// handles the shortcut, and quits the application immediately.
-// TODO: move this up?
-if (require('electron-squirrel-startup')) {
-    app.quit();
-}
 
 // The python web-server sub-process
 var pythonProcess = null;
@@ -173,7 +173,6 @@ async function createWindow(python_url) {
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            // TODO: this may break when the application is packaged on Mac
             preload: path.join(__dirname, 'preload.js'),
         }
     });
