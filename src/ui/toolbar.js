@@ -87,6 +87,7 @@ function setFullscreenIcons(fullScreen) {
     exitFullscreenIcon.classList.toggle("hidden", !fullScreen);
 }
 
+// TODO: check
 window.fullscreenAPI.get().then(setFullscreenIcons);
 
 // TODO: this doesn't work for F11
