@@ -119,7 +119,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 
     line.rotation.set(0, 0, 0); // Reset rotation
     line.applyMatrix4(rotationMatrix);
-};
+}
 
 /**
  * Update the positions of all objects in the current system based on 
