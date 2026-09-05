@@ -30,71 +30,41 @@ const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
-// TODO: reorder defaults (maybe some sort of struct?)
-const defaultFontSize = "12px";
-const largerFontSize = "18px";
+const fontSizes = {
+    Default: "12px",
+    Larger: "18px",
+};
 
-const defaultFontFamily = "inherit";
-const openDyslexicFontFamily = "OpenDyslexic";
+const fontFamilies = {
+    Default: "inherit",
+    OpenDyslexic: "OpenDyslexic",
+};
 
-const lightBackground = new THREE.Color("white");
-const darkBackground = new THREE.Color("black");
+const themes = {
+    light: {
+        background: new THREE.Color("white"),
+        labelColour: "black",
+        textShadow: "0 0 3px white",
+        orbitColour: "black",
+    },
+    dark: {
+        background: new THREE.Color("black"),
+        labelColour: "white",
+        textShadow: "0 0 3px black",
+        orbitColour: "white",
+    },
+};
 
-const lightModeLabelColour = "black";
-const darkModeLabelColour = "white";
-
-const lightModeTextShadow = "0 0 3px white";
-const darkModeTextShadow = "0 0 3px black";
-
-const lightModeOrbitColour = "black";
-const darkModeOrbitColour = "white";
-
-function getBackgroundColour(isDarkMode) {
-    if (isDarkMode) {
-        return darkBackground;
-    } else {
-        return lightBackground;
-    }
-}
-
-function getFontColour(isDarkMode) {
-    if (isDarkMode) {
-        return darkModeLabelColour;
-    } else {
-        return lightModeLabelColour;
-    }
+function getTheme(isDarkMode) {
+    return isDarkMode ? themes.dark : themes.light;
 }
 
 function getFontSize(size) {
-    if (size == "Larger") {
-        return largerFontSize;
-    } else {
-        return defaultFontSize;
-    }
+    return fontSizes[size] ?? fontSizes.Default;
 }
 
 function getFontFamily(chosenFont) {
-    if (chosenFont == "OpenDyslexic") {
-        return openDyslexicFontFamily;
-    } else {
-        return defaultFontFamily;
-    }
-}
-
-function getTextShadow(isDarkMode) {
-    if (isDarkMode) {
-        return darkModeTextShadow;
-    } else {
-        return lightModeTextShadow;
-    }
-}
-
-function getOrbitColour(isDarkMode) {
-    if (isDarkMode) {
-        return darkModeOrbitColour;
-    } else {
-        return lightModeOrbitColour;
-    }
+    return fontFamilies[chosenFont] ?? fontFamilies.Default;
 }
 
 /**
@@ -119,10 +89,10 @@ function createOrUpdateObjectMesh(name, position) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = getFontColour(settings.darkMode);
+        labelDiv.style.color = getTheme(settings.darkMode).labelColour;
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.textShadow = getTextShadow(settings.darkMode);
+        labelDiv.style.textShadow = getTheme(settings.darkMode).textShadow;
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
@@ -148,7 +118,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: getOrbitColour(settings.darkMode) });
+        const material = new THREE.LineBasicMaterial({ color: getTheme(settings.darkMode).orbitColour });
         line = new THREE.LineLoop(geometry, material);
         line.visible = simulationState.orbitsShown;
 
@@ -247,7 +217,7 @@ export function init(name) {
     controls.update();
 
     scene = new THREE.Scene();
-    scene.background = getBackgroundColour(settings.darkMode);
+    scene.background = getTheme(settings.darkMode).background;
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
     labelRenderer = new CSS2DRenderer();
@@ -319,16 +289,16 @@ export function setFontFamily(chosenFont) {
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
-    scene.background = getBackgroundColour(settings.darkMode);
+    scene.background = getTheme(isDarkMode).background;
 
-    let labelColour = getFontColour(isDarkMode);
-    let labelTextShadow = getTextShadow(isDarkMode);
+    let labelColour = getTheme(isDarkMode).labelColour;
+    let labelTextShadow = getTheme(isDarkMode).textShadow;
     for (const label of objectLabels.values()) {
         label.element.style.color = labelColour;
         label.element.style.textShadow = labelTextShadow;
     }
 
-    let orbitColour = getOrbitColour(isDarkMode);
+    let orbitColour = getTheme(isDarkMode).orbitColour;
     for (const orbit of orbitalLines.values()) {
         orbit.material.color.set(orbitColour);
     }
