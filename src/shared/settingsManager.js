@@ -5,7 +5,7 @@ import { EVENTS } from "../events/events.js";
 import { 
     setFont, 
     setObjectMarkerSize, 
-    setOrbitLines, 
+    setOrbitLine, 
     setTextSize, 
     setTimeZone,
     toggleDarkMode,
@@ -33,7 +33,7 @@ bus.subscribe(EVENTS.SETTINGS.OBJECT_MARKER_SIZE_SELECT, (event) => {
 
 // Orbit lines
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
-    setOrbitLines(event.detail.orbitLines);
+    setOrbitLine(event.detail.orbitLine);
 });
 
 // Dark mode

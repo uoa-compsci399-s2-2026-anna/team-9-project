@@ -10,7 +10,7 @@ const defaults = {
     font: "Default",
     textSize: "Default",
     objectMarkerSize: "Default",
-    orbitLines: "Colour",
+    orbitLine: "Colour",
     darkMode: darkModePreferred(),
 };
 
@@ -30,7 +30,7 @@ function persist() {
         font, 
         textSize, 
         objectMarkerSize, 
-        orbitLines,
+        orbitLine,
         darkMode, 
     }).catch((err) => {
         console.error(`Failed to save setting: ${err}`);
@@ -72,14 +72,15 @@ export function setObjectMarkerSize(value) {
 }
 
 // Orbit lines
-export let orbitLines = initial.orbitLines;
+export let orbitLine = initial.orbitLine;
 
-export function setOrbitLines(value) {
-    orbitLines = value;
+export function setOrbitLine(value) {
+    orbitLine = value;
     persist();
 }
 
 // Dark mode
+// TODO: this isn't done right
 // TODO: I am not sure about whether resetting settings should reset this. Feels slightly out of place.
 export let darkMode = initial.darkMode;
 
