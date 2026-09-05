@@ -88,11 +88,3 @@ const currentHiddenObjects = hiddenObjects[currentSystem];
 objectToggles.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
 	checkbox.checked = !currentHiddenObjects.includes(checkbox.dataset.object);
 });
-
-// SPEED ADJUSTER VALUES
-
-const speedAdjuster = document.getElementById("speed-adjuster");
-const speedUnitSelector = document.getElementById("speed-unit-selector");
-
-speedAdjuster.value = simulationSpeed;
-speedUnitSelector.value = simulationSpeedUnit;

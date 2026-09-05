@@ -5,6 +5,7 @@ function darkModePreferred() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+// TODO: keep here or move like sim state?
 const defaults = {
     timeZone: "UTC",
     font: "Default",
