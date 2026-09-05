@@ -33,15 +33,7 @@ def init_solar():
     ]
 
     # Add Halley's comet
-    sim.add(
-        m=0.0,
-        a=17.8,
-        e=0.967,
-        inc=162.0 * 3.14159 / 180.0,
-        omega=58.4 * 3.14159 / 180.0,
-        Omega=111.9 * 3.14159 / 180.0,
-        M=0.0,
-    )
+    sim.add(m=0.0, a=17.8, e=0.967, inc=2.8274333882, omega=1.0192722832, Omega=1.9530234330, M=0.0)
 
     # Move to COM of the system
     sim.move_to_com()
