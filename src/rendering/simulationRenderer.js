@@ -66,11 +66,7 @@ function createOrUpdateObjectMesh(name, position) {
 function createOrUpdateOrbitalLine(name, orbitalData) {
     let line = orbitalLines.get(name);
 
-    const a = orbitalData.a;
-    const e = orbitalData.e;
-    const inc = orbitalData.inc;
-    const Omega = orbitalData.Omega;
-    const omega = orbitalData.omega;
+    const { a, e, inc, Omega, omega } = orbitalData;
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
