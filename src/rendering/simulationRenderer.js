@@ -106,7 +106,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
     // R = Rz(Omega) * Rx(inc) * Rz(omega)
 
     const rotateAscendingNode = new THREE.Matrix4().makeRotationZ(Omega);
-    const rotateInclination   = new THREE.Matrix4().makeRotationX(inc);
+    const rotateInclination = new THREE.Matrix4().makeRotationX(inc);
     const rotatePeriapsis = new THREE.Matrix4().makeRotationZ(omega);
 
     const rotationMatrix = new THREE.Matrix4()
