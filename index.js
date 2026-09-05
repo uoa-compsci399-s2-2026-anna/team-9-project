@@ -5,7 +5,7 @@ const Store = require('electron-store')
 
 const store = new Store();
 
-// TODO: INITIAL STATE (maybe move)
+// TODO: INITIAL STATE (maybe move elsewhere... still has to be in the main process)... I just don't like all the settings living here
 let simulationState = {
     simulationSpeed: 10,
     simulationSpeedUnit: "day",
@@ -28,7 +28,7 @@ ipcMain.handle('settings:set', (_event, newSettings) => {
     });
 });
 
-// TODO
+// Update the simulation state based on the new state
 ipcMain.on('simulationState:set', (_event, newState) => {
     simulationState = { ...simulationState, ...newState };
 });
