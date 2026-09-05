@@ -116,12 +116,17 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         # Init state if empty
         if sim is None:
             sim, objects = init_solar()
+    # Hardcode Kepler-16
+    elif system_name == "kepler-16":
+        # Init state if empty
+        if sim is None:
+            sim, objects = init_kepler_16()
 
-        # Set time
-        sim.integrate(t)
+    # Set time
+    sim.integrate(t)
 
-        # Calculate relevant data and return
-        return calculate_simulation_info(sim)
+    # Calculate relevant data and return
+    return calculate_simulation_info(sim)
 
 
 def calculate_simulation_info(sim):
