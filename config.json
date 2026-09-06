@@ -18,9 +18,21 @@
         {
             "name": "Kepler-16",
             "objects": {
-                "Kepler-16A": {},
-                "Kepler-16B": {},
-                "Kepler-16b": {}
+                "Kepler-16A": {
+                    "mass": "0.6897 ± 0.0035 MSun",
+                    "temp": "4450 ± 150 K",
+                    "radius": "0.6489 ± 0.0013 RSun"
+                },
+                "Kepler-16B": {
+                    "mass": "0.20255 ± 0.00065 MSun",
+                    "temp": "",
+                    "radius": "0.22623 ± 0.00059 RSun"
+                },
+                "Kepler-16b": {
+                    "mass": "0.333 ± 0.016 MJ",
+                    "temp": "",
+                    "radius": "0.7538 ± 0.0023 RJ"
+                }
             }
         },
         {
