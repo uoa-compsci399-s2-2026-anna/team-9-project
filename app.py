@@ -133,7 +133,9 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
     # Gather orbital data for each object
-    orbital_data = {objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))}
+    orbital_data = {
+        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+    }
 
     return {"positions": positions, "orbital_data": orbital_data}
 
@@ -190,8 +192,8 @@ def get_osculating_orbit(sim, i):
     Return only necessary orbital information
     https://rebound.hanno-rein.de/particles/orbitalelements/
     
-    a 	semi-major axis
-    e 	eccentricity
+    a 	    semi-major axis
+    e 	    eccentricity
     inc 	inclination, in radians
     Omega 	longitude of ascending node, in radians
     omega 	argument of pericenter, in radians
