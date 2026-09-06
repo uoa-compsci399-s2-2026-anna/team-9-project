@@ -121,9 +121,15 @@
         <!-- Orbit lines -->
         <label class="flex items-center">
           <span class="text-secondary flex-1">Orbit lines</span>
-          <select name="" class="flex-1">
-            <option value="">Differentiate by colour</option>
-            <option value="">Differentiate by stroke</option>
+          <select id="orbit-lines-select" name="orbit-lines" class="flex-1">
+            {% for option in settings_schema.orbitLines.options %}
+              <option
+                value="{{ option.value }}"
+                {{ "selected" if option.value == settings.orbitLines }}
+              >
+                {{ option.label }}
+              </option>
+            {% endfor %}
           </select>
         </label>
       </div>
