@@ -143,14 +143,17 @@ def calculate_simulation_info(sim):
         - Inclination: radians (0-2pi)
     """
     # Gather positions
-    positions = {}
-    for i, p in enumerate(sim.particles):
-        positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
     # Gather orbital data for each object
     orbital_data = {objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))}
 
     return {"positions": positions, "orbital_data": orbital_data}
+
+
+def get_position_dict(particle):
+    return {"x": particle.x, "y": particle.y, "z": particle.z}
+
 
 def get_osculating_orbit(sim, i):
     particle = sim.particles[i]
