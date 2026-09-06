@@ -32,7 +32,8 @@
         id="objects"
         class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
       >
-        <div id="objects-toggles" class="flex flex-col overflow-hidden">
+        <div id="objects-toggles" class="flex min-h-0 flex-col overflow-hidden">
+          <!-- Checkboxes -->
           <div class="min-h-0 flex-1 overflow-y-auto">
             <!-- TEMP -->
             {% set objects = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "1P/Halley", "3I/ATLAS"] %}
@@ -41,12 +42,21 @@
             {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
 
             {% for obj in objects %}
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-object="{{ obj }}" {{ "checked" if obj not in hidden }} />
-              <span class="flex-1">{{ obj }}</span>
-            </label>
+              <label class="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  data-object="{{ obj }}"
+                  {{ "checked" if obj not in hidden }}
+                />
+                <span class="flex-1">{{ obj }}</span>
+              </label>
             {% endfor %}
           </div>
+
+          <!-- Restore defaults button -->
+          <button class="self-end overflow-hidden">
+            <span class="text-sm">Reset to defaults</span>
+          </button>
         </div>
       </div>
     </div>
@@ -92,22 +102,42 @@
           <!-- Checkboxes -->
           <div id="view-settings-toggles" class="flex flex-col overflow-hidden">
             <label class="flex items-center gap-2">
-              <input type="checkbox" id="habitable-zone-input" data-setting="habitable-zone" {{ "checked" if sim_state.habitableZoneShown }} />
+              <input
+                type="checkbox"
+                id="habitable-zone-input"
+                data-setting="habitable-zone"
+                {{ "checked" if sim_state.habitableZoneShown }}
+              />
               <span>Habitable zone</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" id="orbits-input" data-setting="orbits" {{ "checked" if sim_state.orbitsShown }} />
+              <input
+                type="checkbox"
+                id="orbits-input"
+                data-setting="orbits"
+                {{ "checked" if sim_state.orbitsShown }}
+              />
               <span>Orbits</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" id="reference-grid-input" data-setting="reference-grid" {{ "checked" if sim_state.referenceGridShown }} />
+              <input
+                type="checkbox"
+                id="reference-grid-input"
+                data-setting="reference-grid"
+                {{ "checked" if sim_state.referenceGridShown }}
+              />
               <span>Reference grid</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" id="labels-input" data-setting="labels" {{ "checked" if sim_state.labelsShown }} />
+              <input
+                type="checkbox"
+                id="labels-input"
+                data-setting="labels"
+                {{ "checked" if sim_state.labelsShown }}
+              />
               <span>Labels</span>
             </label>
           </div>
