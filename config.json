@@ -1,13 +1,40 @@
 {
     "systems": [
         {
-            "name": "Solar System"
+            "name": "Solar System",
+            "objects": {
+                "Sun": {},
+                "Mercury": {},
+                "Venus": {},
+                "Earth": {},
+                "Mars": {},
+                "Jupiter": {},
+                "Saturn": {},
+                "Uranus": {},
+                "Neptune": {},
+                "Halley's Comet": {}
+            }
         },
         {
-            "name": "Kepler-16"
+            "name": "Kepler-16",
+            "objects": {
+                "Kepler-16A": {},
+                "Kepler-16B": {},
+                "Kepler-16b": {}
+            }
         },
         {
-            "name": "TRAPPIST-1"
+            "name": "TRAPPIST-1",
+            "objects": {
+                "Trappist-1": {},
+                "Trappist-1b": {},
+                "Trappist-1c": {},
+                "Trappist-1d": {},
+                "Trappist-1e": {},
+                "Trappist-1f": {},
+                "Trappist-1g": {},
+                "Trappist-1h": {}
+            }
         }
     ]
 }
