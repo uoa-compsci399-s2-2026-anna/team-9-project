@@ -35,6 +35,25 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 // Settings menu overlay
 
 const settingsOverlay = document.querySelector("#settings-overlay");
+const systemInformationButton = document.querySelector(
+    "#system-information-button",
+);
+
+// RESET ALL SETTINGS CONFIRMATION OVERLAY
+
+const confirmResetSettingsButton = document.getElementById(
+    "confirm-reset-settings-button",
+);
+
+confirmResetSettingsButton.addEventListener("click", (e) => {
+    hideOverlay(confirmResetSettingsOverlay);
+});
+
+// OVERLAY EVENT LISTENERS
+
+/**
+ * Stack keeping track of currently-open overlays
+ */
 const openOverlays = [];
 
 /**
