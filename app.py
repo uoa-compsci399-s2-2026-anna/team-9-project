@@ -150,12 +150,6 @@ def calculate_simulation_info(sim):
     # Gather orbital data excluding
     orbital_data = {}
     for i, p in enumerate(sim.particles):
-        # Get the COM of the system
-        com = sim.com()
-
-        particle = sim.particles[i]
-        orbit = particle.orbit(primary=com)
-
         """
         https://rebound.hanno-rein.de/particles/orbitalelements/
         
@@ -165,12 +159,45 @@ def calculate_simulation_info(sim):
         Omega 	longitude of ascending node, in radians
         omega 	argument of pericenter, in radians
         """
-        orbital_data[objects[i]] = {
-            "a": orbit.a,  # Longest radius of ellipse
-            "e": orbit.e,  # Shape of ellipse
-            "inc": orbit.inc,  # Amount to tilt
-            "Omega": orbit.Omega,  # Angle about the center axis
-            "omega": orbit.omega,  # Argument of the pericenter
-        }
+        orbital_data[objects[i]] = get_osculating_orbit(sim, i)
 
     return {"positions": positions, "orbital_data": orbital_data}
+
+def get_osculating_orbit(sim, i):
+    particle = sim.particles[i]
+
+    total_mass = 0.0
+    x = y = z = 0.0
+    vx = vy = vz = 0.0
+
+    for j, other in enumerate(sim.particles):
+        if i == j:
+            continue
+
+        total_mass += other.m
+        x += other.m * other.x
+        y += other.m * other.y
+        z += other.m * other.z
+        vx += other.m * other.vx
+        vy += other.m * other.vy
+        vz += other.m * other.vz
+
+    primary = rebound.Particle(
+        m=total_mass,
+        x=x / total_mass,
+        y=y / total_mass,
+        z=z / total_mass,
+        vx=vx / total_mass,
+        vy=vy / total_mass,
+        vz=vz / total_mass,
+    )
+
+    orbit = particle.orbit(primary=primary)
+
+    return {
+        "a": orbit.a * total_mass / (total_mass + particle.m),
+        "e": orbit.e,
+        "inc": orbit.inc,
+        "Omega": orbit.Omega,
+        "omega": orbit.omega,
+    }
