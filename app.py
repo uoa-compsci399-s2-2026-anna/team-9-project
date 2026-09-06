@@ -147,19 +147,8 @@ def calculate_simulation_info(sim):
     for i, p in enumerate(sim.particles):
         positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
 
-    # Gather orbital data excluding
-    orbital_data = {}
-    for i, p in enumerate(sim.particles):
-        """
-        https://rebound.hanno-rein.de/particles/orbitalelements/
-        
-        a 	semi-major axis
-        e 	eccentricity
-        inc 	inclination, in radians
-        Omega 	longitude of ascending node, in radians
-        omega 	argument of pericenter, in radians
-        """
-        orbital_data[objects[i]] = get_osculating_orbit(sim, i)
+    # Gather orbital data for each object
+    orbital_data = {objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))}
 
     return {"positions": positions, "orbital_data": orbital_data}
 
@@ -194,6 +183,15 @@ def get_osculating_orbit(sim, i):
 
     orbit = particle.orbit(primary=primary)
 
+    """
+    https://rebound.hanno-rein.de/particles/orbitalelements/
+    
+    a 	semi-major axis
+    e 	eccentricity
+    inc 	inclination, in radians
+    Omega 	longitude of ascending node, in radians
+    omega 	argument of pericenter, in radians
+    """
     return {
         "a": orbit.a * total_mass / (total_mass + particle.m),
         "e": orbit.e,
