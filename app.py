@@ -132,7 +132,9 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
     # Gather orbital data for each object
-    orbital_data = {objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))}
+    orbital_data = {
+        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+    }
 
     return {"positions": positions, "orbital_data": orbital_data}
 
