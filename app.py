@@ -100,11 +100,12 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     global sim, objects, current_system
 
+    # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
 
     # Catch poor input
-    print(system_name)
     if not any(system["name"].lower() == system_name for system in all_systems):
+        print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Hardcode Solar System
