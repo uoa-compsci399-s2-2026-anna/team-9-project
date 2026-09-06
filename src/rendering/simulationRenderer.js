@@ -61,8 +61,8 @@ const themes = {
     },
 };
 
-function getTheme() {
-    return settings.darkMode ? themes.dark : themes.light;
+function getTheme(isDarkMode = settings.darkMode) {
+    return isDarkMode ? themes.dark : themes.light;
 }
 
 function getFontSize(size) {
@@ -294,17 +294,17 @@ export function setFontFamily(chosenFont) {
     }   
 }
 
-export function toggleSimulationDarkMode() {
-    scene.background = getTheme().background;
+export function toggleSimulationDarkMode(isDarkMode) {
+    scene.background = getTheme(isDarkMode).background;
 
-    let labelColour = getTheme().labelColour;
-    let labelTextShadow = getTheme().textShadow;
+    let labelColour = getTheme(isDarkMode).labelColour;
+    let labelTextShadow = getTheme(isDarkMode).textShadow;
     for (const label of objectLabels.values()) {
         label.element.style.color = labelColour;
         label.element.style.textShadow = labelTextShadow;
     }
 
-    let orbitColour = getTheme().orbitColour;
+    let orbitColour = getTheme(isDarkMode).orbitColour;
     for (const orbit of orbitalLines.values()) {
         orbit.material.color.set(orbitColour);
     }
