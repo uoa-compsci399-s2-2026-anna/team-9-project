@@ -128,20 +128,6 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     # Set time
     sim.integrate(t)
 
-    # Calculate relevant data and return
-    return calculate_simulation_info(sim)
-
-
-def calculate_simulation_info(sim):
-    """
-    Given a REBOUND simulation, calculate:
-    - Particle positions
-    - Barycentric orbital information
-        - Semi-major axis: AU
-        - Eccentricity: -1 - 1
-        - Longitude of the ascending node: radians (0-2pi)
-        - Inclination: radians (0-2pi)
-    """
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
@@ -156,6 +142,15 @@ def get_position_dict(particle):
 
 
 def get_osculating_orbit(sim, i):
+    """
+    Given a REBOUND simulation, calculate:
+    - Particle positions
+    - Barycentric orbital information
+        - Semi-major axis: AU
+        - Eccentricity: -1 - 1
+        - Longitude of the ascending node: radians (0-2pi)
+        - Inclination: radians (0-2pi)
+    """
     particle = sim.particles[i]
 
     total_mass = 0.0
