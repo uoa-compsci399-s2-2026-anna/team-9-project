@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron');
 const path = require('path');
-const Store = require('electron-store');
+const Store = require('electron-store'); // Refer to https://github.com/sindresorhus/electron-store
 const settingsSchema = require('./src/shared/settingsSchema.json');
 const simulationStateSchema = require('./src/shared/simulationStateSchema.json');
 
