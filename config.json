@@ -38,14 +38,46 @@
         {
             "name": "TRAPPIST-1",
             "objects": {
-                "Trappist-1": {},
-                "Trappist-1b": {},
-                "Trappist-1c": {},
-                "Trappist-1d": {},
-                "Trappist-1e": {},
-                "Trappist-1f": {},
-                "Trappist-1g": {},
-                "Trappist-1h": {}
+                "Trappist-1": {
+                    "mass": "0.08 ± 0.007 MSun",
+                    "temp": "2560.0 ± 55.0 K",
+                    "radius": "0.117 ± 0.004 RSun"
+                },
+                "Trappist-1b": {
+                    "mass": "0.004323 ± 0.000217 MJ",
+                    "temp": "400.1 ± 7.7 K",
+                    "radius": ""
+                },
+                "Trappist-1c": {
+                    "mass": "0.004115 ± 0.000176 MJ",
+                    "temp": "341.9 ± 6.6 K",
+                    "radius": "0.09787 ± 0.00125 RJ"
+                },
+                "Trappist-1d": {
+                    "mass": "0.001221 ± 3.8e-05 MJ",
+                    "temp": "288.0 ± 5.6 K",
+                    "radius": "0.0703 ± 0.00098 RJ"
+                },
+                "Trappist-1e": {
+                    "mass": "0.002177 ± 6.9e-05 MJ",
+                    "temp": "251.3 ± 4.9 K",
+                    "radius": "0.08208 ± 0.00116 RJ"
+                },
+                "Trappist-1f": {
+                    "mass": "0.003269 ± 9.8e-05 MJ",
+                    "temp": "219.0 ± 4.2 K",
+                    "radius": "0.09323 ± 0.000116 RJ"
+                },
+                "Trappist-1g": {
+                    "mass": "0.004156 ± 0.00012 MJ",
+                    "temp": "198.6 ± 3.8 K",
+                    "radius": "0.10072 ± 0.00134 RJ"
+                },
+                "Trappist-1h": {
+                    "mass": "0.001026 ± 6e-05 MJ",
+                    "temp": "168.0 ± 28.0 K",
+                    "radius": "0.06736 ± 0.00125 RJ"
+                }
             }
         }
     ]
