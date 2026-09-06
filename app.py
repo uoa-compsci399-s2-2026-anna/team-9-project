@@ -213,7 +213,7 @@ def init_solar():
         "Saturn",
         "Uranus",
         "Neptune",
-        "Halley's Comet",
+        "1P/Halley",
     ]
 
     # Add Halley's comet
