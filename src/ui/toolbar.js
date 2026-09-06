@@ -43,9 +43,10 @@ bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
     settingsOverlay.classList.toggle("pointer-events-none", !openMenu);
 });
 
-const fontSelect = document.getElementById("font-select");
-fontSelect.addEventListener("change", (e) => {
-    const selectedFont = e.target.value;
+// Font select
+
+bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
+    const selectedFont = event.detail.font;
 
     if (selectedFont == "OpenDyslexic") {
         html.classList.add("font-accessible");
