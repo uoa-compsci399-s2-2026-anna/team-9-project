@@ -38,8 +38,6 @@
     "electron-winstaller@5.4.4": true
   },
   "dependencies": {
-    "dot-prop": "^10.2.0",
-    "electron-squirrel-startup": "^1.0.1",
-    "electron-store": "^8.2.0"
+    "electron-squirrel-startup": "^1.0.1"
   }
 }
