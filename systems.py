@@ -60,9 +60,9 @@ def init_kepler_16():
 
     # Add and set all objects in the kepler-16 system
     objects = [
-        "kepler-16A",
-        "kepler-16B",
-        "kepler-16b",
+        "Kepler-16A",
+        "Kepler-16B",
+        "Kepler-16b",
     ]
 
     # Add 16A (First star)
