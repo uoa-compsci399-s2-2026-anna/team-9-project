@@ -1,7 +1,7 @@
 import rebound
 
 
-def init_solar():
+def init_solar(system):
     """
     Initialise solar system function
     Returns simulation and objects
@@ -15,18 +15,7 @@ def init_solar():
     sim.add("solar system")
 
     # Add and set all objects in the solar system
-    objects = [
-        "Sun",
-        "Mercury",
-        "Venus",
-        "Earth",
-        "Mars",
-        "Jupiter",
-        "Saturn",
-        "Uranus",
-        "Neptune",
-        "Halley's Comet",
-    ]
+    objects = list(system["objects"])
 
     # Add Halley's comet
     sim.add(
@@ -45,7 +34,7 @@ def init_solar():
     return sim, objects
 
 
-def init_kepler_16():
+def init_kepler_16(system):
     """
     Initialise Kepler-16 function
     Returns rebound simulation object and objects
@@ -59,11 +48,7 @@ def init_kepler_16():
     sim.units = ("AU", "s", "Msun")
 
     # Add and set all objects in the kepler-16 system
-    objects = [
-        "Kepler-16A",
-        "Kepler-16B",
-        "Kepler-16b",
-    ]
+    objects = list(system["objects"])
 
     # Add 16A (First star)
     sim.add(m=0.6897)
@@ -93,7 +78,7 @@ def init_kepler_16():
     return sim, objects
 
 
-def init_trappist_1():
+def init_trappist_1(system):
     """
     Initialise trappist-1 system function
     Returns rebound simulation object and objects
@@ -107,16 +92,7 @@ def init_trappist_1():
     sim.units = ("AU", "s", "Msun")
 
     # Add and set all objects in the trappist-1 system
-    objects = [
-        "Trappist-1",
-        "Trappist-1b",
-        "Trappist-1c",
-        "Trappist-1d",
-        "Trappist-1e",
-        "Trappist-1f",
-        "Trappist-1g",
-        "Trappist-1h",
-    ]
+    objects = list(system["objects"])
 
     # Trappist-1
     sim.add(m=0.0898)
