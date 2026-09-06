@@ -107,11 +107,6 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     if not any(system["name"].lower() == system_name for system in all_systems):
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Find the next requested system
-    system = next(
-        system for system in all_systems if system["name"].lower() == system_name
-    )
-
     # Hardcode Solar System
     if system_name == "solar system" and current_system != "solar system":
         # Init state if empty
