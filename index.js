@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
-const schema = require('./src/shared/settingsSchema.json');
+const settingsSchema = require('./src/shared/settingsSchema.json');
 const simulationStateSchema = require('./src/shared/simulationStateSchema.json');
 
 // Squirrel launches the appplication multiple extra times during install/update/uninstall
@@ -13,11 +13,13 @@ if (require('electron-squirrel-startup')) {
     return;
 }
 
+// Initialise the default settings from the settings schema
 const DEFAULT_SETTINGS = Object.fromEntries(
-    Object.entries(schema).map(([key, field]) => [key, field.default])
+    Object.entries(settingsSchema).map(([key, field]) => [key, field.default])
 );
 
-const DEFAULT_SIM_STATE = Object.fromEntries(
+// Initialise the default simulation state from the simulate state schema
+const DEFAULT_SIMULATION_STATE = Object.fromEntries(
     Object.entries(simulationStateSchema).map(([key, field]) => [key, structuredClone(field.default)])
 );
 
@@ -33,7 +35,7 @@ store.set('settings', {
 });
 
 // Initialise the simulation state to the default simulation state
-let simulationState = { ...DEFAULT_SIM_STATE };
+let simulationState = { ...DEFAULT_SIMULATION_STATE };
 
 // Handle settings saved between run
 ipcMain.handle('settings:get', () => {
@@ -152,6 +154,13 @@ function spawnPythonProcess(resolve, reject) {
     setTimeout(() => reject(new Error("Python server failed to launch")), 30000);
 }
 
+/**
+ * Builds the initial URL for the application. Adds the stored settings state to the
+ * base URL as search parameters. This state is then handled by the initial route.
+ * 
+ * @param {string} baseUrl The base URL for the application
+ * @returns The base URL with the settings state included as search parameters
+ */
 function buildInitialUrl(baseUrl) {
     const parsed = new URL(baseUrl);
     // Use the saved state
@@ -181,7 +190,15 @@ async function createWindow(python_url) {
     mainWindow.on('enter-full-screen', () => mainWindow.webContents.send('fullscreen:changed', true));
     mainWindow.on('leave-full-screen', () => mainWindow.webContents.send('fullscreen:changed', false));
 
-    // TEMP PLACEMENT
+    /**
+     * Override the default behaviour when a user navigates to another URL.
+     * 
+     * Adds the setting state as search parameters to the target URL. Also adds
+     * the simulation state as search parameters if the user is navigating to a
+     * simulation page. These states are handled by the target route (see app.py).
+     * 
+     * Loads the URL with the added search parameters.
+     */
     mainWindow.webContents.on('will-navigate', (event, url) => {
         const parsed = new URL(url);
         event.preventDefault();
@@ -210,13 +227,12 @@ async function createWindow(python_url) {
 
     console.log(`Connecting to '${url}'...`);
 
-    // Change the window to the given url
-
     // Include the persisted state in the initial URL
     url = buildInitialUrl(url);
 
     console.log(`Connecting to '${url}'...`);
 
+    // Change the window to the given url
     mainWindow.loadURL(url);
 
     // Maximise the window and then show it
