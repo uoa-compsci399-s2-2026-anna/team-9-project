@@ -38,22 +38,6 @@
 }
 
 @layer base {
-  body,
-  div,
-  header,
-  nav,
-  footer,
-  p,
-  h1,
-  h2,
-  h3,
-  svg,
-  span {
-    @apply transition-colors duration-200 ease-in-out;
-  }
-}
-
-@layer base {
   select {
     @apply rounded-md bg-white outline-1 outline-zinc-900 dark:bg-black dark:outline-zinc-500;
   }
