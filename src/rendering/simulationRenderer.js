@@ -111,10 +111,30 @@ function createOrUpdateObjectMesh(name, position) {
 }
 
 /**
+ * Determines whether an object's orbit should be visible. An orbit should be visible if the
+ * orbit lines are visible and the object is visible.
+ * 
+ * Given visibility values take precedence over saved simulation state (since this state
+ * may not have been synced yet).
+ * 
+ * @param {string} name Name of the object associated with the orbit
+ * @param {Object} [options] Visibility values
+ * @param {boolean} [options.orbitsVisible] Whether orbits are visible
+ * @param {boolean} [options.objectVisible] Whether the object should be visible
+ * @returns {boolean} Whether the orbit should be visible
+ */
+function shouldShowOrbit(name, { orbitsVisible, objectVisible } = {}) {
+    const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
+    const isObjectShown = objectVisible ?? !isObjectHidden(currentSystem, name);
+
+    return areOrbitsShown && isObjectShown;
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  * 
- * @param {string} name Name of the orbital line
+ * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  */
 function createOrUpdateOrbitalLine(name, orbitalData) {
@@ -126,7 +146,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
         const geometry = new THREE.BufferGeometry();
         const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
         line = new THREE.LineLoop(geometry, material);
-        line.visible = simulationState.orbitsShown;
+        line.visible = shouldShowOrbit(name);
 
         scene.add(line);
         orbitalLines.set(name, line);
@@ -267,16 +287,20 @@ export function setLabelsVisibility(value) {
 }
 
 export function setOrbitsVisibility(value) {
-    for (const orbit of orbitalLines.values()) {
-        orbit.visible = value;
+    for (const [name, orbit] of orbitalLines) {
+        orbit.visible = shouldShowOrbit(name, { orbitsVisible: value });
     }
 }
 
 export function setObjectVisibility(name, value) {
     const mesh = objectMeshes.get(name);
-
     if (mesh) {
         mesh.visible = value;
+    }
+
+    const orbit = orbitalLines.get(name);
+    if (orbit) {
+        orbit.visible = shouldShowOrbit(name, { objectVisible: value });
     }
 }
 
