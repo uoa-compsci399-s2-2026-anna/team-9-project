@@ -3,16 +3,56 @@
         {
             "name": "Solar System",
             "objects": {
-                "Sun": {},
-                "Mercury": {},
-                "Venus": {},
-                "Earth": {},
-                "Mars": {},
-                "Jupiter": {},
-                "Saturn": {},
-                "Uranus": {},
-                "Neptune": {},
-                "1P/Halley": {}
+                "Sun": {
+                    "mass": "",
+                    "temp": "",
+                    "radius": ""
+                },
+                "Mercury": {
+                    "mass": "0.330103 ± 0.000021 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "2439.4 ± 0.1 km"
+                },
+                "Venus": {
+                    "mass": "4.86731 ± 0.00023 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "6051.8 ± 1.0 km"
+                },
+                "Earth": {
+                    "mass": "5.97217 ± 0.00028 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "6371.0084 ± 0.0001 km"
+                },
+                "Mars": {
+                    "mass": "0.641691 ± 0.000030 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "3389.50 ± 0.2 km"
+                },
+                "Jupiter": {
+                    "mass": "1898.125 ± 0.088 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "69911 ± 6 km"
+                },
+                "Saturn": {
+                    "mass": "568.317 ± 0.026 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "58232 ± 6 km"
+                },
+                "Uranus": {
+                    "mass": "86.8099 ± 0.0040 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "25362 ± 7 km"
+                },
+                "Neptune": {
+                    "mass": "102.4092 ± 0.0048 ×10²⁴ kg",
+                    "temp": "",
+                    "radius": "24622 ± 19 km"
+                },
+                "1P/Halley": {
+                    "mass": "",
+                    "temp": "",
+                    "radius": ""
+                }
             }
         },
         {
