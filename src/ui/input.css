@@ -54,6 +54,6 @@
 
 @layer base {
   select {
-    @apply rounded-md border border-black/50 bg-white p-1 dark:border-white/10 dark:bg-zinc-900;
+    @apply text-secondary rounded-md border border-black/50 bg-white p-1 dark:border-white/10 dark:bg-zinc-900;
   }
 }
