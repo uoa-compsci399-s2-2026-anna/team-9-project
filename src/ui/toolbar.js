@@ -58,11 +58,44 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
     }
 });
 
+// RESET SETTINGS BUTTON
+
+const resetSettingsButton = document.getElementById("reset-settings-button");
+const confirmResetSettingsOverlay = document.getElementById(
+    "confirm-reset-settings-overlay",
+);
+const closeConfirmResetSettingsOverlayButton = document.getElementById(
+    "close-confirm-reset-settings-overlay-button",
+);
+
+/**
+ * Toggles the visibility of the settings reset confirmation overlay.
+ */
+function toggleConfirmResetSettingsOverlay() {
+    confirmResetSettingsOverlay.classList.toggle("opacity-0");
+    confirmResetSettingsOverlay.classList.toggle("opacity-100");
+    confirmResetSettingsOverlay.classList.toggle("pointer-events-none");
+    document.body.classList.toggle("confirm-reset-settings-overlay-open");
+    console.log("toggle reset settings confirm overlay");
+}
+
+if (resetSettingsButton && confirmResetSettingsOverlay) {
+    resetSettingsButton.addEventListener(
+        "click",
+        toggleConfirmResetSettingsOverlay,
+    );
+}
+
+closeConfirmResetSettingsOverlayButton.addEventListener(
+    "click",
+    toggleConfirmResetSettingsOverlay,
+);
+
 // Fullscreen button
 
 const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");
-const fullscreenTooltip = document.querySelector("#fullscreen-tooltip")
+const fullscreenTooltip = document.querySelector("#fullscreen-tooltip");
 
 function setFullscreenIcons(fullscreen) {
     enterFullscreenIcon.classList.toggle("hidden", fullscreen);
