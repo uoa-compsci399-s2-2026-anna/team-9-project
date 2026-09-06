@@ -67,6 +67,8 @@ viewSettingsToggles.addEventListener("change", (event) => {
 		case "labels":
             bus.publish(EVENTS.SIM.LABELS_TOGGLE, { value: isEnabled });
 			break;
+        default:
+            console.warn(`Unknown view setting: "${viewSetting}"`);
 	}
 });
 

@@ -53,6 +53,21 @@ export function getSimulationSpeedSeconds() {
 }
 
 /**
+ * Gets the array of hidden object names for the given system
+ * 
+ * @param {string} system The system to get hidden objects for
+ * @returns {string[]} The array of hidden object names for the system
+ */
+function getHiddenObjects(system) {
+     // Initialise the hidden objects array for this system if it doesn't exist yet
+    if (!simulationState.hiddenObjects[system]) {
+        simulationState.hiddenObjects[system] = [];
+    }
+
+    return simulationState.hiddenObjects[system];
+}
+
+/**
  * Shows or hides an object in the simulation.
  * 
  * @param {string} system The system that the object belongs to 
@@ -60,15 +75,13 @@ export function getSimulationSpeedSeconds() {
  * @param {boolean} showObject Whether to show the object. If false, the object is hidden.
  */
 export function toggleObject(system, object, showObject) {
-    if (!simulationState.hiddenObjects[system]) {
-        simulationState.hiddenObjects[system] = [];
-    }
+    const hidden = getHiddenObjects(system);
 
     if (showObject) {
         // Unhide the object
-        simulationState.hiddenObjects[system] = simulationState.hiddenObjects[system].filter(o => o !== object);
+        simulationState.hiddenObjects[system] = hidden.filter(o => o !== object);
     } else if (!simulationState.hiddenObjects[system].includes(object)) {
-        simulationState.hiddenObjects[system].push(object);
+        hidden.push(object);
     }
 
     persist();
@@ -82,7 +95,7 @@ export function toggleObject(system, object, showObject) {
  * @returns {boolean} `true` if the object is hidden; `false` otherwise
  */
 export function isObjectHidden(system, name) {
-    return simulationState.hiddenObjects[system].includes(name);
+    return getHiddenObjects(system).includes(name);
 }
 
 /**
