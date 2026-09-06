@@ -138,6 +138,9 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
 
 def get_position_dict(particle):
+    """
+    Convert a particle to a dictionary of a positions
+    """
     return {"x": particle.x, "y": particle.y, "z": particle.z}
 
 
