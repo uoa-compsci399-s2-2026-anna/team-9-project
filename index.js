@@ -194,8 +194,12 @@ async function createWindow(python_url) {
      * Override the default behaviour when a user navigates to another URL.
      * 
      * Adds the setting state as search parameters to the target URL. Also adds
-     * the simulation state as search parameters if the user is navigating to a
-     * simulation page. These states are handled by the target route (see app.py).
+     * the fullscreen state as a search parameter.
+     * 
+     * If the user is navigating to a simulation page, the simulation state
+     * are added as search parameters.
+     * 
+     * These states are handled by the target route (see app.py).
      * 
      * Loads the URL with the added search parameters.
      */
@@ -204,6 +208,7 @@ async function createWindow(python_url) {
         event.preventDefault();
 
         parsed.searchParams.set('settings', JSON.stringify(store.get('settings') || {}));
+        parsed.searchParams.set('fullscreen', mainWindow.isFullScreen());
 
         if (parsed.pathname.startsWith('/simulation/')) {
             parsed.searchParams.set('state', JSON.stringify(simulationState));

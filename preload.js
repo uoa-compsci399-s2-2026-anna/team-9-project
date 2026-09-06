@@ -15,6 +15,5 @@ contextBridge.exposeInMainWorld('simulationStateAPI', {
 
 contextBridge.exposeInMainWorld('fullscreenAPI', {
     toggle: () => ipcRenderer.send('fullscreen:toggle'),
-    get: () => ipcRenderer.invoke('fullscreen:get'),
     onChange: (callback) => ipcRenderer.on('fullscreen:changed', (_event, value) => callback(value)),
 });

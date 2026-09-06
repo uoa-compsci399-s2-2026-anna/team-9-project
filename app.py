@@ -43,7 +43,7 @@ objects = []
 
 
 @app.get("/")
-async def home(request: Request, settings: str = "{}"):
+async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
     settings_state = json.loads(settings)
 
     return templates.TemplateResponse(
@@ -52,6 +52,7 @@ async def home(request: Request, settings: str = "{}"):
         context={
             "settings": settings_state,
             "settings_schema": settings_schema,
+            "fullscreen": fullscreen,
 
             "systems": all_systems,
             "dropdown_systems": all_systems,
@@ -67,7 +68,7 @@ async def home(request: Request, settings: str = "{}"):
 
 
 @app.get("/simulation/{system_name}")
-async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}"):
+async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}", fullscreen: bool = False):
     sim_state = json.loads(state)
 
     settings_state = json.loads(settings)
@@ -90,6 +91,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "settings": settings_state,
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
+            "fullscreen": fullscreen,
 
             "systems": all_systems,
             "current_system": current_system,

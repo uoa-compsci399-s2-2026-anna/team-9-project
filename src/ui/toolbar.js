@@ -64,9 +64,6 @@ function setFullscreenIcons(fullScreen) {
     exitFullscreenIcon.classList.toggle("hidden", !fullScreen);
 }
 
-// Set the fullscreen icons based on whether the application is initially in fullscreen or not
-window.fullscreenAPI.get().then(setFullscreenIcons);
-
 // Update the fullscreen icons when the application enters/exits fullscreen
 window.fullscreenAPI.onChange(setFullscreenIcons);
 
