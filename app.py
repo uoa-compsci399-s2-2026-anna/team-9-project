@@ -132,9 +132,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
     # Gather orbital data for each object
-    orbital_data = {
-        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
-    }
+    orbital_data = {objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))}
 
     return {"positions": positions, "orbital_data": orbital_data}
 
@@ -149,8 +147,7 @@ def get_position_dict(particle):
 def get_osculating_orbit(sim, i):
     """
     Given a REBOUND simulation, calculate:
-    - Particle positions
-    - Barycentric orbital information
+    - Barycentric osculating orbital information
         - Semi-major axis: AU
         - Eccentricity: -1 - 1
         - Longitude of the ascending node: radians (0-2pi)
@@ -162,6 +159,7 @@ def get_osculating_orbit(sim, i):
     x = y = z = 0.0
     vx = vy = vz = 0.0
 
+    # Loop through all other particles
     for j, other in enumerate(sim.particles):
         if i == j:
             continue
@@ -174,6 +172,7 @@ def get_osculating_orbit(sim, i):
         vy += other.m * other.vy
         vz += other.m * other.vz
 
+    # The orbital pseudo-particle to calculate the orbit from
     primary = rebound.Particle(
         m=total_mass,
         x=x / total_mass,
@@ -187,6 +186,7 @@ def get_osculating_orbit(sim, i):
     orbit = particle.orbit(primary=primary)
 
     """
+    Return only necessary orbital information
     https://rebound.hanno-rein.de/particles/orbitalelements/
     
     a 	semi-major axis
