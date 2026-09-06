@@ -35,15 +35,57 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 // Settings menu overlay
 
 const settingsOverlay = document.querySelector("#settings-overlay");
+const openOverlays = [];
+
+/**
+ * Shows some overlay and pushes it to the `openOverlays` stack
+ * @param {HTMLElement} overlay The overlay to show
+ */
+function showOverlay(overlay) {
+    overlay.classList.remove("opacity-0");
+    overlay.classList.add("opacity-100");
+    overlay.classList.remove("pointer-events-none");
+    document.body.classList.add(`${overlay.id}-open`);
+
+    if (!openOverlays.some((item) => item.overlay === overlay)) {
+        openOverlays.push({ overlay });
+    }
+}
+
+/**
+ * Pops and hides the topmost overlay on the `openOverlays` stack
+ * @param {HTMLElement} overlay The overlay to hide
+ */
+function hideOverlay(overlay) {
+    overlay.classList.add("opacity-0");
+    overlay.classList.remove("opacity-100");
+    overlay.classList.add("pointer-events-none");
+    document.body.classList.remove(`${overlay.id}-open`);
+
+    const index = openOverlays.findIndex((item) => item.overlay === overlay);
+    if (index !== -1) {
+        openOverlays.splice(index, 1);
+    }
+}
+
+// Pop and hide topmost overlay on ESC press
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        const topOverlay = openOverlays.at(-1)?.overlay;
+        if (topOverlay) {
+            hideOverlay(topOverlay);
+        }
+    }
+});
 
 bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
     const { openMenu } = event.detail;
 
-    settingsOverlay.classList.toggle("opacity-100", openMenu);
-    document.body.classList.toggle("settings-menu-open", openMenu);
-
-    settingsOverlay.classList.toggle("opacity-0", !openMenu);
-    settingsOverlay.classList.toggle("pointer-events-none", !openMenu);
+    if (openMenu) {
+        showOverlay(settingsOverlay);
+    } else {
+        hideOverlay(settingsOverlay);
+    }
 });
 
 // Font select
@@ -72,11 +114,15 @@ const closeConfirmResetSettingsOverlayButton = document.getElementById(
  * Toggles the visibility of the settings reset confirmation overlay.
  */
 function toggleConfirmResetSettingsOverlay() {
-    confirmResetSettingsOverlay.classList.toggle("opacity-0");
-    confirmResetSettingsOverlay.classList.toggle("opacity-100");
-    confirmResetSettingsOverlay.classList.toggle("pointer-events-none");
-    document.body.classList.toggle("confirm-reset-settings-overlay-open");
-    console.log("toggle reset settings confirm overlay");
+    if (
+        openOverlays.some(
+            (item) => item.overlay === confirmResetSettingsOverlay,
+        )
+    ) {
+        hideOverlay(confirmResetSettingsOverlay);
+    } else {
+        showOverlay(confirmResetSettingsOverlay);
+    }
 }
 
 if (resetSettingsButton && confirmResetSettingsOverlay) {
@@ -91,8 +137,15 @@ closeConfirmResetSettingsOverlayButton.addEventListener(
     toggleConfirmResetSettingsOverlay,
 );
 
+confirmResetSettingsOverlay.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) {
+        hideOverlay(confirmResetSettingsOverlay);
+    }
+});
+
 // Fullscreen button
 
+const fullscreenButton = document.querySelector("#fullscreen-button");
 const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");
 const fullscreenTooltip = document.querySelector("#fullscreen-tooltip");
