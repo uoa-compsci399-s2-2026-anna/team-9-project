@@ -11,7 +11,7 @@ def init_solar():
 
     sim.units = ("AU", "s", "Msun")
 
-    # Add the sun at current position
+    # Add all solar system objects
     sim.add("solar system")
 
     # Add and set all objects in the solar system
