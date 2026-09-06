@@ -55,8 +55,8 @@ const themes = {
     },
 };
 
-function getTheme(isDarkMode) {
-    return isDarkMode ? themes.dark : themes.light;
+function getTheme() {
+    return settings.darkMode ? themes.dark : themes.light;
 }
 
 function getFontSize(size) {
@@ -89,10 +89,10 @@ function createOrUpdateObjectMesh(name, position) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = getTheme(settings.darkMode).labelColour;
+        labelDiv.style.color = getTheme().labelColour;
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.textShadow = getTheme(settings.darkMode).textShadow;
+        labelDiv.style.textShadow = getTheme().textShadow;
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
@@ -118,7 +118,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: getTheme(settings.darkMode).orbitColour });
+        const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
         line = new THREE.LineLoop(geometry, material);
         line.visible = simulationState.orbitsShown;
 
@@ -217,7 +217,7 @@ export function init(name) {
     controls.update();
 
     scene = new THREE.Scene();
-    scene.background = getTheme(settings.darkMode).background;
+    scene.background = getTheme().background;
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
     labelRenderer = new CSS2DRenderer();
@@ -288,17 +288,17 @@ export function setFontFamily(chosenFont) {
     }   
 }
 
-export function toggleSimulationDarkMode(isDarkMode) {
-    scene.background = getTheme(isDarkMode).background;
+export function toggleSimulationDarkMode() {
+    scene.background = getTheme().background;
 
-    let labelColour = getTheme(isDarkMode).labelColour;
-    let labelTextShadow = getTheme(isDarkMode).textShadow;
+    let labelColour = getTheme().labelColour;
+    let labelTextShadow = getTheme().textShadow;
     for (const label of objectLabels.values()) {
         label.element.style.color = labelColour;
         label.element.style.textShadow = labelTextShadow;
     }
 
-    let orbitColour = getTheme(isDarkMode).orbitColour;
+    let orbitColour = getTheme().orbitColour;
     for (const orbit of orbitalLines.values()) {
         orbit.material.color.set(orbitColour);
     }
