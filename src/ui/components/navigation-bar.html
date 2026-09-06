@@ -132,7 +132,7 @@
         <!-- Dark mode icon -->
         <svg
           id="dark-mode-icon"
-          class="size-7 {{ 'hidden' if settings.darkMode else '' }}"
+          class="size-7 {{ 'hidden' if settings.darkMode }}"
           viewBox="0 0 24 24"
         >
           <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
@@ -144,7 +144,7 @@
         <!-- Light mode icon -->
         <svg
           id="light-mode-icon"
-          class="size-7 {{ '' if settings.darkMode else 'hidden' }}"
+          class="size-7 {{ 'hidden' if not settings.darkMode }}"
           viewBox="0 0 24 24"
         >
           <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
