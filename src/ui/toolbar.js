@@ -8,15 +8,15 @@ document.querySelectorAll("a").forEach((a) => {
     a.setAttribute("draggable", "false");
 });
 
-// DARK/LIGHT MODE
+// Dark/light mode
 const darkModeIcon = document.querySelector("#dark-mode-icon");
 const lightModeIcon = document.querySelector("#light-mode-icon");
 
-function toggleDarkMode(isDark) {
-    darkModeIcon.classList.toggle("hidden", isDark);
-    lightModeIcon.classList.toggle("hidden", !isDark);
+function toggleDarkMode(isDarkMode) {
+    darkModeIcon.classList.toggle("hidden", isDarkMode);
+    lightModeIcon.classList.toggle("hidden", !isDarkMode);
 
-    if (isDark) {
+    if (isDarkMode) {
         html.setAttribute("data-theme", "dark");
     } else {
         html.setAttribute("data-theme", "light");
@@ -24,12 +24,12 @@ function toggleDarkMode(isDark) {
 }
 
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
-    const { darkMode } = event.detail;
+    const { enterDarkMode } = event.detail;
 
-    toggleDarkMode(darkMode);
+    toggleDarkMode(enterDarkMode);
 });
 
-// SETTINGS MENU OVERLAY
+// Settings menu overlay
 
 const settingsOverlay = document.querySelector("#settings-overlay");
 
@@ -54,7 +54,7 @@ fontSelect.addEventListener("change", (e) => {
     }
 });
 
-// FULLSCREEN BUTTON
+// Fullscreen button
 
 const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");

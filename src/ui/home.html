@@ -38,11 +38,6 @@
 
 <!-- Scripts block -->
 {% block scripts %}
-  <script 
-    type="module" 
-    src="/src/ui/toolbar.js" 
-    defer
-  ></script>
   <script
     type="module"
     src="/src/events/triggers/sharedTriggers.js"
@@ -61,6 +56,11 @@
   <script
     type="module"
     src="/src/events/triggers/homeTriggers.js"
+    defer
+  ></script>
+  <script 
+    type="module" 
+    src="/src/ui/toolbar.js" 
     defer
   ></script>
 {% endblock %}

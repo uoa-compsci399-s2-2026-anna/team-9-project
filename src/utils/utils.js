@@ -1,5 +1,5 @@
 /**
- * Converts a given amount of time into seconds
+ * Converts a given amount of time (time + unit) into seconds.
  *
  * @param {number} time - The amount of time to convert
  * @param {string} unit The time unit: "hour", "day", "week", "month", or "year"

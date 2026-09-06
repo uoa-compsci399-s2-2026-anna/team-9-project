@@ -65,5 +65,5 @@ bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
 // Dark mode
 
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
-    toggleSimulationDarkMode(event.detail.darkMode);
+    toggleSimulationDarkMode(event.detail.enterDarkMode);
 });

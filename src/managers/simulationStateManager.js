@@ -46,7 +46,7 @@ bus.subscribe(EVENTS.SIM.OBJECT_TOGGLE, (event) => {
 // Running and Frozen are not persisted in the session
 
 bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
-    setRunning(event.detail.start);
+    setRunning(event.detail.startSimulation);
 });
 
 // Freeze the simulation when the settings menu is opened (unfreeze when closed)

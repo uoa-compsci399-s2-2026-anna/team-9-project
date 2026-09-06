@@ -29,5 +29,5 @@ bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
 
 // Dark mode
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
-    setSetting("darkMode", event.detail.darkMode);
+    setSetting("darkMode", event.detail.enterDarkMode);
 });

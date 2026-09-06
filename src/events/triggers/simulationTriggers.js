@@ -9,7 +9,7 @@ const currentSystem = canvas.dataset.currentSystem;
 const playPauseButton = document.getElementById("play-pause-button");
 
 playPauseButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.TOGGLE, { start: !running });
+    bus.publish(EVENTS.SIM.TOGGLE, { startSimulation: !running });
 });
 
 // Triggers for the speed adjuster

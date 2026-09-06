@@ -7,10 +7,10 @@ const playIcon = document.querySelector("#play-icon");
 const pauseIcon = document.querySelector("#pause-icon");
 
 bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
-    const { start } = event.detail;
+    const { startSimulation } = event.detail;
 
-    playIcon.classList.toggle("hidden", start);
-    pauseIcon.classList.toggle("hidden", !start);
+    playIcon.classList.toggle("hidden", startSimulation);
+    pauseIcon.classList.toggle("hidden", !startSimulation);
 });
 
 // SYSTEMS DROPDOWN
@@ -39,7 +39,7 @@ bus.subscribe(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE, () => {
 
     viewSettingsShowIcon.classList.toggle("hidden");
     viewSettingsHideIcon.classList.toggle("hidden");
-})
+});
 
 // OBJECTS SIDE PANEL
 
