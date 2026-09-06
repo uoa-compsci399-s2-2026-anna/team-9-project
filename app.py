@@ -22,7 +22,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
 
 # Load the config file
-with open(os.path.join(base_path, "config.json")) as f:
+with open(os.path.join(base_path, "config.json"), 'r', encoding='utf-8') as f:
     config = json.load(f)
 
 # Get the systems in the config
@@ -91,6 +91,21 @@ async def kill():
     """
     sim.stop()
     os.kill(os.getpid(), signal.SIGINT)
+
+
+@app.get("/system_info")
+async def get_system_info(system_name: str = ""):
+    # Convert the system name to lowercase for API resilience
+    system_name = system_name.lower()
+
+    # Catch poor input
+    if not any(system["name"].lower() == system_name for system in all_systems):
+        print("ERROR:", system_name, "not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    system = next(system for system in all_systems if system["name"].lower() == system_name)
+
+    return system["objects"]
 
 
 @app.get("/system")
