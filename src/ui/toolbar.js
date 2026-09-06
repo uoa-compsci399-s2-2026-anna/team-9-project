@@ -44,8 +44,14 @@ const systemInformationButton = document.querySelector(
 const confirmResetSettingsButton = document.getElementById(
     "confirm-reset-settings-button",
 );
+const cancelResetSettingsButton = document.getElementById(
+    "cancel-reset-settings-button",
+);
 
 confirmResetSettingsButton.addEventListener("click", (e) => {
+    hideOverlay(confirmResetSettingsOverlay);
+});
+cancelResetSettingsButton.addEventListener("click", (e) => {
     hideOverlay(confirmResetSettingsOverlay);
 });
 
