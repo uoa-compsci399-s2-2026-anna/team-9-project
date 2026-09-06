@@ -1,9 +1,11 @@
 {% from "components/overlay.html" import overlay %}
 
 {% call overlay("confirm-reset-settings-overlay", "Reset settings") %}
-  <span
-    >Are you sure you want to reset all settings to defaults? This will reset
-    all general and accessibility settings, as well as all simulation-related
-    settings!</span
-  >
+  <div>
+    <p>Are you sure you want to reset all settings to defaults?</p>
+    <p>
+      This will reset all general and accessibility settings, as well as all
+      simulation-related settings!
+    </p>
+  </div>
 {% endcall %}
