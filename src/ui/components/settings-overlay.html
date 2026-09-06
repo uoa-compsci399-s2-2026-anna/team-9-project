@@ -38,7 +38,7 @@
         <h2 class="text-lg font-bold">General</h2>
       </div>
 
-      <label class="flex">
+      <label class="flex items-center">
         <span class="text-secondary flex-1">Time zone</span>
         <select id="time-zone-select" name="time-zone" class="flex-1">
           {% for option in settings_schema.timeZone.options %}
@@ -62,7 +62,7 @@
       </div>
 
       <!-- Font selection -->
-      <label class="flex">
+      <label class="flex items-center">
         <span class="text-secondary flex-1">Font</span>
         <select id="font-select" name="font" class="flex-1">
           {% for option in settings_schema.font.options %}
@@ -72,7 +72,7 @@
       </label>
 
       <!-- Text size -->
-      <label class="flex">
+      <label class="flex items-center">
         <span class="text-secondary flex-1">Text size</span>
         <select id="text-size-select" name="text-size" class="flex-1">
           {% for option in settings_schema.textSize.options %}
@@ -82,7 +82,7 @@
       </label>
 
       <!-- Object marker size -->
-      <label class="flex">
+      <label class="flex items-center">
         <span class="text-secondary flex-1">Object marker size</span>
         <select id="object-marker-size-select" name="object-marker-size" class="flex-1">
           {% for option in settings_schema.objectMarkerSize.options %}
@@ -92,7 +92,7 @@
       </label>
 
       <!-- Orbit lines -->
-      <label class="flex">
+      <label class="flex items-center">
         <span class="text-secondary flex-1">Orbit lines</span>
         <select id="orbit-lines-select" name="orbit-lines" class="flex-1">
           {% for option in settings_schema.orbitLines.options %}
