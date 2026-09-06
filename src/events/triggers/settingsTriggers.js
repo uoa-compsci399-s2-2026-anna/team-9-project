@@ -63,5 +63,5 @@ objectMarkerSizeSelect.addEventListener("change", (event) => {
 const orbitLinesSelect = document.getElementById("orbit-lines-select");
 
 orbitLinesSelect.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SETTINGS.ORBIT_LINES_SELECT, { orbitLine: event.target.value });
+    bus.publish(EVENTS.SETTINGS.ORBIT_LINES_SELECT, { orbitLines: event.target.value });
 });

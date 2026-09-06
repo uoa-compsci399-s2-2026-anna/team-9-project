@@ -85,8 +85,8 @@
       <label class="flex">
         <span class="flex-1">Orbit lines</span>
         <select id="orbit-lines-select" name="orbit-lines" class="flex-1">
-          {% for option in settings_schema.orbitLine.options %}
-            <option value="{{ option.value }}" {{ "selected" if option.value == settings.orbitLine }}>{{ option.label }}</option>
+          {% for option in settings_schema.orbitLines.options %}
+            <option value="{{ option.value }}" {{ "selected" if option.value == settings.orbitLines }}>{{ option.label }}</option>
           {% endfor %}
         </select>
       </label>

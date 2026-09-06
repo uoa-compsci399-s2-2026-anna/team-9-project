@@ -27,7 +27,7 @@
       { "value": "Larger", "label": "Larger" }
     ]
   },
-  "orbitLine": {
+  "orbitLines": {
     "default": "Colour",
     "options": [
       { "value": "Colour", "label": "Differentiate by colour" },

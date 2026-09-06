@@ -51,10 +51,10 @@ viewSettingsToggles.addEventListener("change", (event) => {
         return;
     }
 
-	const setting = event.target.dataset.setting;
+	const viewSetting = event.target.dataset.setting;
 	const isEnabled = event.target.checked;
 
-	switch (setting) {
+	switch (viewSetting) {
 		case "habitable-zone":
             bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, { value: isEnabled });
 			break;
@@ -70,7 +70,7 @@ viewSettingsToggles.addEventListener("change", (event) => {
 	}
 });
 
-// Triggers for objects
+// Triggers for hiding/showing objects
 const objectsToggles = document.getElementById("objects-toggles");
 
 objectsToggles.addEventListener("change", (event) => {
@@ -98,7 +98,7 @@ objectsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.OBJECTS_PANEL_TOGGLE);
 })
 
-// System dropdown (e.g., for changing between Solar System and Kepler-16)
+// System dropdown (e.g., for changing between Solar System and Kepler-16 on the simulation page)
 const systemButton = document.getElementById("system-information-button");
 const systemDropdown = document.getElementById("system-dropdown");
 

@@ -24,7 +24,7 @@ bus.subscribe(EVENTS.SETTINGS.OBJECT_MARKER_SIZE_SELECT, (event) => {
 
 // Orbit lines
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
-    setSetting("orbitLines", event.detail.orbitLine);
+    setSetting("orbitLines", event.detail.orbitLines);
 });
 
 // Dark mode

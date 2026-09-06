@@ -1,3 +1,7 @@
+/**
+ * Safely expose APIs for communication between the main process and renderer processes
+ */
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('settingsAPI', {
