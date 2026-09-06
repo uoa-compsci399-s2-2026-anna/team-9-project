@@ -1,7 +1,13 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { getSimulationSpeedSeconds, simulationState, running, frozen } from "../shared/simulationState.js";
+import {
+    simulationState,
+    running,
+    frozen,
+    isObjectHidden,
+    getSimulationSpeedSeconds,
+} from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
@@ -82,7 +88,7 @@ function createOrUpdateObjectMesh(name, position) {
         const material = new THREE.MeshStandardMaterial({ color: objectColour });
 
         mesh = new THREE.Mesh(geometry, material);
-        mesh.visible = !simulationState.hiddenObjects[currentSystem].includes(name);
+        mesh.visible = !isObjectHidden(currentSystem, name);
         scene.add(mesh);
         objectMeshes.set(name, mesh);
 

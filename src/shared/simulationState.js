@@ -75,6 +75,17 @@ export function toggleObject(system, object, showObject) {
 }
 
 /**
+ * Returns whether an object is hidden in the specified system.
+ * 
+ * @param {string} system The system to check
+ * @param {*} name The name of the object
+ * @returns {boolean} `true` if the object is hidden; `false` otherwise
+ */
+export function isObjectHidden(system, name) {
+    return simulationState.hiddenObjects[system].includes(name);
+}
+
+/**
  * The running and frozen states only exist for the current simulation session, and are reset when the
  * simulation is loaded again.
  */
