@@ -16,8 +16,26 @@ playPauseButton.addEventListener("click", () => {
 const speedAdjuster = document.getElementById("speed-adjuster");
 const speedUnitSelector = document.getElementById("speed-unit-selector");
 
+// Store the last valid speed input
+let lastValidSpeed = speedAdjuster.value;
+
 speedAdjuster.addEventListener("input", (event) => {
-    bus.publish(EVENTS.SIM.ADJUST_SPEED, { speed: event.target.value });
+    const input = event.target;
+
+    // Catch input that cannot be passed as a number
+    if (input.validity.badInput) {
+        input.value = lastValidSpeed;
+        return;
+    }
+
+    // Prevent the user from typing anything but a number between 0 and 9
+    const cleanedInput = input.value.replace(/[^0-9]/g, "");
+    if (cleanedInput !== input.value) {
+        input.value = cleanedInput;
+    }
+
+    lastValidSpeed = cleanedInput;
+    bus.publish(EVENTS.SIM.ADJUST_SPEED, { speed: cleanedInput });
 });
 
 speedUnitSelector.addEventListener("change", (event) => {
