@@ -26,7 +26,7 @@ speedUnitSelector.addEventListener("change", (event) => {
 
 // Triggers for step back and step forward buttons
 const stepForward = document.getElementById("step-forward");
-const stepBack = document.getElementById("step-back");
+const stepBack = document.getElementById("step-back-button");
 
 stepForward.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.STEP_FORWARD);
@@ -37,7 +37,7 @@ stepBack.addEventListener("click", () => {
 })
 
 // Trigger for resetting the simulation view
-const resetView = document.getElementById("reset-view");
+const resetView = document.getElementById("reset-view-button");
 
 resetView.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.RESET_VIEW);
