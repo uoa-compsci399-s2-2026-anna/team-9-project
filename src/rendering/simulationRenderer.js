@@ -214,13 +214,11 @@ async function updateSimulation(systemData = null) {
     if (!systemData) {
         systemData = await getSystemData(currentSystem, currentSimulationTime);
     }
-    const positionMap = Object.entries(systemData.positions);
-    const orbitalDataMap = Object.entries(systemData.orbital_data);
 
-    for (const [name, position] of positionMap) {
+    for (const [name, position] of Object.entries(systemData.positions)) {
         createOrUpdateObjectMesh(name, position);
     }
-    for (const [name, orbitalData] of orbitalDataMap) {
+    for (const [name, orbitalData] of Object.entries(systemData.orbital_data)) {
         createOrUpdateOrbitalLine(name, orbitalData);
     }
 }
@@ -230,11 +228,10 @@ function calculateCameraDistance(viewRadius) {
     return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
 }
 
-function calculateUpVector(orbitalDataMap) {
+function calculateUpVector(orbitalDataValues) {
     const averageNormal = new THREE.Vector3();
 
-    for (const [_, orbitalData] of orbitalDataMap) {
-        const { inc, Omega } = orbitalData;
+    for (const { inc, Omega } of orbitalDataValues) {
         const normal = new THREE.Vector3( // Normal vector of the orbital plane
             Math.sin(inc) * Math.sin(Omega),
             -Math.sin(inc) * Math.cos(Omega),
@@ -285,18 +282,18 @@ export async function init(name) {
     currentSystem = name;
 
     const systemData = await getSystemData(currentSystem, currentSimulationTime);
-    const orbitalDataMap = Object.entries(systemData.orbital_data);
+    const orbitalDataValues = Object.values(systemData.orbital_data);
 
     const maxApoapsis = Math.max(
-        ...orbitalDataMap.map(
-            ([_, orbitalData]) => orbitalData.a*(1 + orbitalData.e)
+        ...orbitalDataValues.map(
+            ({ a, e }) => a * (1 + e)
         )
     );
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
     objectSize = maxApoapsis * objectSizeMultiplier;
 
     const cameraDistance = calculateCameraDistance(viewRadius);
-    const upVector = calculateUpVector(orbitalDataMap);
+    const upVector = calculateUpVector(orbitalDataValues);
     cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
     initCameraAndControls(canvas, cameraDistance, upVector);
 
