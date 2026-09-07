@@ -35,6 +35,7 @@
     <div class="flex flex-nowrap items-start gap-1 justify-self-center">
       <!-- Step back button -->
       <button
+        id="step-back-button"
         class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
       >
         <svg class="size-10" viewBox="0 0 24 24">
@@ -69,6 +70,7 @@
 
       <!-- Step forward button -->
       <button
+        id="step-forward-button"
         class="rounded-md p-1 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
       >
         <svg class="size-10" viewBox="0 0 24 24">
@@ -84,20 +86,21 @@
     <div class="flex items-center gap-3 justify-self-end max-sm:hidden">
       <label class="">speed</label>
       <input
+        id="speed-adjuster"
         type="number"
+        inputmode="numeric"
         min="0"
         class="h-9 w-18 rounded-md pl-2 outline-1 outline-zinc-900 dark:outline-zinc-500"
-        value="20"
+        value="{{ sim_state.simulationSpeed }}"
       />
 
       <select
+        id="speed-unit-selector"
         class="h-9 w-18 rounded-md outline-1 outline-zinc-900 dark:outline-zinc-500"
       >
-        <option>hour</option>
-        <option>day</option>
-        <option>week</option>
-        <option>month</option>
-        <option>year</option>
+        {% for option in sim_state_schema.simulationSpeedUnit.options %}
+          <option value="{{ option.value }}" {{ "selected" if option.value == sim_state.simulationSpeedUnit }}>{{ option.label }}</option>
+        {% endfor %}
       </select>
 
       <p class="pr-3">per second</p>

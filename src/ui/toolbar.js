@@ -1,3 +1,6 @@
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
+
 const html = document.documentElement;
 
 // Disable dragging for all links
@@ -5,113 +8,48 @@ document.querySelectorAll("a").forEach((a) => {
     a.setAttribute("draggable", "false");
 });
 
-// DARK/LIGHT MODE
-
-const darkModeToggleButton = document.querySelector("#dark-mode-toggle-button");
+// Dark/light mode
 const darkModeIcon = document.querySelector("#dark-mode-icon");
 const lightModeIcon = document.querySelector("#light-mode-icon");
+const themeTooltip = document.querySelector("#theme-tooltip");
 
-/**
- * Updates the icon (SVG) of the dark/light mode toggle button to be the
- * correct icon based on the current theme.
- */
-function updateDarkModeIcon() {
-    const isDark = html.getAttribute("data-theme") === "dark";
+function toggleDarkMode(isDarkMode) {
+    darkModeIcon.classList.toggle("hidden", isDarkMode);
+    lightModeIcon.classList.toggle("hidden", !isDarkMode);
 
-    if (isDark) {
-        lightModeIcon.classList.remove("hidden");
-        darkModeIcon.classList.add("hidden");
+    if (isDarkMode) {
+        html.setAttribute("data-theme", "dark");
+        themeTooltip.textContent = "View in light mode";
     } else {
-        lightModeIcon.classList.add("hidden");
-        darkModeIcon.classList.remove("hidden");
+        html.setAttribute("data-theme", "light");
+        themeTooltip.textContent = "View in dark mode";
     }
 }
 
-/**
- * Toggles dark/light mode and updates the icon (SVG) of the dark/light
- * mode toggle button.
- */
-function toggleDarkMode() {
-    const isDark = html.getAttribute("data-theme") === "dark";
+bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
+    const { enterDarkMode } = event.detail;
 
-    html.setAttribute("data-theme", isDark ? "light" : "dark");
-    updateDarkModeIcon();
-}
+    toggleDarkMode(enterDarkMode);
+});
 
-// Check if system theme is dark mode
-if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    html.setAttribute("data-theme", "dark");
-} else {
-    html.setAttribute("data-theme", "light");
-}
+// Settings menu overlay
 
-// Update icons to ensure they are initially shown correctly depending on
-// theme on startup
-updateDarkModeIcon();
-
-darkModeToggleButton.addEventListener("click", toggleDarkMode);
-
-// SYSTEMS DROPDOWN
-
-const systemButton = document.getElementById("system-information-button");
-const systemDropdown = document.getElementById("system-dropdown");
-
-if (systemButton && systemDropdown) {
-    systemButton.addEventListener("click", () => {
-        if (systemDropdown.style.display === "none") {
-            systemDropdown.style.display = "block";
-        } else {
-            systemDropdown.style.display = "none";
-        }
-    });
-}
-
-// SETTINGS MENU OVERLAY
-
-const settingsButton = document.querySelector("#settings-button");
 const settingsOverlay = document.querySelector("#settings-overlay");
-const systemInformationButton = document.querySelector(
-    "#system-information-button",
-);
 
-/**
- * Toggles the visibility of the settings menu overlay.
- */
-function toggleSettingsMenu() {
-    settingsOverlay.classList.toggle("opacity-0");
-    settingsOverlay.classList.toggle("opacity-100");
-    settingsOverlay.classList.toggle("pointer-events-none");
-    document.body.classList.toggle("settings-menu-open");
-}
+bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
+    const { openMenu } = event.detail;
 
-settingsButton.addEventListener("click", toggleSettingsMenu);
+    settingsOverlay.classList.toggle("opacity-100", openMenu);
+    document.body.classList.toggle("settings-menu-open", openMenu);
 
-const closeSettingsMenuButton = document.querySelector(
-    "#close-settings-menu-button",
-);
-
-closeSettingsMenuButton.addEventListener("click", toggleSettingsMenu);
-
-settingsOverlay.addEventListener("click", (e) => {
-    // Close settings menu only when the user clicks outside of the main
-    // settings menu panel
-    if (e.target === e.currentTarget) {
-        toggleSettingsMenu();
-    }
+    settingsOverlay.classList.toggle("opacity-0", !openMenu);
+    settingsOverlay.classList.toggle("pointer-events-none", !openMenu);
 });
 
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-        // Close settings menu if open and user presses escape
-        if (document.body.classList.contains("settings-menu-open")) {
-            toggleSettingsMenu();
-        }
-    }
-});
+// Font select
 
-const fontSelect = document.getElementById("font-select");
-fontSelect.addEventListener("change", (e) => {
-    const selectedFont = e.target.value;
+bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
+    const selectedFont = event.detail.font;
 
     if (selectedFont == "OpenDyslexic") {
         html.classList.add("font-accessible");
@@ -120,27 +58,28 @@ fontSelect.addEventListener("change", (e) => {
     }
 });
 
-// FULLSCREEN BUTTON
+// Fullscreen button
 
-const fullscreenButton = document.querySelector("#fullscreen-button");
 const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");
+const fullscreenTooltip = document.querySelector("#fullscreen-tooltip")
 
-fullscreenButton.addEventListener("click", () => {
-    enterFullscreenIcon.classList.toggle("hidden");
-    exitFullscreenIcon.classList.toggle("hidden");
+function setFullscreenIcons(fullscreen) {
+    enterFullscreenIcon.classList.toggle("hidden", fullscreen);
+    exitFullscreenIcon.classList.toggle("hidden", !fullscreen);
 
-    if (document.fullscreenElement) {
-        document.exitFullscreen();
+    if (fullscreen) {
+        fullscreenTooltip.textContent = "Exit fullscreen";
     } else {
-        if (html.requestFullscreen) {
-            html.requestFullscreen();
-        } else if (html.webkitRequestFullscreen) {
-            // Safari
-            html.webkitRequestFullscreen();
-        } else if (html.msRequestFullscreen) {
-            // IE11
-            html.msRequestFullscreen();
-        }
+        fullscreenTooltip.textContent = "Enter fullscreen";
     }
+}
+
+// Update the fullscreen icons when the application enters/exits fullscreen
+if (window.fullscreenAPI) {
+    window.fullscreenAPI.onChange(setFullscreenIcons);
+}
+
+bus.subscribe(EVENTS.TOOLBAR.FULLSCREEN_BUTTON_TOGGLE, () => {
+    window.fullscreenAPI.toggle();
 });

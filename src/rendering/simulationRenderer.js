@@ -1,7 +1,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { running, frozen, simulationSpeed } from "../shared/simulationState.js";
+import {
+    simulationState,
+    running,
+    frozen,
+    isObjectHidden,
+    getSimulationSpeedSeconds,
+} from "../shared/simulationState.js";
+import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
@@ -10,18 +17,61 @@ let currentSystem;
 
 let scene;
 let camera;
+let controls;
 let renderer;
 let labelRenderer;
 
+const cameraDefaults = {
+    position: new THREE.Vector3(0, 0, 50),
+    target: new THREE.Vector3(0, 0, 0),
+};
+
 const objectMeshes = new Map();
 const orbitalLines = new Map();
+const objectLabels = new Map();
 
 // Default size and colour of all the objects
 const objectSize = 0.05;
-const objectColour = 0xFFFFFF; // White
+const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
-const orbitColour = 0xFFFFFF; // White
+
+const fontSizes = {
+    Default: "12px",
+    Larger: "18px",
+};
+
+const fontFamilies = {
+    Default: "inherit",
+    OpenDyslexic: "OpenDyslexic",
+};
+
+const themes = {
+    light: {
+        background: new THREE.Color("white"),
+        labelColour: "black",
+        textShadow: "0 0 3px white",
+        orbitColour: "black",
+    },
+    dark: {
+        background: new THREE.Color("black"),
+        labelColour: "white",
+        textShadow: "0 0 3px black",
+        orbitColour: "white",
+    },
+};
+
+function getTheme(isDarkMode = settings.darkMode) {
+    return isDarkMode ? themes.dark : themes.light;
+}
+
+function getFontSize(size) {
+    return fontSizes[size] ?? fontSizes.Default;
+}
+
+function getFontFamily(chosenFont) {
+    return fontFamilies[chosenFont] ?? fontFamilies.Default;
+}
 
 /**
  * If the target object does not exist, then its mesh is created at the given position.
@@ -38,29 +88,53 @@ function createOrUpdateObjectMesh(name, position) {
         const material = new THREE.MeshStandardMaterial({ color: objectColour });
 
         mesh = new THREE.Mesh(geometry, material);
+        mesh.visible = !isObjectHidden(currentSystem, name);
         scene.add(mesh);
         objectMeshes.set(name, mesh);
 
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = "white";
-        labelDiv.style.fontSize = "12px";
-        labelDiv.style.textShadow = "0 0 3px black, 0 0 3px black";
+        labelDiv.style.color = getTheme().labelColour;
+        labelDiv.style.fontSize = getFontSize(settings.textSize);
+        labelDiv.style.fontFamily = getFontFamily(settings.font);
+        labelDiv.style.textShadow = getTheme().textShadow;
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
+        label.visible = simulationState.labelsShown;
         mesh.add(label);
+        objectLabels.set(name, label);
     }
 
     mesh.position.set(position.x, position.y, position.z);
 }
 
 /**
+ * Determines whether an object's orbit should be visible. An orbit should be visible if the
+ * orbit lines are visible and the object is visible.
+ * 
+ * Given visibility values take precedence over saved simulation state (since this state
+ * may not have been synced yet).
+ * 
+ * @param {string} objectName Name of the object associated with the orbit
+ * @param {Object} [options] Visibility values
+ * @param {boolean} [options.orbitsVisible] Whether orbits are visible
+ * @param {boolean} [options.objectVisible] Whether the object should be visible
+ * @returns {boolean} Whether the orbit should be visible
+ */
+function shouldShowOrbit(objectName, { orbitsVisible, objectVisible } = {}) {
+    const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
+    const isObjectShown = objectVisible ?? !isObjectHidden(currentSystem, objectName);
+
+    return areOrbitsShown && isObjectShown;
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  * 
- * @param {string} name Name of the orbital line
+ * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  */
 function createOrUpdateOrbitalLine(name, orbitalData) {
@@ -70,8 +144,9 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: orbitColour });
+        const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
         line = new THREE.LineLoop(geometry, material);
+        line.visible = shouldShowOrbit(name);
 
         scene.add(line);
         orbitalLines.set(name, line);
@@ -153,22 +228,22 @@ export function init(name) {
     const cameraFar = 200;
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
-    camera.position.set(0, 0, 50);
+    camera.position.copy(cameraDefaults.position);
 
     // Avoid buggy behaviour when the camera is near the clipping plane
     const controlsMin = 1;
     const controlsMax = 100;
     const controlsZoomMultiplier = 2.5;
 
-    const controls = new OrbitControls(camera, canvas);
-    controls.target.set(0, 0, 0); // Look at the sun
+    controls = new OrbitControls(camera, canvas);
+    controls.target.copy(cameraDefaults.target); // Look at the sun
     controls.minDistance = controlsMin; 
     controls.maxDistance = controlsMax;
     controls.zoomSpeed = controlsZoomMultiplier;
     controls.update();
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color("black");
+    scene.background = getTheme().background;
     scene.add(new THREE.AmbientLight(0xffffff, 1));
 
     labelRenderer = new CSS2DRenderer();
@@ -187,6 +262,76 @@ export function init(name) {
 
     // Start rendering frames and updating the simulation
     renderFrame();
+}
+
+export function stepForward() {
+    currentSimulationTime += getSimulationSpeedSeconds();
+    updateSimulation();
+}
+
+export function stepBack() {
+    currentSimulationTime -= getSimulationSpeedSeconds();
+    updateSimulation();
+}
+
+export function resetView() {
+    camera.position.copy(cameraDefaults.position);
+    controls.target.copy(cameraDefaults.target); // Look at the sun
+    controls.update();
+}
+
+export function setLabelsVisibility(value) {
+    for (const label of objectLabels.values()) {
+        label.visible = value;
+    }
+}
+
+export function setOrbitsVisibility(value) {
+    for (const [name, orbit] of orbitalLines) {
+        orbit.visible = shouldShowOrbit(name, { orbitsVisible: value });
+    }
+}
+
+export function setObjectVisibility(name, value) {
+    const mesh = objectMeshes.get(name);
+    if (mesh) {
+        mesh.visible = value;
+    }
+
+    const orbit = orbitalLines.get(name);
+    if (orbit) {
+        orbit.visible = shouldShowOrbit(name, { objectVisible: value });
+    }
+}
+
+export function setFontSize(size) {
+    let fontSize = getFontSize(size);
+    for (const label of objectLabels.values()) {
+        label.element.style.fontSize = fontSize;
+    }
+}
+
+export function setFontFamily(chosenFont) {
+    let fontFamily = getFontFamily(chosenFont);
+    for (const label of objectLabels.values()) {
+        label.element.style.fontFamily = fontFamily;
+    }   
+}
+
+export function toggleSimulationDarkMode(isDarkMode) {
+    scene.background = getTheme(isDarkMode).background;
+
+    let labelColour = getTheme(isDarkMode).labelColour;
+    let labelTextShadow = getTheme(isDarkMode).textShadow;
+    for (const label of objectLabels.values()) {
+        label.element.style.color = labelColour;
+        label.element.style.textShadow = labelTextShadow;
+    }
+
+    let orbitColour = getTheme(isDarkMode).orbitColour;
+    for (const orbit of orbitalLines.values()) {
+        orbit.material.color.set(orbitColour);
+    }
 }
 
 /**
@@ -223,7 +368,7 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += simulationSpeed * deltaTime;
+        currentSimulationTime += getSimulationSpeedSeconds() * deltaTime;
 
         updateSimulation();
     }

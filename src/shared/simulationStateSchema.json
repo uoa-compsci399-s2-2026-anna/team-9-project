@@ -1,0 +1,32 @@
+{
+  "simulationSpeed": {
+    "default": 10
+  },
+  "simulationSpeedUnit": {
+    "default": "day",
+    "options": [
+      { "value": "hour", "label": "hour" },
+      { "value": "day", "label": "day" },
+      { "value": "week", "label": "week" },
+      { "value": "month", "label": "month" },
+      { "value": "year", "label": "year" }
+    ]
+  },
+  "habitableZoneShown": {
+    "default": true
+  },
+  "orbitsShown": {
+    "default": true
+  },
+  "referenceGridShown": {
+    "default": true
+  },
+  "labelsShown": {
+    "default": true
+  },
+  "hiddenObjects": {
+    "default": {
+      "Solar System": ["Pluto", "1P/Halley", "3I/ATLAS"]
+    }
+  }
+}
