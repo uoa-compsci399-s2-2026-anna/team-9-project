@@ -34,7 +34,7 @@ const controlsMaxMultiplier = 2; // Limit to avoid clipping the far plane
 const controlsZoomSpeed = 2.5;
 
 const cameraDefaults = {
-    position: null,
+    position: null, // Will be set based on the system's orbital data
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
 };
 
@@ -223,11 +223,25 @@ async function updateSimulation(systemData = null) {
     }
 }
 
+/**
+ * Calculate the distance of the camera from the target based on the view radius.
+ * The camera distance is calculated to ensure that the entire view radius fits within the camera's field of view.
+ * 
+ * @param {number} viewRadius The radius of the view to fit within the camera's field of view
+ * @returns {number} The calculated camera distance
+ */
 function calculateCameraDistance(viewRadius) {
     const fovRad = fov * (Math.PI / 180);
     return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
 }
 
+/**
+ * Calculate the average up vector for the camera based on the orbital planes of all objects.
+ * The up vector is calculated as the average of the normal vectors of all orbital planes.
+ * 
+ * @param {Array} orbitalDataValues Array of orbital data values for all objects
+ * @returns {THREE.Vector3} The calculated up vector
+ */
 function calculateUpVector(orbitalDataValues) {
     const averageNormal = new THREE.Vector3();
 
