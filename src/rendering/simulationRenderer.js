@@ -213,26 +213,7 @@ async function updateSimulation(systemData = null) {
     }
 }
 
-/**
- * Initialises the requested system to render
- * 
- * @param {string} name System name
- */
-export async function init(name) {
-    const canvas = document.getElementById("simulation-canvas");
-    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-
-    currentSimulationTime = 0;
-    currentSystem = name;
-
-    const systemData = await getSystemData(currentSystem, currentSimulationTime);
-    const orbitalDataMap = Object.entries(systemData.orbital_data);
-    const maxApoapsis = Math.max(
-        ...orbitalDataMap.map(
-            ([_, orbitalData]) => orbitalData.a*(1 + orbitalData.e)
-        )
-    );
-
+function initCameraAndControls(canvas, viewRadius) {
     const fov = 45;
     const aspect = 2;
     const cameraNear = 0.01;
@@ -252,6 +233,29 @@ export async function init(name) {
     controls.maxDistance = controlsMax;
     controls.zoomSpeed = controlsZoomMultiplier;
     controls.update();
+}
+
+/**
+ * Initialises the requested system to render
+ * 
+ * @param {string} name System name
+ */
+export async function init(name) {
+    const canvas = document.getElementById("simulation-canvas");
+    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+
+    currentSimulationTime = 0;
+    currentSystem = name;
+
+    const systemData = await getSystemData(currentSystem, currentSimulationTime);
+    const orbitalDataMap = Object.entries(systemData.orbital_data);
+    const maxApoapsis = Math.max(
+        ...orbitalDataMap.map(
+            ([_, orbitalData]) => orbitalData.a*(1 + orbitalData.e)
+        )
+    );
+    const viewRadius = maxApoapsis * 1.5; // Add some padding to the view radius
+    initCameraAndControls(canvas, viewRadius);
 
     scene = new THREE.Scene();
     scene.background = getTheme().background;
