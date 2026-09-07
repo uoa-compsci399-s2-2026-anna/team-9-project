@@ -23,6 +23,17 @@ settingsOverlay.addEventListener("click", (event) => {
     }
 });
 
+/**
+ * The button in the 'Settings menu' which, when pressed, opens an overlay
+ * which asks the user whether they want to confirm resetting ALL settings to
+ * their defaults.
+ */
+const resetSettingsButton = document.getElementById("reset-settings-button");
+
+resetSettingsButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: true });
+});
+
 // Time zone
 const timeZoneSelect = document.getElementById("time-zone-select");
 
