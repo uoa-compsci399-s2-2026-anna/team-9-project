@@ -38,7 +38,7 @@
             {% set objects = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "1P/Halley", "3I/ATLAS"] %}
 
             <!-- Objects that are hidden for the current simulation -->
-            {% set hidden = sim_state.hiddenObjects.get(current_system.name, []) %}
+            {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
 
             {% for obj in objects %}
             <label class="flex items-center gap-2">

@@ -25,7 +25,7 @@ speedUnitSelector.addEventListener("change", (event) => {
 });
 
 // Triggers for step back and step forward buttons
-const stepForward = document.getElementById("step-forward");
+const stepForward = document.getElementById("step-forward-button");
 const stepBack = document.getElementById("step-back-button");
 
 stepForward.addEventListener("click", () => {
