@@ -21,6 +21,7 @@ let controls;
 let renderer;
 let labelRenderer;
 
+const fov = 45; // Field of view in degrees
 const cameraDefaults = {
     position: new THREE.Vector3(0, 0, 50),
     target: new THREE.Vector3(0, 0, 0),
@@ -213,28 +214,29 @@ async function updateSimulation(systemData = null) {
     }
 }
 
+function calculateCameraDistance(viewRadius) {
+    const fovRad = fov * (Math.PI / 180);
+    return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
+}
+
 /**
  * Initialise the camera and controls for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} viewRadius The radius of the view to fit the camera to
+ * @param {number} cameraDistance The distance of the camera from the target
  */
-function initCameraAndControls(canvas, viewRadius) {
-    const fov = 45;
+function initCameraAndControls(canvas, cameraDistance) {
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const cameraNear = 0.01;
-
-    const fovRad = fov * (Math.PI / 180);
-    const distance = viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
-    const cameraFar = distance * 3;
+    const cameraFar = cameraDistance * 3;
 
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
-    camera.position.set(0, 0, distance);
+    camera.position.copy(cameraDefaults.position);
 
     controls = new OrbitControls(camera, canvas);
     controls.target.copy(cameraDefaults.target); // Look at the sun
     controls.minDistance = 0.02; // Limit to avoid clipping the near plane
-    controls.maxDistance = distance * 2; // Limit to avoid clipping the far plane
+    controls.maxDistance = cameraDistance * 2; // Limit to avoid clipping the far plane
     controls.zoomSpeed = 2.5;
     controls.update();
 }
@@ -260,7 +262,10 @@ export async function init(name) {
     );
     const viewRadius = maxApoapsis * 1.5; // Add some padding to the view radius
     objectSize = viewRadius * 0.002; // Set object size relative to the view radius
-    initCameraAndControls(canvas, viewRadius);
+
+    const cameraDistance = calculateCameraDistance(viewRadius);
+    cameraDefaults.position.set(0, 0, cameraDistance);
+    initCameraAndControls(canvas, cameraDistance);
 
     scene = new THREE.Scene();
     scene.background = getTheme().background;
