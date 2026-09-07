@@ -90,12 +90,12 @@ export function toggleObject(system, object, showObject) {
 /**
  * Returns whether an object is hidden in the specified system.
  * 
- * @param {string} system The system to check
- * @param {*} name The name of the object
+ * @param {string} system The name of the system to check
+ * @param {string} object The name of the object
  * @returns {boolean} `true` if the object is hidden; `false` otherwise
  */
-export function isObjectHidden(system, name) {
-    return getHiddenObjects(system).includes(name);
+export function isObjectHidden(system, object) {
+    return getHiddenObjects(system).includes(object);
 }
 
 /**

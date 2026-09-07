@@ -2,9 +2,9 @@ import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 
 // Settings menu
-const settingsButton = document.querySelector("#settings-button");
+const settingsButton = document.getElementById("settings-button");
 const closeSettingsMenuButton = document.getElementById("close-settings-menu-button");
-const settingsOverlay = document.querySelector("#settings-overlay");
+const settingsOverlay = document.getElementById("settings-overlay");
 
 settingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });

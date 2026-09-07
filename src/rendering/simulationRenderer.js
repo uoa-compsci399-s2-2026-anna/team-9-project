@@ -117,15 +117,15 @@ function createOrUpdateObjectMesh(name, position) {
  * Given visibility values take precedence over saved simulation state (since this state
  * may not have been synced yet).
  * 
- * @param {string} name Name of the object associated with the orbit
+ * @param {string} objectName Name of the object associated with the orbit
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object should be visible
  * @returns {boolean} Whether the orbit should be visible
  */
-function shouldShowOrbit(name, { orbitsVisible, objectVisible } = {}) {
+function shouldShowOrbit(objectName, { orbitsVisible, objectVisible } = {}) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown = objectVisible ?? !isObjectHidden(currentSystem, name);
+    const isObjectShown = objectVisible ?? !isObjectHidden(currentSystem, objectName);
 
     return areOrbitsShown && isObjectShown;
 }

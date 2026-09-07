@@ -32,8 +32,7 @@ bus.subscribe(EVENTS.SIM.REFERENCE_GRID_TOGGLE, (event) => {
 });
 
 bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
-    const { value } = event.detail;
-    setSimulationState("labelsShown", value);
+    setSimulationState("labelsShown", event.detail.value);
 });
 
 // Objects
