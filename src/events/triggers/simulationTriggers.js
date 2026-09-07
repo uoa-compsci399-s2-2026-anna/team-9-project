@@ -18,11 +18,11 @@ const speedUnitSelector = document.getElementById("speed-unit-selector");
 
 speedAdjuster.addEventListener("input", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED, { speed: event.target.value });
-})
+});
 
 speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
-})
+});
 
 // Triggers for step back and step forward buttons
 const stepForward = document.getElementById("step-forward");
@@ -30,18 +30,18 @@ const stepBack = document.getElementById("step-back-button");
 
 stepForward.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.STEP_FORWARD);
-})
+});
 
 stepBack.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.STEP_BACK);
-})
+});
 
 // Trigger for resetting the simulation view
 const resetView = document.getElementById("reset-view-button");
 
 resetView.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.RESET_VIEW);
-})
+});
 
 // Triggers for view settings
 const viewSettingsToggles = document.getElementById("view-settings-toggles");
