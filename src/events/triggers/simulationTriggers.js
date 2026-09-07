@@ -29,7 +29,7 @@ speedAdjuster.addEventListener("input", (event) => {
     }
 
     // Prevent the user from typing anything but a number between 0 and 9
-    const cleanedInput = input.value.replace(/[^0-9]/g, "");
+    const cleanedInput = input.value.replace(/[^0-9.]/g, "");
     if (cleanedInput !== input.value) {
         input.value = cleanedInput;
     }
