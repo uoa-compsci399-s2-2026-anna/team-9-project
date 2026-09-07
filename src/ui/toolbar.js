@@ -11,6 +11,7 @@ document.querySelectorAll("a").forEach((a) => {
 // Dark/light mode
 const darkModeIcon = document.querySelector("#dark-mode-icon");
 const lightModeIcon = document.querySelector("#light-mode-icon");
+const themeTooltip = document.querySelector("#theme-tooltip");
 
 function toggleDarkMode(isDarkMode) {
     darkModeIcon.classList.toggle("hidden", isDarkMode);
@@ -18,8 +19,10 @@ function toggleDarkMode(isDarkMode) {
 
     if (isDarkMode) {
         html.setAttribute("data-theme", "dark");
+        themeTooltip.textContent = "View in light mode";
     } else {
         html.setAttribute("data-theme", "light");
+        themeTooltip.textContent = "View in dark mode";
     }
 }
 

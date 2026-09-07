@@ -156,9 +156,10 @@
 
       <!-- Tooltip -->
       <div
+        id="theme-tooltip"
         class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
       >
-        View in dark mode
+        {{ "View in light mode" if settings.darkMode else "View in dark mode" }}
       </div>
     </div>
 
