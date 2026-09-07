@@ -192,12 +192,16 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 }
 
 /**
- * Update the positions of all objects in the current system based on 
- * the current simulation time.
+ * Update the positions of all objects in the current system.
+ * If the system data is not provided, it will be fetched from the backend.
+ * 
+ * @param {Object} [systemData] Optional system data to use for the update
  */
-async function updateSimulation() {
-    // Fetch data for the current system
-    const systemData = await getSystemData(currentSystem, currentSimulationTime);
+async function updateSimulation(systemData = null) {
+    // Fetch data for the current system and current simulation time if not provided
+    if (!systemData) {
+        systemData = await getSystemData(currentSystem, currentSimulationTime);
+    }
     const positionMap = Object.entries(systemData.positions);
     const orbitalDataMap = Object.entries(systemData.orbital_data);
 
@@ -214,13 +218,20 @@ async function updateSimulation() {
  * 
  * @param {string} name System name
  */
-export function init(name) {
+export async function init(name) {
+    const canvas = document.getElementById("simulation-canvas");
+    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+
     currentSimulationTime = 0;
     currentSystem = name;
 
-    const canvas = document.getElementById("simulation-canvas");
-
-    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    const systemData = await getSystemData(currentSystem, currentSimulationTime);
+    const orbitalDataMap = Object.entries(systemData.orbital_data);
+    const maxApoapsis = Math.max(
+        ...orbitalDataMap.map(
+            ([_, orbitalData]) => orbitalData.a*(1 + orbitalData.e)
+        )
+    );
 
     const fov = 45;
     const aspect = 2;
@@ -256,7 +267,7 @@ export function init(name) {
 
     // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
     // Render the system at t=0 (fetch the system data from the backend and display initial positions)
-    updateSimulation();
+    updateSimulation(systemData);
     timer = new THREE.Timer();
     timer.connect(document); // Use Page Visibility API
 
