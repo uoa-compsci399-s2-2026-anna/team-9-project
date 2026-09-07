@@ -213,6 +213,11 @@ async function updateSimulation(systemData = null) {
     }
 }
 
+/**
+ * Initialise the camera and controls for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ * @param {number} viewRadius The radius of the view to fit the camera to
+ */
 function initCameraAndControls(canvas, viewRadius) {
     const fov = 45;
     const aspect = canvas.clientWidth / canvas.clientHeight;
