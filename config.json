@@ -9,44 +9,92 @@
                     "radius": ""
                 },
                 "Mercury": {
-                    "mass": "0.330103 ± 0.000021 ×10²⁴ kg",
+                    "mass": {
+                        "abosulute": 3.30103e23,
+                        "uncertainty": 2.1e19
+                    },
                     "temp": "",
-                    "radius": "2439.4 ± 0.1 km"
+                    "radius": {
+                        "absoulute": 2.4394e6,
+                        "uncertainty": 1.0e2 
+                    }
                 },
                 "Venus": {
-                    "mass": "4.86731 ± 0.00023 ×10²⁴ kg",
+                    "mass": {
+                        "absoulute": 4.86731e24,
+                        "uncertainty": 2.3e20 
+                    }, 
                     "temp": "",
-                    "radius": "6051.8 ± 1.0 km"
+                    "radius": {
+                        "absoulute": 6.0518e6,
+                        "uncertainty": 1.0e3
+                    }
                 },
                 "Earth": {
-                    "mass": "5.97217 ± 0.00028 ×10²⁴ kg",
+                    "mass": {
+                        "absoulute": 5.97217e24,
+                        "uncertainty": 2.8e20
+                    }, 
                     "temp": "",
-                    "radius": "6371.0084 ± 0.0001 km"
+                    "radius": {
+                        "absoulute": 6.3710084e6,
+                        "uncertainty": 1.0e-1
+                    }
                 },
                 "Mars": {
-                    "mass": "0.641691 ± 0.000030 ×10²⁴ kg",
+                    "mass": {
+                        "absoulute": 6.41691e23,
+                        "uncertainty": 3.0e19
+                    },
                     "temp": "",
-                    "radius": "3389.50 ± 0.2 km"
+                    "radius": {
+                        "absoulute": 3.38950e6,
+                        "uncertainty": 2.0e2
+                    }
                 },
                 "Jupiter": {
-                    "mass": "1898.125 ± 0.088 ×10²⁴ kg",
+                    "mass": {
+                        "absoulute": 1.898125e27,
+                        "uncertainty": 8.8e22
+                    },
                     "temp": "",
-                    "radius": "69911 ± 6 km"
+                    "radius": {
+                        "absoulute": 6.9911e7,
+                        "uncertainty": 6.0e3
+                    }
                 },
-                "Saturn": {
-                    "mass": "568.317 ± 0.026 ×10²⁴ kg",
+                "Saturn": { 
+                    "mass": {
+                        "absoulute": 5.68317e26,
+                        "uncertainty": 2.6e22
+                    },
                     "temp": "",
-                    "radius": "58232 ± 6 km"
+                    "radius": {
+                        "absoulute": 5.8232e7,
+                        "uncertainty": 6.0e3
+                    }
                 },
                 "Uranus": {
-                    "mass": "86.8099 ± 0.0040 ×10²⁴ kg",
+                    "mass": {
+                        "absoulute": 8.68099e25,
+                        "uncertainty": 4.0e21
+                    },
                     "temp": "",
-                    "radius": "25362 ± 7 km"
+                    "radius": {
+                        "absoulute": 2.5362e7,
+                        "uncertainty": 7.0e3
+                    }
                 },
                 "Neptune": {
-                    "mass": "102.4092 ± 0.0048 ×10²⁴ kg",
+                    "mass": {
+                        "absoulute": 1.024092e26,
+                        "uncertainty": 4.8e21
+                    },
                     "temp": "",
-                    "radius": "24622 ± 19 km"
+                    "radius": {
+                        "absoulute": 2.4622e7,
+                        "uncertainty": 1.9e4
+                    }
                 },
                 "1P/Halley": {
                     "mass": "",
