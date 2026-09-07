@@ -31,7 +31,7 @@ const orbitalLines = new Map();
 const objectLabels = new Map();
 
 // Default size and colour of all the objects
-const objectSize = 0.05;
+let objectSize;
 const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -259,6 +259,7 @@ export async function init(name) {
         )
     );
     const viewRadius = maxApoapsis * 1.5; // Add some padding to the view radius
+    objectSize = viewRadius * 0.002; // Set object size relative to the view radius
     initCameraAndControls(canvas, viewRadius);
 
     scene = new THREE.Scene();
