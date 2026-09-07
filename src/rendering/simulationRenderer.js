@@ -230,6 +230,10 @@ function calculateUpVector(orbitalDataMap) {
             Math.cos(inc)
         );
 
+        if (normal.z < 0) { // Ensure the normal vector points upwards
+            normal.negate();
+        }
+
         averageNormal.add(normal);
     }
 
