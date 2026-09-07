@@ -218,9 +218,10 @@
 
       <!-- Tooltip -->
       <div
+        id="fullscreen-tooltip"
         class="pointer-events-none absolute top-full right-0 block translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
       >
-        Enter fullscreen
+        {{ "Exit fullscreen" if fullscreen else "Enter fullscreen" }}
       </div>
     </div>
   </div>

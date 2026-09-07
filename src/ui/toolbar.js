@@ -62,10 +62,17 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
 
 const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");
+const fullscreenTooltip = document.querySelector("#fullscreen-tooltip")
 
-function setFullscreenIcons(fullScreen) {
-    enterFullscreenIcon.classList.toggle("hidden", fullScreen);
-    exitFullscreenIcon.classList.toggle("hidden", !fullScreen);
+function setFullscreenIcons(fullscreen) {
+    enterFullscreenIcon.classList.toggle("hidden", fullscreen);
+    exitFullscreenIcon.classList.toggle("hidden", !fullscreen);
+
+    if (fullscreen) {
+        fullscreenTooltip.textContent = "Exit fullscreen";
+    } else {
+        fullscreenTooltip.textContent = "Enter fullscreen";
+    }
 }
 
 // Update the fullscreen icons when the application enters/exits fullscreen
