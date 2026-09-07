@@ -10,7 +10,7 @@
                 },
                 "Mercury": {
                     "mass": {
-                        "abosulute": 3.30103e23,
+                        "absoulute": 3.30103e23,
                         "uncertainty": 2.1e19
                     },
                     "temp": "",
