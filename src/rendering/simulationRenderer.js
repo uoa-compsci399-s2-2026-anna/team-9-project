@@ -219,18 +219,36 @@ function calculateCameraDistance(viewRadius) {
     return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
 }
 
+function calculateUpVector(orbitalDataMap) {
+    const averageNormal = new THREE.Vector3();
+
+    for (const [_, orbitalData] of orbitalDataMap) {
+        const { inc, Omega } = orbitalData;
+        const normal = new THREE.Vector3( // Normal vector of the orbital plane
+            Math.sin(inc) * Math.sin(Omega),
+            -Math.sin(inc) * Math.cos(Omega),
+            Math.cos(inc)
+        );
+
+        averageNormal.add(normal);
+    }
+
+    return averageNormal.normalize();
+}
+
 /**
  * Initialise the camera and controls for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} cameraDistance The distance of the camera from the target
+ * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initCameraAndControls(canvas, cameraDistance) {
+function initCameraAndControls(canvas, cameraDistance, upVector) {
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const cameraNear = 0.01;
     const cameraFar = cameraDistance * 3;
 
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-    camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
+    camera.up.copy(upVector);
     camera.position.copy(cameraDefaults.position);
 
     controls = new OrbitControls(camera, canvas);
@@ -255,6 +273,7 @@ export async function init(name) {
 
     const systemData = await getSystemData(currentSystem, currentSimulationTime);
     const orbitalDataMap = Object.entries(systemData.orbital_data);
+
     const maxApoapsis = Math.max(
         ...orbitalDataMap.map(
             ([_, orbitalData]) => orbitalData.a*(1 + orbitalData.e)
@@ -264,8 +283,9 @@ export async function init(name) {
     objectSize = viewRadius * 0.002; // Set object size relative to the view radius
 
     const cameraDistance = calculateCameraDistance(viewRadius);
+    const upVector = calculateUpVector(orbitalDataMap);
     cameraDefaults.position.set(0, 0, cameraDistance);
-    initCameraAndControls(canvas, cameraDistance);
+    initCameraAndControls(canvas, cameraDistance, upVector);
 
     scene = new THREE.Scene();
     scene.background = getTheme().background;
