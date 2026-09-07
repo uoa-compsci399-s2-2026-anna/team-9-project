@@ -28,6 +28,14 @@ with open(os.path.join(base_path, "config.json")) as f:
 # Get the systems in the config
 all_systems = config["systems"]
 
+# Load the settings schema
+with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
+    settings_schema = json.load(f)
+
+# Load the sim state schema
+with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")) as f:
+    sim_state_schema = json.load(f)
+
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
@@ -37,11 +45,17 @@ objects = []
 
 
 @app.get("/")
-async def home(request: Request):
+async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
+    settings_state = json.loads(settings)
+
     return templates.TemplateResponse(
         request=request,
         name="home.html",
         context={
+            "settings": settings_state,
+            "settings_schema": settings_schema,
+            "fullscreen": fullscreen,
+
             "systems": all_systems,
             "dropdown_systems": all_systems,
             # Control which components are rendered on the html page
@@ -56,7 +70,10 @@ async def home(request: Request):
 
 
 @app.get("/simulation/{system_name}")
-async def simulation(request: Request, system_name: str):
+async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}", fullscreen: bool = False):
+    sim_state = json.loads(state)
+
+    settings_state = json.loads(settings)
 
     # Get the current system
     current_system = next(
@@ -72,6 +89,12 @@ async def simulation(request: Request, system_name: str):
         request=request,
         name="simulation.html",
         context={
+            "sim_state": sim_state,
+            "settings": settings_state,
+            "settings_schema": settings_schema,
+            "sim_state_schema": sim_state_schema,
+            "fullscreen": fullscreen,
+
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
