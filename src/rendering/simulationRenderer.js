@@ -288,7 +288,7 @@ export async function init(name) {
 
     const cameraDistance = calculateCameraDistance(viewRadius);
     const upVector = calculateUpVector(orbitalDataMap);
-    cameraDefaults.position.set(0, 0, cameraDistance);
+    cameraDefaults.position.copy(upVector.clone().multiplyScalar(cameraDistance));
     initCameraAndControls(canvas, cameraDistance, upVector);
 
     scene = new THREE.Scene();
