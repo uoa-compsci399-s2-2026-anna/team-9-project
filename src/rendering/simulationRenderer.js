@@ -26,11 +26,11 @@ const viewRadiusMultiplier = 1.5;
 const objectSizeMultiplier = 0.003;
 
 const fov = 45; // Field of view in degrees
-const cameraNear = 0.01;
+const cameraNearMultiplier = 10;
 const cameraFarMultiplier = 3;
 
-const controlsMin = 0.02; // Limit to avoid clipping the near plane
-const controlsMaxMultiplier = 2; // Limit to avoid clipping the far plane
+const controlsMinMultiplier = 2;
+const controlsMaxMultiplier = 0.5;
 const controlsZoomSpeed = 2.5;
 
 const cameraDefaults = {
@@ -270,6 +270,7 @@ function calculateUpVector(orbitalDataValues) {
  */
 function initCameraAndControls(canvas, cameraDistance, upVector) {
     const aspect = canvas.clientWidth / canvas.clientHeight;
+    const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.copy(upVector);
@@ -277,8 +278,8 @@ function initCameraAndControls(canvas, cameraDistance, upVector) {
 
     controls = new OrbitControls(camera, canvas);
     controls.target.copy(cameraDefaults.target);
-    controls.minDistance = controlsMin; // Limit to avoid clipping the near plane
-    controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.minDistance = cameraNear * controlsMinMultiplier; // Limit to avoid clipping the near plane
+    controls.maxDistance = cameraFar * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
 }
