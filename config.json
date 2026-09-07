@@ -108,27 +108,27 @@
             "objects": {
                 "Kepler-16A": {
                     "mass": {
-                        "absolute": 0.6897,
-                        "uncertainty": 0.0035
+                        "absolute": 1.37188227e30,
+                        "uncertainty": 6.96185e27
                     },
                     "temp": {
                         "absolute": 4450,
                         "uncertainty": 150
                     },
                     "radius": {
-                        "absolute": 0.6489,
-                        "uncertainty": 0.0013
+                        "absolute": 4.516344e8,
+                        "uncertainty": 9.048e5
                     }
                 },
                 "Kepler-16B": {
                     "mass": {
-                        "absolute": 0.20255,
-                        "uncertainty": 0.00065
+                        "absolute": 4.02892205e29,
+                        "uncertainty": 1.292915e27
                     },
                     "temp": "",
                     "radius": {
-                        "absolute": 0.22623,
-                        "uncertainty": 0.00059
+                        "absolute": 1.5745608e8,
+                        "uncertainty": 4.1064e5
                     }
                 },
                 "Kepler-16b": {
