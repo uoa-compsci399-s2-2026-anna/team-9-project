@@ -44,32 +44,24 @@ resetView.addEventListener("click", () => {
 });
 
 // Triggers for view settings
-const viewSettingsToggles = document.getElementById("view-settings-toggles");
+const habitableZoneInput = document.getElementById("habitable-zone-input");
+habitableZoneInput.addEventListener("change", (event) => {
+    bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, { value: event.target.checked });
+});
 
-viewSettingsToggles.addEventListener("change", (event) => {
-	if (event.target.type !== "checkbox") {
-        return;
-    }
+const orbitsInput = document.getElementById("orbits-input");
+orbitsInput.addEventListener("change", (event) => {
+    bus.publish(EVENTS.SIM.ORBITS_TOGGLE, { value: event.target.checked });
+});
 
-	const viewSetting = event.target.dataset.setting;
-	const isEnabled = event.target.checked;
+const referenceGridInput = document.getElementById("reference-grid-input");
+referenceGridInput.addEventListener("change", (event) => {
+    bus.publish(EVENTS.SIM.REFERENCE_GRID_TOGGLE, { value: event.target.checked });
+});
 
-	switch (viewSetting) {
-		case "habitable-zone":
-            bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, { value: isEnabled });
-			break;
-		case "orbits":
-            bus.publish(EVENTS.SIM.ORBITS_TOGGLE, { value: isEnabled });
-			break;
-		case "reference-grid":
-            bus.publish(EVENTS.SIM.REFERENCE_GRID_TOGGLE, { value: isEnabled });
-			break;
-		case "labels":
-            bus.publish(EVENTS.SIM.LABELS_TOGGLE, { value: isEnabled });
-			break;
-        default:
-            console.warn(`Unknown view setting: "${viewSetting}"`);
-	}
+const labelsInput = document.getElementById("labels-input");
+labelsInput.addEventListener("change", (event) => {
+    bus.publish(EVENTS.SIM.LABELS_TOGGLE, { value: event.target.checked });
 });
 
 // Triggers for hiding/showing objects

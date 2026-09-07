@@ -91,22 +91,22 @@
         <div id="view-settings-toggles" class="flex flex-col overflow-hidden">
           <div class="mt-3">
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="habitable-zone" {{ "checked" if sim_state.habitableZoneShown }} />
+              <input type="checkbox" id="habitable-zone-input" data-setting="habitable-zone" {{ "checked" if sim_state.habitableZoneShown }} />
               <span>Habitable zone</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="orbits" {{ "checked" if sim_state.orbitsShown }} />
+              <input type="checkbox" id="orbits-input" data-setting="orbits" {{ "checked" if sim_state.orbitsShown }} />
               <span>Orbits</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="reference-grid" {{ "checked" if sim_state.referenceGridShown }} />
+              <input type="checkbox" id="reference-grid-input" data-setting="reference-grid" {{ "checked" if sim_state.referenceGridShown }} />
               <span>Reference grid</span>
             </label>
 
             <label class="flex items-center gap-2">
-              <input type="checkbox" data-setting="labels" {{ "checked" if sim_state.labelsShown }} />
+              <input type="checkbox" id="labels-input" data-setting="labels" {{ "checked" if sim_state.labelsShown }} />
               <span>Labels</span>
             </label>
           </div>
