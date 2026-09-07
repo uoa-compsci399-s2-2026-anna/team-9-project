@@ -34,6 +34,42 @@ resetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: true });
 });
 
+// Confirm reset settings menu
+
+/**
+ * The confirmation button in the 'Confirm reset settings menu' which, on
+ * pressed, resets all settings to system defaults.
+ */
+const confirmResetSettingsButton = document.getElementById(
+    "confirm-reset-settings-button",
+);
+
+/**
+ * The button in the 'Confirm reset settings menu' which dismisses the overlay
+ * without doing anything.
+ */
+const cancelResetSettingsButton = document.getElementById(
+    "cancel-reset-settings-button",
+);
+
+/**
+ * The 'X' button in the 'Confirm reset settings menu' which dismisses the
+ * overlay without doing anything.
+ */
+const closeConfirmResetSettingsOverlayButton = document.getElementById(
+    "close-confirm-reset-settings-overlay-button",
+);
+
+confirmResetSettingsButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SETTINGS.CONFIRM_RESET_SETTINGS);
+});
+cancelResetSettingsButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SETTINGS.CANCEL_RESET_SETTINGS);
+});
+closeConfirmResetSettingsOverlayButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SETTINGS.CANCEL_RESET_SETTINGS);
+});
+
 // Time zone
 const timeZoneSelect = document.getElementById("time-zone-select");
 

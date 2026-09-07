@@ -39,22 +39,6 @@ const systemInformationButton = document.querySelector(
     "#system-information-button",
 );
 
-// RESET ALL SETTINGS CONFIRMATION OVERLAY
-
-const confirmResetSettingsButton = document.getElementById(
-    "confirm-reset-settings-button",
-);
-const cancelResetSettingsButton = document.getElementById(
-    "cancel-reset-settings-button",
-);
-
-confirmResetSettingsButton.addEventListener("click", (e) => {
-    hideOverlay(confirmResetSettingsOverlay);
-});
-cancelResetSettingsButton.addEventListener("click", (e) => {
-    hideOverlay(confirmResetSettingsOverlay);
-});
-
 // OVERLAY EVENT LISTENERS
 
 /**
@@ -134,9 +118,6 @@ bus.subscribe(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, (event) => {
 const confirmResetSettingsOverlay = document.getElementById(
     "confirm-reset-settings-overlay",
 );
-const closeConfirmResetSettingsOverlayButton = document.getElementById(
-    "close-confirm-reset-settings-overlay-button",
-);
 
 /**
  * Toggles the visibility of the settings reset confirmation overlay.
@@ -153,10 +134,12 @@ function toggleConfirmResetSettingsOverlay() {
     }
 }
 
-closeConfirmResetSettingsOverlayButton.addEventListener(
-    "click",
-    toggleConfirmResetSettingsOverlay,
-);
+bus.subscribe(EVENTS.SETTINGS.CANCEL_RESET_SETTINGS, () => {
+    toggleConfirmResetSettingsOverlay();
+});
+bus.subscribe(EVENTS.SETTINGS.CONFIRM_RESET_SETTINGS, () => {
+    toggleConfirmResetSettingsOverlay();
+});
 
 confirmResetSettingsOverlay.addEventListener("click", (event) => {
     if (event.target === event.currentTarget) {
