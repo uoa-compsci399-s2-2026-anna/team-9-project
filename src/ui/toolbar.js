@@ -109,6 +109,17 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
+const fontSelect = document.getElementById("font-select");
+fontSelect.addEventListener("change", (e) => {
+    const selectedFont = e.target.value;
+
+    if (selectedFont == "OpenDyslexic") {
+        html.classList.add("font-accessible");
+    } else {
+        html.classList.remove("font-accessible");
+    }
+});
+
 // FULLSCREEN BUTTON
 
 const fullscreenButton = document.querySelector("#fullscreen-button");
