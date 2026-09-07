@@ -224,6 +224,29 @@ async function updateSimulation(systemData = null) {
 }
 
 /**
+ * Calculate the apoapsis (farthest point in orbit) for an object given its semi-major axis and eccentricity.
+ * @param {number} a Semi-major axis of the orbit
+ * @param {number} e Eccentricity of the orbit
+ * @returns {number} The apoapsis distance
+ */
+function calculateApoapsis(a, e) {
+    return a * (1 + e);
+}
+
+/**
+ * Calculate the maximum apoapsis distance among all objects in the system.
+ * @param {Array} orbitalDataValues Array of orbital data values for all objects
+ * @returns {number} The maximum apoapsis distance
+ */
+function calculateMaxApoapsis(orbitalDataValues) {
+    return Math.max(
+        ...orbitalDataValues.map(
+            ({ a, e }) => calculateApoapsis(a, e)
+        )
+    );
+}
+
+/**
  * Calculate the distance of the camera from the target based on the view radius.
  * The camera distance is calculated to ensure that the entire view radius fits within the camera's field of view.
  * 
@@ -299,11 +322,7 @@ export async function init(name) {
     const systemData = await getSystemData(currentSystem, currentSimulationTime);
     const orbitalDataValues = Object.values(systemData.orbital_data);
 
-    const maxApoapsis = Math.max(
-        ...orbitalDataValues.map(
-            ({ a, e }) => a * (1 + e)
-        )
-    );
+    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
     objectSize = maxApoapsis * objectSizeMultiplier;
 
