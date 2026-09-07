@@ -127,7 +127,10 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
 
 // RESET SETTINGS BUTTON
 
-const resetSettingsButton = document.getElementById("reset-settings-button");
+bus.subscribe(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, (event) => {
+    toggleConfirmResetSettingsOverlay();
+});
+
 const confirmResetSettingsOverlay = document.getElementById(
     "confirm-reset-settings-overlay",
 );
@@ -148,13 +151,6 @@ function toggleConfirmResetSettingsOverlay() {
     } else {
         showOverlay(confirmResetSettingsOverlay);
     }
-}
-
-if (resetSettingsButton && confirmResetSettingsOverlay) {
-    resetSettingsButton.addEventListener(
-        "click",
-        toggleConfirmResetSettingsOverlay,
-    );
 }
 
 closeConfirmResetSettingsOverlayButton.addEventListener(
