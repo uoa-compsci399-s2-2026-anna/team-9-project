@@ -10,89 +10,89 @@
                 },
                 "Mercury": {
                     "mass": {
-                        "absoulute": 3.30103e23,
+                        "absolute": 3.30103e23,
                         "uncertainty": 2.1e19
                     },
                     "temp": "",
                     "radius": {
-                        "absoulute": 2.4394e6,
+                        "absolute": 2.4394e6,
                         "uncertainty": 1.0e2 
                     }
                 },
                 "Venus": {
                     "mass": {
-                        "absoulute": 4.86731e24,
+                        "absolute": 4.86731e24,
                         "uncertainty": 2.3e20 
                     }, 
                     "temp": "",
                     "radius": {
-                        "absoulute": 6.0518e6,
+                        "absolute": 6.0518e6,
                         "uncertainty": 1.0e3
                     }
                 },
                 "Earth": {
                     "mass": {
-                        "absoulute": 5.97217e24,
+                        "absolute": 5.97217e24,
                         "uncertainty": 2.8e20
                     }, 
                     "temp": "",
                     "radius": {
-                        "absoulute": 6.3710084e6,
+                        "absolute": 6.3710084e6,
                         "uncertainty": 1.0e-1
                     }
                 },
                 "Mars": {
                     "mass": {
-                        "absoulute": 6.41691e23,
+                        "absolute": 6.41691e23,
                         "uncertainty": 3.0e19
                     },
                     "temp": "",
                     "radius": {
-                        "absoulute": 3.38950e6,
+                        "absolute": 3.38950e6,
                         "uncertainty": 2.0e2
                     }
                 },
                 "Jupiter": {
                     "mass": {
-                        "absoulute": 1.898125e27,
+                        "absolute": 1.898125e27,
                         "uncertainty": 8.8e22
                     },
                     "temp": "",
                     "radius": {
-                        "absoulute": 6.9911e7,
+                        "absolute": 6.9911e7,
                         "uncertainty": 6.0e3
                     }
                 },
                 "Saturn": { 
                     "mass": {
-                        "absoulute": 5.68317e26,
+                        "absolute": 5.68317e26,
                         "uncertainty": 2.6e22
                     },
                     "temp": "",
                     "radius": {
-                        "absoulute": 5.8232e7,
+                        "absolute": 5.8232e7,
                         "uncertainty": 6.0e3
                     }
                 },
                 "Uranus": {
                     "mass": {
-                        "absoulute": 8.68099e25,
+                        "absolute": 8.68099e25,
                         "uncertainty": 4.0e21
                     },
                     "temp": "",
                     "radius": {
-                        "absoulute": 2.5362e7,
+                        "absolute": 2.5362e7,
                         "uncertainty": 7.0e3
                     }
                 },
                 "Neptune": {
                     "mass": {
-                        "absoulute": 1.024092e26,
+                        "absolute": 1.024092e26,
                         "uncertainty": 4.8e21
                     },
                     "temp": "",
                     "radius": {
-                        "absoulute": 2.4622e7,
+                        "absolute": 2.4622e7,
                         "uncertainty": 1.9e4
                     }
                 },
