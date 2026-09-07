@@ -6,13 +6,14 @@ import rebound
 import os
 import json
 import sys
+from systems import *
 
 # Prevent internal server errors when adding objects to the simulation
-rebound.horizons.SSL_CONTEXT = 'unverified'
+rebound.horizons.SSL_CONTEXT = "unverified"
 
 # Resolve base path to the packaged resources folder when frozen,
 # or to the script's own directory otherwise
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     base_path = os.path.dirname(os.path.dirname(sys.executable))
 else:
     base_path = os.path.dirname(os.path.abspath(__file__))
@@ -39,6 +40,7 @@ app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="s
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 sim = None
+current_system = None
 objects = []
 
 
@@ -96,14 +98,12 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
-
-            "object_num": 9, # Temporary; set this programmatically (or have we decided against an object count?)
-
+            "object_num": 9,  # Temporary; set this programmatically (or have we decided against an object count?)
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": True,
-            "settings_overlay": True
-        }
+            "settings_overlay": True,
+        },
     )
 
 
@@ -121,113 +121,110 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
+    global sim, objects, current_system
+
+    # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
 
     # Catch poor input
-    print(system_name)
     if not any(system["name"].lower() == system_name for system in all_systems):
+        print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Find the next requested system
-    system = next(system for system in all_systems if system["name"].lower() == system_name)
-
     # Hardcode Solar System
-    if system_name == "solar system":
+    if system_name == "solar system" and current_system != "solar system":
         # Init state if empty
-        if sim is None:
-            init_solar()
+        sim, objects = init_solar()
+        current_system = system_name
+    # Hardcode Kepler-16
+    elif system_name == "kepler-16" and current_system != "kepler-16":
+        # Init state if empty
+        sim, objects = init_kepler_16()
+        current_system = system_name
+    # Hardcode TRAPPIST-1
+    elif system_name == "trappist-1" and current_system != "trappist-1":
+        # Init state if empty
+        sim, objects = init_trappist_1()
+        current_system = system_name
+    if sim is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-        # Set time
-        sim.integrate(t)
+    # Set time
+    sim.integrate(t)
 
-        # Calculate relevant data and return
-        return calculate_simulation_info(sim)
+    # Gather positions
+    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+
+    # Gather orbital data for each object
+    orbital_data = {
+        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+    }
+
+    return {"positions": positions, "orbital_data": orbital_data}
 
 
-def calculate_simulation_info(sim):
+def get_position_dict(particle):
+    """
+    Convert a particle to a dictionary of a positions
+    """
+    return {"x": particle.x, "y": particle.y, "z": particle.z}
+
+
+def get_osculating_orbit(sim, i):
     """
     Given a REBOUND simulation, calculate:
-    - Particle positions
-    - Barycentric orbital information
+    - Barycentric osculating orbital information
         - Semi-major axis: AU
         - Eccentricity: -1 - 1
         - Longitude of the ascending node: radians (0-2pi)
         - Inclination: radians (0-2pi)
     """
-    # Gather positions
-    positions = {}
-    for i, p in enumerate(sim.particles):
-        positions[objects[i]] = {"x": p.x, "y": p.y, "z": p.z}
+    particle = sim.particles[i]
 
-    # Gather orbital data excluding
-    orbital_data = {}
-    for i, p in enumerate(sim.particles):
-        # Get the COM of the system
-        com = sim.com()
+    total_mass = 0.0
+    x = y = z = 0.0
+    vx = vy = vz = 0.0
 
-        particle = sim.particles[i]
-        orbit = particle.orbit(primary=com)
+    # Loop through all other particles
+    for j, other in enumerate(sim.particles):
+        if i == j:
+            continue
 
-        """
-        https://rebound.hanno-rein.de/particles/orbitalelements/
-        
-        a 	semi-major axis
-        e 	eccentricity
-        inc 	inclination, in radians
-        Omega 	longitude of ascending node, in radians
-        omega 	argument of pericenter, in radians
-        """
-        orbital_data[objects[i]] = {
-            "a": orbit.a,  # Longest radius of ellipse
-            "e": orbit.e,  # Shape of ellipse
-            "inc": orbit.inc,  # Amount to tilt
-            "Omega": orbit.Omega,  # Angle about the center axis
-            "omega": orbit.omega, # Argument of the pericenter
-        }
+        total_mass += other.m
+        x += other.m * other.x
+        y += other.m * other.y
+        z += other.m * other.z
+        vx += other.m * other.vx
+        vy += other.m * other.vy
+        vz += other.m * other.vz
 
-    return {"positions": positions, "orbital_data": orbital_data}
-
-
-def init_solar():
-    """
-    Initialise solar system function
-    """
-    global sim
-    global objects
-
-    # Initialise the simulation
-    sim = rebound.Simulation()
-
-    sim.units = ("AU", "s", "Msun")
-
-    # Add the sun at current position
-    # sim.add("Sun")
-    sim.add("solar system")
-
-    # Add and set all objects in the solar system
-    objects = [
-        "Sun",
-        "Mercury",
-        "Venus",
-        "Earth",
-        "Mars",
-        "Jupiter",
-        "Saturn",
-        "Uranus",
-        "Neptune",
-        "1P/Halley",
-    ]
-
-    # Add Halley's comet
-    sim.add(
-        m=0.0,
-        a=17.8,
-        e=0.967,
-        inc=162.0 * 3.14159 / 180.0,
-        omega=58.4 * 3.14159 / 180.0,
-        Omega=111.9 * 3.14159 / 180.0,
-        M=0.0,
+    # The orbital pseudo-particle to calculate the orbit from
+    primary = rebound.Particle(
+        m=total_mass,
+        x=x / total_mass,
+        y=y / total_mass,
+        z=z / total_mass,
+        vx=vx / total_mass,
+        vy=vy / total_mass,
+        vz=vz / total_mass,
     )
 
-    # Move to COM of the system
-    sim.move_to_com()
+    orbit = particle.orbit(primary=primary)
+
+    """
+    Return only necessary orbital information
+    https://rebound.hanno-rein.de/particles/orbitalelements/
+    
+    a 	    semi-major axis
+    e 	    eccentricity
+    inc 	inclination, in radians
+    Omega 	longitude of ascending node, in radians
+    omega 	argument of pericenter, in radians
+    """
+    return {
+        "a": orbit.a * total_mass / (total_mass + particle.m),
+        "e": orbit.e,
+        "inc": orbit.inc,
+        "Omega": orbit.Omega,
+        "omega": orbit.omega,
+    }
