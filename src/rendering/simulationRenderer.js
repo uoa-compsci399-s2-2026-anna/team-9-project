@@ -21,10 +21,19 @@ let controls;
 let renderer;
 let labelRenderer;
 
+// Constants for camera and controls
+
 const fov = 45; // Field of view in degrees
+const cameraNear = 0.01;
+const cameraFarMultiplier = 3;
+
+const controlsMin = 0.02; // Limit to avoid clipping the near plane
+const controlsMaxMultiplier = 2; // Limit to avoid clipping the far plane
+const controlsZoomSpeed = 2.5;
+
 const cameraDefaults = {
-    position: new THREE.Vector3(0, 0, 50),
-    target: new THREE.Vector3(0, 0, 0),
+    position: null,
+    target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
 };
 
 const objectMeshes = new Map();
@@ -248,18 +257,16 @@ function calculateUpVector(orbitalDataMap) {
  */
 function initCameraAndControls(canvas, cameraDistance, upVector) {
     const aspect = canvas.clientWidth / canvas.clientHeight;
-    const cameraNear = 0.01;
-    const cameraFar = cameraDistance * 3;
-
+    const cameraFar = cameraDistance * cameraFarMultiplier;
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.copy(upVector);
     camera.position.copy(cameraDefaults.position);
 
     controls = new OrbitControls(camera, canvas);
-    controls.target.copy(cameraDefaults.target); // Look at the sun
-    controls.minDistance = 0.02; // Limit to avoid clipping the near plane
-    controls.maxDistance = cameraDistance * 2; // Limit to avoid clipping the far plane
-    controls.zoomSpeed = 2.5;
+    controls.target.copy(cameraDefaults.target);
+    controls.minDistance = controlsMin; // Limit to avoid clipping the near plane
+    controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
 }
 
@@ -288,7 +295,7 @@ export async function init(name) {
 
     const cameraDistance = calculateCameraDistance(viewRadius);
     const upVector = calculateUpVector(orbitalDataMap);
-    cameraDefaults.position.copy(upVector.clone().multiplyScalar(cameraDistance));
+    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
     initCameraAndControls(canvas, cameraDistance, upVector);
 
     scene = new THREE.Scene();
