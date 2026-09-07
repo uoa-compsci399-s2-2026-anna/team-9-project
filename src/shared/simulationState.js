@@ -59,7 +59,9 @@ export function getSimulationSpeedSeconds() {
  * @returns {string[]} The array of hidden object names for the system
  */
 function getHiddenObjects(system) {
-     // Initialise the hidden objects array for this system if it doesn't exist yet
+    simulationState.hiddenObjects ??= {};
+
+    // Initialise the hidden objects array for this system if it doesn't exist yet
     if (!simulationState.hiddenObjects[system]) {
         simulationState.hiddenObjects[system] = [];
     }

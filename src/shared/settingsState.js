@@ -5,6 +5,10 @@
  * @returns The settings state
  */
 async function loadState() {
+    if (!window.settingsAPI) {
+        return {};
+    }
+
     return await window.settingsAPI.get();
 }
 

@@ -76,7 +76,9 @@ function setFullscreenIcons(fullscreen) {
 }
 
 // Update the fullscreen icons when the application enters/exits fullscreen
-window.fullscreenAPI.onChange(setFullscreenIcons);
+if (window.fullscreenAPI) {
+    window.fullscreenAPI.onChange(setFullscreenIcons);
+}
 
 bus.subscribe(EVENTS.TOOLBAR.FULLSCREEN_BUTTON_TOGGLE, () => {
     window.fullscreenAPI.toggle();
