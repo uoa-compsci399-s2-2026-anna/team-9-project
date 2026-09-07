@@ -215,23 +215,22 @@ async function updateSimulation(systemData = null) {
 
 function initCameraAndControls(canvas, viewRadius) {
     const fov = 45;
-    const aspect = 2;
+    const aspect = canvas.clientWidth / canvas.clientHeight;
     const cameraNear = 0.01;
-    const cameraFar = 200;
+
+    const fovRad = fov * (Math.PI / 180);
+    const distance = viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
+    const cameraFar = distance * 3;
+
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
-    camera.position.copy(cameraDefaults.position);
-
-    // Avoid buggy behaviour when the camera is near the clipping plane
-    const controlsMin = 1;
-    const controlsMax = 100;
-    const controlsZoomMultiplier = 2.5;
+    camera.position.set(0, 0, distance);
 
     controls = new OrbitControls(camera, canvas);
     controls.target.copy(cameraDefaults.target); // Look at the sun
-    controls.minDistance = controlsMin; 
-    controls.maxDistance = controlsMax;
-    controls.zoomSpeed = controlsZoomMultiplier;
+    controls.minDistance = 0.02; // Limit to avoid clipping the near plane
+    controls.maxDistance = distance * 2; // Limit to avoid clipping the far plane
+    controls.zoomSpeed = 2.5;
     controls.update();
 }
 
