@@ -1,6 +1,6 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import { running } from "../../shared/simulationState.js";
+import { running, comparingToSolarSystem } from "../../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -66,7 +66,7 @@ const compareToSolarSystemButton = document.getElementById("compare-to-solar-sys
 
 if (compareToSolarSystemButton) { // Button does not exist for the solar system itself
     compareToSolarSystemButton.addEventListener("click", () => {
-        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM);
+        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, { value: !comparingToSolarSystem });
     });
 }
 
