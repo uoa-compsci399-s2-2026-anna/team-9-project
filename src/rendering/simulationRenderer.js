@@ -228,8 +228,6 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
         createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
     }
 
-    scene.add(currentSystemGroup);
-
     if (comparingToSolarSystem) {
         if (!solarSystemData) {
             solarSystemData = await getSystemData("solar system", currentSimulationTime);
@@ -243,8 +241,6 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
         }
-
-        scene.add(solarSystemGroup);
     }
 }
 
@@ -299,6 +295,8 @@ function initScene() {
     scene = new THREE.Scene();
     scene.background = getTheme().background;
     scene.add(new THREE.AmbientLight(0xffffff, 1));
+    scene.add(currentSystemGroup);
+    scene.add(solarSystemGroup);
 }
 
 /**
