@@ -2,8 +2,6 @@ import { settings } from "../shared/settingsState.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
-console.log(settings.timeZone);
-
 updateCalendar();
 
 /**
