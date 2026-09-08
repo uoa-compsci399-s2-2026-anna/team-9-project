@@ -62,12 +62,13 @@ const closeConfirmResetSettingsOverlayButton = document.getElementById(
 
 confirmResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.CONFIRM_RESET_SETTINGS);
+    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: false });
 });
 cancelResetSettingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.CANCEL_RESET_SETTINGS);
+    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: false });
 });
 closeConfirmResetSettingsOverlayButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.CANCEL_RESET_SETTINGS);
+    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: false });
 });
 
 // Time zone
