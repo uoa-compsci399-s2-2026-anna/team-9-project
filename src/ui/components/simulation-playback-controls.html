@@ -3,7 +3,7 @@
 >
   <!-- Simulation timestamp (narrow screens) -->
   <span class="self-center text-sm sm:hidden">
-    <input type="datetime-local" class="calendar" name="calendar" />
+    <input type="datetime-local" class="calendar" name="calendar" onkeydown="return false;"/>
   </span>
 
   <div class="grid w-full grid-cols-3 items-center gap-4">
@@ -20,7 +20,7 @@
         <!-- Simulation timestamp / date picker -->
         <div class="text-left max-sm:hidden">
           <p class="text-lg">
-            <input type="datetime-local" class="calendar" name="calendar" />
+            <input type="datetime-local" class="calendar" name="calendar" onkeydown="return false;"/>
           </p>
           <p class="text-s italic dark:text-zinc-400">32 days from now</p>
         </div>
