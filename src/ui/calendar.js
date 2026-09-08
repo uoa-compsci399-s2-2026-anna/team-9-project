@@ -5,14 +5,10 @@ import { currentSimulationTime } from "../rendering/simulationRenderer.js";
 
 const MS_IN_S = 1000;
 
-updateCalendar(
-    new Date(Date.now() + currentSimulationTime * MS_IN_S),
-);
+updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
-    updateCalendar(
-        new Date(Date.now() + currentSimulationTime * MS_IN_S),
-    );
+    updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
 });
 
 /**
@@ -63,4 +59,11 @@ function updateCalendar(date) {
         calendar.min = formatted(new Date(date.getTime() - 365 * DAYS_IN_MS));
         calendar.max = formatted(new Date(date.getTime() + 365 * DAYS_IN_MS));
     });
+}
+
+/**
+ * @returns OPIS simulation timestamp in milliseconds since Unix epoch.
+ */
+function getSimulationTimeInMillisecondsSinceUnixEpoch() {
+    return new Date(Date.now() + currentSimulationTime * MS_IN_S);
 }
