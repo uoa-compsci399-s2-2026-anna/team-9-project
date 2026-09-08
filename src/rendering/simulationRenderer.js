@@ -21,9 +21,21 @@ let controls;
 let renderer;
 let labelRenderer;
 
+// Constants for camera and controls
+const viewRadiusMultiplier = 1.5;
+const objectSizeMultiplier = 0.003;
+
+const fov = 45; // Field of view in degrees
+const cameraNearMultiplier = 10;
+const cameraFarMultiplier = 3;
+
+const controlsMinMultiplier = 2;
+const controlsMaxMultiplier = 0.5;
+const controlsZoomSpeed = 2.5;
+
 const cameraDefaults = {
-    position: new THREE.Vector3(0, 0, 50),
-    target: new THREE.Vector3(0, 0, 0),
+    position: null, // Will be set based on the system's orbital data
+    target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
 };
 
 const objectMeshes = new Map();
@@ -31,7 +43,7 @@ const orbitalLines = new Map();
 const objectLabels = new Map();
 
 // Default size and colour of all the objects
-const objectSize = 0.05;
+let objectSize;
 const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -192,21 +204,107 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
 }
 
 /**
- * Update the positions of all objects in the current system based on 
- * the current simulation time.
+ * Update the positions of all objects in the current system.
+ * If the system data is not provided, it will be fetched from the backend.
+ * 
+ * @param {Object} [systemData] Optional system data to use for the update
  */
-async function updateSimulation() {
-    // Fetch data for the current system
-    const systemData = await getSystemData(currentSystem, currentSimulationTime);
-    const positionMap = Object.entries(systemData.positions);
-    const orbitalDataMap = Object.entries(systemData.orbital_data);
+async function updateSimulation(systemData = null) {
+    // Fetch data for the current system and current simulation time if not provided
+    if (!systemData) {
+        systemData = await getSystemData(currentSystem, currentSimulationTime);
+    }
 
-    for (const [name, position] of positionMap) {
+    for (const [name, position] of Object.entries(systemData.positions)) {
         createOrUpdateObjectMesh(name, position);
     }
-    for (const [name, orbitalData] of orbitalDataMap) {
+    for (const [name, orbitalData] of Object.entries(systemData.orbital_data)) {
         createOrUpdateOrbitalLine(name, orbitalData);
     }
+}
+
+/**
+ * Calculate the apoapsis (farthest point in orbit) for an object given its semi-major axis and eccentricity.
+ * @param {number} a Semi-major axis of the orbit
+ * @param {number} e Eccentricity of the orbit
+ * @returns {number} The apoapsis distance
+ */
+function calculateApoapsis(a, e) {
+    return a * (1 + e);
+}
+
+/**
+ * Calculate the maximum apoapsis distance among all objects in the system.
+ * @param {Array} orbitalDataValues Array of orbital data values for all objects
+ * @returns {number} The maximum apoapsis distance
+ */
+function calculateMaxApoapsis(orbitalDataValues) {
+    return Math.max(
+        ...orbitalDataValues.map(
+            ({ a, e }) => calculateApoapsis(a, e)
+        )
+    );
+}
+
+/**
+ * Calculate the distance of the camera from the target based on the view radius.
+ * The camera distance is calculated to ensure that the entire view radius fits within the camera's field of view.
+ * 
+ * @param {number} viewRadius The radius of the view to fit within the camera's field of view
+ * @returns {number} The calculated camera distance
+ */
+function calculateCameraDistance(viewRadius) {
+    const fovRad = fov * (Math.PI / 180);
+    return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
+}
+
+/**
+ * Calculate the average up vector for the camera based on the orbital planes of all objects.
+ * The up vector is calculated as the average of the normal vectors of all orbital planes.
+ * 
+ * @param {Array} orbitalDataValues Array of orbital data values for all objects
+ * @returns {THREE.Vector3} The calculated up vector
+ */
+function calculateUpVector(orbitalDataValues) {
+    const averageNormal = new THREE.Vector3();
+
+    for (const { inc, Omega } of orbitalDataValues) {
+        const normal = new THREE.Vector3( // Normal vector of the orbital plane
+            Math.sin(inc) * Math.sin(Omega),
+            -Math.sin(inc) * Math.cos(Omega),
+            Math.cos(inc)
+        );
+
+        if (normal.z < 0) { // Ensure the normal vector points upwards
+            normal.negate();
+        }
+
+        averageNormal.add(normal);
+    }
+
+    return averageNormal.normalize();
+}
+
+/**
+ * Initialise the camera and controls for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ * @param {number} cameraDistance The distance of the camera from the target
+ * @param {THREE.Vector3} upVector The up vector for the camera
+ */
+function initCameraAndControls(canvas, cameraDistance, upVector) {
+    const aspect = canvas.clientWidth / canvas.clientHeight;
+    const cameraNear = objectSize * cameraNearMultiplier;
+    const cameraFar = cameraDistance * cameraFarMultiplier;
+    camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
+    camera.up.copy(upVector);
+    camera.position.copy(cameraDefaults.position);
+
+    controls = new OrbitControls(camera, canvas);
+    controls.target.copy(cameraDefaults.target);
+    controls.minDistance = cameraNear * controlsMinMultiplier; // Limit to avoid clipping the near plane
+    controls.maxDistance = cameraFar * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.zoomSpeed = controlsZoomSpeed;
+    controls.update();
 }
 
 /**
@@ -214,33 +312,24 @@ async function updateSimulation() {
  * 
  * @param {string} name System name
  */
-export function init(name) {
+export async function init(name) {
+    const canvas = document.getElementById("simulation-canvas");
+    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+
     currentSimulationTime = 0;
     currentSystem = name;
 
-    const canvas = document.getElementById("simulation-canvas");
+    const systemData = await getSystemData(currentSystem, currentSimulationTime);
+    const orbitalDataValues = Object.values(systemData.orbital_data);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
+    const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
+    objectSize = maxApoapsis * objectSizeMultiplier;
 
-    const fov = 45;
-    const aspect = 2;
-    const cameraNear = 0.01;
-    const cameraFar = 200;
-    camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-    camera.up.set(0, 0, 1); // Orbital plane is X-Y (Z is up)
-    camera.position.copy(cameraDefaults.position);
-
-    // Avoid buggy behaviour when the camera is near the clipping plane
-    const controlsMin = 1;
-    const controlsMax = 100;
-    const controlsZoomMultiplier = 2.5;
-
-    controls = new OrbitControls(camera, canvas);
-    controls.target.copy(cameraDefaults.target); // Look at the sun
-    controls.minDistance = controlsMin; 
-    controls.maxDistance = controlsMax;
-    controls.zoomSpeed = controlsZoomMultiplier;
-    controls.update();
+    const cameraDistance = calculateCameraDistance(viewRadius);
+    const upVector = calculateUpVector(orbitalDataValues);
+    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
+    initCameraAndControls(canvas, cameraDistance, upVector);
 
     scene = new THREE.Scene();
     scene.background = getTheme().background;
@@ -256,7 +345,7 @@ export function init(name) {
 
     // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
     // Render the system at t=0 (fetch the system data from the backend and display initial positions)
-    updateSimulation();
+    updateSimulation(systemData);
     timer = new THREE.Timer();
     timer.connect(document); // Use Page Visibility API
 
