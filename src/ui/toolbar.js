@@ -22,9 +22,6 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 // Settings menu overlay
 
 const settingsOverlay = document.querySelector("#settings-overlay");
-const systemInformationButton = document.querySelector(
-    "#system-information-button",
-);
 
 // OVERLAY EVENT LISTENERS
 
