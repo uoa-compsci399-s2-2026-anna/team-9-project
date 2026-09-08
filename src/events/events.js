@@ -14,6 +14,7 @@ export const EVENTS = {
         VIEW_SETTINGS_PANEL_TOGGLE: "sim:view_settings_panel_toggle",
         OBJECTS_PANEL_TOGGLE: "sim:objects_panel_toggle",
         SYSTEM_DROPDOWN_TOGGLE: "sim:system_dropdown_toggle",
+        CALENDAR_CHANGE: "sim:calendar_change"
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
