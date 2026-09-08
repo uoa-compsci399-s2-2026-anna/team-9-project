@@ -1,0 +1,62 @@
+/**
+ * Calculate the apoapsis (farthest point in orbit) for an object given its semi-major axis and eccentricity.
+ * @param {number} a Semi-major axis of the orbit
+ * @param {number} e Eccentricity of the orbit
+ * @returns {number} The apoapsis distance
+ */
+function calculateApoapsis(a, e) {
+    return a * (1 + e);
+}
+
+/**
+ * Calculate the maximum apoapsis distance among all objects in the system.
+ * @param {Array} orbitalDataValues Array of orbital data values for all objects
+ * @returns {number} The maximum apoapsis distance
+ */
+export function calculateMaxApoapsis(orbitalDataValues) {
+    return Math.max(
+        ...orbitalDataValues.map(
+            ({ a, e }) => calculateApoapsis(a, e)
+        )
+    );
+}
+
+/**
+ * Calculate the distance of the camera from the target based on the view radius.
+ * The camera distance is calculated to ensure that the entire view radius fits within the camera's field of view.
+ * 
+ * @param {number} fov The field of view of the camera in degrees
+ * @param {number} viewRadius The radius of the view to fit within the camera's field of view
+ * @returns {number} The calculated camera distance
+ */
+export function calculateCameraDistance(fov, viewRadius) {
+    const fovRad = fov * (Math.PI / 180);
+    return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
+}
+
+/**
+ * Calculate the average up vector for the camera based on the orbital planes of all objects.
+ * The up vector is calculated as the average of the normal vectors of all orbital planes.
+ * 
+ * @param {Array} orbitalDataValues Array of orbital data values for all objects
+ * @returns {THREE.Vector3} The calculated up vector
+ */
+export function calculateUpVector(orbitalDataValues) {
+    const averageNormal = new THREE.Vector3();
+
+    for (const { inc, Omega } of orbitalDataValues) {
+        const normal = new THREE.Vector3( // Normal vector of the orbital plane
+            Math.sin(inc) * Math.sin(Omega),
+            -Math.sin(inc) * Math.cos(Omega),
+            Math.cos(inc)
+        );
+
+        if (normal.z < 0) { // Ensure the normal vector points upwards
+            normal.negate();
+        }
+
+        averageNormal.add(normal);
+    }
+
+    return averageNormal.normalize();
+}
