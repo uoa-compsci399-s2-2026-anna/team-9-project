@@ -23,29 +23,15 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 
 const settingsOverlay = document.querySelector("#settings-overlay");
 
-// OVERLAY EVENT LISTENERS
-
-/**
- * Stack keeping track of currently-open overlays
- */
-const openOverlays = [];
-
-bus.subscribe(EVENTS.SETTINGS.ESCAPE_PRESSED, (event) => {
-    // Pop and hide topmost overlay
-    const topOverlay = openOverlays.at(-1)?.overlay;
-    if (topOverlay) {
-        hideOverlay(topOverlay);
-    }
-});
 
 bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
     const { openMenu } = event.detail;
 
-    if (openMenu) {
-        showOverlay(settingsOverlay);
-    } else {
-        hideOverlay(settingsOverlay);
-    }
+    settingsOverlay.classList.toggle("opacity-100", openMenu);
+    document.body.classList.toggle("settings-menu-open", openMenu);
+
+    settingsOverlay.classList.toggle("opacity-0", !openMenu);
+    settingsOverlay.classList.toggle("pointer-events-none", !openMenu);
 });
 
 // Font select
@@ -61,39 +47,47 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
 });
 
 // RESET SETTINGS BUTTON
+const confirmResetOverlay = document.querySelector("#confirm-reset-settings-overlay");
 
 bus.subscribe(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, (event) => {
-    toggleConfirmResetSettingsOverlay();
+    const { openMenu } = event.detail;
+
+    confirmResetOverlay.classList.toggle("opacity-100", openMenu);
+    confirmResetOverlay.classList.toggle("opacity-0", !openMenu);
+    confirmResetOverlay.classList.toggle("pointer-events-none", !openMenu);
+    document.body.classList.toggle(`confirm-reset-settings-overlay-open`, openMenu);
+    console.log("TOGGLED")
+    // toggleConfirmResetSettingsOverlay();
 });
 
-const confirmResetSettingsOverlay = document.getElementById(
-    "confirm-reset-settings-overlay",
-);
+// const confirmResetSettingsOverlay = document.getElementById(
+//     "confirm-reset-settings-overlay",
+// );
 
-/**
- * Toggles the visibility of the settings reset confirmation overlay.
- */
-function toggleConfirmResetSettingsOverlay() {
-    if (
-        openOverlays.some(
-            (item) => item.overlay === confirmResetSettingsOverlay,
-        )
-    ) {
-        hideOverlay(confirmResetSettingsOverlay);
-    } else {
-        showOverlay(confirmResetSettingsOverlay);
-    }
-}
+// /**
+//  * Toggles the visibility of the settings reset confirmation overlay.
+//  */
+// function toggleConfirmResetSettingsOverlay() {
+//     if (
+//         openOverlays.some(
+//             (item) => item.overlay === confirmResetSettingsOverlay,
+//         )
+//     ) {
+//         hideOverlay(confirmResetSettingsOverlay);
+//     } else {
+//         showOverlay(confirmResetSettingsOverlay);
+//     }
+// }
 
-confirmResetSettingsOverlay.addEventListener("click", (event) => {
-    if (event.target === event.currentTarget) {
-        hideOverlay(confirmResetSettingsOverlay);
-    }
-});
+// confirmResetSettingsOverlay.addEventListener("click", (event) => {
+//     if (event.target === event.currentTarget) {
+//         hideOverlay(confirmResetSettingsOverlay);
+//     }
+// });
 
 // Fullscreen button
 
-const fullscreenButton = document.querySelector("#fullscreen-button");
+// const fullscreenButton = document.querySelector("#fullscreen-button");
 const enterFullscreenIcon = document.querySelector("#enter-fullscreen-icon");
 const exitFullscreenIcon = document.querySelector("#exit-fullscreen-icon");
 const fullscreenTooltip = document.querySelector("#fullscreen-tooltip");
@@ -120,44 +114,44 @@ bus.subscribe(EVENTS.TOOLBAR.FULLSCREEN_BUTTON_TOGGLE, () => {
 
 // HELPER FUNCTIONS
 
-/**
- * Shows some overlay and pushes it to the `openOverlays` stack
- * @param {HTMLElement} overlay The overlay to show
- */
-function showOverlay(overlay) {
-    overlay.classList.remove("opacity-0");
-    overlay.classList.add("opacity-100");
-    overlay.classList.remove("pointer-events-none");
-    document.body.classList.add(`${overlay.id}-open`);
+// /**
+//  * Shows some overlay and pushes it to the `openOverlays` stack
+//  * @param {HTMLElement} overlay The overlay to show
+//  */
+// function showOverlay(overlay) {
+//     overlay.classList.remove("opacity-0");
+//     overlay.classList.add("opacity-100");
+//     overlay.classList.remove("pointer-events-none");
+//     document.body.classList.add(`${overlay.id}-open`);
 
-    if (!openOverlays.some((item) => item.overlay === overlay)) {
-        openOverlays.push({ overlay });
-    }
+//     if (!openOverlays.some((item) => item.overlay === overlay)) {
+//         openOverlays.push({ overlay });
+//     }
 
-    if (document.body.classList.contains("settings-overlay-open")) {
-        bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
-    }
-}
+//     if (document.body.classList.contains("settings-overlay-open")) {
+//         bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
+//     }
+// }
 
-/**
- * Pops and hides the topmost overlay on the `openOverlays` stack
- * @param {HTMLElement} overlay The overlay to hide
- */
-function hideOverlay(overlay) {
-    overlay.classList.add("opacity-0");
-    overlay.classList.remove("opacity-100");
-    overlay.classList.add("pointer-events-none");
-    document.body.classList.remove(`${overlay.id}-open`);
+// /**
+//  * Pops and hides the topmost overlay on the `openOverlays` stack
+//  * @param {HTMLElement} overlay The overlay to hide
+//  */
+// function hideOverlay(overlay) {
+//     overlay.classList.add("opacity-0");
+//     overlay.classList.remove("opacity-100");
+//     overlay.classList.add("pointer-events-none");
+//     document.body.classList.remove(`${overlay.id}-open`);
 
-    const index = openOverlays.findIndex((item) => item.overlay === overlay);
-    if (index !== -1) {
-        openOverlays.splice(index, 1);
-    }
+//     const index = openOverlays.findIndex((item) => item.overlay === overlay);
+//     if (index !== -1) {
+//         openOverlays.splice(index, 1);
+//     }
 
-    if (!document.body.classList.contains("settings-overlay-open")) {
-        bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
-    }
-}
+//     if (!document.body.classList.contains("settings-overlay-open")) {
+//         bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
+//     }
+// }
 
 function toggleDarkMode(isDarkMode) {
     darkModeIcon.classList.toggle("hidden", isDarkMode);

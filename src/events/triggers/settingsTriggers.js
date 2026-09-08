@@ -25,7 +25,11 @@ settingsOverlay.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-        bus.publish(EVENTS.SETTINGS.ESCAPE_PRESSED);
+        if (document.body.classList.contains("confirm-reset-settings-overlay-open")) {
+            bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: false });
+        } else if (document.body.classList.contains("settings-menu-open")) {
+            bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
+        }
     }
 });
 
