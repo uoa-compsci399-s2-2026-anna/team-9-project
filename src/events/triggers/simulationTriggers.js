@@ -141,6 +141,7 @@ calendars.forEach((c) => {
     });
 });
 
+// 'Now' button
 const setTimeToNowButton = document.getElementById("set-time-to-now-button");
 
 setTimeToNowButton.addEventListener("click", () => {
