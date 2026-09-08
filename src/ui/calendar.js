@@ -3,10 +3,16 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { currentSimulationTime } from "../rendering/simulationRenderer.js";
 
-updateCalendar(new Date(Math.floor(Date.now()) + currentSimulationTime));
+const MILLISECONDS_IN_SECOND = 1000;
+
+updateCalendar(
+    new Date(Date.now() + currentSimulationTime * MILLISECONDS_IN_SECOND),
+);
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
-    updateCalendar(new Date(Math.floor(Date.now()) + currentSimulationTime));
+    updateCalendar(
+        new Date(Date.now() + currentSimulationTime * MILLISECONDS_IN_SECOND),
+    );
 });
 
 /**
