@@ -101,7 +101,7 @@ export function isObjectHidden(system, object) {
 }
 
 /**
- * The running and frozen states only exist for the current simulation session, and are reset when the
+ * The running, frozen, and comparingToSolarSystem states only exist for the current simulation session, and are reset when the
  * simulation is loaded again.
  */
 

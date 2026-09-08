@@ -5,6 +5,7 @@ import {
     toggleObject,
     setRunning, 
     setFrozen,
+    setComparingToSolarSystem
 } from "../shared/simulationState.js";
 
 // Speed adjuster
@@ -42,7 +43,7 @@ bus.subscribe(EVENTS.SIM.OBJECT_TOGGLE, (event) => {
     toggleObject(system, name, value);
 });
 
-// Running and Frozen are not persisted in the session
+// running, frozen, and comparingToSolarSystem are not persisted in the session
 
 bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
     setRunning(event.detail.startSimulation);
@@ -51,4 +52,8 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
 // Freeze the simulation when the settings menu is opened (unfreeze when closed)
 bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
     setFrozen(event.detail.openMenu);
+});
+
+bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
+    setComparingToSolarSystem(event.detail.value);
 });
