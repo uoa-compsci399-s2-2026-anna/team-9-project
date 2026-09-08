@@ -10,6 +10,11 @@ calendars.forEach((calendar) => {
     calendar.max = formatted(new Date(now.getTime() + 365 * YEARS_IN_MS));
 });
 
+/**
+ * @param {Date} date A `Date` object
+ * @returns Formatted date/time string in the format taken by 
+ * `<input type="datetime-local">` (yyyy-MM-dd'T'HH:mm)
+ */
 function formatted(date) {
     return date.toISOString().slice(0, 16);
 }
