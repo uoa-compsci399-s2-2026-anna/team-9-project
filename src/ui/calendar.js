@@ -3,15 +3,15 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { currentSimulationTime } from "../rendering/simulationRenderer.js";
 
-const MILLISECONDS_IN_SECOND = 1000;
+const MS_IN_S = 1000;
 
 updateCalendar(
-    new Date(Date.now() + currentSimulationTime * MILLISECONDS_IN_SECOND),
+    new Date(Date.now() + currentSimulationTime * MS_IN_S),
 );
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
     updateCalendar(
-        new Date(Date.now() + currentSimulationTime * MILLISECONDS_IN_SECOND),
+        new Date(Date.now() + currentSimulationTime * MS_IN_S),
     );
 });
 
@@ -56,11 +56,11 @@ function formatted(date) {
 function updateCalendar(date) {
     const calendars = document.querySelectorAll(".calendar");
 
-    const YEARS_IN_MS = 24 * 60 * 60 * 1000;
+    const DAYS_IN_MS = 24 * 60 * 60 * 1000;
 
     calendars.forEach((calendar) => {
         calendar.value = formatted(date);
-        calendar.min = formatted(new Date(date.getTime() - 365 * YEARS_IN_MS));
-        calendar.max = formatted(new Date(date.getTime() + 365 * YEARS_IN_MS));
+        calendar.min = formatted(new Date(date.getTime() - 365 * DAYS_IN_MS));
+        calendar.max = formatted(new Date(date.getTime() + 365 * DAYS_IN_MS));
     });
 }
