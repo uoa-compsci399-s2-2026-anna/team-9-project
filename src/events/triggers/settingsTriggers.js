@@ -25,6 +25,7 @@ settingsOverlay.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+        // Confirm reset settings overlay must be closed before the settings window can be closed
         if (document.body.classList.contains("confirm-reset-settings-overlay-open")) {
             bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: false });
         } else if (document.body.classList.contains("settings-menu-open")) {
@@ -71,16 +72,18 @@ const closeConfirmResetSettingsOverlayButton = document.getElementById(
 );
 
 confirmResetSettingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.CONFIRM_RESET_SETTINGS);
+    bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
         openMenu: false,
     });
 });
+
 cancelResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
         openMenu: false,
     });
 });
+
 closeConfirmResetSettingsOverlayButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
         openMenu: false,
