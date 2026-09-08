@@ -11,6 +11,8 @@ import {
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 import {
+    calculateOrbitalPosition,
+    calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateCameraDistance,
     calculateUpVector,
@@ -176,11 +178,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
     const points = [];
     for (let i = 0; i < orbitPoints; i++) {
         const theta = (i / orbitPoints) * 2 * Math.PI;
-
-        // Calculate the Cartesian position of the point on the ellipse using the polar equation
-        const r = (a * (1 - e**2)) / (1 + e*Math.cos(theta));
-        const x = r * Math.cos(theta);
-        const y = r * Math.sin(theta);
+        const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
     }
 
@@ -198,16 +196,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
     }
 
     // Rotate the line to match the orbital parameters
-    // R = Rz(Omega) * Rx(inc) * Rz(omega)
-
-    const rotateAscendingNode = new THREE.Matrix4().makeRotationZ(Omega);
-    const rotateInclination = new THREE.Matrix4().makeRotationX(inc);
-    const rotatePeriapsis = new THREE.Matrix4().makeRotationZ(omega);
-
-    const rotationMatrix = new THREE.Matrix4()
-        .multiplyMatrices(rotateAscendingNode, rotateInclination)
-        .multiply(rotatePeriapsis);
-
+    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 

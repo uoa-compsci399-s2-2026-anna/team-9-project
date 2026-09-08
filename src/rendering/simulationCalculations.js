@@ -1,3 +1,37 @@
+import * as THREE from "three";
+
+/**
+ * Calculate the Cartesian coordinates of a point in an elliptical orbit.
+ * @param {number} a Semi-major axis of the orbit
+ * @param {number} e Eccentricity of the orbit
+ * @param {number} theta True anomaly (angle from periapsis) in radians
+ * @returns {Object} The x and y coordinates of the object's position in its orbit
+ */
+export function calculateOrbitalPosition(a, e, theta) {
+    const r = (a * (1 - e**2)) / (1 + e*Math.cos(theta));
+    const x = r * Math.cos(theta);
+    const y = r * Math.sin(theta);
+    return { x, y };
+}
+
+/**
+ * Calculate the rotation matrix for an orbit based on its parameters.
+ * R = Rz(Omega) * Rx(inc) * Rz(omega)
+ * @param {number} Omega Longitude of the ascending node in radians
+ * @param {number} inc Inclination of the orbit in radians
+ * @param {number} omega Argument of periapsis in radians
+ * @returns {THREE.Matrix4} The rotation matrix representing the orientation of the orbit
+ */
+export function calculateRotationMatrix(Omega, inc, omega) {
+    const rotateAscendingNode = new THREE.Matrix4().makeRotationZ(Omega);
+    const rotateInclination = new THREE.Matrix4().makeRotationX(inc);
+    const rotatePeriapsis = new THREE.Matrix4().makeRotationZ(omega);
+
+    return new THREE.Matrix4()
+        .multiplyMatrices(rotateAscendingNode, rotateInclination)
+        .multiply(rotatePeriapsis);
+}
+
 /**
  * Calculate the apoapsis (farthest point in orbit) for an object given its semi-major axis and eccentricity.
  * @param {number} a Semi-major axis of the orbit
