@@ -58,6 +58,9 @@ function updateCalendar(date) {
         calendar.value = formatted(date);
         calendar.min = formatted(new Date(date.getTime() - 3 * YEARS_IN_MS));
         calendar.max = formatted(new Date(date.getTime() + 3 * YEARS_IN_MS));
+
+        // Update the previousValue field 
+        calendar.dataset.previousValue = calendar.value;
     });
 }
 

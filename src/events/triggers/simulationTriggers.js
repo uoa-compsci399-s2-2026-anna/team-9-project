@@ -136,7 +136,14 @@ const calendars = document.getElementsByClassName("calendar");
 
 for (const calendar of calendars) {
     calendar.addEventListener("change", (event) => {
-        bus.publish(EVENTS.SIM.CALENDAR_CHANGE, { value: event.target.value });
+        const oldValue = event.target.dataset.previousValue;
+
+        bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
+            oldValue: oldValue,
+            value: event.target.value,
+        });
+
+        event.target.dataset.previousValue = calendar.value;
     });
 }
 
