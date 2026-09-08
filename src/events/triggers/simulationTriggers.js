@@ -134,11 +134,11 @@ systemButton.addEventListener("click", () => {
 // one dispalayed in the narrow-screen view).
 const calendars = document.getElementsByClassName("calendar");
 
-calendars.forEach((c) => {
-    c.addEventListener("change", (event) => {
+for (const calendar of calendars) {
+    calendar.addEventListener("change", (event) => {
         bus.publish(EVENTS.SIM.CALENDAR_CHANGE, { value: event.target.value });
     });
-});
+}
 
 // 'Now' button
 const setTimeToNowButton = document.getElementById("set-time-to-now-button");
