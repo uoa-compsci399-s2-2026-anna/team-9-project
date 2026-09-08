@@ -4,6 +4,10 @@ import { EVENTS } from "../events/events.js";
 
 updateCalendar();
 
+bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
+    updateCalendar();
+});
+
 /**
  * @param {Date} date A `Date` object
  * @returns Formatted date/time string in the format taken by
