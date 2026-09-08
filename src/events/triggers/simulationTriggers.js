@@ -61,6 +61,15 @@ resetView.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.RESET_VIEW);
 });
 
+// Trigger for comparing to the solar system
+const compareToSolarSystemButton = document.getElementById("compare-to-solar-system-button");
+
+if (compareToSolarSystemButton) { // Button does not exist for the solar system itself
+    compareToSolarSystemButton.addEventListener("click", () => {
+        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM);
+    });
+}
+
 // Triggers for view settings
 const habitableZoneInput = document.getElementById("habitable-zone-input");
 habitableZoneInput.addEventListener("change", (event) => {
