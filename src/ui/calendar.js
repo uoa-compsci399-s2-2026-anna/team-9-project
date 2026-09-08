@@ -11,15 +11,6 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
     updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
 });
 
-// Show date/time picker when simulation timestamp/calendar button is pressed
-bus.subscribe(EVENTS.SIM.SIMULATION_TIMESTAMP_CALENDAR, () => {
-    const calendars = document.querySelectorAll(".calendar");
-
-    for (var calendar of calendars) {
-        calendar.showPicker();
-    }
-});
-
 /**
  * @param {Date} date A `Date` object
  * @returns Formatted date/time string in the format taken by
