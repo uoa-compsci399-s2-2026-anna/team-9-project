@@ -1,7 +1,6 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { running } from "../../shared/simulationState.js";
-import { doc } from "prettier";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
