@@ -39,8 +39,8 @@ const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 10;
 const cameraFarMultiplier = 3;
 
-const controlsMinMultiplier = 2;
-const controlsMaxMultiplier = 0.5;
+const controlsMinMultiplier = 20;
+const controlsMaxMultiplier = 1.5;
 const controlsZoomSpeed = 2.5;
 
 const cameraDefaults = {
@@ -246,8 +246,8 @@ function initCameraAndControls(canvas, viewRadius, upVector) {
 
     controls = new OrbitControls(camera, canvas);
     controls.target.copy(cameraDefaults.target);
-    controls.minDistance = cameraNear * controlsMinMultiplier; // Limit to avoid clipping the near plane
-    controls.maxDistance = cameraFar * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
+    controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
 }
