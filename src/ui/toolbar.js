@@ -90,13 +90,6 @@ function toggleConfirmResetSettingsOverlay() {
     }
 }
 
-bus.subscribe(EVENTS.SETTINGS.CANCEL_RESET_SETTINGS, () => {
-    toggleConfirmResetSettingsOverlay();
-});
-bus.subscribe(EVENTS.SETTINGS.CONFIRM_RESET_SETTINGS, () => {
-    toggleConfirmResetSettingsOverlay();
-});
-
 confirmResetSettingsOverlay.addEventListener("click", (event) => {
     if (event.target === event.currentTarget) {
         hideOverlay(confirmResetSettingsOverlay);

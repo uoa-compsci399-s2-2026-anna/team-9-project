@@ -28,6 +28,5 @@ export const EVENTS = {
         ORBIT_LINES_SELECT: "settings:orbit_lines_select",
         RESET_SETTINGS_MENU_TOGGLE: "settings:reset_settings_menu_toggle",
         CONFIRM_RESET_SETTINGS: "settings:confirm_reset_settings",
-        CANCEL_RESET_SETTINGS: "settings:cancel_reset_settings",
     }
 }
