@@ -1,11 +1,12 @@
 import { settings } from "../shared/settingsState.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { currentSimulationTime } from "../rendering/simulationRenderer.js";
 
-updateCalendar();
+updateCalendar(new Date(Math.floor(Date.now()) + currentSimulationTime));
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
-    updateCalendar();
+    updateCalendar(new Date(Math.floor(Date.now()) + currentSimulationTime));
 });
 
 /**
@@ -45,9 +46,7 @@ function formatted(date) {
  * Updates all calendars to show the current date time in the given time zone,
  * and sets the minimum and maximum of the calendar to +/- 1 year.
  */
-function updateCalendar() {
-    const now = new Date();
-
+function updateCalendar(now) {
     const calendars = document.querySelectorAll(".calendar");
 
     const YEARS_IN_MS = 24 * 60 * 60 * 1000;
