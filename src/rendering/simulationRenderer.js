@@ -39,7 +39,7 @@ const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 1;
 const cameraFarMultiplier = 3;
 
-const controlsMinMultiplier = 20;
+const controlsMinMultiplier = 10;
 const controlsMaxMultiplier = 1.5;
 const controlsZoomSpeed = 2.5;
 
