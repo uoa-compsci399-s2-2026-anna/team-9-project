@@ -5,6 +5,7 @@ import {
     simulationState,
     running,
     frozen,
+    comparingToSolarSystem,
     isObjectHidden,
     getSimulationSpeedSeconds,
 } from "../shared/simulationState.js";
@@ -210,9 +211,10 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
  * Update the positions of all objects in the current system.
  * If the system data is not provided, it will be fetched from the backend.
  * 
- * @param {Object} [currentSystemData] Optional system data to use for the update
+ * @param {Object} [currentSystemData] Optional current system data to use for the update
+ * @param {Object} [solarSystemData] Optional solar system data to use for the update
  */
-async function updateSimulation(currentSystemData = null) {
+async function updateSimulation(currentSystemData = null, solarSystemData = null) {
     // Fetch data for the current system and current simulation time if not provided
     if (!currentSystemData) {
         currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
@@ -226,6 +228,23 @@ async function updateSimulation(currentSystemData = null) {
     }
 
     scene.add(currentSystemGroup);
+
+    if (comparingToSolarSystem) {
+        if (!solarSystemData) {
+            solarSystemData = await getSystemData("solar system", currentSimulationTime);
+        }
+
+        for (const [name, position] of Object.entries(solarSystemData.positions)) {
+            if (name === "Sun") continue; // Skip the Sun for the comparison
+            createOrUpdateObjectMesh(name, position, solarSystemGroup);
+        }
+        for (const [name, orbitalData] of Object.entries(solarSystemData.orbital_data)) {
+            if (name === "Sun") continue; // Skip the Sun for the comparison
+            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
+        }
+
+        scene.add(solarSystemGroup); // TODO: need to rotate
+    }
 }
 
 /**
@@ -371,8 +390,7 @@ export async function compareToSolarSystem() {
 
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
-
-    // TODO: update simulation
+    updateSimulation(currentSystemData, solarSystemData);
 }
 
 export function hideSolarSystem() {
