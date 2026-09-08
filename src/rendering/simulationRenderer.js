@@ -210,18 +210,18 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
  * Update the positions of all objects in the current system.
  * If the system data is not provided, it will be fetched from the backend.
  * 
- * @param {Object} [systemData] Optional system data to use for the update
+ * @param {Object} [currentSystemData] Optional system data to use for the update
  */
-async function updateSimulation(systemData = null) {
+async function updateSimulation(currentSystemData = null) {
     // Fetch data for the current system and current simulation time if not provided
-    if (!systemData) {
-        systemData = await getSystemData(currentSystem, currentSimulationTime);
+    if (!currentSystemData) {
+        currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
     }
 
-    for (const [name, position] of Object.entries(systemData.positions)) {
+    for (const [name, position] of Object.entries(currentSystemData.positions)) {
         createOrUpdateObjectMesh(name, position, currentSystemGroup);
     }
-    for (const [name, orbitalData] of Object.entries(systemData.orbital_data)) {
+    for (const [name, orbitalData] of Object.entries(currentSystemData.orbital_data)) {
         createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
     }
 
@@ -315,8 +315,8 @@ export async function init(name) {
     currentSimulationTime = 0;
     currentSystem = name;
 
-    const systemData = await getSystemData(currentSystem, currentSimulationTime);
-    const orbitalDataValues = Object.values(systemData.orbital_data);
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
@@ -330,7 +330,7 @@ export async function init(name) {
     initTimer();
 
     // Start rendering frames and updating the simulation
-    updateSimulation(systemData);
+    updateSimulation(currentSystemData);
     renderFrame();
 }
 
