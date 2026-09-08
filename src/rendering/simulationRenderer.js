@@ -228,12 +228,12 @@ async function updateSimulation(systemData = null) {
 }
 
 /**
- * Initialise the camera and controls for the simulation renderer.
+ * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} viewRadius The radius of view to fit within the camera
  * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initCameraAndControls(canvas, viewRadius, upVector) {
+function initCamera(canvas, viewRadius, upVector) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
 
@@ -243,6 +243,15 @@ function initCameraAndControls(canvas, viewRadius, upVector) {
     camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
     camera.up.copy(upVector);
     camera.position.copy(cameraDefaults.position);
+}
+
+/**
+ * Initialise the controls for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ * @param {number} viewRadius The radius of view to fit within the camera
+ */
+function initControls(canvas, viewRadius) {
+    const cameraDistance = calculateCameraDistance(fov, viewRadius);
 
     controls = new OrbitControls(camera, canvas);
     controls.target.copy(cameraDefaults.target);
@@ -300,11 +309,11 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    objectSize = viewRadius * objectSizeMultiplier;
-
     const upVector = calculateUpVector(orbitalDataValues);
 
-    initCameraAndControls(canvas, viewRadius, upVector);
+    objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+    initCamera(canvas, viewRadius, upVector);
+    initControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
