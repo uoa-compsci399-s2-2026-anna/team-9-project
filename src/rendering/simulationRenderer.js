@@ -58,7 +58,7 @@ const objectLabels = new Map();
 
 // Default size and colour of all the objects
 let objectSize;
-let solarSystemObjectSize;
+let objectScale = 1;
 const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -135,6 +135,7 @@ function createOrUpdateObjectMesh(name, position, group) {
         objectLabels.set(name, label);
     }
 
+    mesh.scale.set(objectScale, objectScale, objectScale);
     mesh.position.set(position.x, position.y, position.z);
 }
 
@@ -385,8 +386,11 @@ export async function compareToSolarSystem() {
     const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
     const viewRadius = Math.max(currentViewRadius, solarViewRadius);
 
-    // Set the object size for the solar system
-    solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
+    // Scale objects for comparison as the smaller of the two sizes
+    const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
+    const solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
+    const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
+    objectScale = comparisonObjectSize / objectSize;
 
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
