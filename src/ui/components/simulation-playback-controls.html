@@ -18,12 +18,17 @@
         </button>
 
         <!-- Simulation timestamp / date picker -->
-        <div class="text-left max-sm:hidden">
-          <p class="text-lg">
-            <input type="datetime-local" class="calendar" name="calendar" />
-          </p>
-          <p class="text-s italic dark:text-zinc-400">32 days from now</p>
-        </div>
+        <button
+          id="simulation-timestamp-calendar-button"
+          class="relative z-30 items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+        >
+          <div class="text-left max-sm:hidden">
+            <p class="text-lg">
+              <input type="datetime-local" class="calendar" name="calendar" />
+            </p>
+            <p class="text-s italic dark:text-zinc-400">32 days from now</p>
+          </div>
+        </button>
       </div>
     </div>
 

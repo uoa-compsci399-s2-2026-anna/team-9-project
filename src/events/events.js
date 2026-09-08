@@ -25,6 +25,13 @@ export const EVENTS = {
          * When the 'Now' button is clicked.
          */
         SET_TIME_TO_NOW: "sim:set_time_to_now",
+
+        /**
+         * When the simulation timestamp/calendar button (the entire cluster
+         * which includes the actual date picker, as well as the subtitle text)
+         * is clicked.
+         */
+        SIMULATION_TIMESTAMP_CALENDAR: "sim:simulation_timestamp_calendar"
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",

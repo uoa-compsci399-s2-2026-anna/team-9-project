@@ -146,3 +146,11 @@ const setTimeToNowButton = document.getElementById("set-time-to-now-button");
 setTimeToNowButton.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.SET_TIME_TO_NOW);
 });
+
+const simulationTimestampCalendarButton = document.getElementById(
+    "simulation-timestamp-calendar-button",
+);
+
+simulationTimestampCalendarButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SIM.SIMULATION_TIMESTAMP_CALENDAR)
+})
