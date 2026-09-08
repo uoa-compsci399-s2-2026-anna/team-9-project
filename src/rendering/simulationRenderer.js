@@ -57,6 +57,7 @@ const objectLabels = new Map();
 
 // Default size and colour of all the objects
 let objectSize;
+let solarSystemObjectSize;
 const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -349,8 +350,29 @@ export function resetView() {
     controls.update();
 }
 
-export function compareToSolarSystem() {
+export async function compareToSolarSystem() {
+    const canvas = renderer.domElement;
 
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const solarSystemData = await getSystemData("solar system", currentSimulationTime);
+
+    const currentOrbitalDataValues = Object.values(currentSystemData.orbital_data);
+    const solarOrbitalDataValues = Object.values(solarSystemData.orbital_data);
+
+    const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
+    const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
+
+    const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
+    const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
+    const viewRadius = Math.max(currentViewRadius, solarViewRadius);
+
+    // Set the object size for the solar system
+    solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
+
+    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateControls(canvas, viewRadius);
+
+    // TODO: update simulation
 }
 
 export function hideSolarSystem() {
