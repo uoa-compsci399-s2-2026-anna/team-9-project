@@ -30,13 +30,11 @@ const settingsOverlay = document.querySelector("#settings-overlay");
  */
 const openOverlays = [];
 
-// Pop and hide topmost overlay on ESC press
-document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-        const topOverlay = openOverlays.at(-1)?.overlay;
-        if (topOverlay) {
-            hideOverlay(topOverlay);
-        }
+bus.subscribe(EVENTS.SETTINGS.ESCAPE_PRESSED, (event) => {
+    // Pop and hide topmost overlay
+    const topOverlay = openOverlays.at(-1)?.overlay;
+    if (topOverlay) {
+        hideOverlay(topOverlay);
     }
 });
 
@@ -135,6 +133,10 @@ function showOverlay(overlay) {
     if (!openOverlays.some((item) => item.overlay === overlay)) {
         openOverlays.push({ overlay });
     }
+
+    if (document.body.classList.contains("settings-overlay-open")) {
+        bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
+    }
 }
 
 /**
@@ -150,6 +152,10 @@ function hideOverlay(overlay) {
     const index = openOverlays.findIndex((item) => item.overlay === overlay);
     if (index !== -1) {
         openOverlays.splice(index, 1);
+    }
+
+    if (!document.body.classList.contains("settings-overlay-open")) {
+        bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
     }
 }
 
