@@ -244,7 +244,7 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
             createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
         }
 
-        scene.add(solarSystemGroup); // TODO: need to rotate
+        scene.add(solarSystemGroup);
     }
 }
 
@@ -391,6 +391,11 @@ export async function compareToSolarSystem() {
     const solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
     const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
     objectScale = comparisonObjectSize / objectSize;
+
+    // Rotate solar system to align with the current system's up vector
+    const solarUpVector = calculateUpVector(solarOrbitalDataValues);
+    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarUpVector, camera.up);
+    solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
 
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
