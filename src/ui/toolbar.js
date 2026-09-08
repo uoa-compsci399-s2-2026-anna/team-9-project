@@ -13,7 +13,6 @@ const darkModeIcon = document.querySelector("#dark-mode-icon");
 const lightModeIcon = document.querySelector("#light-mode-icon");
 const themeTooltip = document.querySelector("#theme-tooltip");
 
-
 function toggleDarkMode(isDarkMode) {
     darkModeIcon.classList.toggle("hidden", isDarkMode);
     lightModeIcon.classList.toggle("hidden", !isDarkMode);
@@ -26,7 +25,6 @@ function toggleDarkMode(isDarkMode) {
         themeTooltip.textContent = "View in dark mode";
     }
 }
-
 
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     const { enterDarkMode } = event.detail;
