@@ -49,17 +49,18 @@ function formatted(date) {
 }
 
 /**
- * Updates all calendars to show the current date time in the given time zone,
+ * Updates all calendars to show the given date-time in the given time zone,
  * and sets the minimum and maximum of the calendar to +/- 1 year.
+ * @param {Date} date The date object to set the calendar to
  */
-function updateCalendar(now) {
+function updateCalendar(date) {
     const calendars = document.querySelectorAll(".calendar");
 
     const YEARS_IN_MS = 24 * 60 * 60 * 1000;
 
     calendars.forEach((calendar) => {
-        calendar.value = formatted(now);
-        calendar.min = formatted(new Date(now.getTime() - 365 * YEARS_IN_MS));
-        calendar.max = formatted(new Date(now.getTime() + 365 * YEARS_IN_MS));
+        calendar.value = formatted(date);
+        calendar.min = formatted(new Date(date.getTime() - 365 * YEARS_IN_MS));
+        calendar.max = formatted(new Date(date.getTime() + 365 * YEARS_IN_MS));
     });
 }
