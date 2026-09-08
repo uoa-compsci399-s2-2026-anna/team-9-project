@@ -3,14 +3,7 @@
 >
   <!-- Simulation timestamp (narrow screens) -->
   <span class="self-center text-sm sm:hidden">
-    <input
-      type="datetime-local"
-      id="meeting-time"
-      name="meeting-time"
-      value="2018-06-12T19:30"
-      min="2018-06-07T00:00"
-      max="2018-06-14T00:00"
-    />
+    <input type="datetime-local" class="calendar" name="calendar" />
   </span>
 
   <div class="grid w-full grid-cols-3 items-center gap-4">
@@ -18,14 +11,7 @@
     <div class="justify-self-start">
       <div class="text-left max-sm:hidden">
         <p class="text-lg">
-          <input
-            type="datetime-local"
-            id="meeting-time"
-            name="meeting-time"
-            value="2018-06-12T19:30"
-            min="2018-06-07T00:00"
-            max="2018-06-14T00:00"
-          />
+          <input type="datetime-local" class="calendar" name="calendar" />
         </p>
         <p class="text-s italic dark:text-zinc-400">32 days from now</p>
       </div>
@@ -99,7 +85,12 @@
         class="h-9 w-18 rounded-md outline-1 outline-zinc-900 dark:outline-zinc-500"
       >
         {% for option in sim_state_schema.simulationSpeedUnit.options %}
-          <option value="{{ option.value }}" {{ "selected" if option.value == sim_state.simulationSpeedUnit }}>{{ option.label }}</option>
+          <option
+            value="{{ option.value }}"
+            {{ "selected" if option.value == sim_state.simulationSpeedUnit }}
+          >
+            {{ option.label }}
+          </option>
         {% endfor %}
       </select>
 
