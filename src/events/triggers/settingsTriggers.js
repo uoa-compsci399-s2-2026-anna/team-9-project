@@ -17,7 +17,7 @@ closeSettingsMenuButton.addEventListener("click", () => {
 });
 
 settingsOverlay.addEventListener("click", (event) => {
-    // Close settings menu only when the user clicks outside of the main settings menu panel
+    // Close settings menu if the user clicks outside of the main settings menu panel
     if (event.target === event.currentTarget) {
         bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
     }
@@ -71,6 +71,14 @@ const closeConfirmResetSettingsOverlayButton = document.getElementById(
     "close-confirm-reset-settings-overlay-button",
 );
 
+/**
+ * The overlay element for the 'Confirm reset settings' menu. Clicking outside
+ * the menu (i.e., on the overlay) dismisses the overlay without doing anything.
+ */
+const confirmResetSettingsOverlay = document.getElementById(
+    "confirm-reset-settings-overlay",
+)
+
 confirmResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
@@ -88,6 +96,15 @@ closeConfirmResetSettingsOverlayButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
         openMenu: false,
     });
+});
+
+confirmResetSettingsOverlay.addEventListener("click", (event) => {
+    // Close settings menu if the user clicks outside of the confirm reset settings panel
+    if (event.target === event.currentTarget) {
+        bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
+            openMenu: false,
+        });
+    }
 });
 
 // Time zone
