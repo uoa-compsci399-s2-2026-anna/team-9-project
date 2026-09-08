@@ -253,6 +253,37 @@ function initCameraAndControls(canvas, viewRadius, upVector) {
 }
 
 /**
+ * Initialise the scene for the simulation renderer.
+ */
+function initScene() {
+    scene = new THREE.Scene();
+    scene.background = getTheme().background;
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+}
+
+/**
+ * Initialise the label renderer for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ */
+function initLabelRenderer(canvas) {
+    labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.top = "0px";
+    labelRenderer.domElement.style.left = "0px";
+    labelRenderer.domElement.style.pointerEvents = "none";
+    canvas.parentElement.appendChild(labelRenderer.domElement);
+}
+
+/**
+ * Initialise the timer for the simulation renderer.
+ */
+function initTimer() {
+    timer = new THREE.Timer();
+    timer.connect(document); // Use Page Visibility API
+}
+
+/**
  * Initialises the requested system to render
  * 
  * @param {string} name System name
@@ -272,27 +303,14 @@ export async function init(name) {
     objectSize = viewRadius * objectSizeMultiplier;
 
     const upVector = calculateUpVector(orbitalDataValues);
+
     initCameraAndControls(canvas, viewRadius, upVector);
-
-    scene = new THREE.Scene();
-    scene.background = getTheme().background;
-    scene.add(new THREE.AmbientLight(0xffffff, 1));
-
-    labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    labelRenderer.domElement.style.position = "absolute";
-    labelRenderer.domElement.style.top = "0px";
-    labelRenderer.domElement.style.left = "0px";
-    labelRenderer.domElement.style.pointerEvents = "none";
-    canvas.parentElement.appendChild(labelRenderer.domElement);
-
-    // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
-    // Render the system at t=0 (fetch the system data from the backend and display initial positions)
-    updateSimulation(systemData);
-    timer = new THREE.Timer();
-    timer.connect(document); // Use Page Visibility API
+    initScene();
+    initLabelRenderer(canvas);
+    initTimer();
 
     // Start rendering frames and updating the simulation
+    updateSimulation(systemData);
     renderFrame();
 }
 
