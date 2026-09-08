@@ -1,6 +1,7 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { running } from "../../shared/simulationState.js";
+import { doc } from "prettier";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -138,4 +139,10 @@ calendars.forEach((c) => {
     c.addEventListener("change", (event) => {
         bus.publish(EVENTS.SIM.CALENDAR_CHANGE, { value: event.target.value });
     });
+});
+
+const setTimeToNowButton = document.getElementById("set-time-to-now-button");
+
+setTimeToNowButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SIM.SET_TIME_TO_NOW);
 });

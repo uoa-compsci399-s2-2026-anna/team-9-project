@@ -14,7 +14,8 @@ export const EVENTS = {
         VIEW_SETTINGS_PANEL_TOGGLE: "sim:view_settings_panel_toggle",
         OBJECTS_PANEL_TOGGLE: "sim:objects_panel_toggle",
         SYSTEM_DROPDOWN_TOGGLE: "sim:system_dropdown_toggle",
-        CALENDAR_CHANGE: "sim:calendar_change"
+        CALENDAR_CHANGE: "sim:calendar_change",
+        SET_TIME_TO_NOW: "sim:set_time_to_now",
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
@@ -27,5 +28,5 @@ export const EVENTS = {
         TEXT_SIZE_SELECT: "settings:text_size_select",
         OBJECT_MARKER_SIZE_SELECT: "settings:object_marker_size_select",
         ORBIT_LINES_SELECT: "settings:orbit_lines_select",
-    }
-}
+    },
+};
