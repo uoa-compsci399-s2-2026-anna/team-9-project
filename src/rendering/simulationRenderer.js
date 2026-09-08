@@ -36,7 +36,7 @@ const viewRadiusMultiplier = 1.5;
 const objectSizeMultiplier = 0.002;
 
 const fov = 45; // Field of view in degrees
-const cameraNearMultiplier = 10;
+const cameraNearMultiplier = 1;
 const cameraFarMultiplier = 3;
 
 const controlsMinMultiplier = 20;
