@@ -230,10 +230,13 @@ async function updateSimulation(systemData = null) {
 /**
  * Initialise the camera and controls for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} cameraDistance The distance of the camera from the target
+ * @param {number} viewRadius The radius of view to fit within the camera
  * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initCameraAndControls(canvas, cameraDistance, upVector) {
+function initCameraAndControls(canvas, viewRadius, upVector) {
+    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
+
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;
@@ -268,10 +271,8 @@ export async function init(name) {
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
     objectSize = viewRadius * objectSizeMultiplier;
 
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
     const upVector = calculateUpVector(orbitalDataValues);
-    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
-    initCameraAndControls(canvas, cameraDistance, upVector);
+    initCameraAndControls(canvas, viewRadius, upVector);
 
     scene = new THREE.Scene();
     scene.background = getTheme().background;
