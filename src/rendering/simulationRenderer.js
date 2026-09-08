@@ -233,16 +233,24 @@ async function updateSimulation(systemData = null) {
  * @param {number} viewRadius The radius of view to fit within the camera
  * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initCamera(canvas, viewRadius, upVector) {
+function initOrUpdateCamera(canvas, viewRadius, upVector) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
 
-    const aspect = canvas.clientWidth / canvas.clientHeight;
     const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;
-    camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-    camera.up.copy(upVector);
-    camera.position.copy(cameraDefaults.position);
+
+    if (!camera) {
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
+        camera.up.copy(upVector); // Stays fixed for the current system
+        camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
+
+    } else {
+        camera.near = cameraNear;
+        camera.far = cameraFar;
+        camera.updateProjectionMatrix(); // Must update after changing camera parameters
+    }
 }
 
 /**
@@ -250,10 +258,12 @@ function initCamera(canvas, viewRadius, upVector) {
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} viewRadius The radius of view to fit within the camera
  */
-function initControls(canvas, viewRadius) {
+function initOrUpdateControls(canvas, viewRadius) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
 
-    controls = new OrbitControls(camera, canvas);
+    if (!controls) {
+        controls = new OrbitControls(camera, canvas);
+    }
     controls.target.copy(cameraDefaults.target);
     controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
@@ -312,8 +322,8 @@ export async function init(name) {
     const upVector = calculateUpVector(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
-    initCamera(canvas, viewRadius, upVector);
-    initControls(canvas, viewRadius);
+    initOrUpdateCamera(canvas, viewRadius, upVector);
+    initOrUpdateControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
