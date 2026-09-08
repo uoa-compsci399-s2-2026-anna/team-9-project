@@ -253,10 +253,11 @@ function calculateMaxApoapsis(orbitalDataValues) {
  * Calculate the distance of the camera from the target based on the view radius.
  * The camera distance is calculated to ensure that the entire view radius fits within the camera's field of view.
  * 
+ * @param {number} fov The field of view of the camera in degrees
  * @param {number} viewRadius The radius of the view to fit within the camera's field of view
  * @returns {number} The calculated camera distance
  */
-function calculateCameraDistance(viewRadius) {
+function calculateCameraDistance(fov, viewRadius) {
     const fovRad = fov * (Math.PI / 180);
     return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
 }
@@ -329,7 +330,7 @@ export async function init(name) {
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
     objectSize = maxApoapsis * objectSizeMultiplier;
 
-    const cameraDistance = calculateCameraDistance(viewRadius);
+    const cameraDistance = calculateCameraDistance(fov, viewRadius);
     const upVector = calculateUpVector(orbitalDataValues);
     cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
     initCameraAndControls(canvas, cameraDistance, upVector);
