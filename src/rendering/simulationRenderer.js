@@ -397,7 +397,7 @@ export async function compareToSolarSystem() {
     updateSimulation(currentSystemData, solarSystemData);
 }
 
-export function hideSolarSystem() {
+export async function hideSolarSystem() {
     objectScale = 1; // Reset object scale to default
 
     // Remove all solar system objects and orbits from the scene
@@ -425,6 +425,20 @@ export function hideSolarSystem() {
     }
 
     solarSystemGroup.clear();
+
+    // Update the camera and controls to fit the current system again
+
+    const canvas = renderer.domElement;
+
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
+
+    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
+    const viewRadius = maxApoapsis * viewRadiusMultiplier;
+
+    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateControls(canvas, viewRadius);
+    updateSimulation(currentSystemData);
 }
 
 export function setLabelsVisibility(value) {
