@@ -127,10 +127,12 @@
   </button>
 
   <!-- Compare to solar system button -->
-  <button
-    id="compare-to-solar-system-button"
-    class="relative z-10 flex items-center gap-3 self-end rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-  >
-    Compare to Solar System
-  </button>
+  {% if current_system.name != "Solar System" %}
+    <button
+      id="compare-to-solar-system-button"
+      class="relative z-10 flex items-center gap-3 self-end rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+    >
+      Compare to Solar System
+    </button>
+  {% endif %}
 </div>
