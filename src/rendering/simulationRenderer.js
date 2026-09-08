@@ -311,6 +311,14 @@ export function resetView() {
     controls.update();
 }
 
+export function compareToSolarSystem() {
+
+}
+
+export function hideSolarSystem() {
+
+}
+
 export function setLabelsVisibility(value) {
     for (const label of objectLabels.values()) {
         label.visible = value;
