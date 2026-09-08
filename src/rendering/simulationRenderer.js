@@ -48,6 +48,9 @@ const cameraDefaults = {
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
 };
 
+const currentSystemGroup = new THREE.Group();
+const solarSystemGroup = new THREE.Group();
+
 const objectMeshes = new Map();
 const orbitalLines = new Map();
 const objectLabels = new Map();
@@ -101,8 +104,9 @@ function getFontFamily(chosenFont) {
  * 
  * @param {string} name Name of the object
  * @param {Object} position Position of the object
+ * @param {THREE.Group} group The group to add the object to
  */
-function createOrUpdateObjectMesh(name, position) {
+function createOrUpdateObjectMesh(name, position, group) {
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -111,7 +115,7 @@ function createOrUpdateObjectMesh(name, position) {
 
         mesh = new THREE.Mesh(geometry, material);
         mesh.visible = !isObjectHidden(currentSystem, name);
-        scene.add(mesh);
+        group.add(mesh);
         objectMeshes.set(name, mesh);
 
         const labelDiv = document.createElement("div");
@@ -158,8 +162,9 @@ function shouldShowOrbit(objectName, { orbitsVisible, objectVisible } = {}) {
  * 
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
+ * @param {THREE.Group} group The group to add the orbital line to
  */
-function createOrUpdateOrbitalLine(name, orbitalData) {
+function createOrUpdateOrbitalLine(name, orbitalData, group) {
     let line = orbitalLines.get(name);
 
     const { a, e, inc, Omega, omega } = orbitalData;
@@ -170,7 +175,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
         line = new THREE.LineLoop(geometry, material);
         line.visible = shouldShowOrbit(name);
 
-        scene.add(line);
+        group.add(line);
         orbitalLines.set(name, line);
     }
 
@@ -213,11 +218,13 @@ async function updateSimulation(systemData = null) {
     }
 
     for (const [name, position] of Object.entries(systemData.positions)) {
-        createOrUpdateObjectMesh(name, position);
+        createOrUpdateObjectMesh(name, position, currentSystemGroup);
     }
     for (const [name, orbitalData] of Object.entries(systemData.orbital_data)) {
-        createOrUpdateOrbitalLine(name, orbitalData);
+        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
     }
+
+    scene.add(currentSystemGroup);
 }
 
 /**
