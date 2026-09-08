@@ -114,3 +114,8 @@ export let frozen = false;
 export function setFrozen(value) {
     frozen = value;
 }
+
+export let comparingToSolarSystem = false;
+export function setComparingToSolarSystem(value) {
+    comparingToSolarSystem = value;
+}
