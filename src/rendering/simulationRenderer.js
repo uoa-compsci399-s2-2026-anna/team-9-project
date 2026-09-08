@@ -33,7 +33,7 @@ let labelRenderer;
 
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.5;
-const objectSizeMultiplier = 0.003;
+const objectSizeMultiplier = 0.002;
 
 const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 10;
@@ -266,7 +266,7 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    objectSize = maxApoapsis * objectSizeMultiplier;
+    objectSize = viewRadius * objectSizeMultiplier;
 
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     const upVector = calculateUpVector(orbitalDataValues);
