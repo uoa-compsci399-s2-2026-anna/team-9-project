@@ -52,7 +52,7 @@ function formatted(date) {
 function updateCalendar(date) {
     const calendars = document.querySelectorAll(".calendar");
 
-    const YEARS_IN_MS = 24 * 60 * 60 * 1000;
+    const YEARS_IN_MS = 365 * 24 * 60 * 60 * 1000;
 
     calendars.forEach((calendar) => {
         calendar.value = formatted(date);
