@@ -28,5 +28,8 @@ export const EVENTS = {
         ORBIT_LINES_SELECT: "settings:orbit_lines_select",
         RESET_SETTINGS_MENU_TOGGLE: "settings:reset_settings_menu_toggle",
         CONFIRM_RESET_SETTINGS: "settings:confirm_reset_settings",
-    }
-}
+
+        /** The escape key is pressed in the settings menu. */
+        ESCAPE_PRESSED: "settings:escape_pressed",
+    },
+};
