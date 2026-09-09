@@ -38,5 +38,7 @@ export const EVENTS = {
         TEXT_SIZE_SELECT: "settings:text_size_select",
         OBJECT_MARKER_SIZE_SELECT: "settings:object_marker_size_select",
         ORBIT_LINES_SELECT: "settings:orbit_lines_select",
+        RESET_SETTINGS_MENU_TOGGLE: "settings:reset_settings_menu_toggle",
+        RESET_ALL_SETTINGS: "settings:reset_all_settings",
     },
 };
