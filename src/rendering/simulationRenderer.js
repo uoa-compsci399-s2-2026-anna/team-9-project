@@ -117,7 +117,13 @@ function createOrUpdateObjectMesh(name, position, group) {
         const material = new THREE.MeshStandardMaterial({ color: objectColour });
 
         mesh = new THREE.Mesh(geometry, material);
-        mesh.visible = !isObjectHidden(currentSystem, name);
+
+        if (group === solarSystemGroup) {
+            mesh.visible = !isObjectHidden("Solar System", name);
+        } else {
+            mesh.visible = !isObjectHidden(currentSystem, name);
+        }
+
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
@@ -148,14 +154,15 @@ function createOrUpdateObjectMesh(name, position, group) {
  * may not have been synced yet).
  * 
  * @param {string} objectName Name of the object associated with the orbit
+ * @param {string} [system=currentSystem] The system associated with the object
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object should be visible
  * @returns {boolean} Whether the orbit should be visible
  */
-function shouldShowOrbit(objectName, { orbitsVisible, objectVisible } = {}) {
+function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, objectVisible } = {}) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown = objectVisible ?? !isObjectHidden(currentSystem, objectName);
+    const isObjectShown = objectVisible ?? !isObjectHidden(system, objectName);
 
     return areOrbitsShown && isObjectShown;
 }
@@ -177,7 +184,12 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
         const geometry = new THREE.BufferGeometry();
         const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
         line = new THREE.LineLoop(geometry, material);
-        line.visible = shouldShowOrbit(name);
+
+        if (group === solarSystemGroup) {
+            line.visible = shouldShowOrbit(name, "Solar System");
+        } else {
+            line.visible = shouldShowOrbit(name, currentSystem);
+        }
 
         group.add(line);
         orbitalLines.set(name, line);
