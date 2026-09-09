@@ -39,6 +39,13 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
+# Each init_*() returns (sim, objects); take only the list of string objects
+system_objects = {
+    "solar system": init_solar()[1],
+    "kepler-16": init_kepler_16()[1],
+    "trappist-1": init_trappist_1()[1],
+}
+
 sim = None
 current_system = None
 objects = []
@@ -85,6 +92,9 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
         system for system in all_systems if system["name"] != current_system["name"]
     ]
 
+    # Get the current system's string object list by lowercase lookup
+    objects = system_objects[current_system["name"].lower()]
+
     return templates.TemplateResponse(
         request=request,
         name="simulation.html",
@@ -98,6 +108,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
+            "objects": objects,
             "object_num": 9,  # Temporary; set this programmatically (or have we decided against an object count?)
             # Control which components are rendered on the html page
             "navigation_bar": True,
