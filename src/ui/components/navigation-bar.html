@@ -2,14 +2,7 @@
   <!-- COMPONENT: System dropdown -->
   <!-- Hidden setting to maintain consistient toolbar position -->
   <div
-    class="flex items-start gap-4"
-    {%
-      if
-      not
-      system_dropdown
-    %}
-      style="visibility: hidden"
-    {% endif %}
+    class="{% if not system_dropdown %}invisible h-0 overflow-hidden{% endif %} flex items-start gap-4"
   >
     <!-- OPIS logo -->
     <a href="/" class="relative z-30 mt-1.5 self-start max-sm:hidden">
