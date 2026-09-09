@@ -241,28 +241,6 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
         }
-    } else {
-        // Remove all solar system objects and orbits from the scene
-        for (const [name, label] of objectLabels) {
-            if (solarSystemGroup.children.includes(label.parent)) {
-                objectLabels.delete(name);
-
-                // Remove label from its mesh.
-                // Otherwise, it is still rendered even when the mesh is removed.
-                label.parent.remove(label);
-            }
-        }
-        for (const [name, mesh] of objectMeshes) {
-            if (solarSystemGroup.children.includes(mesh)) {
-                objectMeshes.delete(name);
-            }
-        }
-        for (const [name, orbit] of orbitalLines) {
-            if (solarSystemGroup.children.includes(orbit)) {
-                orbitalLines.delete(name);
-            }
-        }
-        solarSystemGroup.clear();
     }
 }
 
@@ -417,6 +395,8 @@ export async function compareToSolarSystem() {
     const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarUpVector, camera.up);
     solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
 
+    solarSystemGroup.visible = true;
+
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
     updateSimulation(currentSystemData, solarSystemData);
@@ -434,6 +414,8 @@ export async function hideSolarSystem() {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier;
+
+    solarSystemGroup.visible = false;
 
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
