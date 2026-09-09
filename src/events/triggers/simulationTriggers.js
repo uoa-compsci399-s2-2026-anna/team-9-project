@@ -120,7 +120,6 @@ objectsButton.addEventListener("click", () => {
 
 // System dropdown (e.g., for changing between Solar System and Kepler-16 on the simulation page)
 const systemButton = document.getElementById("system-information-button");
-const systemDropdown = document.getElementById("system-dropdown");
 
 let systemDropdownOpen = false;
 
