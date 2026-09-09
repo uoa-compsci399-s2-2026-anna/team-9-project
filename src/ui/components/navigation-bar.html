@@ -24,34 +24,41 @@
     </a>
 
     <!-- System information -->
-    <button
-      id="system-information-button"
+    <div
       class="relative z-30 items-center rounded-md p-2 text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
     >
-      <hgroup class="max-sm:hidden">
-        <span class="flex items-center">
+      <button
+        id="system-information-button"
+        class="flex w-full items-center text-left"
+      >
+        <span class="flex-1">
           <h1 class="pr-2 text-3xl font-bold">
             {% if current_system %}
               {{ current_system.name }}
             {% endif %}
           </h1>
-
-          <!-- Dropdown chevron -->
-          <svg class="size-7" viewBox="0 0 24 24">
-            <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-            <path
-              d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
-            />
-          </svg>
+          <p class="text-s italic dark:text-zinc-400">
+            {{ object_num }} objects
+          </p>
         </span>
-        <p class="text-s italic dark:text-zinc-400">{{ object_num }} objects</p>
-      </hgroup>
-    </button>
 
-    <div id="system-dropdown" style="display: none" class="z-30">
-      {% for system in dropdown_systems %}
-        <a href="/simulation/{{ system.name }}"> {{ system.name }} </a>
-      {% endfor %}
+        <svg class="size-7" viewBox="0 0 24 24">
+          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+          <path
+            d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
+          />
+        </svg>
+      </button>
+
+      <div id="system-dropdown" class="">
+        <div class="flex flex-col overflow-hidden">
+          <div class="mt-2">
+            {% for system in dropdown_systems %}
+              <a href="/simulation/{{ system.name }}"> {{ system.name }} </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -132,7 +139,7 @@
         <!-- Dark mode icon -->
         <svg
           id="dark-mode-icon"
-          class="size-7 {{ 'hidden' if settings.darkMode }}"
+          class="{{ 'hidden' if settings.darkMode }} size-7"
           viewBox="0 0 24 24"
         >
           <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
@@ -144,7 +151,7 @@
         <!-- Light mode icon -->
         <svg
           id="light-mode-icon"
-          class="size-7 {{ 'hidden' if not settings.darkMode }}"
+          class="{{ 'hidden' if not settings.darkMode }} size-7"
           viewBox="0 0 24 24"
         >
           <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
@@ -192,9 +199,9 @@
         class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
       >
         <!-- Enter fullscreen icon -->
-        <svg 
-          id="enter-fullscreen-icon" 
-          class="size-7 {{ 'hidden' if fullscreen }}" 
+        <svg
+          id="enter-fullscreen-icon"
+          class="{{ 'hidden' if fullscreen }} size-7"
           viewBox="0 0 24 24"
         >
           <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
@@ -206,7 +213,7 @@
         <!-- Exit fullscreen icon -->
         <svg
           id="exit-fullscreen-icon"
-          class="size-7 {{ 'hidden' if not fullscreen }}"
+          class="{{ 'hidden' if not fullscreen }} size-7"
           viewBox="0 0 24 24"
         >
           <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
