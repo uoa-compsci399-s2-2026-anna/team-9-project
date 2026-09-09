@@ -77,6 +77,7 @@ export function calculateCameraDistance(fov, viewRadius) {
  */
 export function calculateUpVector(orbitalDataValues) {
     const averageNormal = new THREE.Vector3();
+    let reference = null;
 
     for (const { inc, Omega } of orbitalDataValues) {
         const normal = new THREE.Vector3( // Normal vector of the orbital plane
@@ -85,8 +86,12 @@ export function calculateUpVector(orbitalDataValues) {
             Math.cos(inc)
         );
 
-        if (normal.z < 0) { // Ensure the normal vector points upwards
+        // Use the first normal vector as a reference.
+        // Subsequent normal vectors are negated if they point opposite to it.
+        if (reference && normal.dot(reference) < 0) {
             normal.negate();
+        } else if (!reference) {
+            reference = normal.clone();
         }
 
         averageNormal.add(normal);
