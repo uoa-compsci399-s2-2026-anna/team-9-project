@@ -134,20 +134,19 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     if system_name == "solar system" and sim is None:
         # Init state if empty
         sim, objects = init_solar()
-        sims[system_name] = (sim, objects)
     # Hardcode Kepler-16
     elif system_name == "kepler-16" and sim is None:
         # Init state if empty
         sim, objects = init_kepler_16()
-        sims[system_name] = (sim, objects)
     # Hardcode TRAPPIST-1
     elif system_name == "trappist-1" and sim is None:
         # Init state if empty
         sim, objects = init_trappist_1()
-        sims[system_name] = (sim, objects)
 
     if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    sims[system_name] = (sim, objects)
 
     # Set time
     sim.integrate(t)
