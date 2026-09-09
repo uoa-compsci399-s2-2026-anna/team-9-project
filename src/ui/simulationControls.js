@@ -21,9 +21,11 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
 
     if (showDropdown) {
-        systemDropdown.style.display = "block";
+        systemDropdown.classList.remove("grid-rows-[0fr]");
+        systemDropdown.classList.add("grid-rows-[1fr]");
     } else {
-        systemDropdown.style.display = "none";
+        systemDropdown.classList.remove("grid-rows-[1fr]");
+        systemDropdown.classList.add("grid-rows-[0fr]");
     }
 });
 
