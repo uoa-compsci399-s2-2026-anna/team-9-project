@@ -13,7 +13,12 @@ document.querySelectorAll("a").forEach((a) => {
 const themeTooltip = document.querySelector("#theme-tooltip");
 const themeSvgPath = document.querySelector("#theme-svg-path");
 
-function toggleDarkMode(isDarkMode) {
+/**
+ * Updates the tooltip and icon of the Dark/light mode button to reflect the
+ * new dark/light mode state.
+ * @param {boolean} isDarkMode Whether the application will be in dark mode
+ */
+function updateDarkModeButtonAppearance(isDarkMode) {
     if (isDarkMode) {
         html.setAttribute("data-theme", "dark");
         themeTooltip.textContent = "View in light mode";
@@ -34,7 +39,7 @@ function toggleDarkMode(isDarkMode) {
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     const { enterDarkMode } = event.detail;
 
-    toggleDarkMode(enterDarkMode);
+    updateDarkModeButtonAppearance(enterDarkMode);
 });
 
 // Settings menu overlay
