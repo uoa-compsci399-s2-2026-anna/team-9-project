@@ -54,6 +54,20 @@ bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
     settingsOverlay.classList.toggle("pointer-events-none", !openMenu);
 });
 
+// Confirm reset settings overlay
+
+const confirmResetOverlay = document.querySelector("#confirm-reset-settings-overlay");
+
+bus.subscribe(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, (event) => {
+    const { openMenu } = event.detail;
+
+    confirmResetOverlay.classList.toggle("opacity-100", openMenu);
+    document.body.classList.toggle(`confirm-reset-settings-overlay-open`, openMenu);
+
+    confirmResetOverlay.classList.toggle("opacity-0", !openMenu);
+    confirmResetOverlay.classList.toggle("pointer-events-none", !openMenu);
+});
+
 // Font select
 
 bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
