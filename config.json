@@ -13,7 +13,10 @@
                         "absolute": 3.30103e23,
                         "uncertainty": 2.1e19
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 2.4394e6,
                         "uncertainty": 1.0e2 
@@ -24,7 +27,10 @@
                         "absolute": 4.86731e24,
                         "uncertainty": 2.3e20 
                     }, 
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 6.0518e6,
                         "uncertainty": 1.0e3
@@ -35,7 +41,10 @@
                         "absolute": 5.97217e24,
                         "uncertainty": 2.8e20
                     }, 
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 6.3710084e6,
                         "uncertainty": 1.0e-1
@@ -46,7 +55,10 @@
                         "absolute": 6.41691e23,
                         "uncertainty": 3.0e19
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 3.38950e6,
                         "uncertainty": 2.0e2
@@ -57,7 +69,10 @@
                         "absolute": 1.898125e27,
                         "uncertainty": 8.8e22
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 6.9911e7,
                         "uncertainty": 6.0e3
@@ -68,7 +83,10 @@
                         "absolute": 5.68317e26,
                         "uncertainty": 2.6e22
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 5.8232e7,
                         "uncertainty": 6.0e3
@@ -79,7 +97,10 @@
                         "absolute": 8.68099e25,
                         "uncertainty": 4.0e21
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 2.5362e7,
                         "uncertainty": 7.0e3
@@ -90,16 +111,28 @@
                         "absolute": 1.024092e26,
                         "uncertainty": 4.8e21
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 2.4622e7,
                         "uncertainty": 1.9e4
                     }
                 },
                 "1P/Halley": {
-                    "mass": "",
-                    "temp": "",
-                    "radius": ""
+                    "mass": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    }
                 }
             }
         },
@@ -125,7 +158,10 @@
                         "absolute": 4.09e29,
                         "uncertainty": 1.29e27
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 1.57e8,
                         "uncertainty": 4.11e5
@@ -136,7 +172,10 @@
                         "absolute": 6.32e26,
                         "uncertainty": 3.04e25
                     },
-                    "temp": "",
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
                     "radius": {
                         "absolute": 5.27e7,
                         "uncertainty": 1.75e5
