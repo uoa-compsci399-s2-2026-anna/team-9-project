@@ -61,7 +61,7 @@ const compareToSolarSystemButton = document.querySelector("#compare-to-solar-sys
 
 bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
     if (compareToSolarSystemButton) {
-        if (event.detail.value) {
+        if (event.detail.compare) {
             compareToSolarSystemButton.textContent = "Hide Solar System";
         } else {
             compareToSolarSystemButton.textContent = "Compare to Solar System";

@@ -38,7 +38,7 @@ bus.subscribe(EVENTS.SIM.RESET_VIEW, () => {
 // Compare to solar system
 
 bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
-    if (event.detail.value) {
+    if (event.detail.compare) {
         compareToSolarSystem();
     } else {
         hideSolarSystem();

@@ -66,7 +66,7 @@ const compareToSolarSystemButton = document.getElementById("compare-to-solar-sys
 
 if (compareToSolarSystemButton) { // Button does not exist for the solar system itself
     compareToSolarSystemButton.addEventListener("click", () => {
-        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, { value: !comparingToSolarSystem });
+        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, { compare: !comparingToSolarSystem });
     });
 }
 

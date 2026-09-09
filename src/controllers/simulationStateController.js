@@ -55,5 +55,5 @@ bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
 });
 
 bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
-    setComparingToSolarSystem(event.detail.value);
+    setComparingToSolarSystem(event.detail.compare);
 });
