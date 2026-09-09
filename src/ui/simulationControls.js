@@ -28,22 +28,32 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
         systemDropdown.classList.add("grid-rows-[1fr]");
 
         systemDropdownWrapper.classList.add(
-            "bg-zinc-100",
+            "bg-white",
             "outline-1",
             "outline-zinc-900",
-            "dark:bg-zinc-900",
+            "dark:bg-black",
             "dark:outline-zinc-500",
+        );
+
+        systemDropdownWrapper.classList.remove(
+            "hover:bg-zinc-100",
+            "dark:hover:bg-zinc-900",
         );
     } else {
         systemDropdown.classList.remove("grid-rows-[1fr]");
         systemDropdown.classList.add("grid-rows-[0fr]");
 
         systemDropdownWrapper.classList.remove(
-            "bg-zinc-100",
+            "bg-white",
             "outline-1",
             "outline-zinc-900",
-            "dark:bg-zinc-900",
+            "dark:bg-black",
             "dark:outline-zinc-500",
+        );
+
+        systemDropdownWrapper.classList.add(
+            "hover:bg-zinc-100",
+            "dark:hover:bg-zinc-900",
         );
     }
 });
