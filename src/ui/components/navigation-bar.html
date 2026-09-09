@@ -5,7 +5,7 @@
     class="{% if not system_dropdown %}invisible h-0 overflow-hidden{% endif %} flex items-start gap-4"
   >
     <!-- OPIS logo -->
-    <a href="/" class="relative z-30 mt-1.5 self-start max-sm:hidden">
+    <a href="/" class="relative z-30 mt-1 self-start max-sm:hidden">
       <svg
         viewBox="0 0 150 166.27"
         class="h-14 -translate-y-1 fill-zinc-800 dark:fill-white"
@@ -25,7 +25,7 @@
         class="flex w-full items-center text-left"
       >
         <span class="flex-1">
-          <h1 class="pr-2 text-3xl font-bold">
+          <h1 class="pr-2 pb-2 text-3xl font-bold">
             {% if current_system %}
               {{ current_system.name }}
             {% endif %}
