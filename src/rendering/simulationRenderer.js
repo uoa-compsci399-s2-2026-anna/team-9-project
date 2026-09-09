@@ -12,7 +12,10 @@ import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
 
 let timer;
-let currentSimulationTime = 0;
+
+/** The current simulation time in seconds. */
+export let currentSimulationTime = 0;
+
 let currentSystem;
 
 let scene;

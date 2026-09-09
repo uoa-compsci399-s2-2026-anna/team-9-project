@@ -14,6 +14,17 @@ export const EVENTS = {
         VIEW_SETTINGS_PANEL_TOGGLE: "sim:view_settings_panel_toggle",
         OBJECTS_PANEL_TOGGLE: "sim:objects_panel_toggle",
         SYSTEM_DROPDOWN_TOGGLE: "sim:system_dropdown_toggle",
+
+        /**
+         * When the calendar is changed (i.e. when the user selects a new
+         * date-time and confirms by exiting the selector).
+         */
+        CALENDAR_CHANGE: "sim:calendar_change",
+
+        /**
+         * When the 'Now' button is clicked.
+         */
+        SET_TIME_TO_NOW: "sim:set_time_to_now",
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",

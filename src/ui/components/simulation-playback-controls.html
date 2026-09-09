@@ -3,31 +3,27 @@
 >
   <!-- Simulation timestamp (narrow screens) -->
   <span class="self-center text-sm sm:hidden">
-    <input
-      type="datetime-local"
-      id="meeting-time"
-      name="meeting-time"
-      value="2018-06-12T19:30"
-      min="2018-06-07T00:00"
-      max="2018-06-14T00:00"
-    />
+    <input type="datetime-local" class="calendar" name="calendar" onkeydown="return false;"/>
   </span>
 
   <div class="grid w-full grid-cols-3 items-center gap-4">
-    <!-- Simulation timestamp / date picker -->
     <div class="justify-self-start">
-      <div class="text-left max-sm:hidden">
-        <p class="text-lg">
-          <input
-            type="datetime-local"
-            id="meeting-time"
-            name="meeting-time"
-            value="2018-06-12T19:30"
-            min="2018-06-07T00:00"
-            max="2018-06-14T00:00"
-          />
-        </p>
-        <p class="text-s italic dark:text-zinc-400">32 days from now</p>
+      <div class="flex items-center gap-3">
+        <!-- 'Now' button (to reset time to current time) -->
+        <button
+          id="set-time-to-now-button"
+          class="relative z-10 flex items-center gap-3 rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+        >
+          Now
+        </button>
+
+        <!-- Simulation timestamp / date picker -->
+        <div class="text-left max-sm:hidden">
+          <p class="text-lg">
+            <input type="datetime-local" class="calendar" name="calendar" onkeydown="return false;"/>
+          </p>
+          <p class="text-s italic dark:text-zinc-400">32 days from now</p>
+        </div>
       </div>
     </div>
 
@@ -99,7 +95,12 @@
         class="h-9 w-18 rounded-md outline-1 outline-zinc-900 dark:outline-zinc-500"
       >
         {% for option in sim_state_schema.simulationSpeedUnit.options %}
-          <option value="{{ option.value }}" {{ "selected" if option.value == sim_state.simulationSpeedUnit }}>{{ option.label }}</option>
+          <option
+            value="{{ option.value }}"
+            {{ "selected" if option.value == sim_state.simulationSpeedUnit }}
+          >
+            {{ option.label }}
+          </option>
         {% endfor %}
       </select>
 
