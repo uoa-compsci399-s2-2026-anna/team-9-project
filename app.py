@@ -39,10 +39,7 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
-sim = None
-current_system = None
-objects = []
-
+sims = {}
 
 @app.get("/")
 async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
@@ -112,7 +109,8 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
-    sim.stop()
+    for sim in sims.values():
+        sim.stop()
     os.kill(os.getpid(), signal.SIGINT)
 
 
@@ -121,7 +119,6 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
-    global sim, objects, current_system
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
@@ -131,21 +128,24 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
+    sim, objects = sims.get(system_name, (None, None))
+
     # Hardcode Solar System
-    if system_name == "solar system" and current_system != "solar system":
+    if system_name == "solar system" and sim is None:
         # Init state if empty
         sim, objects = init_solar()
-        current_system = system_name
+        sims[system_name] = (sim, objects)
     # Hardcode Kepler-16
-    elif system_name == "kepler-16" and current_system != "kepler-16":
+    elif system_name == "kepler-16" and sim is None:
         # Init state if empty
         sim, objects = init_kepler_16()
-        current_system = system_name
+        sims[system_name] = (sim, objects)
     # Hardcode TRAPPIST-1
-    elif system_name == "trappist-1" and current_system != "trappist-1":
+    elif system_name == "trappist-1" and sim is None:
         # Init state if empty
         sim, objects = init_trappist_1()
-        current_system = system_name
+        sims[system_name] = (sim, objects)
+
     if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
