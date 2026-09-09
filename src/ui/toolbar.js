@@ -89,9 +89,6 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
 const fullscreenSvgPath = document.querySelector("#fullscreen-svg-path");
 const fullscreenTooltip = document.querySelector("#fullscreen-tooltip");
 
-// Initialise fullscreen icons (TBC; maybe this could be done better rather than using false as a constant?)
-setFullscreenIcons(false);
-
 function setFullscreenIcons(fullscreen) {
     if (fullscreen) {
         fullscreenTooltip.textContent = "Exit fullscreen";
