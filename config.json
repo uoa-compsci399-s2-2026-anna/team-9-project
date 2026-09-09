@@ -149,111 +149,114 @@
             "objects": {
                 "Trappist-1": {
                     "mass": {
-                        "absolute": 0.159128e30,
-                        "uncertainty": 0.0139237e30
+                        "absolute": 1.79e29,
+                        "uncertainty": 4.57e27
                     },
                     "temp": {
-                        "absolute": 2560.0,
-                        "uncertainty": 55.0
+                        "absolute": 2566.0,
+                        "uncertainty": 26.0
                     },
                     "radius": {
-                        "absolute": 8.1432e7,
-                        "uncertainty": 2.784e6
+                        "absolute": 1.60e6,
+                        "uncertainty": 9.05e5
                     }
                 },
                 "Trappist-1b": {
                     "mass": {
-                        "absolute": 0.0528438e27,
-                        "uncertainty": 0.0004118931e27
+                        "absolute": 7.20e6,
+                        "uncertainty": 8.70e4
                     },
                     "temp": {
                         "absolute": 400.1,
                         "uncertainty": 7.7
                     },
-                    "radius": ""
+                    "radius": {
+                        "absoulute": 8.21e24,
+                        "uncertainty": 4.12e23
+                    }
                 },
                 "Trappist-1c": {
                     "mass": {
-                        "absolute": 0.0078107844e27,
-                        "uncertainty": 0.00033407e27
+                        "absolute": 7.00e6,
+                        "uncertainty": 8.60e4
                     },
                     "temp": {
                         "absolute": 341.9,
                         "uncertainty": 6.6
                     },
                     "radius": {
-                        "absolute": 0.684218957e7,
-                        "uncertainty": 0.008738875e7
+                        "absolute": 7.81e24,
+                        "uncertainty": 3.35e23
                     }
                 },
                 "Trappist-1d": {
                     "mass": {
-                        "absolute": 0.0023176106e27,
-                        "uncertainty": 0.0000721288e27
+                        "absolute": 5.03e6,
+                        "uncertainty": 7.10e4
                     },
                     "temp": {
                         "absolute": 288.0,
                         "uncertainty": 5.6
                     },
                     "radius": {
-                        "absolute": 0.49147433e7,
-                        "uncertainty": 0.006851278e7
+                        "absolute": 2.32e24,
+                        "uncertainty": 3.35e23
                     }
                 },
                 "Trappist-1e": {
                     "mass": {
-                        "absolute": 0.1557981e27,
-                        "uncertainty": 0.002201825e27
+                        "absolute": 5.87e6,
+                        "uncertainty": 8.20e4
                     },
                     "temp": {
                         "absolute": 251.3,
                         "uncertainty": 4.9
                     },
                     "radius": {
-                        "absolute": 0.573829488e7,
-                        "uncertainty": 0.008109676e7
+                        "absolute": 4.13e24,
+                        "uncertainty": 1.30e23
                     }
                 },
                 "Trappist-1f": {
                     "mass": {
-                        "absolute": 0.0062049706e27,
-                        "uncertainty": 0.0001860163e27
+                        "absolute": 6.66e6,
+                        "uncertainty": 8.50e4
                     },
                     "temp": {
                         "absolute": 219.0,
                         "uncertainty": 4.2
                     },
                     "radius": {
-                        "absolute": 0.651780253e7,
-                        "uncertainty": 0.0008109676e7
+                        "absolute": 6.21e24,
+                        "uncertainty": 1.84e23
                     }
                 },
                 "Trappist-1g": {
                     "mass": {
-                        "absolute": 0.0078886075e27,
-                        "uncertainty": 0.000227775e27
+                        "absolute": 7.20e6,
+                        "uncertainty": 9.40e4
                     },
                     "temp": {
                         "absolute": 198.6,
                         "uncertainty": 3.8
                     },
                     "radius": {
-                        "absolute": 0.0056695556e7,
-                        "uncertainty": 0.009368074e7
+                        "absolute": 7.89e24,
+                        "uncertainty": 2.26e23
                     }
                 },
                 "Trappist-1h": {
                     "mass": {
-                        "absolute": 0.001947476327,
-                        "uncertainty": 0.0001138875e27
+                        "absolute": 4.82e6,
+                        "uncertainty": 9.10e4
                     },
                     "temp": {
                         "absolute": 168.0,
                         "uncertainty": 28.0
                     },
                     "radius": {
-                        "absolute": 0.06736,
-                        "uncertainty": 0.00125
+                        "absolute": 1.95e24,
+                        "uncertainty": 1.22e23
                     }
                 }
             }
