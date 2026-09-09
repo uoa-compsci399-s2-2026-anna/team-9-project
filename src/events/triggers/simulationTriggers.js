@@ -64,7 +64,9 @@ resetView.addEventListener("click", () => {
 // Triggers for view settings
 const habitableZoneInput = document.getElementById("habitable-zone-input");
 habitableZoneInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, { value: event.target.checked });
+    bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, {
+        value: event.target.checked,
+    });
 });
 
 const orbitsInput = document.getElementById("orbits-input");
@@ -74,7 +76,9 @@ orbitsInput.addEventListener("change", (event) => {
 
 const referenceGridInput = document.getElementById("reference-grid-input");
 referenceGridInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.REFERENCE_GRID_TOGGLE, { value: event.target.checked });
+    bus.publish(EVENTS.SIM.REFERENCE_GRID_TOGGLE, {
+        value: event.target.checked,
+    });
 });
 
 const labelsInput = document.getElementById("labels-input");
@@ -86,14 +90,18 @@ labelsInput.addEventListener("change", (event) => {
 const objectsToggles = document.getElementById("objects-toggles");
 
 objectsToggles.addEventListener("change", (event) => {
-	if (event.target.type !== "checkbox") {
+    if (event.target.type !== "checkbox") {
         return;
     }
 
-	const objectName = event.target.dataset.object;
-	const isEnabled = event.target.checked;
+    const objectName = event.target.dataset.object;
+    const isEnabled = event.target.checked;
 
-    bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { system: currentSystem, name: objectName, value: isEnabled });
+    bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
+        system: currentSystem,
+        name: objectName,
+        value: isEnabled,
+    });
 });
 
 // View settings panel
@@ -108,14 +116,40 @@ const objectsButton = document.getElementById("objects-button");
 
 objectsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.OBJECTS_PANEL_TOGGLE);
-})
+});
 
 // System dropdown (e.g., for changing between Solar System and Kepler-16 on the simulation page)
 const systemButton = document.getElementById("system-information-button");
 const systemDropdown = document.getElementById("system-dropdown");
 
 systemButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, { 
-        showDropdown: systemDropdown.style.display === "none" 
+    bus.publish(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, {
+        showDropdown: systemDropdown.style.display === "none",
     });
+});
+
+// Triggers for the calendar
+
+// There are multiple calendars (the one displayed in the standard view, and the
+// one dispalayed in the narrow-screen view).
+const calendars = document.getElementsByClassName("calendar");
+
+for (const calendar of calendars) {
+    calendar.addEventListener("change", (event) => {
+        const oldValue = event.target.dataset.previousValue;
+
+        bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
+            oldValue: oldValue,
+            value: event.target.value,
+        });
+
+        event.target.dataset.previousValue = calendar.value;
+    });
+}
+
+// 'Now' button
+const setTimeToNowButton = document.getElementById("set-time-to-now-button");
+
+setTimeToNowButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SIM.SET_TIME_TO_NOW);
 });
