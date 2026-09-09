@@ -15,3 +15,11 @@ const darkModeToggleButton = document.getElementById("dark-mode-toggle-button");
 darkModeToggleButton.addEventListener("click", () => {
     bus.publish(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, { enterDarkMode: !settings.darkMode });
 });
+
+// Triggers for home button
+const homeButton = document.getElementById("home-button");
+
+homeButton.addEventListener("click", () => {
+    bus.publish(EVENTS.TOOLBAR.HOME);
+})
+

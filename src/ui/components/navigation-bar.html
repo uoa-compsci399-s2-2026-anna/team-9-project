@@ -62,26 +62,14 @@
   <!-- Controls on RHS -->
   <div class="flex gap-4">
     <!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
-    <div class="group relative z-30 inline-flex">
-      <a
-        href="/"
-        class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-      >
-        <svg class="size-7" viewBox="0 0 24 24">
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19"
-          />
-        </svg>
-      </a>
-
-      <!-- Tooltip -->
-      <div
-        class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-      >
-        Home
-      </div>
-    </div>
+    {{
+      button_with_tooltip(
+        button_id="home-button",
+        tooltip_text="Home",
+        svg_path="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19",
+        tooltip_position="below"
+      )
+    }}
 
     <!-- Switch planetary system button (only shown at max-sm). TODO: functionality not yet implemented -->
     <div class="sm:hidden">
