@@ -241,6 +241,28 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
         }
+    } else {
+        // Remove all solar system objects and orbits from the scene
+        for (const [name, label] of objectLabels) {
+            if (solarSystemGroup.children.includes(label.parent)) {
+                objectLabels.delete(name);
+
+                // Remove label from its mesh.
+                // Otherwise, it is still rendered even when the mesh is removed.
+                label.parent.remove(label);
+            }
+        }
+        for (const [name, mesh] of objectMeshes) {
+            if (solarSystemGroup.children.includes(mesh)) {
+                objectMeshes.delete(name);
+            }
+        }
+        for (const [name, orbit] of orbitalLines) {
+            if (solarSystemGroup.children.includes(orbit)) {
+                orbitalLines.delete(name);
+            }
+        }
+        solarSystemGroup.clear();
     }
 }
 
@@ -402,32 +424,6 @@ export async function compareToSolarSystem() {
 
 export async function hideSolarSystem() {
     objectScale = 1; // Reset object scale to default
-
-    // Remove all solar system objects and orbits from the scene
-
-    for (const [name, label] of objectLabels) {
-        if (solarSystemGroup.children.includes(label.parent)) {
-            objectLabels.delete(name);
-
-            // Remove label from its mesh.
-            // Otherwise, it is still rendered even when the mesh is removed.
-            label.parent.remove(label);
-        }
-    }
-
-    for (const [name, mesh] of objectMeshes) {
-        if (solarSystemGroup.children.includes(mesh)) {
-            objectMeshes.delete(name);
-        }
-    }
-
-    for (const [name, orbit] of orbitalLines) {
-        if (solarSystemGroup.children.includes(orbit)) {
-            orbitalLines.delete(name);
-        }
-    }
-
-    solarSystemGroup.clear();
 
     // Update the camera and controls to fit the current system again
 
