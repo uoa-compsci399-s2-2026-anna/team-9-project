@@ -7,12 +7,12 @@ const playPauseSvgPath = document.getElementById("play-pause-svg-path");
 const playPauseTooltip = document.getElementById("play-pause-tooltip");
 
 // TODO: rewrite to not use a boolean constant? 
-updatePlayPauseButtonTooltipsAndIcons(false);
+updatePlayPauseButtonAppearance(false);
 
 bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
     const { startSimulation } = event.detail;
 
-    updatePlayPauseButtonTooltipsAndIcons(startSimulation);
+    updatePlayPauseButtonAppearance(startSimulation);
 });
 
 /**
@@ -20,7 +20,7 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
  * simulation playback state.
  * @param {boolean} isPlaying Whether the simulation is playing.
  */
-function updatePlayPauseButtonTooltipsAndIcons(isPlaying) {
+function updatePlayPauseButtonAppearance(isPlaying) {
     if (isPlaying) {
         playPauseTooltip.textContent = "Pause";
         playPauseSvgPath.setAttribute(
