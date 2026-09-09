@@ -13,8 +13,6 @@ document.querySelectorAll("a").forEach((a) => {
 const themeTooltip = document.querySelector("#theme-tooltip");
 const themeSvgPath = document.querySelector("#theme-svg-path");
 
-toggleDarkMode(settings.darkMode);
-
 function toggleDarkMode(isDarkMode) {
     if (isDarkMode) {
         html.setAttribute("data-theme", "dark");
