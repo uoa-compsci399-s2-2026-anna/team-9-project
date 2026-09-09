@@ -88,6 +88,8 @@ export function calculateUpVector(orbitalDataValues) {
 
         // Use the first normal vector as a reference.
         // Subsequent normal vectors are negated if they point opposite to it.
+        // Note: This has undesirable effects if the first orbital plane differs significantly from the others
+        // TODO: Consider a more robust approach
         if (reference && normal.dot(reference) < 0) {
             normal.negate();
         } else if (!reference) {
