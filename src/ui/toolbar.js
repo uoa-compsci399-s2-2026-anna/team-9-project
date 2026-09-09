@@ -1,5 +1,6 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { settings } from "../shared/settingsState.js";
 
 const html = document.documentElement;
 
@@ -12,9 +13,7 @@ document.querySelectorAll("a").forEach((a) => {
 const themeTooltip = document.querySelector("#theme-tooltip");
 const themeSvgPath = document.querySelector("#theme-svg-path");
 
-// TODO: maybe this could be re-written to be better
-const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-toggleDarkMode(isDarkMode);
+toggleDarkMode(settings.darkMode);
 
 function toggleDarkMode(isDarkMode) {
     if (isDarkMode) {
@@ -56,13 +55,18 @@ bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
 
 // Confirm reset settings overlay
 
-const confirmResetOverlay = document.querySelector("#confirm-reset-settings-overlay");
+const confirmResetOverlay = document.querySelector(
+    "#confirm-reset-settings-overlay",
+);
 
 bus.subscribe(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, (event) => {
     const { openMenu } = event.detail;
 
     confirmResetOverlay.classList.toggle("opacity-100", openMenu);
-    document.body.classList.toggle(`confirm-reset-settings-overlay-open`, openMenu);
+    document.body.classList.toggle(
+        `confirm-reset-settings-overlay-open`,
+        openMenu,
+    );
 
     confirmResetOverlay.classList.toggle("opacity-0", !openMenu);
     confirmResetOverlay.classList.toggle("pointer-events-none", !openMenu);
