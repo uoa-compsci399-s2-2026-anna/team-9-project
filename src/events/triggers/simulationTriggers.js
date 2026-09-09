@@ -122,9 +122,12 @@ objectsButton.addEventListener("click", () => {
 const systemButton = document.getElementById("system-information-button");
 const systemDropdown = document.getElementById("system-dropdown");
 
+let systemDropdownOpen = false;
+
 systemButton.addEventListener("click", () => {
+    systemDropdownOpen = !systemDropdownOpen;
     bus.publish(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, {
-        showDropdown: systemDropdown.style.display === "none",
+        showDropdown: systemDropdownOpen,
     });
 });
 
