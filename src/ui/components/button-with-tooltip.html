@@ -1,10 +1,10 @@
-{% macro button_with_tooltip(button_id, tooltip_text, svg_path, tooltip_id=None, svg_path_id=None, tooltip_position="below", tooltip_align="center") %}
+{% macro button_with_tooltip(button_id, tooltip_text, svg_path, tooltip_id=None, svg_path_id=None, tooltip_position="below", tooltip_align="center", svg_size=7) %}
   <div class="group relative z-30 inline-flex">
     <button
       id="{{ button_id }}"
       class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
     >
-      <svg class="size-7" viewBox="0 0 24 24">
+      <svg class="size-{{ svg_size }}" viewBox="0 0 24 24">
         <path id="{{ svg_path_id }}" d="{{ svg_path }}" />
       </svg>
     </button>
