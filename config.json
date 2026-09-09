@@ -108,38 +108,38 @@
             "objects": {
                 "Kepler-16A": {
                     "mass": {
-                        "absolute": 1.37188227e30,
-                        "uncertainty": 6.96185e27
+                        "absolute": 1.37e30,
+                        "uncertainty": 6.96e27
                     },
                     "temp": {
                         "absolute": 4450,
                         "uncertainty": 150
                     },
                     "radius": {
-                        "absolute": 4.516344e8,
-                        "uncertainty": 9.048e5
+                        "absolute": 4.52e8,
+                        "uncertainty": 9.05e5
                     }
                 },
                 "Kepler-16B": {
                     "mass": {
-                        "absolute": 4.02892205e29,
-                        "uncertainty": 1.292915e27
+                        "absolute": 4.09e29,
+                        "uncertainty": 1.29e27
                     },
                     "temp": "",
                     "radius": {
-                        "absolute": 1.5745608e8,
-                        "uncertainty": 4.1064e5
+                        "absolute": 1.57e8,
+                        "uncertainty": 4.11e5
                     }
                 },
                 "Kepler-16b": {
                     "mass": {
-                        "absolute": 6.32075625e26,
-                        "uncertainty": 3.037e25
+                        "absolute": 6.32e26,
+                        "uncertainty": 3.04e25
                     },
                     "temp": "",
                     "radius": {
-                        "absolute": 5.26989118e7,
-                        "uncertainty": 1.607953e5
+                        "absolute": 5.27e7,
+                        "uncertainty": 1.75e5
                     }
                 }
             }
