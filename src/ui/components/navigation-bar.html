@@ -83,25 +83,16 @@
       </div>
     </div>
 
-    <!-- Switch planetary system button (only shown at max-sm) -->
-    <div class="group relative z-30 inline-flex sm:hidden">
-      <button
-        class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-      >
-        <svg class="size-7 sm:hidden" viewBox="0 0 24 24">
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M5.825 16L7.7 17.875q.275.275.275.688t-.275.712q-.3.3-.712.3t-.713-.3L2.7 15.7q-.15-.15-.213-.325T2.426 15t.063-.375t.212-.325l3.6-3.6q.3-.3.7-.287t.7.312q.275.3.288.7t-.288.7L5.825 14H12q.425 0 .713.288T13 15t-.288.713T12 16zm12.35-6H12q-.425 0-.712-.288T11 9t.288-.712T12 8h6.175L16.3 6.125q-.275-.275-.275-.687t.275-.713q.3-.3.713-.3t.712.3L21.3 8.3q.15.15.212.325t.063.375t-.063.375t-.212.325l-3.6 3.6q-.3.3-.7.288t-.7-.313q-.275-.3-.288-.7t.288-.7z"
-          />
-        </svg>
-      </button>
-
-      <!-- Tooltip -->
-      <div
-        class="pointer-events-none absolute top-full left-1/2 block -translate-x-1/2 translate-y-1/4 rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
-      >
-        Change planetary system
-      </div>
+    <!-- Switch planetary system button (only shown at max-sm). TODO: functionality not yet implemented -->
+    <div class="sm:hidden">
+      {{
+        button_with_tooltip(
+          button_id="system-information-button",
+          tooltip_text="Switch planetary system",
+          svg_path="M5.825 16L7.7 17.875q.275.275.275.688t-.275.712q-.3.3-.712.3t-.713-.3L2.7 15.7q-.15-.15-.213-.325T2.426 15t.063-.375t.212-.325l3.6-3.6q.3-.3.7-.287t.7.312q.275.3.288.7t-.288.7L5.825 14H12q.425 0 .713.288T13 15t-.288.713T12 16zm12.35-6H12q-.425 0-.712-.288T11 9t.288-.712T12 8h6.175L16.3 6.125q-.275-.275-.275-.687t.275-.713q.3-.3.713-.3t.712.3L21.3 8.3q.15.15.212.325t.063.375t-.063.375t-.212.325l-3.6 3.6q-.3.3-.7.288t-.7-.313q-.275-.3-.288-.7t.288-.7z",
+          tooltip_position="below"
+        )
+      }}
     </div>
 
     <!-- Help button -->
