@@ -443,7 +443,11 @@ export function setLabelsVisibility(value) {
 
 export function setOrbitsVisibility(value) {
     for (const [name, orbit] of orbitalLines) {
-        orbit.visible = shouldShowOrbit(name, { orbitsVisible: value });
+        orbit.visible = shouldShowOrbit(
+            name,
+            currentSystem,
+            { orbitsVisible: value }
+        );
     }
 }
 
@@ -455,7 +459,11 @@ export function setObjectVisibility(name, value) {
 
     const orbit = orbitalLines.get(name);
     if (orbit) {
-        orbit.visible = shouldShowOrbit(name, { objectVisible: value });
+        orbit.visible = shouldShowOrbit(
+            name,
+            currentSystem,
+            { objectVisible: value }
+        );
     }
 }
 
