@@ -87,7 +87,12 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
 const fullscreenSvgPath = document.querySelector("#fullscreen-svg-path");
 const fullscreenTooltip = document.querySelector("#fullscreen-tooltip");
 
-function setFullscreenIcons(fullscreen) {
+/**
+ * Updates the tooltip and icon of the Fullscreen button to reflect the new
+ * fullscreen state.
+ * @param {boolean} fullscreen Whether the app will be in fullscreen
+ */
+function updateFullscreenButtonAppearance(fullscreen) {
     if (fullscreen) {
         fullscreenTooltip.textContent = "Exit fullscreen";
 
@@ -109,7 +114,7 @@ function setFullscreenIcons(fullscreen) {
 
 // Update the fullscreen icons when the application enters/exits fullscreen
 if (window.fullscreenAPI) {
-    window.fullscreenAPI.onChange(setFullscreenIcons);
+    window.fullscreenAPI.onChange(updateFullscreenButtonAppearance);
 }
 
 bus.subscribe(EVENTS.TOOLBAR.FULLSCREEN_BUTTON_TOGGLE, () => {
