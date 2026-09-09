@@ -51,6 +51,7 @@ const cameraDefaults = {
 
 const currentSystemGroup = new THREE.Group();
 const solarSystemGroup = new THREE.Group();
+solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
