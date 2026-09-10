@@ -138,7 +138,11 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
     }
 
     button.addEventListener("click", () => {
-        bus.publish(event);
+        bus.publish(event, {
+            content: panel.querySelector("[data-panel-content]"),
+            showIcon: panel.querySelector("[data-panel-show-icon]"),
+            hideIcon: panel.querySelector("[data-panel-hide-icon]"),
+        });
     });
 });
 
