@@ -36,7 +36,6 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-
 // Triggers for view settings
 const habitableZoneInput = document.getElementById("habitable-zone-input");
 habitableZoneInput.addEventListener("change", (event) => {
