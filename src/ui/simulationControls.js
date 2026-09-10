@@ -6,9 +6,6 @@ import { EVENTS } from "../events/events.js";
 const playPauseSvgPath = document.getElementById("play-pause-svg-path");
 const playPauseTooltip = document.getElementById("play-pause-tooltip");
 
-// TODO: rewrite to not use a boolean constant? 
-updatePlayPauseButtonAppearance(false);
-
 bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
     const { startSimulation } = event.detail;
 
