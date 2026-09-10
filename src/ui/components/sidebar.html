@@ -1,5 +1,6 @@
 {% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
 {% from "components/side-panel.html" import side_panel %}
+{% from "components/text-button.html" import text_button %}
 
 <div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
   <!-- Left sidebar -->
@@ -80,12 +81,7 @@
   <div class="flex-1"></div>
 
   <!-- Reset view button -->
-  <button
-    id="reset-view-button"
-    class="relative z-10 flex items-center gap-3 rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-  >
-    Reset view
-  </button>
+  {{ text_button("reset-view-button", "Reset view") }}
 
   <!-- Compare to solar system button -->
   {% if current_system.name != "Solar System" %}
