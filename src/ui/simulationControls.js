@@ -36,14 +36,45 @@ function updatePlayPauseButtonAppearance(isPlaying) {
 // SYSTEMS DROPDOWN
 
 const systemDropdown = document.getElementById("system-dropdown");
+const systemDropdownWrapper = document.getElementById(
+    "system-dropdown-wrapper",
+);
 
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
 
     if (showDropdown) {
-        systemDropdown.style.display = "block";
+        systemDropdown.classList.remove("grid-rows-[0fr]");
+        systemDropdown.classList.add("grid-rows-[1fr]");
+
+        systemDropdownWrapper.classList.add(
+            "bg-white",
+            "outline-1",
+            "outline-zinc-900",
+            "dark:bg-black",
+            "dark:outline-zinc-500",
+        );
+
+        systemDropdownWrapper.classList.remove(
+            "hover:bg-zinc-100",
+            "dark:hover:bg-zinc-900",
+        );
     } else {
-        systemDropdown.style.display = "none";
+        systemDropdown.classList.remove("grid-rows-[1fr]");
+        systemDropdown.classList.add("grid-rows-[0fr]");
+
+        systemDropdownWrapper.classList.remove(
+            "bg-white",
+            "outline-1",
+            "outline-zinc-900",
+            "dark:bg-black",
+            "dark:outline-zinc-500",
+        );
+
+        systemDropdownWrapper.classList.add(
+            "hover:bg-zinc-100",
+            "dark:hover:bg-zinc-900",
+        );
     }
 });
 
