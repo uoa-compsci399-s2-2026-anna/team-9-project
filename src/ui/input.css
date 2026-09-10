@@ -54,6 +54,6 @@
 
 @layer components {
   .control {
-    @apply z-10 h-9 rounded-md border border-black/50 bg-white p-1 dark:border-white/10 dark:bg-zinc-950;
+    @apply text-secondary z-10 h-9 rounded-md border border-black/50 bg-white px-2 py-1 dark:border-white/10 dark:bg-zinc-950;
   }
 }
