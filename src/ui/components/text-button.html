@@ -1,0 +1,8 @@
+{% macro text_button(button_id, button_text) %}
+  <button
+    id="{{ button_id }}"
+    class="control z-10 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+  >
+    {{ button_text }}
+  </button>
+{% endmacro %}
