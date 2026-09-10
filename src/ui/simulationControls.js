@@ -100,6 +100,9 @@ const objectsHideIcon = document.querySelector("#objects-hide-icon");
 const objectsScrollContainer = document.querySelector("#objects-scroll-container");
 
 bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
+    objectsScrollContainer.classList.add("overflow-hidden");
+    objectsScrollContainer.classList.remove("overflow-y-auto");
+
     objects.classList.toggle("grid-rows-[0fr]");
     objects.classList.toggle("grid-rows-[1fr]");
 
@@ -112,10 +115,7 @@ objects.addEventListener("transitionend", () => {
     const isOpen = objects.classList.contains("grid-rows-[1fr]");
     if (isOpen) {
         objectsScrollContainer.classList.add("overflow-y-auto");
-        objectsScrollContainer.classList.remove("overflow-hidden");
-    } else {
-        objectsScrollContainer.classList.add("overflow-hidden");
-        objectsScrollContainer.classList.remove("overflow-y-auto");
+        objectsScrollContainer.classList.remove("overflow-hidden"); 
     }
 });
 
