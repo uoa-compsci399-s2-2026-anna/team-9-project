@@ -29,6 +29,9 @@ export const EVENTS = {
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
         DARK_MODE_TOGGLE: "toolbar:dark_mode_toggle",
+
+        /** When the home button is clicked. */
+        HOME: "toolbar:home",
     },
     SETTINGS: {
         MENU_TOGGLE: "settings:menu_toggle",
