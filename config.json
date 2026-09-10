@@ -4,9 +4,18 @@
             "name": "Solar System",
             "objects": {
                 "Sun": {
-                    "mass": "",
-                    "temp": "",
-                    "radius": ""
+                    "mass": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    }
                 },
                 "Mercury": {
                     "mass": {
