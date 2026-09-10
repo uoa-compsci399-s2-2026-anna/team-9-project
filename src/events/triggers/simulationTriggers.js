@@ -96,7 +96,7 @@ labelsInput.addEventListener("change", (event) => {
 });
 
 // Triggers for hiding/showing objects
-const objectsToggles = document.getElementById("objects-toggles");
+const objectsToggles = document.getElementById("objects-scroll-container");
 
 objectsToggles.addEventListener("change", (event) => {
     if (event.target.type !== "checkbox") {
