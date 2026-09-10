@@ -1,16 +1,18 @@
 {%
   macro side_panel_checkbox(
     input_id,
-    input_data_setting,
     is_checked_initially,
-    label_text
+    label_text,
+    data_attributes={}
   )
 %}
   <label class="flex items-center gap-2">
     <input
       type="checkbox"
       id="input_id"
-      data-setting="input_data_setting"
+      {% for name, value in data_attributes.values() %}
+        data-{{ name }}="{{ value }}"
+      {% endfor %}
       {{ "checked" if is_checked_initially }}
     />
     <span>{{ label_text }}</span>
