@@ -40,15 +40,11 @@ app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="s
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 # Each init_*() returns (sim, objects); take only the list of string objects
-system_objects = {
-    "Solar System": init_solar()[1],
-    "Kepler-16": init_kepler_16()[1],
-    "TRAPPIST-1": init_trappist_1()[1],
+sims = {
+    "Solar System": init_solar(),
+    "Kepler-16": init_kepler_16(),
+    "TRAPPIST-1": init_trappist_1(),
 }
-
-sim = None
-current_system = None
-objects = []
 
 
 @app.get("/")
@@ -93,7 +89,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     ]
 
     # Get the current system's string object list by lookup
-    objects = system_objects[current_system["name"]]
+    objects = sims[current_system["name"]][1]
 
     return templates.TemplateResponse(
         request=request,
@@ -122,7 +118,8 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
-    sim.stop()
+    for sim in sims.values():
+        sim.stop()
     os.kill(os.getpid(), signal.SIGINT)
 
 
@@ -131,7 +128,6 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
-    global sim, objects, current_system
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
@@ -141,23 +137,25 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
+    sim, objects = sims.get(system_name, (None, None))
+
     # Hardcode Solar System
-    if system_name == "solar system" and current_system != "solar system":
+    if system_name == "solar system" and sim is None:
         # Init state if empty
         sim, objects = init_solar()
-        current_system = system_name
     # Hardcode Kepler-16
-    elif system_name == "kepler-16" and current_system != "kepler-16":
+    elif system_name == "kepler-16" and sim is None:
         # Init state if empty
         sim, objects = init_kepler_16()
-        current_system = system_name
     # Hardcode TRAPPIST-1
-    elif system_name == "trappist-1" and current_system != "trappist-1":
+    elif system_name == "trappist-1" and sim is None:
         # Init state if empty
         sim, objects = init_trappist_1()
-        current_system = system_name
+
     if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    sims[system_name] = (sim, objects)
 
     # Set time
     sim.integrate(t)

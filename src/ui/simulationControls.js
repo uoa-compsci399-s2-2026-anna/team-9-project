@@ -74,3 +74,17 @@ bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
     objectsShowIcon.classList.toggle("hidden");
     objectsHideIcon.classList.toggle("hidden");
 });
+
+// COMPARE TO SOLAR SYSTEM BUTTON
+
+const compareToSolarSystemButton = document.querySelector("#compare-to-solar-system-button");
+
+bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
+    if (compareToSolarSystemButton) {
+        if (event.detail.compare) {
+            compareToSolarSystemButton.textContent = "Hide Solar System";
+        } else {
+            compareToSolarSystemButton.textContent = "Compare to Solar System";
+        }
+    }
+});

@@ -1,6 +1,6 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import { running } from "../../shared/simulationState.js";
+import { running, comparingToSolarSystem } from "../../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -60,6 +60,15 @@ const resetView = document.getElementById("reset-view-button");
 resetView.addEventListener("click", () => {
     bus.publish(EVENTS.SIM.RESET_VIEW);
 });
+
+// Trigger for comparing to the solar system
+const compareToSolarSystemButton = document.getElementById("compare-to-solar-system-button");
+
+if (compareToSolarSystemButton) { // Button does not exist for the solar system itself
+    compareToSolarSystemButton.addEventListener("click", () => {
+        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, { compare: !comparingToSolarSystem });
+    });
+}
 
 // Triggers for view settings
 const habitableZoneInput = document.getElementById("habitable-zone-input");
