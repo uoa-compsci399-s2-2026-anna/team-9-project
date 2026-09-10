@@ -97,6 +97,7 @@ bus.subscribe(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE, () => {
 const objects = document.querySelector("#objects");
 const objectsShowIcon = document.querySelector("#objects-show-icon");
 const objectsHideIcon = document.querySelector("#objects-hide-icon");
+const objectsScrollContainer = document.querySelector("objects-scroll-container");
 
 bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
     objects.classList.toggle("grid-rows-[0fr]");
@@ -104,6 +105,18 @@ bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
 
     objectsShowIcon.classList.toggle("hidden");
     objectsHideIcon.classList.toggle("hidden");
+});
+
+// Only allow scrolling after the open transition has finished
+objects.addEventListener("transitionend", () => {
+    const isOpen = objects.classList.contains("grid-rows-[1fr]");
+    if (isOpen) {
+        objectsScrollContainer.classList.add("overflow-y-auto");
+        objectsScrollContainer.classList.remove("overflow-hidden");
+    } else {
+        objectsScrollContainer.classList.add("overflow-hidden");
+        objectsScrollContainer.classList.remove("overflow-y-auto");
+    }
 });
 
 // COMPARE TO SOLAR SYSTEM BUTTON
