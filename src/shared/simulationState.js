@@ -101,7 +101,7 @@ export function isObjectHidden(system, object) {
 }
 
 /**
- * The running and frozen states only exist for the current simulation session, and are reset when the
+ * The running, frozen, and comparingToSolarSystem states only exist for the current simulation session, and are reset when the
  * simulation is loaded again.
  */
 
@@ -113,4 +113,9 @@ export function setRunning(value) {
 export let frozen = false;
 export function setFrozen(value) {
     frozen = value;
+}
+
+export let comparingToSolarSystem = false;
+export function setComparingToSolarSystem(value) {
+    comparingToSolarSystem = value;
 }

@@ -14,6 +14,7 @@ export const EVENTS = {
         VIEW_SETTINGS_PANEL_TOGGLE: "sim:view_settings_panel_toggle",
         OBJECTS_PANEL_TOGGLE: "sim:objects_panel_toggle",
         SYSTEM_DROPDOWN_TOGGLE: "sim:system_dropdown_toggle",
+        COMPARE_TO_SOLAR_SYSTEM: "sim:compare_to_solar_system",
 
         /**
          * When the calendar is changed (i.e. when the user selects a new
@@ -29,6 +30,9 @@ export const EVENTS = {
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
         DARK_MODE_TOGGLE: "toolbar:dark_mode_toggle",
+
+        /** When the home button is clicked. */
+        HOME: "toolbar:home",
     },
     SETTINGS: {
         MENU_TOGGLE: "settings:menu_toggle",

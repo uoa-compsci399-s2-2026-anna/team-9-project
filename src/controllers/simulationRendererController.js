@@ -1,10 +1,12 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { 
-    init, 
-    stepForward, 
+import {
+    init,
+    stepForward,
     stepBack,
-    resetView, 
+    resetView,
+    compareToSolarSystem,
+    hideSolarSystem,
     setLabelsVisibility,
     setOrbitsVisibility,
     setObjectVisibility,
@@ -33,6 +35,16 @@ bus.subscribe(EVENTS.SIM.RESET_VIEW, () => {
     resetView();
 });
 
+// Compare to solar system
+
+bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
+    if (event.detail.compare) {
+        compareToSolarSystem();
+    } else {
+        hideSolarSystem();
+    }
+});
+
 // View settings
 
 bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
@@ -41,7 +53,7 @@ bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
 
 bus.subscribe(EVENTS.SIM.ORBITS_TOGGLE, (event) => {
     setOrbitsVisibility(event.detail.value);
-})
+});
 
 // Objects
 

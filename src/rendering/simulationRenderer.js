@@ -5,11 +5,19 @@ import {
     simulationState,
     running,
     frozen,
+    comparingToSolarSystem,
     isObjectHidden,
     getSimulationSpeedSeconds,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
+import {
+    calculateOrbitalPosition,
+    calculateRotationMatrix,
+    calculateMaxApoapsis,
+    calculateCameraDistance,
+    calculateUpVector,
+} from "./simulationCalculations.js";
 
 let timer;
 
@@ -25,15 +33,15 @@ let renderer;
 let labelRenderer;
 
 // Constants for camera and controls
-const viewRadiusMultiplier = 1.5;
-const objectSizeMultiplier = 0.003;
+const viewRadiusMultiplier = 1.2;
+const objectSizeMultiplier = 0.002;
 
 const fov = 45; // Field of view in degrees
-const cameraNearMultiplier = 10;
+const cameraNearMultiplier = 1;
 const cameraFarMultiplier = 3;
 
-const controlsMinMultiplier = 2;
-const controlsMaxMultiplier = 0.5;
+const controlsMinMultiplier = 10;
+const controlsMaxMultiplier = 1.5;
 const controlsZoomSpeed = 2.5;
 
 const cameraDefaults = {
@@ -41,12 +49,17 @@ const cameraDefaults = {
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
 };
 
+const currentSystemGroup = new THREE.Group();
+const solarSystemGroup = new THREE.Group();
+solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
+
 const objectMeshes = new Map();
 const orbitalLines = new Map();
 const objectLabels = new Map();
 
 // Default size and colour of all the objects
 let objectSize;
+let objectScale = 1;
 const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -94,8 +107,9 @@ function getFontFamily(chosenFont) {
  * 
  * @param {string} name Name of the object
  * @param {Object} position Position of the object
+ * @param {THREE.Group} group The group to add the object to
  */
-function createOrUpdateObjectMesh(name, position) {
+function createOrUpdateObjectMesh(name, position, group) {
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -103,8 +117,14 @@ function createOrUpdateObjectMesh(name, position) {
         const material = new THREE.MeshStandardMaterial({ color: objectColour });
 
         mesh = new THREE.Mesh(geometry, material);
-        mesh.visible = !isObjectHidden(currentSystem, name);
-        scene.add(mesh);
+
+        if (group === solarSystemGroup) {
+            mesh.visible = !isObjectHidden("Solar System", name);
+        } else {
+            mesh.visible = !isObjectHidden(currentSystem, name);
+        }
+
+        group.add(mesh);
         objectMeshes.set(name, mesh);
 
         const labelDiv = document.createElement("div");
@@ -122,6 +142,7 @@ function createOrUpdateObjectMesh(name, position) {
         objectLabels.set(name, label);
     }
 
+    mesh.scale.set(objectScale, objectScale, objectScale);
     mesh.position.set(position.x, position.y, position.z);
 }
 
@@ -133,14 +154,15 @@ function createOrUpdateObjectMesh(name, position) {
  * may not have been synced yet).
  * 
  * @param {string} objectName Name of the object associated with the orbit
+ * @param {string} [system=currentSystem] The system associated with the object
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object should be visible
  * @returns {boolean} Whether the orbit should be visible
  */
-function shouldShowOrbit(objectName, { orbitsVisible, objectVisible } = {}) {
+function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, objectVisible } = {}) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown = objectVisible ?? !isObjectHidden(currentSystem, objectName);
+    const isObjectShown = objectVisible ?? !isObjectHidden(system, objectName);
 
     return areOrbitsShown && isObjectShown;
 }
@@ -151,8 +173,9 @@ function shouldShowOrbit(objectName, { orbitsVisible, objectVisible } = {}) {
  * 
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
+ * @param {THREE.Group} group The group to add the orbital line to
  */
-function createOrUpdateOrbitalLine(name, orbitalData) {
+function createOrUpdateOrbitalLine(name, orbitalData, group) {
     let line = orbitalLines.get(name);
 
     const { a, e, inc, Omega, omega } = orbitalData;
@@ -161,9 +184,14 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
         const geometry = new THREE.BufferGeometry();
         const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
         line = new THREE.LineLoop(geometry, material);
-        line.visible = shouldShowOrbit(name);
 
-        scene.add(line);
+        if (group === solarSystemGroup) {
+            line.visible = shouldShowOrbit(name, "Solar System");
+        } else {
+            line.visible = shouldShowOrbit(name, currentSystem);
+        }
+
+        group.add(line);
         orbitalLines.set(name, line);
     }
 
@@ -171,11 +199,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
     const points = [];
     for (let i = 0; i < orbitPoints; i++) {
         const theta = (i / orbitPoints) * 2 * Math.PI;
-
-        // Calculate the Cartesian position of the point on the ellipse using the polar equation
-        const r = (a * (1 - e**2)) / (1 + e*Math.cos(theta));
-        const x = r * Math.cos(theta);
-        const y = r * Math.sin(theta);
+        const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
     }
 
@@ -193,16 +217,7 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
     }
 
     // Rotate the line to match the orbital parameters
-    // R = Rz(Omega) * Rx(inc) * Rz(omega)
-
-    const rotateAscendingNode = new THREE.Matrix4().makeRotationZ(Omega);
-    const rotateInclination = new THREE.Matrix4().makeRotationX(inc);
-    const rotatePeriapsis = new THREE.Matrix4().makeRotationZ(omega);
-
-    const rotationMatrix = new THREE.Matrix4()
-        .multiplyMatrices(rotateAscendingNode, rotateInclination)
-        .multiply(rotatePeriapsis);
-
+    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
@@ -210,104 +225,113 @@ function createOrUpdateOrbitalLine(name, orbitalData) {
  * Update the positions of all objects in the current system.
  * If the system data is not provided, it will be fetched from the backend.
  * 
- * @param {Object} [systemData] Optional system data to use for the update
+ * @param {Object} [currentSystemData] Optional current system data to use for the update
+ * @param {Object} [solarSystemData] Optional solar system data to use for the update
  */
-async function updateSimulation(systemData = null) {
+async function updateSimulation(currentSystemData = null, solarSystemData = null) {
     // Fetch data for the current system and current simulation time if not provided
-    if (!systemData) {
-        systemData = await getSystemData(currentSystem, currentSimulationTime);
+    if (!currentSystemData) {
+        currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
     }
 
-    for (const [name, position] of Object.entries(systemData.positions)) {
-        createOrUpdateObjectMesh(name, position);
+    for (const [name, position] of Object.entries(currentSystemData.positions)) {
+        createOrUpdateObjectMesh(name, position, currentSystemGroup);
     }
-    for (const [name, orbitalData] of Object.entries(systemData.orbital_data)) {
-        createOrUpdateOrbitalLine(name, orbitalData);
+    for (const [name, orbitalData] of Object.entries(currentSystemData.orbital_data)) {
+        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
     }
-}
 
-/**
- * Calculate the apoapsis (farthest point in orbit) for an object given its semi-major axis and eccentricity.
- * @param {number} a Semi-major axis of the orbit
- * @param {number} e Eccentricity of the orbit
- * @returns {number} The apoapsis distance
- */
-function calculateApoapsis(a, e) {
-    return a * (1 + e);
-}
-
-/**
- * Calculate the maximum apoapsis distance among all objects in the system.
- * @param {Array} orbitalDataValues Array of orbital data values for all objects
- * @returns {number} The maximum apoapsis distance
- */
-function calculateMaxApoapsis(orbitalDataValues) {
-    return Math.max(
-        ...orbitalDataValues.map(
-            ({ a, e }) => calculateApoapsis(a, e)
-        )
-    );
-}
-
-/**
- * Calculate the distance of the camera from the target based on the view radius.
- * The camera distance is calculated to ensure that the entire view radius fits within the camera's field of view.
- * 
- * @param {number} viewRadius The radius of the view to fit within the camera's field of view
- * @returns {number} The calculated camera distance
- */
-function calculateCameraDistance(viewRadius) {
-    const fovRad = fov * (Math.PI / 180);
-    return viewRadius / Math.tan(fovRad / 2); // Calculate the distance to fit the view radius
-}
-
-/**
- * Calculate the average up vector for the camera based on the orbital planes of all objects.
- * The up vector is calculated as the average of the normal vectors of all orbital planes.
- * 
- * @param {Array} orbitalDataValues Array of orbital data values for all objects
- * @returns {THREE.Vector3} The calculated up vector
- */
-function calculateUpVector(orbitalDataValues) {
-    const averageNormal = new THREE.Vector3();
-
-    for (const { inc, Omega } of orbitalDataValues) {
-        const normal = new THREE.Vector3( // Normal vector of the orbital plane
-            Math.sin(inc) * Math.sin(Omega),
-            -Math.sin(inc) * Math.cos(Omega),
-            Math.cos(inc)
-        );
-
-        if (normal.z < 0) { // Ensure the normal vector points upwards
-            normal.negate();
+    if (comparingToSolarSystem) {
+        if (!solarSystemData) {
+            solarSystemData = await getSystemData("solar system", currentSimulationTime);
         }
 
-        averageNormal.add(normal);
+        for (const [name, position] of Object.entries(solarSystemData.positions)) {
+            if (name === "Sun") continue; // Skip the Sun for the comparison
+            createOrUpdateObjectMesh(name, position, solarSystemGroup);
+        }
+        for (const [name, orbitalData] of Object.entries(solarSystemData.orbital_data)) {
+            if (name === "Sun") continue; // Skip the Sun for the comparison
+            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
+        }
     }
-
-    return averageNormal.normalize();
 }
 
 /**
- * Initialise the camera and controls for the simulation renderer.
+ * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} cameraDistance The distance of the camera from the target
+ * @param {number} viewRadius The radius of view to fit within the camera
  * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initCameraAndControls(canvas, cameraDistance, upVector) {
-    const aspect = canvas.clientWidth / canvas.clientHeight;
+function initOrUpdateCamera(canvas, viewRadius, upVector) {
+    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
+
     const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;
-    camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-    camera.up.copy(upVector);
-    camera.position.copy(cameraDefaults.position);
 
-    controls = new OrbitControls(camera, canvas);
+    if (!camera) {
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
+        camera.up.copy(upVector); // Stays fixed for the current system
+        camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
+
+    } else {
+        camera.near = cameraNear;
+        camera.far = cameraFar;
+        camera.updateProjectionMatrix(); // Must update after changing camera parameters
+    }
+}
+
+/**
+ * Initialise the controls for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ * @param {number} viewRadius The radius of view to fit within the camera
+ */
+function initOrUpdateControls(canvas, viewRadius) {
+    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+
+    if (!controls) {
+        controls = new OrbitControls(camera, canvas);
+    }
     controls.target.copy(cameraDefaults.target);
-    controls.minDistance = cameraNear * controlsMinMultiplier; // Limit to avoid clipping the near plane
-    controls.maxDistance = cameraFar * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
+    controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
+}
+
+/**
+ * Initialise the scene for the simulation renderer.
+ */
+function initScene() {
+    scene = new THREE.Scene();
+    scene.background = getTheme().background;
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+    scene.add(currentSystemGroup);
+    scene.add(solarSystemGroup);
+}
+
+/**
+ * Initialise the label renderer for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ */
+function initLabelRenderer(canvas) {
+    labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.top = "0px";
+    labelRenderer.domElement.style.left = "0px";
+    labelRenderer.domElement.style.pointerEvents = "none";
+    canvas.parentElement.appendChild(labelRenderer.domElement);
+}
+
+/**
+ * Initialise the timer for the simulation renderer.
+ */
+function initTimer() {
+    timer = new THREE.Timer();
+    timer.connect(document); // Use Page Visibility API
 }
 
 /**
@@ -322,37 +346,22 @@ export async function init(name) {
     currentSimulationTime = 0;
     currentSystem = name;
 
-    const systemData = await getSystemData(currentSystem, currentSimulationTime);
-    const orbitalDataValues = Object.values(systemData.orbital_data);
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    objectSize = maxApoapsis * objectSizeMultiplier;
-
-    const cameraDistance = calculateCameraDistance(viewRadius);
     const upVector = calculateUpVector(orbitalDataValues);
-    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
-    initCameraAndControls(canvas, cameraDistance, upVector);
 
-    scene = new THREE.Scene();
-    scene.background = getTheme().background;
-    scene.add(new THREE.AmbientLight(0xffffff, 1));
-
-    labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    labelRenderer.domElement.style.position = "absolute";
-    labelRenderer.domElement.style.top = "0px";
-    labelRenderer.domElement.style.left = "0px";
-    labelRenderer.domElement.style.pointerEvents = "none";
-    canvas.parentElement.appendChild(labelRenderer.domElement);
-
-    // TODO: There is currently a massive delay on the first load. This will be addresed by the backend.
-    // Render the system at t=0 (fetch the system data from the backend and display initial positions)
-    updateSimulation(systemData);
-    timer = new THREE.Timer();
-    timer.connect(document); // Use Page Visibility API
+    objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+    initOrUpdateCamera(canvas, viewRadius, upVector);
+    initOrUpdateControls(canvas, viewRadius);
+    initScene();
+    initLabelRenderer(canvas);
+    initTimer();
 
     // Start rendering frames and updating the simulation
+    updateSimulation(currentSystemData);
     renderFrame();
 }
 
@@ -372,6 +381,63 @@ export function resetView() {
     controls.update();
 }
 
+export async function compareToSolarSystem() {
+    const canvas = renderer.domElement;
+
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const solarSystemData = await getSystemData("solar system", currentSimulationTime);
+
+    const currentOrbitalDataValues = Object.values(currentSystemData.orbital_data);
+    const solarOrbitalDataValues = Object.values(solarSystemData.orbital_data);
+
+    const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
+    const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
+
+    const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
+    const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
+    const viewRadius = Math.max(currentViewRadius, solarViewRadius);
+
+    // Scale objects for comparison as the smaller of the two sizes
+    const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
+    const solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
+    const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
+    objectScale = comparisonObjectSize / objectSize;
+
+    // Rotate solar system to align with the current system's up vector
+    const solarUpVector = calculateUpVector(solarOrbitalDataValues);
+    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarUpVector, camera.up);
+    solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
+
+    solarSystemGroup.visible = true;
+
+    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateControls(canvas, viewRadius);
+
+    resetView();
+
+    updateSimulation(currentSystemData, solarSystemData);
+}
+
+export async function hideSolarSystem() {
+    objectScale = 1; // Reset object scale to default
+
+    // Update the camera and controls to fit the current system again
+
+    const canvas = renderer.domElement;
+
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
+
+    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
+    const viewRadius = maxApoapsis * viewRadiusMultiplier;
+
+    solarSystemGroup.visible = false;
+
+    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateControls(canvas, viewRadius);
+    updateSimulation(currentSystemData);
+}
+
 export function setLabelsVisibility(value) {
     for (const label of objectLabels.values()) {
         label.visible = value;
@@ -380,7 +446,11 @@ export function setLabelsVisibility(value) {
 
 export function setOrbitsVisibility(value) {
     for (const [name, orbit] of orbitalLines) {
-        orbit.visible = shouldShowOrbit(name, { orbitsVisible: value });
+        orbit.visible = shouldShowOrbit(
+            name,
+            currentSystem,
+            { orbitsVisible: value }
+        );
     }
 }
 
@@ -392,7 +462,11 @@ export function setObjectVisibility(name, value) {
 
     const orbit = orbitalLines.get(name);
     if (orbit) {
-        orbit.visible = shouldShowOrbit(name, { objectVisible: value });
+        orbit.visible = shouldShowOrbit(
+            name,
+            currentSystem,
+            { objectVisible: value }
+        );
     }
 }
 
