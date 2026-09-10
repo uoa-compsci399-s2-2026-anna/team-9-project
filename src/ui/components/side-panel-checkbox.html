@@ -9,7 +9,7 @@
   <label class="flex items-center gap-2">
     <input
       type="checkbox"
-      id="input_id"
+      id="{{ input_id }}"
       {% for name, value in data_attributes.items() %}
         data-{{ name }}="{{ value }}"
       {% endfor %}
