@@ -97,7 +97,7 @@ bus.subscribe(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE, () => {
 const objects = document.querySelector("#objects");
 const objectsShowIcon = document.querySelector("#objects-show-icon");
 const objectsHideIcon = document.querySelector("#objects-hide-icon");
-const objectsScrollContainer = document.querySelector("objects-scroll-container");
+const objectsScrollContainer = document.querySelector("#objects-scroll-container");
 
 bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
     objects.classList.toggle("grid-rows-[0fr]");
