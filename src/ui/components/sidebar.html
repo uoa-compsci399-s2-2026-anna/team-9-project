@@ -1,3 +1,5 @@
+{% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
+
 <div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
   <!-- Left sidebar -->
   <div class="flex h-full min-h-0 w-48 flex-col gap-2">
@@ -39,14 +41,13 @@
             {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
 
             {% for obj in objects %}
-              <label class="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  data-object="{{ obj }}"
-                  {{ "checked" if obj not in hidden }}
-                />
-                <span class="flex-1">{{ obj }}</span>
-              </label>
+              {{
+                side_panel_checkbox(
+                is_checked_initially=(obj not in hidden),
+                label_text=obj,
+                data_attributes={ "object": obj }
+                )
+              }}
             {% endfor %}
           </div>
 
