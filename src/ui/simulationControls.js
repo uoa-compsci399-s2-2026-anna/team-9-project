@@ -89,8 +89,6 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
 function updatePanel(event) {
     const detail = event.detail;
 
-    console.log(detail);
-
     const content = detail.content;
     const showIcon = detail.showIcon;
     const hideIcon = detail.hideIcon;
