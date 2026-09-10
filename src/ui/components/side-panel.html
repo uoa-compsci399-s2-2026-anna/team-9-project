@@ -42,7 +42,9 @@
         class="flex min-h-0 flex-col overflow-hidden"
       >
         <!-- Content -->
-        <div class="min-h-0 flex-1 overflow-y-auto">{{ caller() }}</div>
+        <div class="text-secondary min-h-0 flex-1 overflow-y-auto">
+          {{ caller() }}
+        </div>
 
         <!-- Restore defaults button -->
         <button id="{{ reset_button_id }}" class="self-end overflow-hidden">
