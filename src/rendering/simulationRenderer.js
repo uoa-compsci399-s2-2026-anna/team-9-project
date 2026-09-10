@@ -33,7 +33,7 @@ let renderer;
 let labelRenderer;
 
 // Constants for camera and controls
-const viewRadiusMultiplier = 1.5;
+const viewRadiusMultiplier = 1.2;
 const objectSizeMultiplier = 0.002;
 
 const fov = 45; // Field of view in degrees
@@ -412,6 +412,9 @@ export async function compareToSolarSystem() {
 
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
+
+    resetView();
+
     updateSimulation(currentSystemData, solarSystemData);
 }
 
