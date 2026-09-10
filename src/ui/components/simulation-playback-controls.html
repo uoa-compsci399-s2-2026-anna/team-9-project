@@ -1,4 +1,5 @@
 {% from "components/button-with-tooltip.html" import button_with_tooltip %}
+{% from "components/text-button.html" import text_button %}
 
 <div
   class="z-10 flex flex-col bg-linear-to-t from-white via-white via-80% to-transparent px-6 py-6 dark:from-black dark:via-black dark:via-80%"
@@ -17,12 +18,7 @@
     <div class="justify-self-start">
       <div class="flex items-center gap-3">
         <!-- 'Now' button (to reset time to current time) -->
-        <button
-          id="set-time-to-now-button"
-          class="relative z-10 flex items-center gap-3 rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-        >
-          Now
-        </button>
+        {{ text_button("set-time-to-now-button", "Now") }}
 
         <!-- Simulation timestamp / date picker -->
         <div class="text-left max-sm:hidden">
@@ -85,11 +81,11 @@
         type="number"
         inputmode="numeric"
         min="0"
-        class="w-18 control"
+        class="control w-18"
         value="{{ sim_state.simulationSpeed }}"
       />
 
-      <select id="speed-unit-selector" class="w-18 control">
+      <select id="speed-unit-selector" class="control w-18">
         {% for option in sim_state_schema.simulationSpeedUnit.options %}
           <option
             value="{{ option.value }}"
