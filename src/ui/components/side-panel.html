@@ -9,16 +9,18 @@
 %}
   <div
     class="relative z-10 flex min-h-0 flex-col rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
+    data-panel
   >
     <!-- Panel button -->
     <button
       id="{{ panel_button_id }}"
       class="flex w-full items-center font-bold"
+      data-panel-button
     >
       <span class="flex-1 text-left">{{ panel_title_text }}</span>
 
       <!-- Show icon -->
-      <svg id="objects-show-icon" class="size-7" viewBox="0 0 24 24">
+      <svg data-panel-show-icon class="size-7" viewBox="0 0 24 24">
         <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
         <path
           d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
@@ -26,7 +28,7 @@
       </svg>
 
       <!-- Hide icon -->
-      <svg id="objects-hide-icon" class="hidden size-7" viewBox="0 0 24 24">
+      <svg data-panel-hide-icon class="hidden size-7" viewBox="0 0 24 24">
         <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
         <path
           d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
