@@ -78,7 +78,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     }
 });
 
-// VIEW SETTINGS SIDE PANEL
+// Panel interaction logic
 
 /**
  * Updates the panel associated with the components obtained from `event`, by
