@@ -10,7 +10,7 @@
     <input
       type="checkbox"
       id="input_id"
-      {% for name, value in data_attributes.values() %}
+      {% for name, value in data_attributes.items() %}
         data-{{ name }}="{{ value }}"
       {% endfor %}
       {{ "checked" if is_checked_initially }}
