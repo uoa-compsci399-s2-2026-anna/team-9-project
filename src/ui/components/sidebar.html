@@ -43,9 +43,9 @@
             {% for obj in objects %}
               {{
                 side_panel_checkbox(
-                is_checked_initially=(obj not in hidden),
-                label_text=obj,
-                data_attributes={ "object": obj }
+                  is_checked_initially=(obj not in hidden),
+                  label_text=obj,
+                  data_attributes={ "object": obj }
                 )
               }}
             {% endfor %}
