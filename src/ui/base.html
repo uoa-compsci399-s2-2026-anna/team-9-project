@@ -2,7 +2,7 @@
 <html
   lang="en"
   data-theme="{{ 'dark' if settings.darkMode else 'light' }}"
-  class="scheme-light dark:scheme-dark {{ 'font-accessible' if settings.font == 'OpenDyslexic' }}"
+  class="{{ 'font-accessible' if settings.font == 'OpenDyslexic' }} scheme-light dark:scheme-dark"
 >
   <head>
     <meta charset="UTF-8" />
@@ -13,7 +13,7 @@
 
   <body>
     <div
-      class="text-color-body flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 select-none dark:bg-black dark:fill-purple-100"
+      class="text-primary flex h-screen flex-col bg-white bg-cover bg-center fill-zinc-800 select-none dark:bg-black dark:fill-purple-100"
     >
       <div class="relative flex min-h-0 flex-1 flex-col">
         <!-- COMPONENT: Navigation bar -->

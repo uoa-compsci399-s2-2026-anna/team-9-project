@@ -15,7 +15,7 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --color-color-body: var(--color-zinc-800);
+  --color-primary: var(--color-zinc-800);
   --color-secondary: var(--color-zinc-600);
 }
 
@@ -23,7 +23,7 @@
   :root,
   :host {
     @variant dark {
-      --color-color-body: var(--color-purple-100);
+      --color-primary: var(--color-purple-100);
       --color-secondary: oklch(94.6% 0.033 307.174 / 0.6); /* purple-100/60 */
     }
   }
