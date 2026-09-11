@@ -5,10 +5,14 @@
     on_click_event_name=None
   )
 %}
-  <div data-button-type data-on-click-event-name="{{ on_click_event_name }}">
+  <div
+    data-button-type
+    data-on-click-event-name="{{ on_click_event_name }}"
+    class="z-10"
+  >
     <button
       id="{{ button_id }}"
-      class="control z-10 px-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+      class="control px-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
       data-button
     >
       {{ button_text }}
