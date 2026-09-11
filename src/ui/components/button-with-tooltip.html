@@ -7,10 +7,15 @@
     svg_path_id=None,
     tooltip_position="below",
     tooltip_align="center",
-    svg_size=7
+    svg_size=7,
+    on_click_event_name=None
   )
 %}
-  <div class="group relative z-30 inline-flex">
+  <div
+    class="group relative z-30 inline-flex"
+    data-button
+    data-on-click-event-name="{{ on_click_event_name }}"
+  >
     <button
       id="{{ button_id }}"
       class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
