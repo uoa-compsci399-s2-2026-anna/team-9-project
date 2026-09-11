@@ -6,11 +6,15 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     const button = buttonType.querySelector("[data-button]");
     const onClickEventName = buttonType.dataset.onClickEventName;
 
+    if (!button) {
+        return;
+    }
+
     button.addEventListener("click", () => {
         var eventDetail;
 
         if (onClickEventName === EVENTS.TOOLBAR.DARK_MODE_TOGGLE) {
-            eventDetail = { enterDarkMode: !settings.darkMode }
+            eventDetail = { enterDarkMode: !settings.darkMode };
         }
 
         bus.publish(onClickEventName, eventDetail);
