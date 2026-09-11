@@ -2,6 +2,8 @@ import time
 import rebound
 from astropy.time import Time
 
+UNITS = ("AU", "day", "Msun")
+
 # From Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet"
 # https://arxiv.org/abs/1109.3432
 KEPLER_16_INITIAL_BJD_TDB = 2_455_212.12316
@@ -11,26 +13,35 @@ KEPLER_16_INITIAL_BJD_TDB = 2_455_212.12316
 TRAPPIST_1_INITIAL_BJD_TDB = 2_457_257.93115525
 
 
-def jd_tdb_to_unix(jd_tdb: float) -> float:
-    """
-    Convert a JD_TDB timestamp in days to a unix timestamp in seconds
-    """
-    return Time(jd_tdb, format="jd", scale="tdb").unix
-
-
-# Unix timestamps represented by sim.t = 0 for each system 
-sim_initial_timestamps = {
+# Time when sim.t = 0 for each system
+# Note: Kepler-16 and TRAPPIST-1 use BJD_TDB, while the Solar System uses JD_TDB,
+# so there is a small difference in the time representation.
+sim_initial_jd_tdb = {
     "solar system": None, # Will be set to the current time when initialised
-    "kepler-16": jd_tdb_to_unix(KEPLER_16_INITIAL_BJD_TDB),
-    "trappist-1": jd_tdb_to_unix(TRAPPIST_1_INITIAL_BJD_TDB),
+    "kepler-16": KEPLER_16_INITIAL_BJD_TDB,
+    "trappist-1": TRAPPIST_1_INITIAL_BJD_TDB,
 }
 
 
-def convert_unix_to_sim_time(system_name: str, t: float) -> float:
+def unix_to_jd_tdb(t: float) -> float:
     """
-    Convert a unix timestamp in seconds to a simulation time in seconds
+    Convert a unix timestamp in seconds to a JD_TDB timestamp in days
     """
-    return t - sim_initial_timestamps[system_name]
+    return Time(t, format="unix", scale="utc").tdb.jd
+
+
+def unix_to_sim_time(system_name: str, t: float) -> float:
+    """
+    Convert a unix timestamp in seconds to a simulation time in days
+    """
+    return unix_to_jd_tdb(t) - sim_initial_jd_tdb[system_name]
+
+
+def get_current_jd_tdb() -> float:
+    """
+    Get the current JD_TDB timestamp in days
+    """
+    return Time.now().tdb.jd
 
 
 def init_solar():
@@ -40,10 +51,9 @@ def init_solar():
     """
     # Initialise the simulation
     sim = rebound.Simulation()
+    sim.units = UNITS
 
-    sim.units = ("AU", "s", "Msun")
-
-    sim_initial_timestamps["solar system"] = time.time()
+    sim_initial_jd_tdb["solar system"] = unix_to_jd_tdb(time.time())
 
     # Add and set all objects in the solar system
     objects = [
@@ -78,8 +88,7 @@ def init_kepler_16():
     """
     # Initialise the simulation
     sim = rebound.Simulation()
-
-    sim.units = ("AU", "s", "Msun")
+    sim.units = UNITS
 
     # Add and set all objects in the kepler-16 system
     objects = [
@@ -126,8 +135,7 @@ def init_trappist_1():
     """
     # Initialise the simulation
     sim = rebound.Simulation()
-
-    sim.units = ("AU", "s", "Msun")
+    sim.units = UNITS
 
     # Add and set all objects in the trappist-1 system
     objects = [
