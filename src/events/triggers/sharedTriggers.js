@@ -22,10 +22,6 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     button.addEventListener("click", () => {
         var eventDetail;
 
-        if (onClickEventName === EVENTS.TOOLBAR.DARK_MODE_TOGGLE) {
-            eventDetail = { enterDarkMode: !settings.darkMode };
-        }
-
         switch (onClickEventName) {
             case EVENTS.TOOLBAR.DARK_MODE_TOGGLE:
                 eventDetail = { enterDarkMode: !settings.darkMode };
