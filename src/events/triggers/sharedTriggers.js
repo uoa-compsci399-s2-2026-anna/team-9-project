@@ -20,10 +20,3 @@ darkModeToggleButton.addEventListener("click", () => {
         enterDarkMode: !settings.darkMode,
     });
 });
-
-// Triggers for home button
-const homeButton = document.getElementById("home-button");
-
-homeButton.addEventListener("click", () => {
-    bus.publish(EVENTS.TOOLBAR.HOME);
-});
