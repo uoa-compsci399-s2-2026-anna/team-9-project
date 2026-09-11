@@ -7,7 +7,7 @@ import {
     frozen,
     comparingToSolarSystem,
     isObjectHidden,
-    getSimulationSpeedSeconds,
+    getSimulationSpeedMilliseconds,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
@@ -366,12 +366,12 @@ export async function init(name) {
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedSeconds();
+    currentSimulationTime += getSimulationSpeedMilliseconds();
     updateSimulation();
 }
 
 export function stepBack() {
-    currentSimulationTime -= getSimulationSpeedSeconds();
+    currentSimulationTime -= getSimulationSpeedMilliseconds();
     updateSimulation();
 }
 
@@ -533,8 +533,9 @@ async function renderFrame(timestamp) {
     if (running && !frozen) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
+        console.log(deltaTime)
 
-        currentSimulationTime += getSimulationSpeedSeconds() * deltaTime;
+        currentSimulationTime += getSimulationSpeedMilliseconds() * deltaTime;
 
         updateSimulation();
     }
