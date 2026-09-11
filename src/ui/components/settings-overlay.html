@@ -1,6 +1,12 @@
 {% from "components/overlay.html" import overlay %}
 
-{% call overlay("settings-overlay", "Settings") %}
+{%
+  call overlay(
+    "settings-overlay",
+    "Settings",
+    toggle_event_name="settings:menu_toggle"
+  )
+%}
   <!-- General settings -->
   <div class="flex flex-col gap-2">
     <div class="flex items-center gap-2">

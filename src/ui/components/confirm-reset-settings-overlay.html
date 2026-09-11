@@ -1,6 +1,12 @@
 {% from "components/overlay.html" import overlay %}
 
-{% call overlay("confirm-reset-settings-overlay", "Reset all settings") %}
+{%
+  call overlay(
+    "confirm-reset-settings-overlay",
+    "Reset all settings",
+    toggle_event_name="settings:reset_settings_menu_toggle"
+  )
+%}
   <div>
     <p>Are you sure you want to reset all settings to defaults?</p>
     <br />

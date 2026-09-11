@@ -1,33 +1,41 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 
+document.querySelectorAll("[data-overlay]").forEach((overlay) => {
+    const closeButton = overlay.querySelector("[data-close-overlay-button]");
+    const toggleEventName = overlay.dataset.toggleEventName;
+
+    // Close menu if user clicks close ('X') button
+    closeButton.addEventListener("click", () => {
+        bus.publish(toggleEventName, { openMenu: false });
+    });
+
+    // Close menu if user clicks outside of main panel
+    overlay.addEventListener("click", (event) => {
+        if (event.target === event.currentTarget) {
+            bus.publish(toggleEventName, { openMenu: false });
+        }
+    });
+});
+
 // Settings menu
 const settingsButton = document.getElementById("settings-button");
-const closeSettingsMenuButton = document.getElementById(
-    "close-settings-overlay-button",
-);
-const settingsOverlay = document.getElementById("settings-overlay");
 
 settingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
 });
 
-closeSettingsMenuButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
-});
-
-settingsOverlay.addEventListener("click", (event) => {
-    // Close settings menu if the user clicks outside of the main settings menu panel
-    if (event.target === event.currentTarget) {
-        bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
-    }
-});
-
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         // Confirm reset settings overlay must be closed before the settings window can be closed
-        if (document.body.classList.contains("confirm-reset-settings-overlay-open")) {
-            bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: false });
+        if (
+            document.body.classList.contains(
+                "confirm-reset-settings-overlay-open",
+            )
+        ) {
+            bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
+                openMenu: false,
+            });
         } else if (document.body.classList.contains("settings-menu-open")) {
             bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
         }
@@ -63,22 +71,6 @@ const cancelResetSettingsButton = document.getElementById(
     "cancel-reset-settings-button",
 );
 
-/**
- * The 'X' button in the 'Confirm reset settings menu' which dismisses the
- * overlay without doing anything.
- */
-const closeConfirmResetSettingsOverlayButton = document.getElementById(
-    "close-confirm-reset-settings-overlay-button",
-);
-
-/**
- * The overlay element for the 'Confirm reset settings' menu. Clicking outside
- * the menu (i.e., on the overlay) dismisses the overlay without doing anything.
- */
-const confirmResetSettingsOverlay = document.getElementById(
-    "confirm-reset-settings-overlay",
-)
-
 confirmResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
@@ -90,21 +82,6 @@ cancelResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
         openMenu: false,
     });
-});
-
-closeConfirmResetSettingsOverlayButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
-        openMenu: false,
-    });
-});
-
-confirmResetSettingsOverlay.addEventListener("click", (event) => {
-    // Close settings menu if the user clicks outside of the confirm reset settings panel
-    if (event.target === event.currentTarget) {
-        bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
-            openMenu: false,
-        });
-    }
 });
 
 // Time zone
