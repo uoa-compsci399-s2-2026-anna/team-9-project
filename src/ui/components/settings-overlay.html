@@ -1,4 +1,5 @@
 {% from "components/overlay.html" import overlay %}
+{% from "components/settings-option.html" import settings_option %}
 
 {%
   call overlay(
@@ -55,24 +56,14 @@
       <h2 class="text-lg font-bold">Accessibility</h2>
     </div>
 
-    <!-- Font selection -->
-    <label class="flex items-center">
-      <span class="text-secondary w-full">Font</span>
-      <select
-        id="font-select"
-        name="font"
-        class="control w-full min-w-0 truncate"
-      >
-        {% for option in settings_schema.font.options %}
-          <option
-            value="{{ option.value }}"
-            {{ "selected" if option.value == settings.font }}
-          >
-            {{ option.label }}
-          </option>
-        {% endfor %}
-      </select>
-    </label>
+    {{
+      settings_option(
+        label_text="Font",
+        select_id="font-select",
+        initial_selected=settings.font,
+        options=settings_schema.font.options
+      )
+    }}
 
     <!-- Text size -->
     <label class="flex items-center">
