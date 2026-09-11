@@ -34,6 +34,7 @@ let labelRenderer;
 
 // Camera settings are calculated using orbital data at this timestamp
 const referenceTimestamp = 0; // 1970-01-01T00:00:00Z
+const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
@@ -102,6 +103,23 @@ function getFontSize(size) {
 
 function getFontFamily(chosenFont) {
     return fontFamilies[chosenFont] ?? fontFamilies.Default;
+}
+
+/**
+ * Get the reference system data for a given system.
+ * If the data is not in the cache, it will be fetched and stored.
+ * 
+ * @param {string} system The name of the system
+ * @returns {Promise<Object>} The reference system data
+ */
+async function getReferenceSystemData(system) {
+    if (!referenceSystemData.has(system)) {
+        referenceSystemData.set(
+            system,
+            await getSystemData(system, referenceTimestamp)
+        );
+    }
+    return referenceSystemData.get(system);
 }
 
 /**
@@ -340,7 +358,7 @@ export async function init(name) {
     currentSimulationTime = 0;
     currentSystem = name;
 
-    const currentSystemData = await getSystemData(currentSystem, referenceTimestamp);
+    const currentSystemData = await getReferenceSystemData(currentSystem);
     const orbitalDataValues = Object.values(currentSystemData.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
@@ -378,8 +396,8 @@ export function resetView() {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getSystemData(currentSystem, referenceTimestamp);
-    const solarSystemData = await getSystemData("Solar System", referenceTimestamp);
+    const currentSystemData = await getReferenceSystemData(currentSystem);
+    const solarSystemData = await getReferenceSystemData("Solar System");
 
     const currentOrbitalDataValues = Object.values(currentSystemData.orbital_data);
     const solarOrbitalDataValues = Object.values(solarSystemData.orbital_data);
@@ -419,7 +437,7 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getSystemData(currentSystem, referenceTimestamp);
+    const currentSystemData = await getReferenceSystemData(currentSystem);
     const orbitalDataValues = Object.values(currentSystemData.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
