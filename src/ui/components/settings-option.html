@@ -1,0 +1,22 @@
+{%
+  macro settings_option(
+    label_text,
+    select_id,
+    initial_selected,
+    options
+  )
+%}
+  <label class="flex items-center">
+    <span class="text-secondary w-full">{{ label_text }}</span>
+    <select id="{{ select_id }}" class="w-full min-w-0 truncate">
+      {% for option in options %}
+        <option
+          value="{{ option.value }}"
+          {{ "selected" if option.value == initial_selected }}
+        >
+          {{ option.label }}
+        </option>
+      {% endfor %}
+    </select>
+  </label>
+{% endmacro %}
