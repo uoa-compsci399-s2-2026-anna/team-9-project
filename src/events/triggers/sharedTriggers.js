@@ -36,6 +36,9 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             case EVENTS.SIM.TOGGLE:
                 eventDetail = { startSimulation: !running };
                 break;
+            case EVENTS.SETTINGS.MENU_TOGGLE:
+                eventDetail = { openMenu: true };
+                break;
         }
 
         bus.publish(onClickEventName, eventDetail);
