@@ -137,7 +137,9 @@
         tooltip_position="below",
         tooltip_align="right",
         tooltip_text=("Exit fullscreen" if fullscreen else "Enter fullscreen"),
-        svg_path=(exitFullscreenIcon if fullscreen else enterFullscreenIcon)
+        svg_path=(exitFullscreenIcon if fullscreen else enterFullscreenIcon),
+
+        on_click_event_name="toolbar:fullscreen_button_toggle",
       )
     }}
   </div>

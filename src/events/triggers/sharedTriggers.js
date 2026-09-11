@@ -12,13 +12,6 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     });
 });
 
-// Triggers for the fullscreen button
-const fullscreenButton = document.getElementById("fullscreen-button");
-
-fullscreenButton.addEventListener("click", () => {
-    bus.publish(EVENTS.TOOLBAR.FULLSCREEN_BUTTON_TOGGLE);
-});
-
 // Triggers for dark/light mode button
 const darkModeToggleButton = document.getElementById("dark-mode-toggle-button");
 
