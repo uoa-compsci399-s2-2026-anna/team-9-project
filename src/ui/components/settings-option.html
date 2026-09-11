@@ -1,7 +1,6 @@
 {%
   macro settings_option(
     label_text,
-    select_id,
     initial_selected,
     options,
     on_change_event_name=None
@@ -14,7 +13,6 @@
   >
     <span class="text-secondary w-full">{{ label_text }}</span>
     <select
-      id="{{ select_id }}"
       class="w-full min-w-0 truncate"
       data-settings-select
     >
