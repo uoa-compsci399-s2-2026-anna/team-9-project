@@ -113,7 +113,9 @@
         svg_path_id="theme-svg-path",
         tooltip_position="below",
         tooltip_text=("View in light mode" if settings.darkMode else "View in dark mode"),
-        svg_path=(viewInLightModeIcon if settings.darkMode else viewInDarkModeIcon)
+        svg_path=(viewInLightModeIcon if settings.darkMode else viewInDarkModeIcon),
+
+        on_click_event_name="toolbar:dark_mode_toggle"
       )
     }}
 

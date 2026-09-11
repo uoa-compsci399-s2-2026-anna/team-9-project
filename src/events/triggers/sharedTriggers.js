@@ -5,18 +5,14 @@ import { settings } from "../../shared/settingsState.js";
 document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     const button = buttonType.querySelector("[data-button]");
     const onClickEventName = buttonType.dataset.onClickEventName;
-    const eventDetail = JSON.parse(buttonType.dataset.eventDetail);
 
     button.addEventListener("click", () => {
+        var eventDetail;
+
+        if (onClickEventName === EVENTS.TOOLBAR.DARK_MODE_TOGGLE) {
+            eventDetail = { enterDarkMode: !settings.darkMode }
+        }
+
         bus.publish(onClickEventName, eventDetail);
-    });
-});
-
-// Triggers for dark/light mode button
-const darkModeToggleButton = document.getElementById("dark-mode-toggle-button");
-
-darkModeToggleButton.addEventListener("click", () => {
-    bus.publish(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, {
-        enterDarkMode: !settings.darkMode,
     });
 });
