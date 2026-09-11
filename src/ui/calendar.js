@@ -68,5 +68,5 @@ function updateCalendar(date) {
  * @returns OPIS simulation timestamp in milliseconds since Unix epoch.
  */
 function getSimulationTimeInMillisecondsSinceUnixEpoch() {
-    return new Date(Date.now() + currentSimulationTime * MS_IN_S);
+    return new Date(currentSimulationTime * MS_IN_S);
 }
