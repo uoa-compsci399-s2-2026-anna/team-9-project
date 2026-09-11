@@ -45,13 +45,6 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-// Trigger for resetting the simulation view
-const resetView = document.getElementById("reset-view-button");
-
-resetView.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.RESET_VIEW);
-});
-
 // Trigger for comparing to the solar system
 const compareToSolarSystemButton = document.getElementById(
     "compare-to-solar-system-button",
