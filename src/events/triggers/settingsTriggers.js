@@ -1,6 +1,7 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 
+// Add event listeners for buttons in overlays
 document.querySelectorAll("[data-overlay]").forEach((overlay) => {
     const closeButton = overlay.querySelector("[data-close-overlay-button]");
     const toggleEventName = overlay.dataset.toggleEventName;
@@ -16,7 +17,6 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
             bus.publish(toggleEventName, { openMenu: false });
         }
     });
-
 
     // Add event listeners for user-provided buttons in the data-buttons
     // attribute
@@ -46,6 +46,7 @@ confirmResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
 });
 
+// Close overlays on pressing Escape
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         // Confirm reset settings overlay must be closed before the settings window can be closed
@@ -62,7 +63,6 @@ document.addEventListener("keydown", (e) => {
         }
     }
 });
-
 
 // Time zone
 const timeZoneSelect = document.getElementById("time-zone-select");
