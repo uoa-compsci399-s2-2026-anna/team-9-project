@@ -2,7 +2,8 @@
   macro overlay(
     id,
     title,
-    toggle_event_name=None
+    toggle_event_name=None,
+    buttons={}
   )
 %}
   <div
@@ -10,6 +11,7 @@
     class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
     data-overlay
     data-toggle-event-name="{{ toggle_event_name }}"
+    data-buttons="{{ buttons | tojson }}"
   >
     <!-- Settings menu itself -->
     <div
