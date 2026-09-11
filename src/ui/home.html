@@ -26,7 +26,7 @@
       {% for system in systems %}
         <a
           id="{{ system.name }}"
-          class="system-path-button control bordered flex h-35 w-55 flex-col items-center justify-center gap-2 rounded-md font-semibold hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-700"
+          class="system-path-button control bordered clickable flex h-35 w-55 flex-col items-center justify-center gap-2 rounded-md font-semibold"
           href="/simulation/{{ system.name }}"
         >
           {{ system.name }}
