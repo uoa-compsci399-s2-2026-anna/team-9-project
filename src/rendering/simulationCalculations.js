@@ -110,15 +110,15 @@ function areParallel(vectorA, vectorB, tolerance = 1e-10) {
 }
 
 /**
- * Calculate the default camera position at a specified angle from the up vector.
+ * Calculate the default camera position, at 1 degree from the up vector.
  * This ensures the camera direction is not parallel to the up vector and gives a unique camera orientation.
  * 
  * @param {THREE.Vector3} upVector The up vector for the camera
  * @param {number} cameraDistance The distance of the camera from the target
- * @param {number} angleFromUp The angle from the up vector in radians
  * @returns {THREE.Vector3} The calculated default camera position
  */
-export function calculateDefaultCameraPosition(upVector, cameraDistance, angleFromUp) {
+export function calculateDefaultCameraPosition(upVector, cameraDistance) {
+    const angleFromUp = Math.PI / 180; // 1 degree in radians
     let arbitraryVector = new THREE.Vector3(1, 0, 0);
 
     // Use a different arbitrary vector if it is parallel to the up vector

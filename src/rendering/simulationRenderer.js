@@ -280,8 +280,7 @@ function initOrUpdateCamera(canvas, viewRadius, upVector) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = calculateDefaultCameraPosition(
         upVector,
-        cameraDistance,
-        Math.PI / 180 // 1 degree in radians
+        cameraDistance
     );
 
     const cameraNear = objectSize * cameraNearMultiplier;
