@@ -37,8 +37,6 @@ def init_solar():
 
     sim.units = ("AU", "s", "Msun")
 
-    # Add all solar system objects
-    sim.add("solar system")
     sim_initial_timestamps["solar system"] = time.time()
 
     # Add and set all objects in the solar system
@@ -52,19 +50,11 @@ def init_solar():
         "Saturn",
         "Uranus",
         "Neptune",
-        "1P/Halley",
+        "DES=1P",
     ]
 
-    # Add Halley's comet
-    sim.add(
-        m=0.0,
-        a=17.8,
-        e=0.967,
-        inc=2.8274333882,
-        omega=1.0192722832,
-        Omega=1.9530234330,
-        M=0.0,
-    )
+    for obj in objects:
+        sim.add(obj)
 
     # Move to COM of the system
     sim.move_to_com()
