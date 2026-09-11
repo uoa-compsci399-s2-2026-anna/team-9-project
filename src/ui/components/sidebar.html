@@ -36,7 +36,7 @@
       >
         <div id="objects-toggles" class="flex min-h-0 flex-col overflow-hidden">
           <!-- Checkboxes -->
-          <div class="min-h-0 flex-1 overflow-y-auto">
+          <div id="objects-scroll-container" class="min-h-0 flex-1 overflow-hidden">
             <!-- Objects that are hidden for the current simulation -->
             {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
 
