@@ -126,11 +126,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     system = next(system for system in all_systems if system["name"].lower() == system_name)
 
     # Hardcode Solar System
-    if system_name == "solar system" and current_system != "solar system":
-        # Init state if empty
-        sim, objects = init_solar(system)
-        current_system = system_name
-    elif current_system != system_name:
+    if current_system != system_name:
         sim, objects = init_system(system)
         current_system = system_name
 

@@ -1,39 +1,6 @@
 import rebound
 
 
-def init_solar(system):
-    """
-    Initialise solar system function
-    Returns simulation and objects
-    """
-    # Initialise the simulation
-    sim = rebound.Simulation()
-
-    sim.units = ("AU", "s", "Msun")
-
-    # Add all solar system objects
-    sim.add("solar system")
-
-    # Add and set all objects in the solar system
-    objects = list(system["objects"])
-
-    # Add Halley's comet
-    sim.add(
-        m=0.0,
-        a=17.8,
-        e=0.967,
-        inc=2.8274333882,
-        omega=1.0192722832,
-        Omega=1.9530234330,
-        M=0.0,
-    )
-
-    # Move to COM of the system
-    sim.move_to_com()
-
-    return sim, objects
-
-
 def init_system(system):
     """
     Initialise general system in config function
