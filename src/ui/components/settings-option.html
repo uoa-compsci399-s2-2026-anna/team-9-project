@@ -3,12 +3,21 @@
     label_text,
     select_id,
     initial_selected,
-    options
+    options,
+    on_change_event_name=None
   )
 %}
-  <label class="flex items-center">
+  <label
+    class="flex items-center"
+    data-settings-option
+    data-on-change-event-name="{{ on_change_event_name }}"
+  >
     <span class="text-secondary w-full">{{ label_text }}</span>
-    <select id="{{ select_id }}" class="w-full min-w-0 truncate">
+    <select
+      id="{{ select_id }}"
+      class="w-full min-w-0 truncate"
+      data-settings-select
+    >
       {% for option in options %}
         <option
           value="{{ option.value }}"
