@@ -1,7 +1,12 @@
 import time
 import rebound
 
+# From Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet"
+# https://arxiv.org/abs/1109.3432
 KEPLER_16_INITIAL_BJD = 2_455_212.12316
+
+# From Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets"
+# https://arxiv.org/abs/2010.01074
 TRAPPIST_1_INITIAL_BJD = 2_457_257.93115525
 
 
