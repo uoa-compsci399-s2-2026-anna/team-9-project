@@ -24,23 +24,14 @@
       <h2 class="text-lg font-bold">General</h2>
     </div>
 
-    <label class="flex items-center">
-      <span class="text-secondary w-full">Time zone</span>
-      <select
-        id="time-zone-select"
-        name="time-zone"
-        class="control w-full min-w-0 truncate"
-      >
-        {% for option in settings_schema.timeZone.options %}
-          <option
-            value="{{ option.value }}"
-            {{ "selected" if option.value == settings.timeZone }}
-          >
-            {{ option.label }}
-          </option>
-        {% endfor %}
-      </select>
-    </label>
+    {{
+      settings_option(
+        label_text="Time zone",
+        select_id="time-zone-select",
+        initial_selected=settings.timeZone,
+        options=settings_schema.timeZone.options
+      )
+    }}
   </div>
 
   <!-- Accessibility settings -->
@@ -65,62 +56,32 @@
       )
     }}
 
-    <!-- Text size -->
-    <label class="flex items-center">
-      <span class="text-secondary w-full">Text size</span>
-      <select
-        id="text-size-select"
-        name="text-size"
-        class="control w-full min-w-0 truncate"
-      >
-        {% for option in settings_schema.textSize.options %}
-          <option
-            value="{{ option.value }}"
-            {{ "selected" if option.value == settings.textSize }}
-          >
-            {{ option.label }}
-          </option>
-        {% endfor %}
-      </select>
-    </label>
+    {{
+      settings_option(
+        label_text="Text size",
+        select_id="text-size-select",
+        initial_selected=settings.textSize,
+        options=settings_schema.textSize.options
+      )
+    }}
 
-    <!-- Object marker size -->
-    <label class="flex items-center">
-      <span class="text-secondary w-full">Object marker size</span>
-      <select
-        id="object-marker-size-select"
-        name="object-marker-size"
-        class="control w-full min-w-0 truncate"
-      >
-        {% for option in settings_schema.objectMarkerSize.options %}
-          <option
-            value="{{ option.value }}"
-            {{ "selected" if option.value == settings.objectMarkerSize }}
-          >
-            {{ option.label }}
-          </option>
-        {% endfor %}
-      </select>
-    </label>
+    {{
+      settings_option(
+        label_text="Object marker size",
+        select_id="object-marker-size-select",
+        initial_selected=settings.objectMarkerSize,
+        options=settings_schema.objectMarkerSize.options
+      )
+    }}
 
-    <!-- Orbit lines -->
-    <label class="flex items-center">
-      <span class="text-secondary w-full">Orbit lines</span>
-      <select
-        id="orbit-lines-select"
-        name="orbit-lines"
-        class="control w-full min-w-0 truncate"
-      >
-        {% for option in settings_schema.orbitLines.options %}
-          <option
-            value="{{ option.value }}"
-            {{ "selected" if option.value == settings.orbitLines }}
-          >
-            {{ option.label }}
-          </option>
-        {% endfor %}
-      </select>
-    </label>
+    {{
+      settings_option(
+        label_text="Orbit lines",
+        select_id="orbit-lines-select",
+        initial_selected=settings.orbitLines,
+        options=settings_schema.orbitLines.options
+      )
+    }}
   </div>
 
   <!-- Restore defaults button -->
