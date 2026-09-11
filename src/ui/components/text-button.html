@@ -2,7 +2,8 @@
   macro text_button(
     button_id,
     button_text,
-    on_click_event_name=None
+    on_click_event_name=None,
+    event_detail={}
   )
 %}
   <button
@@ -10,6 +11,7 @@
     class="control z-10 px-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
     data-button
     data-on-click-event-name="{{ on_click_event_name }}"
+    data-event-detail="{{ event_detail | tojson | forceescape }}"
   >
     {{ button_text }}
   </button>
