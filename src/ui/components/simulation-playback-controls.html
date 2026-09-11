@@ -18,7 +18,13 @@
     <div class="justify-self-start">
       <div class="flex items-center gap-3">
         <!-- 'Now' button (to reset time to current time) -->
-        {{ text_button("set-time-to-now-button", "Now") }}
+        {{
+          text_button(
+            button_id="set-time-to-now-button",
+            button_text="Now",
+            on_click_event_name="sim:set_time_to_now"
+          )
+        }}
 
         <!-- Simulation timestamp / date picker -->
         <div class="text-left max-sm:hidden">

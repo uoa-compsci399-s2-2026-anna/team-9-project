@@ -176,10 +176,3 @@ for (const calendar of calendars) {
         event.target.dataset.previousValue = calendar.value;
     });
 }
-
-// 'Now' button
-const setTimeToNowButton = document.getElementById("set-time-to-now-button");
-
-setTimeToNowButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.SET_TIME_TO_NOW);
-});
