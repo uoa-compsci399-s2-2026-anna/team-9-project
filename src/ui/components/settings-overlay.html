@@ -29,7 +29,8 @@
         label_text="Time zone",
         select_id="time-zone-select",
         initial_selected=settings.timeZone,
-        options=settings_schema.timeZone.options
+        options=settings_schema.timeZone.options,
+        on_change_event_name="settings:time_zone_select"
       )
     }}
   </div>
@@ -52,7 +53,8 @@
         label_text="Font",
         select_id="font-select",
         initial_selected=settings.font,
-        options=settings_schema.font.options
+        options=settings_schema.font.options,
+        on_change_event_name="settings:font_select"
       )
     }}
 
@@ -61,7 +63,8 @@
         label_text="Text size",
         select_id="text-size-select",
         initial_selected=settings.textSize,
-        options=settings_schema.textSize.options
+        options=settings_schema.textSize.options,
+        on_change_event_name="settings:text_size_select"
       )
     }}
 
@@ -70,7 +73,8 @@
         label_text="Object marker size",
         select_id="object-marker-size-select",
         initial_selected=settings.objectMarkerSize,
-        options=settings_schema.objectMarkerSize.options
+        options=settings_schema.objectMarkerSize.options,
+        on_change_event_name="settings:object_marker_size_select"
       )
     }}
 
@@ -79,7 +83,8 @@
         label_text="Orbit lines",
         select_id="orbit-lines-select",
         initial_selected=settings.orbitLines,
-        options=settings_schema.orbitLines.options
+        options=settings_schema.orbitLines.options,
+        on_change_event_name="settings:orbit_lines_select"
       )
     }}
   </div>
