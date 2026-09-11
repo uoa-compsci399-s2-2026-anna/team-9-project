@@ -1,4 +1,30 @@
+import time
 import rebound
+
+KEPLER_16_INITIAL_BJD = 2_455_212.12316
+TRAPPIST_1_INITIAL_BJD = 2_457_257.93115525
+
+
+def convert_bjd_to_unix(bjd: float) -> float:
+    """
+    Convert a BJD timestamp in days to a unix timestamp in seconds
+    """
+    return (bjd - 2440587.5) * 86400.0
+
+
+# Unix timestamps represented by sim.t = 0 for each system 
+sim_initial_timestamps = {
+    "solar system": None, # Will be set to the current time when initialised
+    "kepler-16": convert_bjd_to_unix(KEPLER_16_INITIAL_BJD),
+    "trappist-1": convert_bjd_to_unix(TRAPPIST_1_INITIAL_BJD),
+}
+
+
+def convert_unix_to_sim_time(system_name: str, t: float) -> float:
+    """
+    Convert a unix timestamp in seconds to a simulation time in seconds
+    """
+    return t - sim_initial_timestamps[system_name]
 
 
 def init_solar():
@@ -13,6 +39,7 @@ def init_solar():
 
     # Add all solar system objects
     sim.add("solar system")
+    sim_initial_timestamps["solar system"] = time.time()
 
     # Add and set all objects in the solar system
     objects = [

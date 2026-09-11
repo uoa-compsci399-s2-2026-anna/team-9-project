@@ -6,7 +6,7 @@ import rebound
 import os
 import json
 import sys
-from systems import *
+from systems import init_solar, init_kepler_16, init_trappist_1, convert_unix_to_sim_time
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -157,8 +157,10 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     sims[system_name] = (sim, objects)
 
+    sim_time = convert_unix_to_sim_time(system_name, t)
+
     # Set time
-    sim.integrate(t)
+    sim.integrate(sim_time)
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
