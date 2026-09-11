@@ -1,4 +1,15 @@
-{% macro button_with_tooltip(button_id, tooltip_text, svg_path, tooltip_id=None, svg_path_id=None, tooltip_position="below", tooltip_align="center", svg_size=7) %}
+{%
+  macro button_with_tooltip(
+    button_id,
+    tooltip_text,
+    svg_path,
+    tooltip_id=None,
+    svg_path_id=None,
+    tooltip_position="below",
+    tooltip_align="center",
+    svg_size=7
+  )
+%}
   <div class="group relative z-30 inline-flex">
     <button
       id="{{ button_id }}"
