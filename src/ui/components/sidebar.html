@@ -1,3 +1,5 @@
+{% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
+
 <div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
   <!-- Left sidebar -->
   <div class="flex h-full min-h-0 w-48 flex-col gap-2">
@@ -39,14 +41,13 @@
             {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
 
             {% for obj in objects %}
-              <label class="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  data-object="{{ obj }}"
-                  {{ "checked" if obj not in hidden }}
-                />
-                <span class="flex-1">{{ obj }}</span>
-              </label>
+              {{
+                side_panel_checkbox(
+                  is_checked_initially=(obj not in hidden),
+                  label_text=obj,
+                  data_attributes={ "object": obj }
+                )
+              }}
             {% endfor %}
           </div>
 
@@ -98,45 +99,41 @@
         <div class="flex min-h-0 flex-col overflow-hidden">
           <!-- Checkboxes -->
           <div id="view-settings-toggles" class="flex flex-col overflow-hidden">
-            <label class="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="habitable-zone-input"
-                data-setting="habitable-zone"
-                {{ "checked" if sim_state.habitableZoneShown }}
-              />
-              <span>Habitable zone</span>
-            </label>
+            {{
+              side_panel_checkbox(
+                input_id="habitable-zone-input",
+                is_checked_initially=sim_state.habitableZoneShown,
+                label_text="Habitable zone",
+                data_attributes={ "setting": "habitable-zone" }
+              )
+            }}
 
-            <label class="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="orbits-input"
-                data-setting="orbits"
-                {{ "checked" if sim_state.orbitsShown }}
-              />
-              <span>Orbits</span>
-            </label>
+            {{
+              side_panel_checkbox(
+                input_id="orbits-input",
+                is_checked_initially=sim_state.orbitsShown,
+                label_text="Orbits",
+                data_attributes={ "setting": "orbits" }
+              )
+            }}
 
-            <label class="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="reference-grid-input"
-                data-setting="reference-grid"
-                {{ "checked" if sim_state.referenceGridShown }}
-              />
-              <span>Reference grid</span>
-            </label>
+            {{
+              side_panel_checkbox(
+                input_id="reference-grid-input",
+                is_checked_initially=sim_state.referenceGridShown,
+                label_text="Reference grid",
+                data_attributes={ "setting": "reference-grid" }
+              )
+            }}
 
-            <label class="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="labels-input"
-                data-setting="labels"
-                {{ "checked" if sim_state.labelsShown }}
-              />
-              <span>Labels</span>
-            </label>
+            {{
+              side_panel_checkbox(
+                input_id="labels-input",
+                is_checked_initially=sim_state.labelsShown,
+                label_text="Labels",
+                data_attributes={ "setting": "labels" }
+              )
+            }}
           </div>
 
           <!-- Restore defaults button -->
