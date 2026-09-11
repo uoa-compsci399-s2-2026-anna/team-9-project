@@ -45,18 +45,6 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-// Triggers for step back and step forward buttons
-const stepForward = document.getElementById("step-forward-button");
-const stepBack = document.getElementById("step-back-button");
-
-stepForward.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.STEP_FORWARD);
-});
-
-stepBack.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.STEP_BACK);
-});
-
 // Trigger for resetting the simulation view
 const resetView = document.getElementById("reset-view-button");
 
