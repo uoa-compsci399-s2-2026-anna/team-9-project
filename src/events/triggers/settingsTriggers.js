@@ -16,14 +16,30 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
             bus.publish(toggleEventName, { openMenu: false });
         }
     });
+
+    console.log(overlay.dataset.buttons);
+
+    const buttons = JSON.parse(overlay.dataset.buttons);
+
+    for (const [buttonId, action] of Object.entries(buttons)) {
+        const button = document.getElementById(buttonId);
+
+        button.addEventListener("click", () => {
+            if (action === "open") {
+                bus.publish(toggleEventName, { openMenu: true });
+            } else if (action === "close") {
+                bus.publish(toggleEventName, { openMenu: false });
+            }
+        });
+    }
 });
 
 // Settings menu
-const settingsButton = document.getElementById("settings-button");
+// const settingsButton = document.getElementById("settings-button");
 
-settingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
-});
+// settingsButton.addEventListener("click", () => {
+//     bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
+// });
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
