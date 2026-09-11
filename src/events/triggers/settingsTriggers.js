@@ -34,13 +34,6 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
     }
 });
 
-// Settings menu
-// const settingsButton = document.getElementById("settings-button");
-
-// settingsButton.addEventListener("click", () => {
-//     bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: true });
-// });
-
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         // Confirm reset settings overlay must be closed before the settings window can be closed
