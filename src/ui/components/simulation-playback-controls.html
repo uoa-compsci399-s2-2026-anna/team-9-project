@@ -91,11 +91,11 @@
         type="number"
         inputmode="numeric"
         min="0"
-        class="control w-18"
+        class="control bordered w-18"
         value="{{ sim_state.simulationSpeed }}"
       />
 
-      <select id="speed-unit-selector" class="control w-18">
+      <select id="speed-unit-selector" class="control bordered w-18">
         {% for option in sim_state_schema.simulationSpeedUnit.options %}
           <option
             value="{{ option.value }}"
