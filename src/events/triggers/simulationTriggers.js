@@ -45,19 +45,6 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-// Trigger for comparing to the solar system
-const compareToSolarSystemButton = document.getElementById(
-    "compare-to-solar-system-button",
-);
-
-if (compareToSolarSystemButton) {
-    // Button does not exist for the solar system itself
-    compareToSolarSystemButton.addEventListener("click", () => {
-        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, {
-            compare: !comparingToSolarSystem,
-        });
-    });
-}
 
 // Triggers for view settings
 const habitableZoneInput = document.getElementById("habitable-zone-input");
