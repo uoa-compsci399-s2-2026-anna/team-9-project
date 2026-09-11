@@ -108,8 +108,8 @@ def init_trappist_1(system):
         e=0.0030547340309755285,
         omega=2.3515648936386335,
         M=1.58330904089647,
-        inc=inc,
-        Omega=Omega,
+        inc=1.5707963267948966,
+        Omega=0,
     )
     # Trappist-1c
     sim.add(
@@ -118,8 +118,8 @@ def init_trappist_1(system):
         e=0.0005500909015790027,
         omega=0.01817981507297828,
         M=4.581013289959033,
-        inc=inc,
-        Omega=Omega,
+        inc=1.5707963267948966,
+        Omega=0,
     )
     # Trappist-1d
     sim.add(
@@ -128,8 +128,8 @@ def init_trappist_1(system):
         e=0.005632983223834418,
         omega=2.64777152033153,
         M=1.3398571437885913,
-        inc=inc,
-        Omega=Omega,
+        inc=1.5707963267948966,
+        Omega=0,
     )
     # Trappist-1e
     sim.add(
@@ -138,8 +138,8 @@ def init_trappist_1(system):
         e=0.006324634376784163,
         omega=-0.8167078389843289,
         M=0.10653405834521407,
-        inc=inc,
-        Omega=Omega,
+        inc=1.5707963267948966,
+        Omega=0,
     )
     # Trappist-1f
     sim.add(
@@ -148,8 +148,8 @@ def init_trappist_1(system):
         e=0.00841546790143008,
         omega=-3.080952805470817,
         M=0.5847415970602159,
-        inc=inc,
-        Omega=Omega,
+        inc=1.5707963267948966,
+        Omega=0,
     )
     # Trappist-1g
     sim.add(
@@ -158,8 +158,8 @@ def init_trappist_1(system):
         e=0.004009788024322483,
         omega=0.32490511806511907,
         M=0.1101426471560622,
-        inc=inc,
-        Omega=Omega,
+        inc=1.5707963267948966,
+        Omega=0,
     )
     # Trappist-1h
     sim.add(
@@ -168,8 +168,8 @@ def init_trappist_1(system):
         e=0.003650054794109261,
         omega=-3.136113256373088,
         M=2.786133876732481,
-        inc=inc,
-        Omega=Omega,
+        inc=1.5707963267948966,
+        Omega=0,
     )
 
     sim.move_to_com()
