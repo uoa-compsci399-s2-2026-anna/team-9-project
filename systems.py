@@ -1,27 +1,28 @@
 import time
 import rebound
+from astropy.time import Time
 
 # From Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet"
 # https://arxiv.org/abs/1109.3432
-KEPLER_16_INITIAL_BJD = 2_455_212.12316
+KEPLER_16_INITIAL_BJD_TDB = 2_455_212.12316
 
 # From Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets"
 # https://arxiv.org/abs/2010.01074
-TRAPPIST_1_INITIAL_BJD = 2_457_257.93115525
+TRAPPIST_1_INITIAL_BJD_TDB = 2_457_257.93115525
 
 
-def convert_bjd_to_unix(bjd: float) -> float:
+def jd_tdb_to_unix(jd_tdb: float) -> float:
     """
-    Convert a BJD timestamp in days to a unix timestamp in seconds
+    Convert a JD_TDB timestamp in days to a unix timestamp in seconds
     """
-    return (bjd - 2440587.5) * 86400.0
+    return Time(jd_tdb, format="jd", scale="tdb").unix
 
 
 # Unix timestamps represented by sim.t = 0 for each system 
 sim_initial_timestamps = {
     "solar system": None, # Will be set to the current time when initialised
-    "kepler-16": convert_bjd_to_unix(KEPLER_16_INITIAL_BJD),
-    "trappist-1": convert_bjd_to_unix(TRAPPIST_1_INITIAL_BJD),
+    "kepler-16": jd_tdb_to_unix(KEPLER_16_INITIAL_BJD_TDB),
+    "trappist-1": jd_tdb_to_unix(TRAPPIST_1_INITIAL_BJD_TDB),
 }
 
 
