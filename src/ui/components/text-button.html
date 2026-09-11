@@ -5,12 +5,13 @@
     on_click_event_name=None
   )
 %}
-  <button
-    id="{{ button_id }}"
-    class="control z-10 px-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-    data-button
-    data-on-click-event-name="{{ on_click_event_name }}"
-  >
-    {{ button_text }}
-  </button>
+  <div data-button-type data-on-click-event-name="{{ on_click_event_name }}">
+    <button
+      id="{{ button_id }}"
+      class="control z-10 px-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+      data-button
+    >
+      {{ button_text }}
+    </button>
+  </div>
 {% endmacro %}
