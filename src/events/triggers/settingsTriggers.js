@@ -17,8 +17,9 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
         }
     });
 
-    console.log(overlay.dataset.buttons);
 
+    // Add event listeners for user-provided buttons in the data-buttons
+    // attribute
     const buttons = JSON.parse(overlay.dataset.buttons);
 
     for (const [buttonId, action] of Object.entries(buttons)) {
