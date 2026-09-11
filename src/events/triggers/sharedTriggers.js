@@ -1,7 +1,10 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { settings } from "../../shared/settingsState.js";
-import { comparingToSolarSystem } from "../../shared/simulationState.js";
+import {
+    running,
+    comparingToSolarSystem,
+} from "../../shared/simulationState.js";
 
 document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     const button = buttonType.querySelector("[data-button]");
@@ -24,6 +27,9 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
                 break;
             case EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM:
                 eventDetail = { compare: !comparingToSolarSystem };
+                break;
+            case EVENTS.SIM.TOGGLE:
+                eventDetail = { startSimulation: !running };
                 break;
         }
 

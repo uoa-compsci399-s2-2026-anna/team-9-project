@@ -1,19 +1,8 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import {
-    running,
-    comparingToSolarSystem,
-} from "../../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
-
-// Triggers for the play/pause button
-const playPauseButton = document.getElementById("play-pause-button");
-
-playPauseButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.TOGGLE, { startSimulation: !running });
-});
 
 // Triggers for the speed adjuster
 const speedAdjuster = document.getElementById("speed-adjuster");
