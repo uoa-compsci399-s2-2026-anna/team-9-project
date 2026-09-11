@@ -6,6 +6,11 @@ import {
     comparingToSolarSystem,
 } from "../../shared/simulationState.js";
 
+/**
+ * Register event listeners, event bus publishes, and any additional event
+ * detail (where provided) to all `button_with_tooltip` and `text_button` macro
+ * calls.
+ */
 document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     const button = buttonType.querySelector("[data-button]");
     const onClickEventName = buttonType.dataset.onClickEventName;
