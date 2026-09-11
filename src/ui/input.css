@@ -57,6 +57,10 @@
     @apply z-10 h-9 rounded-md bg-white p-1 dark:bg-zinc-950;
   }
 
+  .control-no-background {
+    @apply z-10 h-9 rounded-md p-1;
+  }
+
   .bordered {
     @apply border border-black/50 dark:border-white/10;
   }
