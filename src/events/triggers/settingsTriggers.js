@@ -63,9 +63,6 @@ const confirmResetSettingsButton = document.getElementById(
 );
 confirmResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
-    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
-        openMenu: false,
-    });
 });
 
 // Time zone
