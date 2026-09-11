@@ -32,6 +32,9 @@ let controls;
 let renderer;
 let labelRenderer;
 
+// Camera settings are calculated using orbital data at this timestamp
+const referenceTimestamp = 0; // 1970-01-01T00:00:00Z
+
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
 const objectSizeMultiplier = 0.002;
@@ -223,16 +226,9 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
 
 /**
  * Update the positions of all objects in the current system.
- * If the system data is not provided, it will be fetched from the backend.
- * 
- * @param {Object} [currentSystemData] Optional current system data to use for the update
- * @param {Object} [solarSystemData] Optional solar system data to use for the update
  */
-async function updateSimulation(currentSystemData = null, solarSystemData = null) {
-    // Fetch data for the current system and current simulation time if not provided
-    if (!currentSystemData) {
-        currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
-    }
+async function updateSimulation() {
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
         createOrUpdateObjectMesh(name, position, currentSystemGroup);
@@ -242,9 +238,7 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
     }
 
     if (comparingToSolarSystem) {
-        if (!solarSystemData) {
-            solarSystemData = await getSystemData("solar system", currentSimulationTime);
-        }
+        const solarSystemData = await getSystemData("Solar System", currentSimulationTime);
 
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
@@ -346,7 +340,7 @@ export async function init(name) {
     currentSimulationTime = 0;
     currentSystem = name;
 
-    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const currentSystemData = await getSystemData(currentSystem, referenceTimestamp);
     const orbitalDataValues = Object.values(currentSystemData.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
@@ -361,7 +355,7 @@ export async function init(name) {
     initTimer();
 
     // Start rendering frames and updating the simulation
-    updateSimulation(currentSystemData);
+    updateSimulation();
     renderFrame();
 }
 
@@ -384,8 +378,8 @@ export function resetView() {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
-    const solarSystemData = await getSystemData("solar system", currentSimulationTime);
+    const currentSystemData = await getSystemData(currentSystem, referenceTimestamp);
+    const solarSystemData = await getSystemData("Solar System", referenceTimestamp);
 
     const currentOrbitalDataValues = Object.values(currentSystemData.orbital_data);
     const solarOrbitalDataValues = Object.values(solarSystemData.orbital_data);
@@ -415,7 +409,7 @@ export async function compareToSolarSystem() {
 
     resetView();
 
-    updateSimulation(currentSystemData, solarSystemData);
+    updateSimulation();
 }
 
 export async function hideSolarSystem() {
@@ -425,7 +419,7 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    const currentSystemData = await getSystemData(currentSystem, referenceTimestamp);
     const orbitalDataValues = Object.values(currentSystemData.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
@@ -435,7 +429,7 @@ export async function hideSolarSystem() {
 
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
-    updateSimulation(currentSystemData);
+    updateSimulation();
 }
 
 export function setLabelsVisibility(value) {
