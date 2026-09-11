@@ -22,6 +22,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     button.addEventListener("click", () => {
         var eventDetail;
 
+        // Add custom additional event detail for events here
         switch (onClickEventName) {
             case EVENTS.TOOLBAR.DARK_MODE_TOGGLE:
                 eventDetail = { enterDarkMode: !settings.darkMode };
