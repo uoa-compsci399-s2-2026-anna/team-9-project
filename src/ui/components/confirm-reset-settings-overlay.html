@@ -4,7 +4,12 @@
   call overlay(
     "confirm-reset-settings-overlay",
     "Reset all settings",
-    toggle_event_name="settings:reset_settings_menu_toggle"
+    toggle_event_name="settings:reset_settings_menu_toggle",
+    buttons={
+      "reset-settings-button": "open",
+      "confirm-reset-settings-button": "close",
+      "cancel-reset-settings-button": "close"
+    }
   )
 %}
   <div>

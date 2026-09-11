@@ -51,17 +51,6 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
-/**
- * The button in the 'Settings menu' which, when pressed, opens an overlay
- * which asks the user whether they want to confirm resetting ALL settings to
- * their defaults.
- */
-const resetSettingsButton = document.getElementById("reset-settings-button");
-
-resetSettingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, { openMenu: true });
-});
-
 // Confirm reset settings menu
 
 /**
@@ -71,23 +60,8 @@ resetSettingsButton.addEventListener("click", () => {
 const confirmResetSettingsButton = document.getElementById(
     "confirm-reset-settings-button",
 );
-
-/**
- * The button in the 'Confirm reset settings menu' which dismisses the overlay
- * without doing anything.
- */
-const cancelResetSettingsButton = document.getElementById(
-    "cancel-reset-settings-button",
-);
-
 confirmResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
-    bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
-        openMenu: false,
-    });
-});
-
-cancelResetSettingsButton.addEventListener("click", () => {
     bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
         openMenu: false,
     });
