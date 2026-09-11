@@ -35,6 +35,17 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
     }
 });
 
+/**
+ * The confirmation button in the 'Confirm reset settings menu' which, on
+ * pressed, resets all settings to system defaults.
+ */
+const confirmResetSettingsButton = document.getElementById(
+    "confirm-reset-settings-button",
+);
+confirmResetSettingsButton.addEventListener("click", () => {
+    bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
+});
+
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         // Confirm reset settings overlay must be closed before the settings window can be closed
@@ -52,18 +63,6 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
-// Confirm reset settings menu
-
-/**
- * The confirmation button in the 'Confirm reset settings menu' which, on
- * pressed, resets all settings to system defaults.
- */
-const confirmResetSettingsButton = document.getElementById(
-    "confirm-reset-settings-button",
-);
-confirmResetSettingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SETTINGS.RESET_ALL_SETTINGS);
-});
 
 // Time zone
 const timeZoneSelect = document.getElementById("time-zone-select");
