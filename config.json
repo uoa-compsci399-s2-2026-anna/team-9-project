@@ -5,15 +5,15 @@
             "objects": {
                 "Sun": {
                     "mass": {
-                        "absolute": -1,
+                        "absolute": 1.99e30,
                         "uncertainty": -1
                     },
                     "temp": {
-                        "absolute": -1,
+                        "absolute": 5772,
                         "uncertainty": -1
                     },
                     "radius": {
-                        "absolute": -1,
+                        "absolute": 6.96e8,
                         "uncertainty": -1
                     }
                 },
@@ -23,7 +23,7 @@
                         "uncertainty": 2.1e19
                     },
                     "temp": {
-                        "absolute": -1,
+                        "absolute": 440,
                         "uncertainty": -1
                     },
                     "radius": {
@@ -37,7 +37,7 @@
                         "uncertainty": 2.3e20 
                     }, 
                     "temp": {
-                        "absolute": -1,
+                        "absolute": 735,
                         "uncertainty": -1
                     },
                     "radius": {
@@ -65,7 +65,7 @@
                         "uncertainty": 3.0e19
                     },
                     "temp": {
-                        "absolute": -1,
+                        "absolute": 210,
                         "uncertainty": -1
                     },
                     "radius": {
@@ -93,8 +93,8 @@
                         "uncertainty": 2.6e22
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": 134,
+                        "uncertainty": 4
                     },
                     "radius": {
                         "absolute": 5.8232e7,
@@ -107,8 +107,8 @@
                         "uncertainty": 4.0e21
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": 76,
+                        "uncertainty": 2
                     },
                     "radius": {
                         "absolute": 2.5362e7,
@@ -121,8 +121,8 @@
                         "uncertainty": 4.8e21
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": 72,
+                        "uncertainty": 2
                     },
                     "radius": {
                         "absolute": 2.4622e7,
