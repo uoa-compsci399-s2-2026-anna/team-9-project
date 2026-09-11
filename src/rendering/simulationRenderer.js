@@ -17,6 +17,7 @@ import {
     calculateMaxApoapsis,
     calculateCameraDistance,
     calculateUpVector,
+    calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
 
 let timer;
@@ -277,7 +278,11 @@ async function updateSimulation() {
  */
 function initOrUpdateCamera(canvas, viewRadius, upVector) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
-    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
+    cameraDefaults.position = calculateDefaultCameraPosition(
+        upVector,
+        cameraDistance,
+        Math.PI / 180 // 1 degree in radians
+    );
 
     const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;

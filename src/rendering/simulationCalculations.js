@@ -101,3 +101,46 @@ export function calculateUpVector(orbitalDataValues) {
 
     return averageNormal.normalize();
 }
+
+function areParallel(vectorA, vectorB, tolerance = 1e-10) {
+    const crossProduct = new THREE.Vector3()
+        .crossVectors(vectorA, vectorB);
+
+    return crossProduct.length() < tolerance;
+}
+
+/**
+ * Calculate the default camera position at a specified angle from the up vector.
+ * This ensures the camera direction is not parallel to the up vector and gives a unique camera orientation.
+ * 
+ * @param {THREE.Vector3} upVector The up vector for the camera
+ * @param {number} cameraDistance The distance of the camera from the target
+ * @param {number} angleFromUp The angle from the up vector in radians
+ * @returns {THREE.Vector3} The calculated default camera position
+ */
+export function calculateDefaultCameraPosition(upVector, cameraDistance, angleFromUp) {
+    let arbitraryVector = new THREE.Vector3(1, 0, 0);
+
+    // Use a different arbitrary vector if it is parallel to the up vector
+    if (areParallel(upVector, arbitraryVector)) {
+        arbitraryVector = new THREE.Vector3(0, 1, 0);
+    }
+
+    // Calculate a vector perpendicular to the upVector using the cross product
+    const perpendicularVector = new THREE.Vector3()
+        .crossVectors(upVector, arbitraryVector)
+        .normalize();
+
+    // Calculate the direction of the camera based on the angle from the up vector
+    const towardUpVector = upVector
+        .clone()
+        .multiplyScalar(Math.cos(angleFromUp));
+    const towardPerpendicular = perpendicularVector
+        .clone()
+        .multiplyScalar(Math.sin(angleFromUp));
+    const cameraDirection = towardUpVector
+        .add(towardPerpendicular)
+        .normalize();
+
+    return cameraDirection.multiplyScalar(cameraDistance);
+}
