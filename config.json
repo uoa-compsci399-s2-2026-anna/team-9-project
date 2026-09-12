@@ -6,15 +6,15 @@
                 "Sun": {
                     "mass": {
                         "absolute": 1.99e30,
-                        "uncertainty": -1
+                        "uncertainty": "null"
                     },
                     "temp": {
                         "absolute": 5772,
-                        "uncertainty": -1
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 6.96e8,
-                        "uncertainty": -1
+                        "uncertainty": "null"
                     }
                 },
                 "Mercury": {
@@ -24,7 +24,7 @@
                     },
                     "temp": {
                         "absolute": 440,
-                        "uncertainty": -1
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 2.4394e6,
@@ -38,7 +38,7 @@
                     },
                     "temp": {
                         "absolute": 735,
-                        "uncertainty": -1
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 6.0518e6,
@@ -51,8 +51,8 @@
                         "uncertainty": 2.8e20
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": "null",
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 6.3710084e6,
@@ -66,7 +66,7 @@
                     },
                     "temp": {
                         "absolute": 210,
-                        "uncertainty": -1
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 3.38950e6,
@@ -79,8 +79,8 @@
                         "uncertainty": 8.8e22
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": "null",
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 6.9911e7,
@@ -135,12 +135,12 @@
                         "uncertainty": 9.0e13
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": "null",
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 5.5e3,
-                        "uncertainty": -1
+                        "uncertainty": "null"
                     }
                 }
             },
@@ -255,8 +255,8 @@
                         "uncertainty": 1.29e27
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": "null",
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 1.57e8,
@@ -269,8 +269,8 @@
                         "uncertainty": 3.04e25
                     },
                     "temp": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": "null",
+                        "uncertainty": "null"
                     },
                     "radius": {
                         "absolute": 5.27e7,
