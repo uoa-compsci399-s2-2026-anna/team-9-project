@@ -42,5 +42,25 @@ export const EVENTS = {
         ORBIT_LINES_SELECT: "settings:orbit_lines_select",
         RESET_SETTINGS_MENU_TOGGLE: "settings:reset_settings_menu_toggle",
         RESET_ALL_SETTINGS: "settings:reset_all_settings",
+
+        /**
+         * Open the 'Settings' menu.
+         */
+        OPEN_SETTINGS_MENU: "settings:open_settings_menu",
+
+        /**
+         * Close the 'Settings' menu.
+         */
+        CLOSE_SETTINGS_MENU: "settings:open_settings_menu",
+
+        /**
+         * Open the 'Reset settings' (confirmation) menu.
+         */
+        OPEN_RESET_SETTINGS_MENU: "settings:open_reset_settings_menu",
+
+        /**
+         * Close the 'Reset settings' (confirmation) menu.
+         */
+        CLOSE_RESET_SETTINGS_MENU: "settings:close_reset_settings_menu",
     },
 };
