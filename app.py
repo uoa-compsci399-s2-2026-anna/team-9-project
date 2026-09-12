@@ -42,7 +42,7 @@ app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name=
 
 def get_system_with_name(name):
     name = name.lower()
-    return next(system for system in all_systems if system["name"].lower() == name)
+    return next(system_data for system_data in all_systems if system_data["name"].lower() == name)
 
 
 def init_system_with_name(name):
@@ -91,7 +91,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     current_system = get_system_with_name(system_name)
     # Get all other systems, except the current system
     dropdown_systems = [
-        system for system in all_systems if system["name"] != current_system["name"]
+        system_data for system_data in all_systems if system_data["name"] != current_system["name"]
     ]
 
     # Get the current system's string object list by lookup
@@ -137,14 +137,14 @@ async def get_system_info(system_name: str = ""):
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
 
-    system = get_system_with_name(system_name)
+    system_data = get_system_with_name(system_name)
 
     # Catch poor input
-    if system is None:
+    if system_data is None:
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    return system["objects"]
+    return system_data["objects"]
 
 
 @app.get("/system")
@@ -155,10 +155,10 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
-    system = get_system_with_name(system_name)
+    system_data = get_system_with_name(system_name)
 
     # Catch poor input
-    if system is None:
+    if system_data is None:
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
@@ -166,7 +166,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     # Init system if it is none
     if sim is None:
-        sim, objects = init_system(system)
+        sim, objects = init_system(system_data)
 
     if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)

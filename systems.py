@@ -44,7 +44,7 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system, name):
+def init_system(system_data, name):
     """
     Initialises the given system
     Returns simulation and objects
@@ -53,9 +53,9 @@ def init_system(system, name):
     sim = rebound.Simulation()
     sim.units = UNITS
 
-    sim_initial_jd_tdb[name] = system["timestamp"]
+    sim_initial_jd_tdb[name] = system_data["timestamp"]
 
-    orbits = system["orbits"]
+    orbits = system_data["orbits"]
 
     # Get objects (keys of orbits dictionary) as list
     objects = list(orbits)
