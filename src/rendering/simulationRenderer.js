@@ -8,6 +8,8 @@ import {
     comparingToSolarSystem,
     isObjectHidden,
     getSimulationSpeedMilliseconds,
+    getSimulationTime,
+    setSimulationTime,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
@@ -23,8 +25,8 @@ import { updateCalendar } from "../ui/calendar.js";
 
 let timer;
 
-/** The current simulation time in milliseconds since Unix epoch. */
-export let currentSimulationTime = Date.now();
+// The current simulation time in milliseconds since Unix epoch
+let currentSimulationTime;
 
 let currentSystem;
 
@@ -361,6 +363,7 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
+    currentSimulationTime = getSimulationTime(name);
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
@@ -378,6 +381,10 @@ export async function init(name) {
     initScene();
     initLabelRenderer(canvas);
     initTimer();
+
+    // Persist the current simulation time before the simulation is exited
+    // TODO: consider integrating with event system?
+    window.addEventListener("pagehide", () => setSimulationTime(currentSystem, currentSimulationTime));
 
     // Start rendering frames and updating the simulation
     updateSimulation();

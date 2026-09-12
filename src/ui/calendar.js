@@ -1,7 +1,6 @@
 import { settings } from "../shared/settingsState.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { currentSimulationTime } from "../rendering/simulationRenderer.js";
 import { timeToMilliseconds } from "../utils/utils.js";
 
 // The last simulation time displayed by the calendar

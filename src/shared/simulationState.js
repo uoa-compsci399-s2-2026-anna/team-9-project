@@ -53,6 +53,28 @@ export function getSimulationSpeedMilliseconds() {
 }
 
 /**
+ * 
+ * @param {*} system 
+ * @returns 
+ */
+export function getSimulationTime(system) {
+    simulationState.simulationTimes ??= {};
+    return simulationState.simulationTimes[system] ?? Date.now();
+}
+
+/**
+ * 
+ * @param {*} system 
+ * @param {*} time 
+ */
+export function setSimulationTime(system, time) {
+    simulationState.simulationTimes ??= {};
+    simulationState.simulationTimes[system] = time;
+    persist();
+}
+
+
+/**
  * Gets the array of hidden object names for the given system
  * 
  * @param {string} system The system to get hidden objects for

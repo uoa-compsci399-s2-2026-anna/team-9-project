@@ -2,6 +2,9 @@
   "simulationSpeed": {
     "default": 10
   },
+  "simulationTimes": {
+    "default": {}
+  },
   "simulationSpeedUnit": {
     "default": "day",
     "options": [
