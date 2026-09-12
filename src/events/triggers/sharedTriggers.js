@@ -6,8 +6,6 @@ import {
     comparingToSolarSystem,
 } from "../../shared/simulationState.js";
 
-// TODO: replace X buttons in overlays with button with tooltip
-
 /**
  * Register event listeners, event bus publishes, and any additional event
  * detail (where provided) to all `button_with_tooltip` and `text_button` macro
