@@ -160,7 +160,7 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     system = next(system for system in all_systems if system["name"].lower() == system_name)
 
-    # Hardcode Solar System
+    # Initialise the simulation if its not found
     if sim is None:
         # Init state if empty
         sim, objects = init_system(system)
