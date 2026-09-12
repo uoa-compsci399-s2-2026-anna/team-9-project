@@ -4,8 +4,7 @@
     title,
     toggle_event_name=None,
     open_overlay_event=None,
-    close_overlay_event=None,
-    buttons={}
+    close_overlay_event=None
   )
 %}
   <div
@@ -15,7 +14,6 @@
     data-toggle-event-name="{{ toggle_event_name }}"
     data-open-overlay-event="{{ open_overlay_event }}"
     data-close-overlay-event="{{ close_overlay_event }}"
-    data-buttons="{{ buttons | tojson | forceescape }}"
   >
     <!-- Settings menu itself -->
     <div
