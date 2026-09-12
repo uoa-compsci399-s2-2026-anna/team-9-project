@@ -55,8 +55,10 @@ def init_system(system, name):
 
     sim_initial_jd_tdb[name] = system["timestamp"]
 
-    objects = list(system["orbits"])
     orbits = system["orbits"]
+
+    # Get objects (keys of orbits dictionary) as list
+    objects = list(orbits)
 
     for obj in objects:
         orbit_data = orbits[obj]
