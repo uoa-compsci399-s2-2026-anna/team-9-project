@@ -75,16 +75,16 @@
                 },
                 "Jupiter": {
                     "mass": {
-                        "value": 1.898125e27,
-                        "uncertainty": 8.8e22
+                        "value": 1898.125e24,
+                        "uncertainty": 0.088e24
                     },
                     "temp": {
-                        "value": null,
-                        "uncertainty": null
+                        "value": 165,
+                        "uncertainty": 5
                     },
                     "radius": {
-                        "value": 6.9911e7,
-                        "uncertainty": 6.0e3
+                        "value": 69911e3,
+                        "uncertainty": 6e3
                     }
                 },
                 "Saturn": {
