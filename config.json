@@ -6,15 +6,15 @@
                 "Sun": {
                     "mass": {
                         "value": 1.99e30,
-                        "uncertainty": "null"
+                        "uncertainty": null
                     },
                     "temp": {
                         "value": 5772,
-                        "uncertainty": "null"
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 6.96e8,
-                        "uncertainty": "null"
+                        "uncertainty": null
                     }
                 },
                 "Mercury": {
@@ -24,7 +24,7 @@
                     },
                     "temp": {
                         "value": 440,
-                        "uncertainty": "null"
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 2.4394e6,
@@ -38,7 +38,7 @@
                     },
                     "temp": {
                         "value": 735,
-                        "uncertainty": "null"
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 6.0518e6,
@@ -51,8 +51,8 @@
                         "uncertainty": 2.8e20
                     },
                     "temp": {
-                        "value": "null",
-                        "uncertainty": "null"
+                        "value": null,
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 6.3710084e6,
@@ -66,7 +66,7 @@
                     },
                     "temp": {
                         "value": 210,
-                        "uncertainty": "null"
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 3.38950e6,
@@ -79,8 +79,8 @@
                         "uncertainty": 8.8e22
                     },
                     "temp": {
-                        "value": "null",
-                        "uncertainty": "null"
+                        "value": null,
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 6.9911e7,
@@ -135,12 +135,12 @@
                         "uncertainty": 9.0e13
                     },
                     "temp": {
-                        "value": "null",
-                        "uncertainty": "null"
+                        "value": null,
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 5.5e3,
-                        "uncertainty": "null"
+                        "uncertainty": null
                     }
                 }
             },
@@ -255,8 +255,8 @@
                         "uncertainty": 1.29e27
                     },
                     "temp": {
-                        "value": "null",
-                        "uncertainty": "null"
+                        "value": null,
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 1.57e8,
@@ -269,8 +269,8 @@
                         "uncertainty": 3.04e25
                     },
                     "temp": {
-                        "value": "null",
-                        "uncertainty": "null"
+                        "value": null,
+                        "uncertainty": null
                     },
                     "radius": {
                         "value": 5.27e7,
