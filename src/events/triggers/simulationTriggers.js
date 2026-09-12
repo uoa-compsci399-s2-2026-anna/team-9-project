@@ -1,6 +1,9 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import { running, comparingToSolarSystem } from "../../shared/simulationState.js";
+import {
+    running,
+    comparingToSolarSystem,
+} from "../../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -62,11 +65,16 @@ resetView.addEventListener("click", () => {
 });
 
 // Trigger for comparing to the solar system
-const compareToSolarSystemButton = document.getElementById("compare-to-solar-system-button");
+const compareToSolarSystemButton = document.getElementById(
+    "compare-to-solar-system-button",
+);
 
-if (compareToSolarSystemButton) { // Button does not exist for the solar system itself
+if (compareToSolarSystemButton) {
+    // Button does not exist for the solar system itself
     compareToSolarSystemButton.addEventListener("click", () => {
-        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, { compare: !comparingToSolarSystem });
+        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, {
+            compare: !comparingToSolarSystem,
+        });
     });
 }
 
@@ -96,7 +104,7 @@ labelsInput.addEventListener("change", (event) => {
 });
 
 // Triggers for hiding/showing objects
-const objectsToggles = document.getElementById("objects-toggles");
+const objectsToggles = document.getElementById("objects-scroll-container");
 
 objectsToggles.addEventListener("change", (event) => {
     if (event.target.type !== "checkbox") {
@@ -113,18 +121,29 @@ objectsToggles.addEventListener("change", (event) => {
     });
 });
 
-// View settings panel
-const viewSettingsButton = document.getElementById("view-settings-button");
+// Add event listeners for buttons for each panel, which publishes the relevant
+// event on trigger
+document.querySelectorAll("[data-panel]").forEach((panel) => {
+    const button = panel.querySelector("[data-panel-button]");
 
-viewSettingsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE);
-});
+    var event;
 
-// Objects panel
-const objectsButton = document.getElementById("objects-button");
+    switch (button.id) {
+        case "view-settings-button":
+            event = EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE;
+            break;
+        case "objects-button":
+            event = EVENTS.SIM.OBJECTS_PANEL_TOGGLE;
+            break;
+    }
 
-objectsButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.OBJECTS_PANEL_TOGGLE);
+    button.addEventListener("click", () => {
+        bus.publish(event, {
+            content: panel.querySelector("[data-panel-content]"),
+            showIcon: panel.querySelector("[data-panel-show-icon]"),
+            hideIcon: panel.querySelector("[data-panel-hide-icon]"),
+        });
+    });
 });
 
 // System dropdown (e.g., for changing between Solar System and Kepler-16 on the simulation page)
