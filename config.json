@@ -19,16 +19,16 @@
                 },
                 "Mercury": {
                     "mass": {
-                        "value": 3.30103e23,
-                        "uncertainty": 2.1e19
+                        "value": 0.330103e24,
+                        "uncertainty": 0.000021e24
                     },
                     "temp": {
                         "value": 440,
                         "uncertainty": null
                     },
                     "radius": {
-                        "value": 2.4394e6,
-                        "uncertainty": 1.0e2
+                        "value": 2439.4e3,
+                        "uncertainty": 0.1e3
                     }
                 },
                 "Venus": {
