@@ -102,6 +102,13 @@ export function calculateUpVector(orbitalDataValues) {
     return averageNormal.normalize();
 }
 
+/**
+ * Check if two vectors are parallel.
+ * @param {THREE.Vector3} vectorA The first vector
+ * @param {THREE.Vector3} vectorB The second vector
+ * @param {number} tolerance The tolerance for the dot product
+ * @returns {boolean} True if the vectors are parallel, false otherwise
+ */
 function areParallel(vectorA, vectorB, tolerance = 1e-10) {
     const crossProduct = new THREE.Vector3()
         .crossVectors(vectorA, vectorB);
