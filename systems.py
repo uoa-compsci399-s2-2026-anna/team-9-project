@@ -138,24 +138,24 @@ def init_trappist_1():
 
     # Add and set all objects in the trappist-1 system
     objects = [
-        "Trappist-1",
-        "Trappist-1b",
-        "Trappist-1c",
-        "Trappist-1d",
-        "Trappist-1e",
-        "Trappist-1f",
-        "Trappist-1g",
-        "Trappist-1h",
+        "TRAPPIST-1",
+        "TRAPPIST-1b",
+        "TRAPPIST-1c",
+        "TRAPPIST-1d",
+        "TRAPPIST-1e",
+        "TRAPPIST-1f",
+        "TRAPPIST-1g",
+        "TRAPPIST-1h",
     ]
 
-    # Trappist-1
+    # TRAPPIST-1
     sim.add(m=0.0898)
 
     # All inclination and Omega are identical
     inc = 1.5707963267948966
     Omega = 0
 
-    # Trappist-1b
+    # TRAPPIST-1b
     sim.add(
         m=4.13610554870027e-06,
         P=1.510826,
@@ -165,7 +165,7 @@ def init_trappist_1():
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1c
+    # TRAPPIST-1c
     sim.add(
         m=3.93607314034689e-06,
         P=2.421937,
@@ -175,7 +175,7 @@ def init_trappist_1():
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1d
+    # TRAPPIST-1d
     sim.add(
         m=1.16685571539471e-06,
         P=4.049219,
@@ -185,7 +185,7 @@ def init_trappist_1():
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1e
+    # TRAPPIST-1e
     sim.add(
         m=2.08201900105949e-06,
         P=6.101013,
@@ -195,7 +195,7 @@ def init_trappist_1():
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1f
+    # TRAPPIST-1f
     sim.add(
         m=3.12693303808863e-06,
         P=9.207540,
@@ -205,7 +205,7 @@ def init_trappist_1():
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1g
+    # TRAPPIST-1g
     sim.add(
         m=3.97601955222527e-06,
         P=12.352446,
@@ -215,7 +215,7 @@ def init_trappist_1():
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1h
+    # TRAPPIST-1h
     sim.add(
         m=9.79437963423977e-07,
         P=18.772866,
