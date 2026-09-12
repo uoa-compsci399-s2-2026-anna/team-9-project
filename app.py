@@ -141,7 +141,6 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     simulation_time = sim_state["simulationTimes"].get(system_name, time.time() * MS_PER_SECOND)
     simulation_date = format_sim_date(simulation_time, settings_state["timeZone"])
     elapsed_days_text = format_elapsed_days_text(simulation_time, settings_state["timeZone"])
-    print(elapsed_days_text)
 
     return templates.TemplateResponse(
         request=request,
