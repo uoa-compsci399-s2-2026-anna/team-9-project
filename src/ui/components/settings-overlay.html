@@ -94,7 +94,13 @@
   {% endcall %}
 
   <!-- Restore defaults button -->
-  <button id="reset-settings-button" class="self-end">
-    <span class="text-sm">Reset all settings to defaults</span>
-  </button>
+  <!-- TODO: styling -->
+  <div class="self-end">
+    {{
+      text_button(
+        button_text="Reset all settings to default",
+        on_click_event_name="settings:open_reset_settings_menu"
+      )
+    }}
+  </div>
 {% endcall %}
