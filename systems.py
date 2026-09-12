@@ -53,7 +53,7 @@ def init_solar():
     sim = rebound.Simulation()
     sim.units = UNITS
 
-    sim_initial_jd_tdb["solar system"] = unix_to_jd_tdb(time.time())
+    sim_initial_jd_tdb["solar system"] = get_current_jd_tdb()
 
     # Add and set all objects in the solar system
     objects = [
