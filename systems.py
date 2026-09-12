@@ -1,4 +1,47 @@
 import rebound
+from astropy.time import Time
+
+UNITS = ("AU", "day", "Msun")
+
+# From Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet"
+# https://arxiv.org/abs/1109.3432
+KEPLER_16_INITIAL_BJD_TDB = 2_455_212.12316
+
+# From Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets"
+# https://arxiv.org/abs/2010.01074
+TRAPPIST_1_INITIAL_BJD_TDB = 2_457_257.93115525
+
+
+# Time when sim.t = 0 for each system
+# Note: Kepler-16 and TRAPPIST-1 use BJD_TDB, while the Solar System uses JD_TDB,
+# so there is a small difference in the time representation.
+sim_initial_jd_tdb = {
+    "solar system": None, # Will be set to the current time when initialised
+    "kepler-16": KEPLER_16_INITIAL_BJD_TDB,
+    "trappist-1": TRAPPIST_1_INITIAL_BJD_TDB,
+}
+
+
+def unix_to_jd_tdb(t: float) -> float:
+    """
+    Convert a unix timestamp in milliseconds to a JD_TDB timestamp in days
+    """
+    time_in_s = t / 1000
+    return Time(time_in_s, format="unix", scale="utc").tdb.jd
+
+
+def unix_to_sim_time(system_name: str, t: float) -> float:
+    """
+    Convert a unix timestamp in milliseconds to a simulation time in days
+    """
+    return unix_to_jd_tdb(t) - sim_initial_jd_tdb[system_name]
+
+
+def get_current_jd_tdb() -> float:
+    """
+    Get the current JD_TDB timestamp in days
+    """
+    return Time.now().tdb.jd
 
 
 def init_solar():
@@ -8,11 +51,9 @@ def init_solar():
     """
     # Initialise the simulation
     sim = rebound.Simulation()
+    sim.units = UNITS
 
-    sim.units = ("AU", "s", "Msun")
-
-    # Add all solar system objects
-    sim.add("solar system")
+    sim_initial_jd_tdb["solar system"] = get_current_jd_tdb()
 
     # Add and set all objects in the solar system
     objects = [
@@ -25,19 +66,11 @@ def init_solar():
         "Saturn",
         "Uranus",
         "Neptune",
-        "1P/Halley",
+        "DES=1P",
     ]
 
-    # Add Halley's comet
-    sim.add(
-        m=0.0,
-        a=17.8,
-        e=0.967,
-        inc=2.8274333882,
-        omega=1.0192722832,
-        Omega=1.9530234330,
-        M=0.0,
-    )
+    for obj in objects:
+        sim.add(obj)
 
     # Move to COM of the system
     sim.move_to_com()
@@ -55,8 +88,7 @@ def init_kepler_16():
     """
     # Initialise the simulation
     sim = rebound.Simulation()
-
-    sim.units = ("AU", "s", "Msun")
+    sim.units = UNITS
 
     # Add and set all objects in the kepler-16 system
     objects = [
@@ -103,95 +135,94 @@ def init_trappist_1():
     """
     # Initialise the simulation
     sim = rebound.Simulation()
-
-    sim.units = ("AU", "s", "Msun")
+    sim.units = UNITS
 
     # Add and set all objects in the trappist-1 system
     objects = [
-        "Trappist-1",
-        "Trappist-1b",
-        "Trappist-1c",
-        "Trappist-1d",
-        "Trappist-1e",
-        "Trappist-1f",
-        "Trappist-1g",
-        "Trappist-1h",
+        "TRAPPIST-1",
+        "TRAPPIST-1b",
+        "TRAPPIST-1c",
+        "TRAPPIST-1d",
+        "TRAPPIST-1e",
+        "TRAPPIST-1f",
+        "TRAPPIST-1g",
+        "TRAPPIST-1h",
     ]
 
-    # Trappist-1
+    # TRAPPIST-1
     sim.add(m=0.0898)
 
     # All inclination and Omega are identical
     inc = 1.5707963267948966
     Omega = 0
 
-    # Trappist-1b
+    # TRAPPIST-1b
     sim.add(
-        m=1.2366358000000002e-06,
-        P=130535.3664,
+        m=4.13610554870027e-06,
+        P=1.510826,
         e=0.0030547340309755285,
         omega=2.3515648936386335,
-        M=1.58330904089647,
+        M=0.806833482602799, # TODO: verify all M values for TRAPPIST-1 planets
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1c
+    # TRAPPIST-1c
     sim.add(
-        m=1.176829e-06,
-        P=209255.35679999998,
+        m=3.93607314034689e-06,
+        P=2.421937,
         e=0.0005500909015790027,
         omega=0.01817981507297828,
-        M=4.581013289959033,
+        M=6.132529809985432,
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1d
+    # TRAPPIST-1d
     sim.add(
-        m=3.48873e-07,
-        P=349852.5216,
+        m=1.16685571539471e-06,
+        P=4.049219,
         e=0.005632983223834418,
         omega=2.64777152033153,
-        M=1.3398571437885913,
+        M=0.272782080175814,
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1e
+    # TRAPPIST-1e
     sim.add(
-        m=6.224936e-07,
-        P=527127.5232,
+        m=2.08201900105949e-06,
+        P=6.101013,
         e=0.006324634376784163,
         omega=-0.8167078389843289,
-        M=0.10653405834521407,
+        M=2.485348216981597,
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1f
+    # TRAPPIST-1f
     sim.add(
-        m=9.349078000000002e-07,
-        P=795531.456,
+        m=3.12693303808863e-06,
+        P=9.207540,
         e=0.00841546790143008,
         omega=-3.080952805470817,
-        M=0.5847415970602159,
+        M=5.253296959827790,
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1g
+    # TRAPPIST-1g
     sim.add(
-        m=1.1887724e-06,
-        P=1067251.3344,
+        m=3.97601955222527e-06,
+        P=12.352446,
         e=0.004009788024322483,
         omega=0.32490511806511907,
-        M=0.1101426471560622,
+        M=1.348441163931109,
         inc=inc,
         Omega=Omega,
     )
-    # Trappist-1h
+    # TRAPPIST-1h
     sim.add(
-        m=2.9283780000000003e-07,
-        P=1621975.6224,
+        m=9.79437963423977e-07,
+        P=18.772866,
         e=0.003650054794109261,
         omega=-3.136113256373088,
-        M=2.786133876732481,
+        M=1.217158246012907,
         inc=inc,
         Omega=Omega,
     )

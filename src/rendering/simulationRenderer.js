@@ -7,7 +7,7 @@ import {
     frozen,
     comparingToSolarSystem,
     isObjectHidden,
-    getSimulationSpeedSeconds,
+    getSimulationSpeedMilliseconds,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
@@ -22,8 +22,8 @@ import {
 
 let timer;
 
-/** The current simulation time in seconds. */
-export let currentSimulationTime = 0;
+/** The current simulation time in milliseconds since Unix epoch. */
+export let currentSimulationTime = Date.now();
 
 let currentSystem;
 
@@ -356,11 +356,10 @@ function initTimer() {
  * @param {string} name System name
  */
 export async function init(name) {
+    currentSystem = name;
+
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-
-    currentSimulationTime = 0;
-    currentSystem = name;
 
     const currentSystemData = await getReferenceSystemData(currentSystem);
     const orbitalDataValues = Object.values(currentSystemData.orbital_data);
@@ -382,12 +381,12 @@ export async function init(name) {
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedSeconds();
+    currentSimulationTime += getSimulationSpeedMilliseconds();
     updateSimulation();
 }
 
 export function stepBack() {
-    currentSimulationTime -= getSimulationSpeedSeconds();
+    currentSimulationTime -= getSimulationSpeedMilliseconds();
     updateSimulation();
 }
 
@@ -550,7 +549,7 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += getSimulationSpeedSeconds() * deltaTime;
+        currentSimulationTime += getSimulationSpeedMilliseconds() * deltaTime;
 
         updateSimulation();
     }

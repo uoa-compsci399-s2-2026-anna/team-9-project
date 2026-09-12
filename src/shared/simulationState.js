@@ -1,4 +1,4 @@
-import { timeToSeconds } from "../utils/utils.js";
+import { timeToMilliseconds } from "../utils/utils.js";
 
 /** 
  * Loads the current simulation state from the simulation-state script element
@@ -44,12 +44,12 @@ export function setSimulationState(key, value) {
 }
 
 /**
- * Gets the simulation speed converted to seconds.
+ * Gets the simulation speed per second converted to milliseconds.
  * 
- * @returns {number} The simulation speed in seconds
+ * @returns {number} The simulation speed per second in milliseconds
  */
-export function getSimulationSpeedSeconds() {
-    return timeToSeconds(simulationState.simulationSpeed, simulationState.simulationSpeedUnit);
+export function getSimulationSpeedMilliseconds() {
+    return timeToMilliseconds(simulationState.simulationSpeed, simulationState.simulationSpeedUnit);
 }
 
 /**
