@@ -3,14 +3,7 @@ import { EVENTS } from "../events.js";
 
 // Add event listeners for buttons in overlays
 document.querySelectorAll("[data-overlay]").forEach((overlay) => {
-    const closeButton = overlay.querySelector("[data-close-overlay-button]");
-
     const closeOverlayEvent = overlay.dataset.closeOverlayEvent;
-
-    // Close menu if user clicks close ('X') button
-    closeButton.addEventListener("click", () => {
-        bus.publish(closeOverlayEvent);
-    });
 
     // Close menu if user clicks outside of main panel
     overlay.addEventListener("click", (event) => {
@@ -19,8 +12,6 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
         }
     });
 });
-
-// TODO: event for confirm reset settings button (allow multiple events per button)
 
 // Close overlays on pressing Escape
 document.addEventListener("keydown", (e) => {
