@@ -1,5 +1,6 @@
 {% from "components/overlay.html" import overlay %}
 {% from "components/settings-option.html" import settings_option %}
+{% from "components/text-button.html" import text_button %}
 
 {%
   macro settings_section(
@@ -29,7 +30,9 @@
   call overlay(
     "settings-overlay",
     "Settings",
-    toggle_event_name="settings:menu_toggle",
+
+    open_overlay_event="settings:open_settings_menu",
+    close_overlay_event="settings:close_settings_menu"
   )
 %}
   <!-- General settings section -->

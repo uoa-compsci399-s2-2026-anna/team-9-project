@@ -1,15 +1,13 @@
 {% from "components/overlay.html" import overlay %}
+{% from "components/text-button.html" import text_button %}
 
 {%
   call overlay(
     "confirm-reset-settings-overlay",
     "Reset all settings",
-    toggle_event_name="settings:reset_settings_menu_toggle",
-    buttons={
-      "reset-settings-button": "open",
-      "confirm-reset-settings-button": "close",
-      "cancel-reset-settings-button": "close"
-    }
+
+    open_overlay_event="settings:open_reset_settings_menu",
+    close_overlay_event="settings:close_reset_settings_menu"
   )
 %}
   <div>
