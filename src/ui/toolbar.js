@@ -50,15 +50,12 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
 
     bus.subscribe(openOverlayEvent, () => {
         overlay.classList.add("opacity-100");
-        // TODO: make this more robust (remove use of ${})
-        overlay.classList.add(`${overlay.id}-open`);
         overlay.classList.remove("opacity-0");
         overlay.classList.remove("pointer-events-none");
     });
 
     bus.subscribe(closeOverlayEvent, () => {
         overlay.classList.remove("opacity-100");
-        overlay.classList.remove(`${overlay.id}-open`);
         overlay.classList.add("opacity-0");
         overlay.classList.add("pointer-events-none");
     });
