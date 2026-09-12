@@ -19,10 +19,6 @@ To run the program use:
 npm run dev
 ```
 
-## Useful Links
-- [node version manager](https://www.nvmnode.com/)
-- [`electron` Reference Docs](https://www.electronjs.org/docs/latest/)
-
 # Running the Python Web-server
 ## Installing the Packages
 ```sh
@@ -96,3 +92,7 @@ npm run watch
 ```
 
 This runs `npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch`
+
+# Useful Links
+- [node version manager](https://www.nvmnode.com/)
+- [`electron` Reference Docs](https://www.electronjs.org/docs/latest/)

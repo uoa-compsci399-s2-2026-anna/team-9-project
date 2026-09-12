@@ -1,13 +1,71 @@
 const { spawn } = require('child_process');
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron');
 const path = require('path');
+const Store = require('electron-store'); // Refer to https://github.com/sindresorhus/electron-store
+const settingsSchema = require('./src/shared/settingsSchema.json');
+const simulationStateSchema = require('./src/shared/simulationStateSchema.json');
 
 // Squirrel launches the appplication multiple extra times during install/update/uninstall
 // so it can create/remove the start menu shortcut. This detects those launches,
 // handles the shortcut, and quits the application immediately.
 if (require('electron-squirrel-startup')) {
     app.quit();
+    return;
 }
+
+// Initialise the default settings from the settings schema
+const DEFAULT_SETTINGS = Object.fromEntries(
+    Object.entries(settingsSchema).map(([key, field]) => [key, field.default])
+);
+
+// Initialise the default simulation state from the simulate state schema
+const DEFAULT_SIMULATION_STATE = Object.fromEntries(
+    Object.entries(simulationStateSchema).map(([key, field]) => [key, structuredClone(field.default)])
+);
+
+const store = new Store();
+
+// Initialise the settings store in case of any missing values
+const existingSettings = store.get('settings') || {};
+store.set('settings', {
+    ...DEFAULT_SETTINGS,
+    // By default, whether dark mode is used depends on the theme of the user's device
+    darkMode: nativeTheme.shouldUseDarkColors,
+    ...existingSettings,
+});
+
+// Initialise the simulation state to the default simulation state
+let simulationState = { ...DEFAULT_SIMULATION_STATE };
+
+// Handle settings saved between run
+ipcMain.handle('settings:get', () => {
+    return store.get('settings');
+});
+
+ipcMain.handle('settings:set', (_event, newSettings) => {
+    store.set('settings', {
+        ...store.get('settings'),
+        ...newSettings
+    });
+});
+
+// Update the simulation state based on the new state
+ipcMain.on('simulationState:set', (_event, newState) => {
+    simulationState = { ...simulationState, ...newState };
+});
+
+let mainWindow;
+
+ipcMain.on('fullscreen:toggle', () => {
+    if (!mainWindow) { 
+        return;
+    }
+    mainWindow.setFullScreen(!mainWindow.isFullScreen());
+});
+
+ipcMain.handle('fullscreen:get', () => {
+    return mainWindow?.isFullScreen() ?? false;
+});
 
 // The python web-server sub-process
 var pythonProcess = null;
@@ -97,20 +155,66 @@ function spawnPythonProcess(resolve, reject) {
 }
 
 /**
+ * Builds the initial URL for the application. Adds the stored settings state to the
+ * base URL as search parameters. This state is then handled by the initial route.
+ * 
+ * @param {string} baseUrl The base URL for the application
+ * @returns The base URL with the settings state included as search parameters
+ */
+function buildInitialUrl(baseUrl) {
+    const parsed = new URL(baseUrl);
+    // Use the saved state
+    parsed.searchParams.set('settings', JSON.stringify(store.get('settings') || {}));
+    return parsed.toString();
+}
+
+/**
  * Creates the electron window and binds itself to the given url
  * 
  * @param {Promise} url - A promise to the entry url to bind the application to
  */
 async function createWindow(python_url) {
     // Create the browser window with specified preferences
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         show: false,    
         webPreferences: {
             nodeIntegration: false,
-            contextIsolation: true
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js'),
         }
+    });
+
+    // Inform the renderer process upon the application entering/exiting fullscreen
+    mainWindow.on('enter-full-screen', () => mainWindow.webContents.send('fullscreen:changed', true));
+    mainWindow.on('leave-full-screen', () => mainWindow.webContents.send('fullscreen:changed', false));
+
+    /**
+     * Override the default behaviour when a user navigates to another URL.
+     * 
+     * Adds the setting state as search parameters to the target URL. Also adds
+     * the fullscreen state as a search parameter.
+     * 
+     * If the user is navigating to a simulation page, the simulation state
+     * are added as search parameters.
+     * 
+     * These states are handled by the target route (see app.py).
+     * 
+     * Loads the URL with the added search parameters.
+     */
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        const parsed = new URL(url);
+        event.preventDefault();
+
+        parsed.searchParams.set('settings', JSON.stringify(store.get('settings') || {}));
+        parsed.searchParams.set('fullscreen', mainWindow.isFullScreen());
+
+        if (parsed.pathname.startsWith('/simulation/')) {
+            parsed.searchParams.set('state', JSON.stringify(simulationState));
+        }
+
+        mainWindow.loadURL(parsed.toString());
     });
 
     var url;
@@ -125,6 +229,9 @@ async function createWindow(python_url) {
 
         return;
     }
+
+    // Include the persisted state in the initial URL
+    url = buildInitialUrl(url);
 
     console.log(`Connecting to '${url}'...`);
 
