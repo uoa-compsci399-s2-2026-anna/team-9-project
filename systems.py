@@ -161,7 +161,7 @@ def init_trappist_1():
         P=1.510826,
         e=0.0030547340309755285,
         omega=2.3515648936386335,
-        M=0.806833482602799,
+        M=0.806833482602799, # TODO: verify all M values for TRAPPIST-1 planets
         inc=inc,
         Omega=Omega,
     )
