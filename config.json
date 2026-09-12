@@ -34,14 +34,14 @@
                 "Venus": {
                     "mass": {
                         "value": 4.86731e24,
-                        "uncertainty": 2.3e20
+                        "uncertainty": 0.00023e24
                     },
                     "temp": {
                         "value": 735,
                         "uncertainty": null
                     },
                     "radius": {
-                        "value": 6.0518e6,
+                        "value": 6051.8e3,
                         "uncertainty": 1.0e3
                     }
                 },
