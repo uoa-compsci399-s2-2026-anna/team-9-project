@@ -18,15 +18,17 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         // Confirm reset settings overlay must be closed before the settings window can be closed
         if (
-            document.body.classList.contains(
-                "confirm-reset-settings-overlay-open",
-            )
+            document
+                .getElementById("confirm-reset-settings-overlay")
+                .checkVisibility({ checkOpacity: true })
         ) {
-            bus.publish(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, {
-                openMenu: false,
-            });
-        } else if (document.body.classList.contains("settings-menu-open")) {
-            bus.publish(EVENTS.SETTINGS.MENU_TOGGLE, { openMenu: false });
+            bus.publish(EVENTS.SETTINGS.CLOSE_RESET_SETTINGS_MENU);
+        } else if (
+            document
+                .getElementById("settings-overlay")
+                .checkVisibility({ checkOpacity: true })
+        ) {
+            bus.publish(EVENTS.SETTINGS.CLOSE_SETTINGS_MENU);
         }
     }
 });
