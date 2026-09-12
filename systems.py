@@ -26,7 +26,8 @@ def unix_to_jd_tdb(t: float) -> float:
     """
     Convert a unix timestamp in milliseconds to a JD_TDB timestamp in days
     """
-    return Time(t / 1000, format="unix", scale="utc").tdb.jd
+    time_in_s = t / 1000
+    return Time(time_in_s, format="unix", scale="utc").tdb.jd
 
 
 def unix_to_sim_time(system_name: str, t: float) -> float:
