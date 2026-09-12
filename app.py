@@ -39,9 +39,14 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
+
+def get_system_with_name(name):
+    name = name.lower()
+    return next(system for system in all_systems if system["name"].lower() == name)
+
+
 def init_system_with_name(name):
-    system = next(system for system in all_systems if system["name"].lower() == name)
-    return init_system(system, name)
+    return init_system(get_system_with_name(name), name)
 
 # Each init_*() returns (sim, objects); take only the list of string objects
 sims = {
@@ -83,10 +88,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     settings_state = json.loads(settings)
 
     # Get the current system
-    current_system = next(
-        system for system in all_systems if system["name"] == system_name
-    )
-
+    current_system = get_system_with_name(system_name)
     # Get all other systems, except the current system
     dropdown_systems = [
         system for system in all_systems if system["name"] != current_system["name"]
@@ -135,12 +137,12 @@ async def get_system_info(system_name: str = ""):
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
 
+    system = get_system_with_name(system_name)
+
     # Catch poor input
-    if not any(system["name"].lower() == system_name for system in all_systems):
+    if system is None:
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
-
-    system = next(system for system in all_systems if system["name"].lower() == system_name)
 
     return system["objects"]
 
@@ -153,15 +155,14 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
+    system = get_system_with_name(system_name)
 
     # Catch poor input
-    if not any(system["name"].lower() == system_name for system in all_systems):
+    if system is None:
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     sim, objects = sims.get(system_name, (None, None))
-
-    system = next(system for system in all_systems if system["name"].lower() == system_name)
 
     # Init system if it is none
     if sim is None:
