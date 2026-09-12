@@ -19,6 +19,7 @@ import {
     calculateUpVector,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
+import { updateCalendar } from "../ui/calendar.js";
 
 let timer;
 
@@ -249,6 +250,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
  * Update the positions of all objects in the current system.
  */
 async function updateSimulation() {
+    updateCalendar(currentSimulationTime);
     const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {

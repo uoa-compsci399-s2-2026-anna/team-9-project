@@ -2,11 +2,12 @@ import { settings } from "../shared/settingsState.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { currentSimulationTime } from "../rendering/simulationRenderer.js";
+import { timeToMilliseconds } from "../utils/utils.js";
 
-updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
+// updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
-    updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
+    // updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
 });
 
 /**
@@ -43,28 +44,31 @@ function formatted(date) {
 }
 
 /**
- * Updates all calendars to show the given date-time in the given time zone,
- * and sets the minimum and maximum of the calendar to +/- 1 year.
- * @param {Date} date The date object to set the calendar to
+ * Updates all calendars to show the given simulation time in the given time zone,
+ * and sets the minimum and maximum of the calendar to +/- 3 years.
+ * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  */
-function updateCalendar(date) {
+export function updateCalendar(simulationTime) {
+    const date = new Date(simulationTime);
+
     const calendars = document.querySelectorAll(".calendar");
 
-    const YEARS_IN_MS = 365 * 24 * 60 * 60 * 1000;
+    const CALENDAR_RANGE_YEARS = 3;
+    const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
 
     calendars.forEach((calendar) => {
         calendar.value = formatted(date);
-        calendar.min = formatted(new Date(date.getTime() - 3 * YEARS_IN_MS));
-        calendar.max = formatted(new Date(date.getTime() + 3 * YEARS_IN_MS));
+        calendar.min = formatted(new Date(date.getTime() - CALENDAR_RANGE_MS));
+        calendar.max = formatted(new Date(date.getTime() + CALENDAR_RANGE_MS));
 
         // Update the previousValue field 
         calendar.dataset.previousValue = calendar.value;
     });
 }
 
-/**
- * @returns OPIS simulation timestamp in milliseconds since Unix epoch.
- */
-function getSimulationTimeInMillisecondsSinceUnixEpoch() {
-    return new Date(currentSimulationTime);
-}
+// /**
+//  * @returns OPIS simulation timestamp in milliseconds since Unix epoch.
+//  */
+// function getSimulationTimeInMillisecondsSinceUnixEpoch() {
+//     return new Date(currentSimulationTime);
+// }
