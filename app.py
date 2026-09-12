@@ -6,7 +6,7 @@ import rebound
 import os
 import json
 import sys
-from systems import init_solar, init_kepler_16, init_trappist_1, unix_to_sim_time, init_system
+from systems import unix_to_sim_time, init_system
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
