@@ -23,7 +23,9 @@ export function timeToMilliseconds(time, unit) {
     return time * units[unit];
 }
 
-// TODO: use in calendar
+/**
+ * Maps time zone abbreviations to IANA timezone identifiers
+ */
 export const TIMEZONE_MAP = {
     UTC: "UTC",
     NZT: "Pacific/Auckland",

@@ -1,7 +1,7 @@
 import { settings } from "../shared/settingsState.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { timeToMilliseconds } from "../utils/utils.js";
+import { TIMEZONE_MAP, timeToMilliseconds } from "../utils/utils.js";
 
 // The last simulation time displayed by the calendar
 let lastSimulationTime = null;
@@ -18,17 +18,7 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
  * zone setting.
  */
 function formatted(date) {
-    var timeZone;
-
-    switch (settings.timeZone) {
-        case "NZT":
-            timeZone = "Pacific/Auckland";
-            break;
-        case "UTC":
-        default:
-            timeZone = "UTC";
-            break;
-    }
+    var timeZone = TIMEZONE_MAP[settings.timeZone];
 
     // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
     return new Intl.DateTimeFormat("sv", {
