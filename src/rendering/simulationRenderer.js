@@ -17,6 +17,7 @@ import {
     calculateMaxApoapsis,
     calculateCameraDistance,
     calculateUpVector,
+    calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
 
 let timer;
@@ -31,6 +32,12 @@ let camera;
 let controls;
 let renderer;
 let labelRenderer;
+
+// Camera settings are calculated using orbital data at the reference timestamp.
+// TODO: Backend endpoint for getting reference system data,
+// which will be at the initial BJD_TDB of each system.
+const referenceTimestamp = 1767225600000; // 2026-01-01 00:00:00 UTC in ms
+const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
@@ -99,6 +106,23 @@ function getFontSize(size) {
 
 function getFontFamily(chosenFont) {
     return fontFamilies[chosenFont] ?? fontFamilies.Default;
+}
+
+/**
+ * Get the reference system data for a given system.
+ * If the data is not in the cache, it will be fetched and stored.
+ * 
+ * @param {string} system The name of the system
+ * @returns {Promise<Object>} The reference system data
+ */
+async function getReferenceSystemData(system) {
+    if (!referenceSystemData.has(system)) {
+        referenceSystemData.set(
+            system,
+            await getSystemData(system, referenceTimestamp)
+        );
+    }
+    return referenceSystemData.get(system);
 }
 
 /**
@@ -223,16 +247,9 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
 
 /**
  * Update the positions of all objects in the current system.
- * If the system data is not provided, it will be fetched from the backend.
- * 
- * @param {Object} [currentSystemData] Optional current system data to use for the update
- * @param {Object} [solarSystemData] Optional solar system data to use for the update
  */
-async function updateSimulation(currentSystemData = null, solarSystemData = null) {
-    // Fetch data for the current system and current simulation time if not provided
-    if (!currentSystemData) {
-        currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
-    }
+async function updateSimulation() {
+    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
         createOrUpdateObjectMesh(name, position, currentSystemGroup);
@@ -242,9 +259,7 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
     }
 
     if (comparingToSolarSystem) {
-        if (!solarSystemData) {
-            solarSystemData = await getSystemData("solar system", currentSimulationTime);
-        }
+        const solarSystemData = await getSystemData("Solar System", currentSimulationTime);
 
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
@@ -265,7 +280,10 @@ async function updateSimulation(currentSystemData = null, solarSystemData = null
  */
 function initOrUpdateCamera(canvas, viewRadius, upVector) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
-    cameraDefaults.position = upVector.clone().multiplyScalar(cameraDistance);
+    cameraDefaults.position = calculateDefaultCameraPosition(
+        upVector,
+        cameraDistance
+    );
 
     const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;
@@ -345,8 +363,8 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
-    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
+    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
+    const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
@@ -360,7 +378,7 @@ export async function init(name) {
     initTimer();
 
     // Start rendering frames and updating the simulation
-    updateSimulation(currentSystemData);
+    updateSimulation();
     renderFrame();
 }
 
@@ -383,11 +401,11 @@ export function resetView() {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
-    const solarSystemData = await getSystemData("solar system", currentSimulationTime);
+    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
+    const referenceDataForSolarSystem = await getReferenceSystemData("Solar System");
 
-    const currentOrbitalDataValues = Object.values(currentSystemData.orbital_data);
-    const solarOrbitalDataValues = Object.values(solarSystemData.orbital_data);
+    const currentOrbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
+    const solarOrbitalDataValues = Object.values(referenceDataForSolarSystem.orbital_data);
 
     const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
     const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
@@ -414,7 +432,7 @@ export async function compareToSolarSystem() {
 
     resetView();
 
-    updateSimulation(currentSystemData, solarSystemData);
+    updateSimulation();
 }
 
 export async function hideSolarSystem() {
@@ -424,8 +442,8 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
-    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
+    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
+    const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier;
@@ -434,7 +452,7 @@ export async function hideSolarSystem() {
 
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
-    updateSimulation(currentSystemData);
+    updateSimulation();
 }
 
 export function setLabelsVisibility(value) {

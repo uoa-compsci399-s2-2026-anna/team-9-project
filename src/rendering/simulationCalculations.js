@@ -101,3 +101,56 @@ export function calculateUpVector(orbitalDataValues) {
 
     return averageNormal.normalize();
 }
+
+/**
+ * Check if two vectors are parallel.
+ * @param {THREE.Vector3} vectorA The first vector
+ * @param {THREE.Vector3} vectorB The second vector
+ * @param {number} tolerance The tolerance for the dot product
+ * @returns {boolean} True if the vectors are parallel, false otherwise
+ */
+function areParallel(vectorA, vectorB, tolerance = 1e-10) {
+    const crossProduct = new THREE.Vector3()
+        .crossVectors(vectorA, vectorB);
+
+    return crossProduct.length() < tolerance;
+}
+
+/**
+ * Calculate the default camera position, at 1 degree from the up vector.
+ * This ensures the camera direction is not parallel to the up vector.
+ * Otherwise, camera orientation would not be uniquely determined by the position.
+ * 
+ * @param {THREE.Vector3} upVector The up vector for the camera
+ * @param {number} cameraDistance The distance of the camera from the target
+ * @returns {THREE.Vector3} The calculated default camera position
+ */
+export function calculateDefaultCameraPosition(upVector, cameraDistance) {
+    const angleFromUp = Math.PI / 180; // 1 degree in radians
+
+    // Get an arbitrary vector that is not parallel to the up vector
+    // This will be used to calculate a vector that is perpendicular to the up vector
+    let arbitraryVector = new THREE.Vector3(1, 0, 0);
+    if (areParallel(upVector, arbitraryVector)) {
+        arbitraryVector = new THREE.Vector3(0, 1, 0);
+    }
+
+    // Calculate a vector perpendicular to the up vector using the cross product
+    // This vector will be used to calculate the camera direction
+    const perpendicularVector = new THREE.Vector3()
+        .crossVectors(upVector, arbitraryVector)
+        .normalize();
+
+    // Calculate the direction of the camera based on the angle from the up vector
+    const towardUpVector = upVector
+        .clone()
+        .multiplyScalar(Math.cos(angleFromUp));
+    const towardPerpendicular = perpendicularVector
+        .clone()
+        .multiplyScalar(Math.sin(angleFromUp));
+    const cameraDirection = towardUpVector
+        .add(towardPerpendicular)
+        .normalize();
+
+    return cameraDirection.multiplyScalar(cameraDistance);
+}
