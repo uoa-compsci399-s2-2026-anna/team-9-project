@@ -131,15 +131,15 @@
                 },
                 "1P/Halley": {
                     "mass": {
-                        "absolute": -1,
-                        "uncertainty": -1
+                        "absolute": 2.2e14,
+                        "uncertainty": 9.0e13
                     },
                     "temp": {
                         "absolute": -1,
                         "uncertainty": -1
                     },
                     "radius": {
-                        "absolute": -1,
+                        "absolute": 5.5e3,
                         "uncertainty": -1
                     }
                 }
