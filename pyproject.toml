@@ -5,6 +5,7 @@ description = "OPIS: Orbital Planetary Interactive Simulator—A project for the
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "astropy>=8.0.1",
     "fastapi[standard]>=0.141.1",
     "rebound>=5.1.1",
 ]

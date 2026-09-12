@@ -21,8 +21,8 @@ import {
 
 let timer;
 
-/** The current simulation time in seconds. */
-export let currentSimulationTime = 0;
+/** The current simulation time in seconds since Unix epoch. */
+export let currentSimulationTime = Date.now() / 1000;
 
 let currentSystem;
 
@@ -340,11 +340,10 @@ function initTimer() {
  * @param {string} name System name
  */
 export async function init(name) {
+    currentSystem = name;
+
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-
-    currentSimulationTime = 0;
-    currentSystem = name;
 
     const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
     const orbitalDataValues = Object.values(currentSystemData.orbital_data);
