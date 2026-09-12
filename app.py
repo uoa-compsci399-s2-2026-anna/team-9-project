@@ -7,6 +7,7 @@ import os
 import json
 import sys
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import time
 from systems import init_solar, init_kepler_16, init_trappist_1, unix_to_sim_time
 
@@ -49,6 +50,20 @@ sims = {
 }
 
 MS_PER_SECOND = 1000
+
+TIMEZONE_MAP = {
+    "NZT": "Pacific/Auckland",
+    "UTC": "UTC",
+}
+
+# TODO: document and review
+def format_sim_date(simulation_time_ms, timezone_key):
+    time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
+    time_zone = ZoneInfo(time_zone_name)
+
+    date = datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
+
+    return date.strftime("%Y-%m-%dT%H:%M")
 
 
 @app.get("/")
@@ -97,7 +112,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
 
     # Simulation times are stored and managed on the frontend in milliseconds
     simulation_time = sim_state["simulationTimes"].get(system_name, time.time() * MS_PER_SECOND)
-    simulation_date = datetime.fromtimestamp(simulation_time / MS_PER_SECOND).strftime("%Y-%m-%dT%H:%M")
+    simulation_date = format_sim_date(simulation_time, settings_state["timeZone"])
 
     return templates.TemplateResponse(
         request=request,
