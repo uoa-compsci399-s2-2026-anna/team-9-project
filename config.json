@@ -103,16 +103,16 @@
                 },
                 "Uranus": {
                     "mass": {
-                        "value": 8.68099e25,
-                        "uncertainty": 4.0e21
+                        "value": 86.8099e24,
+                        "uncertainty": 0.0040e24
                     },
                     "temp": {
                         "value": 76,
                         "uncertainty": 2
                     },
                     "radius": {
-                        "value": 2.5362e7,
-                        "uncertainty": 7.0e3
+                        "value": 25362e3,
+                        "uncertainty": 7e3
                     }
                 },
                 "Neptune": {
