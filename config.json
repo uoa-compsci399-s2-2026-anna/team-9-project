@@ -1,13 +1,490 @@
 {
     "systems": [
         {
-            "name": "Solar System"
+            "name": "Solar System",
+            "objects": {
+                "Sun": {
+                    "mass": {
+                        "absolute": 1.99e30,
+                        "uncertainty": -1
+                    },
+                    "temp": {
+                        "absolute": 5772,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 6.96e8,
+                        "uncertainty": -1
+                    }
+                },
+                "Mercury": {
+                    "mass": {
+                        "absolute": 3.30103e23,
+                        "uncertainty": 2.1e19
+                    },
+                    "temp": {
+                        "absolute": 440,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 2.4394e6,
+                        "uncertainty": 1.0e2
+                    }
+                },
+                "Venus": {
+                    "mass": {
+                        "absolute": 4.86731e24,
+                        "uncertainty": 2.3e20
+                    },
+                    "temp": {
+                        "absolute": 735,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 6.0518e6,
+                        "uncertainty": 1.0e3
+                    }
+                },
+                "Earth": {
+                    "mass": {
+                        "absolute": 5.97217e24,
+                        "uncertainty": 2.8e20
+                    },
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 6.3710084e6,
+                        "uncertainty": 1.0e-1
+                    }
+                },
+                "Mars": {
+                    "mass": {
+                        "absolute": 6.41691e23,
+                        "uncertainty": 3.0e19
+                    },
+                    "temp": {
+                        "absolute": 210,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 3.38950e6,
+                        "uncertainty": 2.0e2
+                    }
+                },
+                "Jupiter": {
+                    "mass": {
+                        "absolute": 1.898125e27,
+                        "uncertainty": 8.8e22
+                    },
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 6.9911e7,
+                        "uncertainty": 6.0e3
+                    }
+                },
+                "Saturn": {
+                    "mass": {
+                        "absolute": 5.68317e26,
+                        "uncertainty": 2.6e22
+                    },
+                    "temp": {
+                        "absolute": 134,
+                        "uncertainty": 4
+                    },
+                    "radius": {
+                        "absolute": 5.8232e7,
+                        "uncertainty": 6.0e3
+                    }
+                },
+                "Uranus": {
+                    "mass": {
+                        "absolute": 8.68099e25,
+                        "uncertainty": 4.0e21
+                    },
+                    "temp": {
+                        "absolute": 76,
+                        "uncertainty": 2
+                    },
+                    "radius": {
+                        "absolute": 2.5362e7,
+                        "uncertainty": 7.0e3
+                    }
+                },
+                "Neptune": {
+                    "mass": {
+                        "absolute": 1.024092e26,
+                        "uncertainty": 4.8e21
+                    },
+                    "temp": {
+                        "absolute": 72,
+                        "uncertainty": 2
+                    },
+                    "radius": {
+                        "absolute": 2.4622e7,
+                        "uncertainty": 1.9e4
+                    }
+                },
+                "1P/Halley": {
+                    "mass": {
+                        "absolute": 2.2e14,
+                        "uncertainty": 9.0e13
+                    },
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 5.5e3,
+                        "uncertainty": -1
+                    }
+                }
+            },
+            "orbits": {
+                "Sun": {
+                    "m": 1.0
+                },
+                "Mercury": {
+                    "m": 1.6601141530543e-07,
+                    "a": 0.38709873488039565,
+                    "e": 0.20563425743114344,
+                    "inc": 0.12223761458865381,
+                    "omega": 0.5093941264318138,
+                    "Omega": 0.8430838381492696,
+                    "M": 2.4538992408725733
+                },
+                "Venus": {
+                    "m": 2.4478382877847703e-06,
+                    "a": 0.7233231806491242,
+                    "e": 0.006789378655887644,
+                    "inc": 0.05924616360926004,
+                    "omega": 0.9629526117449547,
+                    "Omega": 1.3373251998759481,
+                    "M": 4.843228228546307
+                },
+                "Earth": {
+                    "m": 3.04043264802264e-06,
+                    "a": 1.0000001983666864,
+                    "e": 0.016711159827984937,
+                    "inc": 4.695342414869022e-05,
+                    "omega": 5.000799929638181,
+                    "Omega": 3.080455259054802,
+                    "M": 4.288246582051437
+                },
+                "Mars": {
+                    "m": 3.227156037554999e-07,
+                    "a": 1.5236188858422626,
+                    "e": 0.09335870466461232,
+                    "inc": 0.03225220589056975,
+                    "omega": 5.0022278304877945,
+                    "Omega": 0.8638493743951475,
+                    "M": 0.3396273943028989
+                },
+                "Jupiter": {
+                    "m": 0.0009547919152112404,
+                    "a": 5.203770080632831,
+                    "e": 0.048639024737792774,
+                    "inc": 0.022751678453263476,
+                    "omega": 4.77188752126391,
+                    "Omega": 1.7543456825123547,
+                    "M": 5.03297871586326
+                },
+                "Saturn": {
+                    "m": 0.0002858856727222417,
+                    "a": 9.539684939565669,
+                    "e": 0.05489760052159008,
+                    "inc": 0.04342249633050542,
+                    "omega": 5.917899089011026,
+                    "Omega": 1.9827291270345913,
+                    "M": 3.668930309954654
+                },
+                "Uranus": {
+                    "m": 4.36624373583127e-05,
+                    "a": 19.19265128299376,
+                    "e": 0.04723165219911783,
+                    "inc": 0.013475526721277055,
+                    "omega": 1.6914218946372914,
+                    "Omega": 1.2916740015134998,
+                    "M": 4.0311865725771785
+                },
+                "Neptune": {
+                    "m": 5.151383772628674e-05,
+                    "a": 30.076046335613285,
+                    "e": 0.008748518832749944,
+                    "inc": 0.03089623544495719,
+                    "omega": 4.754875875867036,
+                    "Omega": 2.3000415819651865,
+                    "M": 5.338392712716602
+                },
+                "1P/Halley": {
+                    "m": 0.0,
+                    "a": 17.8,
+                    "e": 0.967,
+                    "inc": 2.8274333882,
+                    "omega": 1.0192722832,
+                    "Omega": 1.9530234330,
+                    "M": 0.0
+                }
+            }
         },
         {
-            "name": "Kepler-16"
+            "name": "Kepler-16",
+            "objects": {
+                "Kepler-16A": {
+                    "mass": {
+                        "absolute": 1.37e30,
+                        "uncertainty": 6.96e27
+                    },
+                    "temp": {
+                        "absolute": 4450,
+                        "uncertainty": 150
+                    },
+                    "radius": {
+                        "absolute": 4.52e8,
+                        "uncertainty": 9.05e5
+                    }
+                },
+                "Kepler-16B": {
+                    "mass": {
+                        "absolute": 4.09e29,
+                        "uncertainty": 1.29e27
+                    },
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 1.57e8,
+                        "uncertainty": 4.11e5
+                    }
+                },
+                "Kepler-16b": {
+                    "mass": {
+                        "absolute": 6.32e26,
+                        "uncertainty": 3.04e25
+                    },
+                    "temp": {
+                        "absolute": -1,
+                        "uncertainty": -1
+                    },
+                    "radius": {
+                        "absolute": 5.27e7,
+                        "uncertainty": 1.75e5
+                    }
+                }
+            },
+            "orbits": {
+                "Kepler-16A": {
+                    "m": 0.6897
+                },
+                "Kepler-16B": {
+                    "m": 0.20255,
+                    "a": 0.22431,
+                    "e": 0.15944,
+                    "inc": 1.5767321916,
+                    "Omega": 0.0,
+                    "omega": 4.5983142605,
+                    "M": -2.9864677897
+                },
+                "Kepler-16b": {
+                    "m": 0.0003178778,
+                    "a": 0.7048,
+                    "e": 0.0069,
+                    "inc": 1.5713583228,
+                    "Omega": 0.0000523599,
+                    "omega": 5.5501470213,
+                    "M": -3.6912491949
+                }
+            }
         },
         {
-            "name": "TRAPPIST-1"
+            "name": "TRAPPIST-1",
+            "objects": {
+                "Trappist-1": {
+                    "mass": {
+                        "absolute": 1.79e29,
+                        "uncertainty": 4.57e27
+                    },
+                    "temp": {
+                        "absolute": 2566.0,
+                        "uncertainty": 26.0
+                    },
+                    "radius": {
+                        "absolute": 1.60e6,
+                        "uncertainty": 9.05e5
+                    }
+                },
+                "Trappist-1b": {
+                    "mass": {
+                        "absolute": 7.20e6,
+                        "uncertainty": 8.70e4
+                    },
+                    "temp": {
+                        "absolute": 400.1,
+                        "uncertainty": 7.7
+                    },
+                    "radius": {
+                        "absoulute": 8.21e24,
+                        "uncertainty": 4.12e23
+                    }
+                },
+                "Trappist-1c": {
+                    "mass": {
+                        "absolute": 7.00e6,
+                        "uncertainty": 8.60e4
+                    },
+                    "temp": {
+                        "absolute": 341.9,
+                        "uncertainty": 6.6
+                    },
+                    "radius": {
+                        "absolute": 7.81e24,
+                        "uncertainty": 3.35e23
+                    }
+                },
+                "Trappist-1d": {
+                    "mass": {
+                        "absolute": 5.03e6,
+                        "uncertainty": 7.10e4
+                    },
+                    "temp": {
+                        "absolute": 288.0,
+                        "uncertainty": 5.6
+                    },
+                    "radius": {
+                        "absolute": 2.32e24,
+                        "uncertainty": 3.35e23
+                    }
+                },
+                "Trappist-1e": {
+                    "mass": {
+                        "absolute": 5.87e6,
+                        "uncertainty": 8.20e4
+                    },
+                    "temp": {
+                        "absolute": 251.3,
+                        "uncertainty": 4.9
+                    },
+                    "radius": {
+                        "absolute": 4.13e24,
+                        "uncertainty": 1.30e23
+                    }
+                },
+                "Trappist-1f": {
+                    "mass": {
+                        "absolute": 6.66e6,
+                        "uncertainty": 8.50e4
+                    },
+                    "temp": {
+                        "absolute": 219.0,
+                        "uncertainty": 4.2
+                    },
+                    "radius": {
+                        "absolute": 6.21e24,
+                        "uncertainty": 1.84e23
+                    }
+                },
+                "Trappist-1g": {
+                    "mass": {
+                        "absolute": 7.20e6,
+                        "uncertainty": 9.40e4
+                    },
+                    "temp": {
+                        "absolute": 198.6,
+                        "uncertainty": 3.8
+                    },
+                    "radius": {
+                        "absolute": 7.89e24,
+                        "uncertainty": 2.26e23
+                    }
+                },
+                "Trappist-1h": {
+                    "mass": {
+                        "absolute": 4.82e6,
+                        "uncertainty": 9.10e4
+                    },
+                    "temp": {
+                        "absolute": 168.0,
+                        "uncertainty": 28.0
+                    },
+                    "radius": {
+                        "absolute": 1.95e24,
+                        "uncertainty": 1.22e23
+                    }
+                }
+            },
+            "orbits": {
+                "Trappist-1": {
+                    "m": 0.0898
+                },
+                "Trappist-1b": {
+                    "m": 1.2366358000000002e-06,
+                    "P": 130535.3664,
+                    "e": 0.0030547340309755285,
+                    "omega": 2.3515648936386335,
+                    "M": 1.58330904089647,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1c": {
+                    "m": 1.176829e-06,
+                    "P": 209255.35679999998,
+                    "e": 0.0005500909015790027,
+                    "omega": 0.01817981507297828,
+                    "M": 4.581013289959033,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1d": {
+                    "m": 3.48873e-07,
+                    "P": 349852.5216,
+                    "e": 0.005632983223834418,
+                    "omega": 2.64777152033153,
+                    "M": 1.3398571437885913,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1e": {
+                    "m": 6.224936e-07,
+                    "P": 527127.5232,
+                    "e": 0.006324634376784163,
+                    "omega": -0.8167078389843289,
+                    "M": 0.10653405834521407,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1f": {
+                    "m": 9.349078000000002e-07,
+                    "P": 795531.456,
+                    "e": 0.00841546790143008,
+                    "omega": -3.080952805470817,
+                    "M": 0.5847415970602159,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1g": {
+                    "m": 1.1887724e-06,
+                    "P": 1067251.3344,
+                    "e": 0.004009788024322483,
+                    "omega": 0.32490511806511907,
+                    "M": 0.1101426471560622,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1h": {
+                    "m": 2.9283780000000003e-07,
+                    "P": 1621975.6224,
+                    "e": 0.003650054794109261,
+                    "omega": -3.136113256373088,
+                    "M": 2.786133876732481,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                }
+            }
         }
     ]
 }
