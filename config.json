@@ -117,16 +117,16 @@
                 },
                 "Neptune": {
                     "mass": {
-                        "value": 1.024092e26,
-                        "uncertainty": 4.8e21
+                        "value": 102.4092e24,
+                        "uncertainty": 0.0048e24
                     },
                     "temp": {
                         "value": 72,
                         "uncertainty": 2
                     },
                     "radius": {
-                        "value": 2.4622e7,
-                        "uncertainty": 1.9e4
+                        "value": 24622e3,
+                        "uncertainty": 19e3
                     }
                 },
                 "1P/Halley": {
