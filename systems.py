@@ -1,7 +1,50 @@
 import rebound
+from astropy.time import Time
+
+UNITS = ("AU", "day", "Msun")
+
+# From Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet"
+# https://arxiv.org/abs/1109.3432
+KEPLER_16_INITIAL_BJD_TDB = 2_455_212.12316
+
+# From Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets"
+# https://arxiv.org/abs/2010.01074
+TRAPPIST_1_INITIAL_BJD_TDB = 2_457_257.93115525
 
 
-def init_system(system):
+# Time when sim.t = 0 for each system
+# Note: Kepler-16 and TRAPPIST-1 use BJD_TDB, while the Solar System uses JD_TDB,
+# so there is a small difference in the time representation.
+sim_initial_jd_tdb = {
+    "solar system": None, # Will be set to the current time when initialised
+    "kepler-16": KEPLER_16_INITIAL_BJD_TDB,
+    "trappist-1": TRAPPIST_1_INITIAL_BJD_TDB,
+}
+
+
+def unix_to_jd_tdb(t: float) -> float:
+    """
+    Convert a unix timestamp in milliseconds to a JD_TDB timestamp in days
+    """
+    time_in_s = t / 1000
+    return Time(time_in_s, format="unix", scale="utc").tdb.jd
+
+
+def unix_to_sim_time(system_name: str, t: float) -> float:
+    """
+    Convert a unix timestamp in milliseconds to a simulation time in days
+    """
+    return unix_to_jd_tdb(t) - sim_initial_jd_tdb[system_name]
+
+
+def get_current_jd_tdb() -> float:
+    """
+    Get the current JD_TDB timestamp in days
+    """
+    return Time.now().tdb.jd
+
+
+def init_system(system, is_solar=False):
     """
     Initialise general system in config function
     Returns rebound simulation object and objects
@@ -9,8 +52,10 @@ def init_system(system):
     """
     # Initialise the simulation
     sim = rebound.Simulation()
+    sim.units = UNITS
 
-    sim.units = ("AU", "s", "Msun")
+    if is_solar:
+        sim_initial_jd_tdb["solar system"] = get_current_jd_tdb()
 
     # Add and set all objects in the trappist-1 system
     objects = list(system["orbits"])

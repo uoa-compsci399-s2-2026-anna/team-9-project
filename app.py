@@ -28,20 +28,37 @@ with open(os.path.join(base_path, "config.json"), 'r', encoding='utf-8') as f:
 # Get the systems in the config
 all_systems = config["systems"]
 
+# Load the settings schema
+with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
+    settings_schema = json.load(f)
+
+# Load the sim state schema
+with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")) as f:
+    sim_state_schema = json.load(f)
+
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
-sim = None
-current_system = None
-objects = []
+# Each init_*() returns (sim, objects); take only the list of string objects
+sims = {
+    "solar system": init_system(all_systems["Solar System"]),
+    "kepler-16": init_system(all_systems["Kepler-16"]),
+    "trappist-1": init_system(all_systems["TRAPPIST-1"]),
+}
 
 
 @app.get("/")
-async def home(request: Request):
+async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
+    settings_state = json.loads(settings)
+
     return templates.TemplateResponse(
         request=request,
         name="home.html",
         context={
+            "settings": settings_state,
+            "settings_schema": settings_schema,
+            "fullscreen": fullscreen,
+
             "systems": all_systems,
             "dropdown_systems": all_systems,
             # Control which components are rendered on the html page
@@ -56,7 +73,10 @@ async def home(request: Request):
 
 
 @app.get("/simulation/{system_name}")
-async def simulation(request: Request, system_name: str):
+async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}", fullscreen: bool = False):
+    sim_state = json.loads(state)
+
+    settings_state = json.loads(settings)
 
     # Get the current system
     current_system = next(
@@ -68,14 +88,23 @@ async def simulation(request: Request, system_name: str):
         system for system in all_systems if system["name"] != current_system["name"]
     ]
 
+    # Get the current system's string object list by lookup
+    objects = sims[current_system["name"].lower()][1]
+
     return templates.TemplateResponse(
         request=request,
         name="simulation.html",
         context={
+            "sim_state": sim_state,
+            "settings": settings_state,
+            "settings_schema": settings_schema,
+            "sim_state_schema": sim_state_schema,
+            "fullscreen": fullscreen,
+
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
-            "object_num": 9,  # Temporary; set this programmatically (or have we decided against an object count?)
+            "objects": objects,
             # Control which components are rendered on the html page
             "navigation_bar": True,
             "system_dropdown": True,
@@ -89,7 +118,8 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
-    sim.stop()
+    for sim in sims.values():
+        sim.stop()
     os.kill(os.getpid(), signal.SIGINT)
 
 
@@ -113,7 +143,6 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     """
     GET /system endpoint
     """
-    global sim, objects, current_system
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
@@ -123,18 +152,24 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
+    sim, objects = sims.get(system_name, (None, None))
+
     system = next(system for system in all_systems if system["name"].lower() == system_name)
 
     # Hardcode Solar System
-    if current_system != system_name:
+    if sim is None:
+        # Init state if empty
         sim, objects = init_system(system)
-        current_system = system_name
 
     if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
+    sims[system_name] = (sim, objects)
+
+    sim_time = unix_to_sim_time(system_name, t)
+
     # Set time
-    sim.integrate(t)
+    sim.integrate(sim_time)
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -153,6 +188,8 @@ def get_position_dict(particle):
     """
     return {"x": particle.x, "y": particle.y, "z": particle.z}
 
+    # Gather positions
+    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
 def get_osculating_orbit(sim, i):
     """

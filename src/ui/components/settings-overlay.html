@@ -1,90 +1,126 @@
-<div
-  id="settings-overlay"
-  class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
->
-  <div
-    class="h-full w-full max-w-prose bg-white p-6 shadow-2xl shadow-black/50 dark:bg-zinc-900"
-  >
-    <div class="flex items-start">
-      <h1 class="mb-4 flex-1 text-3xl font-bold">Settings</h1>
+{% from "components/overlay.html" import overlay %}
 
-      <!-- Close button -->
-      <div>
-        <button
-          id="close-settings-menu-button"
-          class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-        >
-          <svg class="size-7" viewBox="0 0 24 24">
-            <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-            <path
-              d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
+{% call overlay("settings-overlay", "Settings") %}
+  <!-- General settings -->
+  <div class="flex flex-col gap-2">
+    <div class="flex items-center gap-2">
+      <svg class="size-6" viewBox="0 0 24 24">
+        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+        <path
+          d="M19.5 12c0-.23-.01-.45-.03-.68l1.86-1.41c.4-.3.51-.86.26-1.3l-1.87-3.23a.987.987 0 0 0-1.25-.42l-2.15.91c-.37-.26-.76-.49-1.17-.68l-.29-2.31c-.06-.5-.49-.88-.99-.88h-3.73c-.51 0-.94.38-1 .88l-.29 2.31c-.41.19-.8.42-1.17.68l-2.15-.91c-.46-.2-1-.02-1.25.42L2.41 8.62c-.25.44-.14.99.26 1.3l1.86 1.41a7.3 7.3 0 0 0 0 1.35l-1.86 1.41c-.4.3-.51.86-.26 1.3l1.87 3.23c.25.44.79.62 1.25.42l2.15-.91c.37.26.76.49 1.17.68l.29 2.31c.06.5.49.88.99.88h3.73c.5 0 .93-.38.99-.88l.29-2.31c.41-.19.8-.42 1.17-.68l2.15.91c.46.2 1 .02 1.25-.42l1.87-3.23c.25-.44.14-.99-.26-1.3l-1.86-1.41c.03-.23.04-.45.04-.68m-7.46 3.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5s-1.57 3.5-3.5 3.5"
+        />
+      </svg>
 
-    <!-- General settings -->
-    <div class="mb-4 flex flex-col gap-2">
       <h2 class="text-lg font-bold">General</h2>
-
-      <label class="flex">
-        <span class="flex-1">Time zone</span>
-        <select name="time-zone" class="flex-1">
-          <option value="">UTC</option>
-          <option value="">NZT</option>
-        </select>
-      </label>
     </div>
 
-    <!-- Accessibility settings -->
-    <div class="mb-4 flex flex-col gap-2">
-      <div class="flex items-center gap-2">
-        <h2 class="text-lg font-bold">Accessibility</h2>
-
-        <svg class="size-6" viewBox="0 0 24 24">
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M10.588 5.413Q10 4.825 10 4t.588-1.412T12 2t1.413.588T14 4t-.587 1.413T12 6t-1.412-.587M9 21V9q-1.225-.1-2.475-.275t-2.45-.45q-.425-.1-.687-.475T3.25 7t.525-.625t.85-.1q1.75.375 3.638.55T12 7t3.738-.175t3.637-.55q.45-.1.85.1T20.75 7t-.137.8t-.688.475q-1.2.275-2.45.45T15 9v12q0 .425-.287.713T14 22t-.712-.288T13 21v-5h-2v5q0 .425-.288.713T10 22t-.712-.288T9 21"
-          />
-        </svg>
-      </div>
-
-      <!-- Font selection -->
-      <label class="flex">
-        <span class="flex-1">Font</span>
-        <select name="font" id="font-select" class="flex-1">
-          <option value="Default">Default</option>
-          <option value="OpenDyslexic">OpenDyslexic</option>
-        </select>
-      </label>
-
-      <!-- Text size -->
-      <label class="flex">
-        <span class="flex-1">Text size</span>
-        <select name="text-size" class="flex-1">
-          <option value="">Default</option>
-          <option value="">Larger</option>
-        </select>
-      </label>
-
-      <!-- Object marker size -->
-      <label class="flex">
-        <span class="flex-1">Object marker size</span>
-        <select name="" class="flex-1">
-          <option value="">Default</option>
-          <option value="">Larger</option>
-        </select>
-      </label>
-
-      <!-- Orbit lines -->
-      <label class="flex">
-        <span class="flex-1">Orbit lines</span>
-        <select name="" class="flex-1">
-          <option value="">Differentiate by colour</option>
-          <option value="">Differentiate by stroke</option>
-        </select>
-      </label>
-    </div>
+    <label class="flex items-center">
+      <span class="text-secondary w-full">Time zone</span>
+      <select
+            id="time-zone-select"
+            name="time-zone"
+            class="w-full min-w-0 truncate"
+          >
+        {% for option in settings_schema.timeZone.options %}
+          <option
+            value="{{ option.value }}"
+            {{ "selected" if option.value == settings.timeZone }}
+          >
+            {{ option.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
   </div>
-</div>
+
+  <!-- Accessibility settings -->
+  <div class="flex flex-col gap-2">
+    <div class="flex items-center gap-2">
+      <svg class="size-6" viewBox="0 0 24 24">
+        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+        <path
+          d="M10.588 5.413Q10 4.825 10 4t.588-1.412T12 2t1.413.588T14 4t-.587 1.413T12 6t-1.412-.587M9 21V9q-1.225-.1-2.475-.275t-2.45-.45q-.425-.1-.687-.475T3.25 7t.525-.625t.85-.1q1.75.375 3.638.55T12 7t3.738-.175t3.637-.55q.45-.1.85.1T20.75 7t-.137.8t-.688.475q-1.2.275-2.45.45T15 9v12q0 .425-.287.713T14 22t-.712-.288T13 21v-5h-2v5q0 .425-.288.713T10 22t-.712-.288T9 21"
+        />
+      </svg>
+
+      <h2 class="text-lg font-bold">Accessibility</h2>
+    </div>
+
+    <!-- Font selection -->
+    <label class="flex items-center">
+      <span class="text-secondary w-full">Font</span>
+      <select id="font-select" name="font" class="w-full min-w-0 truncate">
+        {% for option in settings_schema.font.options %}
+          <option
+            value="{{ option.value }}"
+            {{ "selected" if option.value == settings.font }}
+          >
+            {{ option.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <!-- Text size -->
+    <label class="flex items-center">
+      <span class="text-secondary w-full">Text size</span>
+      <select
+            id="text-size-select"
+            name="text-size"
+            class="w-full min-w-0 truncate"
+          >
+        {% for option in settings_schema.textSize.options %}
+          <option
+            value="{{ option.value }}"
+            {{ "selected" if option.value == settings.textSize }}
+          >
+            {{ option.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <!-- Object marker size -->
+    <label class="flex items-center">
+      <span class="text-secondary w-full">Object marker size</span>
+      <select
+        id="object-marker-size-select"
+        name="object-marker-size"
+        class="w-full min-w-0 truncate"
+      >
+        {% for option in settings_schema.objectMarkerSize.options %}
+          <option
+            value="{{ option.value }}"
+            {{ "selected" if option.value == settings.objectMarkerSize }}
+          >
+            {{ option.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <!-- Orbit lines -->
+    <label class="flex items-center">
+      <span class="text-secondary w-full">Orbit lines</span>
+      <select
+            id="orbit-lines-select"
+            name="orbit-lines"
+            class="w-full min-w-0 truncate"
+          >
+        {% for option in settings_schema.orbitLines.options %}
+          <option
+            value="{{ option.value }}"
+            {{ "selected" if option.value == settings.orbitLines }}
+          >
+            {{ option.label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+
+  <!-- Restore defaults button -->
+  <button id="reset-settings-button" class="self-end">
+    <span class="text-sm">Reset all settings to defaults</span>
+  </button>
+{% endcall %}

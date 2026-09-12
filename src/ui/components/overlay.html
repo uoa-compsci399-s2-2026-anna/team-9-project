@@ -1,0 +1,34 @@
+{% macro overlay(id, title) %}
+  <div
+    id="{{ id }}"
+    class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
+  >
+    <!-- Settings menu itself -->
+    <div
+      class="w-full max-w-prose rounded-2xl border border-black/50 bg-white p-10 shadow-2xl/50 shadow-black/50 dark:border-white/10 dark:bg-zinc-950 dark:shadow-purple-300/30"
+    >
+      <!-- 'Settings' heading and close button -->
+      <div class="mb-8 flex items-start">
+        <h1 class="flex-1 text-2xl font-bold">{{ title }}</h1>
+
+        <!-- Close button -->
+        <div>
+          <button
+            id="close-{{ id }}-button"
+            class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+          >
+            <svg class="size-7" viewBox="0 0 24 24">
+              <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+              <path
+                d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Actual settings -->
+      <div class="flex flex-col gap-8">{{ caller() }}</div>
+    </div>
+  </div>
+{% endmacro %}

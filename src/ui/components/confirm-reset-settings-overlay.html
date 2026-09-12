@@ -1,0 +1,28 @@
+{% from "components/overlay.html" import overlay %}
+
+{% call overlay("confirm-reset-settings-overlay", "Reset all settings") %}
+  <div>
+    <p>Are you sure you want to reset all settings to defaults?</p>
+    <br />
+    <p>
+      This will reset all general and accessibility settings, as well as all
+      simulation-related settings!
+    </p>
+  </div>
+
+  <!-- Reset view button -->
+  <div class="flex justify-end gap-3">
+    <button
+      id="cancel-reset-settings-button"
+      class="rounded-md border border-black/50 bg-white p-2 hover:border-zinc-900 hover:bg-zinc-100 dark:border-zinc-500 dark:bg-black dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
+    >
+      Cancel
+    </button>
+    <button
+      id="confirm-reset-settings-button"
+      class="rounded-md border border-red-700 bg-white p-2 text-red-600 hover:border-red-800 hover:bg-zinc-100 dark:border-red-500 dark:bg-black dark:text-red-400 dark:hover:border-red-500 dark:hover:bg-zinc-900"
+    >
+      Reset all settings
+    </button>
+  </div>
+{% endcall %}

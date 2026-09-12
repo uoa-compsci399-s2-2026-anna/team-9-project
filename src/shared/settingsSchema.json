@@ -1,0 +1,40 @@
+{
+  "timeZone": {
+    "default": "UTC",
+    "options": [
+      { "value": "UTC", "label": "Coordinated Universal Time (UTC)" },
+      { "value": "NZT", "label": "New Zealand Time (NZT)" }
+    ]
+  },
+  "font": {
+    "default": "Default",
+    "options": [
+      { "value": "Default", "label": "Default" },
+      { "value": "OpenDyslexic", "label": "OpenDyslexic" }
+    ]
+  },
+  "textSize": {
+    "default": "Default",
+    "options": [
+      { "value": "Default", "label": "Default" },
+      { "value": "Larger", "label": "Larger" }
+    ]
+  },
+  "objectMarkerSize": {
+    "default": "Default",
+    "options": [
+      { "value": "Default", "label": "Default" },
+      { "value": "Larger", "label": "Larger" }
+    ]
+  },
+  "orbitLines": {
+    "default": "Colour",
+    "options": [
+      { "value": "Colour", "label": "Differentiate by colour" },
+      { "value": "Stroke", "label": "Differentiate by stroke" }
+    ]
+  },
+  "darkMode": {
+    "default": null
+  }
+}
