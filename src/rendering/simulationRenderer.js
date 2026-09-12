@@ -532,7 +532,6 @@ async function renderFrame(timestamp) {
     if (running && !frozen) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
-        console.log(deltaTime)
 
         currentSimulationTime += getSimulationSpeedMilliseconds() * deltaTime;
 
