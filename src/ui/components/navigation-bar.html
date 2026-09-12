@@ -75,7 +75,7 @@
         svg_path="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19",
         tooltip_position="below",
 
-        on_click_event_name="toolbar:home",
+        on_click_events="toolbar:home",
       )
     }}
 
@@ -112,7 +112,7 @@
         tooltip_text=("View in light mode" if settings.darkMode else "View in dark mode"),
         svg_path=(viewInLightModeIcon if settings.darkMode else viewInDarkModeIcon),
 
-        on_click_event_name="toolbar:dark_mode_toggle"
+        on_click_events="toolbar:dark_mode_toggle"
       )
     }}
 
@@ -123,7 +123,7 @@
         svg_path="M19.5 12c0-.23-.01-.45-.03-.68l1.86-1.41c.4-.3.51-.86.26-1.3l-1.87-3.23a.987.987 0 0 0-1.25-.42l-2.15.91c-.37-.26-.76-.49-1.17-.68l-.29-2.31c-.06-.5-.49-.88-.99-.88h-3.73c-.51 0-.94.38-1 .88l-.29 2.31c-.41.19-.8.42-1.17.68l-2.15-.91c-.46-.2-1-.02-1.25.42L2.41 8.62c-.25.44-.14.99.26 1.3l1.86 1.41a7.3 7.3 0 0 0 0 1.35l-1.86 1.41c-.4.3-.51.86-.26 1.3l1.87 3.23c.25.44.79.62 1.25.42l2.15-.91c.37.26.76.49 1.17.68l.29 2.31c.06.5.49.88.99.88h3.73c.5 0 .93-.38.99-.88l.29-2.31c.41-.19.8-.42 1.17-.68l2.15.91c.46.2 1 .02 1.25-.42l1.87-3.23c.25-.44.14-.99-.26-1.3l-1.86-1.41c.03-.23.04-.45.04-.68m-7.46 3.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5s-1.57 3.5-3.5 3.5",
         tooltip_position="below",
 
-        on_click_event_name="settings:menu_toggle"
+        on_click_events="settings:menu_toggle"
       )
     }}
 
@@ -140,7 +140,7 @@
         tooltip_text=("Exit fullscreen" if fullscreen else "Enter fullscreen"),
         svg_path=(exitFullscreenIcon if fullscreen else enterFullscreenIcon),
 
-        on_click_event_name="toolbar:fullscreen_button_toggle",
+        on_click_events="toolbar:fullscreen_button_toggle",
       )
     }}
   </div>
