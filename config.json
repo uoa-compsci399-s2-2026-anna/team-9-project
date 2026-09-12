@@ -61,16 +61,16 @@
                 },
                 "Mars": {
                     "mass": {
-                        "value": 6.41691e23,
-                        "uncertainty": 3.0e19
+                        "value": 0.641691e24,
+                        "uncertainty": 0.000030e24
                     },
                     "temp": {
                         "value": 210,
                         "uncertainty": null
                     },
                     "radius": {
-                        "value": 3.38950e6,
-                        "uncertainty": 2.0e2
+                        "value": 3389.50e3,
+                        "uncertainty": 0.2e3
                     }
                 },
                 "Jupiter": {
