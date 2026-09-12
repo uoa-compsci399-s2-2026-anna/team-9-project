@@ -37,6 +37,10 @@ function formatted(date) {
         .replace(" ", "T"); // Replace the ' ' with a 'T' to conform to format
 }
 
+/**
+ * @param {Date} date A `Date` object
+ * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
+ */
 function dateOnly(date) {
     var timeZone = TIMEZONE_MAP[settings.timeZone];
 
@@ -49,8 +53,9 @@ function dateOnly(date) {
 }
 
 /**
- * TODO
- * @param {*} simulationTime 
+ * Updates the elapsed days text to show how far the simulation time is from today,
+ *  in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
+ * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  */
 function updateElapsedDaysText(simulationTime) {
     const elapsedDays = document.querySelector("#elapsed-days");

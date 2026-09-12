@@ -32,10 +32,11 @@ export const TIMEZONE_MAP = {
 };
 
 /**
- * TODO
- * @param {*} dateString 
- * @param {*} timeZone 
- * @returns 
+ * Converts a datetime-local string into an epoch timestamp, using the given
+ * time zone to interpret it.
+ * @param {string} dateString A date/time string in "yyyy-MM-ddTHH:mm" format
+ * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
+ * @returns {number} Epoch time in milliseconds
  */
 export function convertToEpoch(dateString, timeZone) {
     const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";

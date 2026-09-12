@@ -56,18 +56,20 @@ TIMEZONE_MAP = {
     "UTC": "UTC",
 }
 
-# TODO: review and document these
 
 def resolve_timezone(timezone_key):
+    """Returns the ZoneInfo for the given application time zone setting."""
     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
     return ZoneInfo(time_zone_name)
 
 
 def sim_datetime(simulation_time_ms, time_zone):
+    """Converts a simulation time (ms since epoch) into a datetime in the given time zone."""
     return datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
 
 
 def format_sim_date(simulation_time_ms, timezone_key):
+    """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
     time_zone = resolve_timezone(timezone_key)
     sim_date = sim_datetime(simulation_time_ms, time_zone)
 
@@ -75,6 +77,8 @@ def format_sim_date(simulation_time_ms, timezone_key):
 
 
 def format_elapsed_days_text(simulation_time_ms, timezone_key):
+    """Describes how far the simulation time is from today, in the given time zone
+    (e.g., "Today", "3 days from today", "5 days ago")."""
     time_zone = resolve_timezone(timezone_key)
 
     sim_date = sim_datetime(simulation_time_ms, time_zone).date()
