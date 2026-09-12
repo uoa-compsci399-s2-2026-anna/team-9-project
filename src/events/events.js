@@ -51,7 +51,7 @@ export const EVENTS = {
         /**
          * Close the 'Settings' menu.
          */
-        CLOSE_SETTINGS_MENU: "settings:open_settings_menu",
+        CLOSE_SETTINGS_MENU: "settings:close_settings_menu",
 
         /**
          * Open the 'Reset settings' (confirmation) menu.
