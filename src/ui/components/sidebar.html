@@ -1,168 +1,90 @@
 {% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
+{% from "components/side-panel.html" import side_panel %}
+{% from "components/text-button.html" import text_button %}
 
-<div class="flex min-h-0 flex-1 items-end gap-4 px-6 pt-6">
+<div class="flex min-h-0 flex-1 items-end gap-3 px-6 pt-6">
   <!-- Left sidebar -->
   <div class="flex h-full min-h-0 w-48 flex-col gap-2">
+    <!-- Spacer -->
     <div class="flex-1"></div>
-    <!-- Objects side panel -->
-    <div
-      class="relative z-10 flex min-h-0 flex-col rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
-    >
-      <!-- "Objects" header and hide panel button -->
-      <button id="objects-button" class="flex w-full items-center font-bold">
-        <span class="flex-1 text-left">Objects</span>
 
-        <!-- Objects show icon -->
-        <svg id="objects-show-icon" class="size-7" viewBox="0 0 24 24">
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
-          />
-        </svg>
+    <!-- Objects panel -->
+    {%
+      call side_panel(
+        panel_button_id="objects-button",
+        panel_title_text="Objects",
+        toggles_div_id="objects-scroll-container",
+        reset_button_id="reset-objects"
+      )
+    %}
+      <!-- Objects that are hidden for the current simulation -->
+      {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
 
-        <!-- Objects hide icon -->
-        <svg id="objects-hide-icon" class="hidden size-7" viewBox="0 0 24 24">
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-          />
-        </svg>
-      </button>
+      {% for obj in objects %}
+        {{
+          side_panel_checkbox(
+          is_checked_initially=(obj not in hidden),
+          label_text=obj,
+          data_attributes={ "object": obj }
+          )
+        }}
+      {% endfor %}
+    {% endcall %}
 
-      <!-- Objects controls -->
-      <div
-        id="objects"
-        class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
-      >
-        <div id="objects-toggles" class="flex min-h-0 flex-col overflow-hidden">
-          <!-- Checkboxes -->
-          <div id="objects-scroll-container" class="min-h-0 flex-1 overflow-hidden">
-            <!-- Objects that are hidden for the current simulation -->
-            {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
+    <!-- View settings panel -->
+    {%
+      call side_panel(
+        panel_button_id="view-settings-button",
+        panel_title_text="View settings",
+        reset_button_id="reset-view-settings"
+      )
+    %}
+      {{
+        side_panel_checkbox(
+          input_id="habitable-zone-input",
+          is_checked_initially=sim_state.habitableZoneShown,
+          label_text="Habitable zone",
+          data_attributes={ "setting": "habitable-zone" }
+        )
+      }}
 
-            {% for obj in objects %}
-              {{
-                side_panel_checkbox(
-                  is_checked_initially=(obj not in hidden),
-                  label_text=obj,
-                  data_attributes={ "object": obj }
-                )
-              }}
-            {% endfor %}
-          </div>
+      {{
+        side_panel_checkbox(
+          input_id="orbits-input",
+          is_checked_initially=sim_state.orbitsShown,
+          label_text="Orbits",
+          data_attributes={ "setting": "orbits" }
+        )
+      }}
 
-          <!-- Restore defaults button -->
-          <button id="reset-objects" class="self-end overflow-hidden">
-            <span class="text-sm">Reset to defaults</span>
-          </button>
-        </div>
-      </div>
-    </div>
+      {{
+        side_panel_checkbox(
+          input_id="reference-grid-input",
+          is_checked_initially=sim_state.referenceGridShown,
+          label_text="Reference grid",
+          data_attributes={ "setting": "reference-grid" }
+        )
+      }}
 
-    <!-- View settings side panel -->
-    <div
-      class="relative z-10 shrink-0 rounded-md bg-white p-2 outline-1 dark:bg-black dark:outline-zinc-500"
-    >
-      <!-- "View settings" header and hide panel button -->
-      <button
-        id="view-settings-button"
-        class="flex w-full items-center font-bold"
-      >
-        <span class="flex-1 text-left">View settings</span>
-
-        <!-- View settings show icon -->
-        <svg id="view-settings-show-icon" class="size-7" viewBox="0 0 24 24">
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
-          />
-        </svg>
-
-        <!-- View settings hide icon -->
-        <svg
-          id="view-settings-hide-icon"
-          class="hidden size-7"
-          viewBox="0 0 24 24"
-        >
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-          />
-        </svg>
-      </button>
-
-      <!-- View settings controls -->
-      <div
-        id="view-settings"
-        class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
-      >
-        <div class="flex min-h-0 flex-col overflow-hidden">
-          <!-- Checkboxes -->
-          <div id="view-settings-toggles" class="flex flex-col overflow-hidden">
-            {{
-              side_panel_checkbox(
-                input_id="habitable-zone-input",
-                is_checked_initially=sim_state.habitableZoneShown,
-                label_text="Habitable zone",
-                data_attributes={ "setting": "habitable-zone" }
-              )
-            }}
-
-            {{
-              side_panel_checkbox(
-                input_id="orbits-input",
-                is_checked_initially=sim_state.orbitsShown,
-                label_text="Orbits",
-                data_attributes={ "setting": "orbits" }
-              )
-            }}
-
-            {{
-              side_panel_checkbox(
-                input_id="reference-grid-input",
-                is_checked_initially=sim_state.referenceGridShown,
-                label_text="Reference grid",
-                data_attributes={ "setting": "reference-grid" }
-              )
-            }}
-
-            {{
-              side_panel_checkbox(
-                input_id="labels-input",
-                is_checked_initially=sim_state.labelsShown,
-                label_text="Labels",
-                data_attributes={ "setting": "labels" }
-              )
-            }}
-          </div>
-
-          <!-- Restore defaults button -->
-          <button id="reset-view-settings" class="self-end overflow-hidden">
-            <span class="text-sm">Reset to defaults</span>
-          </button>
-        </div>
-      </div>
-    </div>
+      {{
+        side_panel_checkbox(
+          input_id="labels-input",
+          is_checked_initially=sim_state.labelsShown,
+          label_text="Labels",
+          data_attributes={ "setting": "labels" }
+        )
+      }}
+    {% endcall %}
   </div>
 
   <!-- Spacer -->
   <div class="flex-1"></div>
 
   <!-- Reset view button -->
-  <button
-    id="reset-view-button"
-    class="relative z-10 flex items-center gap-3 rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-  >
-    Reset view
-  </button>
+  {{ text_button("reset-view-button", "Reset view") }}
 
   <!-- Compare to solar system button -->
   {% if current_system.name != "Solar System" %}
-    <button
-      id="compare-to-solar-system-button"
-      class="relative z-10 flex items-center gap-3 self-end rounded-md bg-white p-2 outline-1 hover:bg-zinc-100 hover:outline-zinc-900 dark:bg-black dark:outline-zinc-500 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-    >
-      Compare to Solar System
-    </button>
+    {{ text_button("compare-to-solar-system-button", "Compare to Solar System") }}
   {% endif %}
 </div>
