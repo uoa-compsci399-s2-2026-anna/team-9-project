@@ -44,7 +44,41 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_solar():
+def init_system(system, name):
+    """
+    Initialises the given system
+    Returns simulation and objects
+    """
+    # Initialise the simulation
+    sim = rebound.Simulation()
+    sim.units = UNITS
+
+    sim_initial_jd_tdb[name] = system["timestamp"]
+
+    objects = list(system["orbits"])
+    orbits = system["orbits"]
+
+    for obj in objects:
+        orbit_data = orbits[obj]
+
+        # Get orbit data (and set to None otherwise)
+        m = orbit_data.get("m", None)
+        a = orbit_data.get("a", None)
+        e = orbit_data.get("e", None)
+        P = orbit_data.get("P", None)
+        omega = orbit_data.get("omega", None)
+        M = orbit_data.get("M", None)
+        inc = orbit_data.get("inc", None)
+        Omega = orbit_data.get("Omega", None)
+
+        sim.add(m=m, a=a, P=P, e=e, omega=omega, M=M, inc=inc, Omega=Omega)
+
+    sim.move_to_com()
+
+    return sim, objects
+
+
+def init_solar(system):
     """
     Initialise solar system function
     Returns simulation and objects
@@ -53,7 +87,7 @@ def init_solar():
     sim = rebound.Simulation()
     sim.units = UNITS
 
-    sim_initial_jd_tdb["solar system"] = get_current_jd_tdb()
+    sim_initial_jd_tdb["solar system"] = system["timestamp"]
 
     # Add and set all objects in the solar system
     objects = [
