@@ -363,8 +363,8 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-    const currentSystemData = await getReferenceSystemData(currentSystem);
-    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
+    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
+    const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
@@ -401,11 +401,11 @@ export function resetView() {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getReferenceSystemData(currentSystem);
-    const solarSystemData = await getReferenceSystemData("Solar System");
+    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
+    const referenceDataForSolarSystem = await getReferenceSystemData("Solar System");
 
-    const currentOrbitalDataValues = Object.values(currentSystemData.orbital_data);
-    const solarOrbitalDataValues = Object.values(solarSystemData.orbital_data);
+    const currentOrbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
+    const solarOrbitalDataValues = Object.values(referenceDataForSolarSystem.orbital_data);
 
     const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
     const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
@@ -442,8 +442,8 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getReferenceSystemData(currentSystem);
-    const orbitalDataValues = Object.values(currentSystemData.orbital_data);
+    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
+    const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier;
