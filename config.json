@@ -89,16 +89,16 @@
                 },
                 "Saturn": {
                     "mass": {
-                        "value": 5.68317e26,
-                        "uncertainty": 2.6e22
+                        "value": 568.317e24,
+                        "uncertainty": 0.026e24
                     },
                     "temp": {
                         "value": 134,
                         "uncertainty": 4
                     },
                     "radius": {
-                        "value": 5.8232e7,
-                        "uncertainty": 6.0e3
+                        "value": 58232e3,
+                        "uncertainty": 6e3
                     }
                 },
                 "Uranus": {
