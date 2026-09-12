@@ -23,7 +23,6 @@ let timer;
 
 /** The current simulation time in milliseconds since Unix epoch. */
 export let currentSimulationTime = Date.now();
-console.log(currentSimulationTime);
 
 let currentSystem;
 
