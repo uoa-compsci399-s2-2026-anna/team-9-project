@@ -252,7 +252,6 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
  * Update the positions of all objects in the current system.
  */
 async function updateSimulation() {
-    updateCalendar(currentSimulationTime);
     const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
@@ -394,11 +393,13 @@ export async function init(name) {
 export function stepForward() {
     currentSimulationTime += getSimulationSpeedMilliseconds();
     updateSimulation();
+    updateCalendar(currentSimulationTime);
 }
 
 export function stepBack() {
     currentSimulationTime -= getSimulationSpeedMilliseconds();
     updateSimulation();
+    updateCalendar(currentSimulationTime);
 }
 
 export function resetView() {
@@ -563,6 +564,7 @@ async function renderFrame(timestamp) {
         currentSimulationTime += getSimulationSpeedMilliseconds() * deltaTime;
 
         updateSimulation();
+        updateCalendar(currentSimulationTime);
     }
 
     renderer.render(scene, camera);

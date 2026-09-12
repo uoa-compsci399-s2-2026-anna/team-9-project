@@ -6,6 +6,8 @@ import rebound
 import os
 import json
 import sys
+from datetime import datetime
+import time
 from systems import init_solar, init_kepler_16, init_trappist_1, unix_to_sim_time
 
 # Prevent internal server errors when adding objects to the simulation
@@ -46,6 +48,8 @@ sims = {
     "trappist-1": init_trappist_1(),
 }
 
+MS_PER_SECOND = 1000
+
 
 @app.get("/")
 async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
@@ -85,11 +89,15 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
 
     # Get all other systems, except the current system
     dropdown_systems = [
-        system for system in all_systems if system["name"] != current_system["name"]
+        system for system in all_systems if system["name"] != system_name
     ]
 
     # Get the current system's string object list by lookup
-    objects = sims[current_system["name"].lower()][1]
+    objects = sims[system_name.lower()][1]
+
+    # Simulation times are stored and managed on the frontend in milliseconds
+    simulation_time = sim_state["simulationTimes"].get(system_name, time.time() * MS_PER_SECOND)
+    simulation_date = datetime.fromtimestamp(simulation_time / MS_PER_SECOND).strftime("%Y-%m-%dT%H:%M")
 
     return templates.TemplateResponse(
         request=request,
@@ -100,6 +108,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
             "fullscreen": fullscreen,
+            "sim_date": simulation_date,
 
             "systems": all_systems,
             "current_system": current_system,
