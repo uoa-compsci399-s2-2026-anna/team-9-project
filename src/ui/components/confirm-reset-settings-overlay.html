@@ -23,17 +23,20 @@
 
   <!-- Reset view button -->
   <div class="flex justify-end gap-3">
-    <button
-      id="cancel-reset-settings-button"
-      class="rounded-md border border-black/50 bg-white p-2 hover:border-zinc-900 hover:bg-zinc-100 dark:border-zinc-500 dark:bg-black dark:hover:border-zinc-500 dark:hover:bg-zinc-900"
-    >
-      Cancel
-    </button>
-    <button
-      id="confirm-reset-settings-button"
-      class="rounded-md border border-red-700 bg-white p-2 text-red-600 hover:border-red-800 hover:bg-zinc-100 dark:border-red-500 dark:bg-black dark:text-red-400 dark:hover:border-red-500 dark:hover:bg-zinc-900"
-    >
-      Reset all settings
-    </button>
+    {{
+      text_button(
+        button_text="Cancel",
+        on_click_event_name="settings:close_reset_settings_menu"
+      )
+    }}
+
+    <!-- TODO: button styling (style red) -->
+    <!-- TODO: add support for multiple on-click events -->
+    {{
+      text_button(
+        button_text="Reset all settings",
+        on_click_event_name="settings:close_reset_settings_menu"
+      )
+    }}
   </div>
 {% endcall %}
