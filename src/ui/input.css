@@ -15,7 +15,7 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --color-color-body: var(--color-zinc-800);
+  --color-primary: var(--color-zinc-800);
   --color-secondary: var(--color-zinc-600);
 }
 
@@ -23,7 +23,7 @@
   :root,
   :host {
     @variant dark {
-      --color-color-body: var(--color-purple-100);
+      --color-primary: var(--color-purple-100);
       --color-secondary: oklch(94.6% 0.033 307.174 / 0.6); /* purple-100/60 */
     }
   }
@@ -52,8 +52,8 @@
   }
 }
 
-@layer base {
-  select {
-    @apply text-secondary rounded-md border border-black/50 bg-white p-1 dark:border-white/10 dark:bg-zinc-950;
+@layer components {
+  .control {
+    @apply z-10 h-9 rounded-md border border-black/50 bg-white p-1 dark:border-white/10 dark:bg-zinc-950;
   }
 }
