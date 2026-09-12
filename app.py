@@ -39,11 +39,15 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
+
+def get_system_by_name(name):
+    return next(system for system in all_systems if system["name"] == name)
+
 # Each init_*() returns (sim, objects); take only the list of string objects
 sims = {
-    "solar system": init_system(all_systems["Solar System"]),
-    "kepler-16": init_system(all_systems["Kepler-16"]),
-    "trappist-1": init_system(all_systems["TRAPPIST-1"]),
+    "solar system": init_system(get_system_by_name("Solar System"), is_solar=True),
+    "kepler-16": init_system(get_system_by_name("Kepler-16")),
+    "trappist-1": init_system(get_system_by_name("TRAPPIST-1")),
 }
 
 
