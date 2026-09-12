@@ -237,8 +237,8 @@
             "objects": {
                 "Kepler-16A": {
                     "mass": {
-                        "value": 1.37e30,
-                        "uncertainty": 6.96e27
+                        "value": 1.372E+30,
+                        "uncertainty": 6.962E+27
                     },
                     "temp": {
                         "value": 4450,
@@ -251,8 +251,8 @@
                 },
                 "Kepler-16B": {
                     "mass": {
-                        "value": 4.09e29,
-                        "uncertainty": 1.29e27
+                        "value": 4.0289E+29,
+                        "uncertainty": 1.3128E+27
                     },
                     "temp": {
                         "value": null,
