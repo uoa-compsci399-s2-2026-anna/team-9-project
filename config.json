@@ -308,16 +308,16 @@
             "objects": {
                 "Trappist-1": {
                     "mass": {
-                        "value": 1.79e29,
-                        "uncertainty": 4.57e27
+                        "value": 1.786E+29,
+                        "uncertainty": 4.575E+27
                     },
                     "temp": {
                         "value": 2566.0,
                         "uncertainty": 26.0
                     },
                     "radius": {
-                        "value": 1.60e6,
-                        "uncertainty": 9.05e5
+                        "value": 8.293E+07,
+                        "uncertainty": 9.044E+05
                     }
                 },
                 "Trappist-1b": {
