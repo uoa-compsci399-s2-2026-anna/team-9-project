@@ -1,17 +1,17 @@
 /**
- * Converts a given amount of time (time + unit) into seconds.
+ * Converts a given amount of time (time + unit) into milliseconds.
  *
  * @param {number} time - The amount of time to convert
  * @param {string} unit The time unit: "hour", "day", "week", "month", or "year"
- * @returns {number} The equivalent amount of time in seconds
+ * @returns {number} The equivalent amount of time in milliseconds
  */
-export function timeToSeconds(time, unit) {
+export function timeToMilliseconds(time, unit) {
     const units = {
-        hour: 3600, // 60 * 60
-        day: 86400, // 24 * 60 * 60
-        week: 604800, // 7 * 24 * 60 * 60
-        month: 2629800, // (365.25 / 12) * 24 * 60 * 60 (Julian month)
-        year: 31557600, // 365.25 * 24 * 60 * 60 (Julian year)
+        hour: 3600000, // 60 * 60 * 1000
+        day: 86400000, // 24 * 60 * 60 * 1000
+        week: 604800000, // 7 * 24 * 60 * 60 * 1000
+        month: 2629800000, // (365.25 / 12) * 24 * 60 * 60 * 1000 (Julian month)
+        year: 31557600000, // 365.25 * 24 * 60 * 60 * 1000 (Julian year)
     }
 
     if (!(unit in units)) {
