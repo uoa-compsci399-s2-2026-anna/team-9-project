@@ -8,6 +8,8 @@ Units were converted to SI units via:
 - Mass was multiplied by 10²⁴ and kept in kg
 - Radius was converted km→m (×10³)
 
+Halley's Comet mass sourced from...
+
 ## Kepler-16
 Data is taken from Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet", Science, 333, 1602
 https://arxiv.org/abs/1109.3432
