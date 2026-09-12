@@ -322,100 +322,100 @@
                 },
                 "Trappist-1b": {
                     "mass": {
-                        "value": 7.20e6,
-                        "uncertainty": 8.70e4
+                        "value": 8.211E+25,
+                        "uncertainty": 4.120E+24
                     },
                     "temp": {
                         "value": 400.1,
                         "uncertainty": 7.7
                     },
                     "radius": {
-                        "absoulute": 8.21e24,
-                        "uncertainty": 4.12e23
+                        "absoulute": 7.119E+07,
+                        "uncertainty": 8.700E+05
                     }
                 },
                 "Trappist-1c": {
                     "mass": {
-                        "value": 7.00e6,
-                        "uncertainty": 8.60e4
+                        "value": 7.814E+25,
+                        "uncertainty": 3.350E+24
                     },
                     "temp": {
                         "value": 341.9,
                         "uncertainty": 6.6
                     },
                     "radius": {
-                        "value": 7.81e24,
-                        "uncertainty": 3.35e23
+                        "value": 6.995E+07,
+                        "uncertainty": 8.600E+05
                     }
                 },
                 "Trappist-1d": {
                     "mass": {
-                        "value": 5.03e6,
-                        "uncertainty": 7.10e4
+                        "value": 2.316E+25,
+                        "uncertainty": 7.400E+23
                     },
                     "temp": {
                         "value": 288.0,
                         "uncertainty": 5.6
                     },
                     "radius": {
-                        "value": 2.32e24,
-                        "uncertainty": 3.35e23
+                        "value": 5.026E+07,
+                        "uncertainty": 7.100E+05
                     }
                 },
                 "Trappist-1e": {
                     "mass": {
-                        "value": 5.87e6,
-                        "uncertainty": 8.20e4
+                        "value": 4.132E+25,
+                        "uncertainty": 1.300E+24
                     },
                     "temp": {
                         "value": 251.3,
                         "uncertainty": 4.9
                     },
                     "radius": {
-                        "value": 4.13e24,
-                        "uncertainty": 1.30e23
+                        "value": 5.868E+07,
+                        "uncertainty": 8.200E+05
                     }
                 },
                 "Trappist-1f": {
                     "mass": {
-                        "value": 6.66e6,
-                        "uncertainty": 8.50e4
+                        "value": 6.205E+25,
+                        "uncertainty": 1.840E+24
                     },
                     "temp": {
                         "value": 219.0,
                         "uncertainty": 4.2
                     },
                     "radius": {
-                        "value": 6.21e24,
-                        "uncertainty": 1.84e23
+                        "value": 6.664E+07,
+                        "uncertainty": 8.500E+05
                     }
                 },
                 "Trappist-1g": {
                     "mass": {
-                        "value": 7.20e6,
-                        "uncertainty": 9.40e4
+                        "value": 7.890E+25,
+                        "uncertainty": 2.260E+24
                     },
                     "temp": {
                         "value": 198.6,
                         "uncertainty": 3.8
                     },
                     "radius": {
-                        "value": 7.89e24,
-                        "uncertainty": 2.26e23
+                        "value": 7.204E+07,
+                        "uncertainty": 9.400E+05
                     }
                 },
                 "Trappist-1h": {
                     "mass": {
-                        "value": 4.82e6,
-                        "uncertainty": 9.10e4
+                        "value": 1.945E+25,
+                        "uncertainty": 1.220E+24
                     },
                     "temp": {
                         "value": 168.0,
                         "uncertainty": 28.0
                     },
                     "radius": {
-                        "value": 1.95e24,
-                        "uncertainty": 1.22e23
+                        "value": 4.817E+07,
+                        "uncertainty": 9.100E+05
                     }
                 }
             },
