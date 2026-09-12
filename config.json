@@ -48,15 +48,15 @@
                 "Earth": {
                     "mass": {
                         "value": 5.97217e24,
-                        "uncertainty": 2.8e20
+                        "uncertainty": 0.00028e24
                     },
                     "temp": {
-                        "value": null,
+                        "value": 287.6,
                         "uncertainty": null
                     },
                     "radius": {
-                        "value": 6.3710084e6,
-                        "uncertainty": 1.0e-1
+                        "value": 6371.0084e3,
+                        "uncertainty": 0.0001e3
                     }
                 },
                 "Mars": {
