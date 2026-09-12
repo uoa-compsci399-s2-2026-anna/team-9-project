@@ -1,4 +1,3 @@
-import time
 import rebound
 from astropy.time import Time
 
