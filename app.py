@@ -6,7 +6,7 @@ import rebound
 import os
 import json
 import sys
-from systems import init_solar, init_kepler_16, init_trappist_1, unix_to_sim_time
+from systems import init_solar, init_kepler_16, init_trappist_1, unix_to_sim_time, init_system
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -39,11 +39,15 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
+def init_system_with_name(name):
+    system = next(system for system in all_systems if system["name"].lower() == name)
+    return init_system(system, name)
+
 # Each init_*() returns (sim, objects); take only the list of string objects
 sims = {
-    "solar system": init_solar(),
-    "kepler-16": init_kepler_16(),
-    "trappist-1": init_trappist_1(),
+    "solar system": init_system_with_name("solar system"),
+    "kepler-16": init_system_with_name("kepler-16"),
+    "trappist-1": init_system_with_name("trappist-1"),
 }
 
 
@@ -139,18 +143,11 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     sim, objects = sims.get(system_name, (None, None))
 
-    # Hardcode Solar System
-    if system_name == "solar system" and sim is None:
-        # Init state if empty
-        sim, objects = init_solar()
-    # Hardcode Kepler-16
-    elif system_name == "kepler-16" and sim is None:
-        # Init state if empty
-        sim, objects = init_kepler_16()
-    # Hardcode TRAPPIST-1
-    elif system_name == "trappist-1" and sim is None:
-        # Init state if empty
-        sim, objects = init_trappist_1()
+    system = next(system for system in all_systems if system["name"].lower() == system_name)
+
+    # Init system if it is none
+    if sim is None:
+        sim, objects = init_system(system)
 
     if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
