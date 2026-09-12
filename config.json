@@ -273,8 +273,8 @@
                         "uncertainty": null
                     },
                     "radius": {
-                        "value": 5.27e7,
-                        "uncertainty": 1.75e5
+                        "value": 5.270E+07,
+                        "uncertainty": 1.748E+05
                     }
                 }
             },
