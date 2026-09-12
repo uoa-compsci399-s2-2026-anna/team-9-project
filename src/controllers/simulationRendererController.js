@@ -5,6 +5,7 @@ import {
     stepForward,
     stepBack,
     resetSimulationTimeToNow,
+    setSimulationTimeToTime,
     resetView,
     compareToSolarSystem,
     hideSolarSystem,
@@ -41,9 +42,7 @@ bus.subscribe(EVENTS.SIM.SET_TIME_TO_NOW, () => {
 // Calendar change
 
 bus.subscribe(EVENTS.SIM.CALENDAR_CHANGE, (event) => {
-    const { time } = event.detail;
-
-    console.log(time);
+    setSimulationTimeToTime(event.detail.time);
 });
 
 // Reset view
