@@ -56,14 +56,41 @@ TIMEZONE_MAP = {
     "UTC": "UTC",
 }
 
-# TODO: document and review
-def format_sim_date(simulation_time_ms, timezone_key):
+# TODO: review and document these
+
+def resolve_timezone(timezone_key):
     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
-    time_zone = ZoneInfo(time_zone_name)
+    return ZoneInfo(time_zone_name)
 
-    date = datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
 
-    return date.strftime("%Y-%m-%dT%H:%M")
+def sim_datetime(simulation_time_ms, time_zone):
+    return datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
+
+
+def format_sim_date(simulation_time_ms, timezone_key):
+    time_zone = resolve_timezone(timezone_key)
+    sim_date = sim_datetime(simulation_time_ms, time_zone)
+
+    return sim_date.strftime("%Y-%m-%dT%H:%M")
+
+
+def format_elapsed_days_text(simulation_time_ms, timezone_key):
+    time_zone = resolve_timezone(timezone_key)
+
+    sim_date = sim_datetime(simulation_time_ms, time_zone).date()
+    now_date = datetime.now(tz=time_zone).date()
+
+    days_count = (sim_date - now_date).days
+
+    if days_count == 0:
+        return "Today"
+
+    day_word = "day" if abs(days_count) == 1 else "days"
+
+    if days_count > 0:
+        return f"{days_count} {day_word} from today"
+    else:
+        return f"{abs(days_count)} {day_word} ago"
 
 
 @app.get("/")
@@ -113,6 +140,8 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     # Simulation times are stored and managed on the frontend in milliseconds
     simulation_time = sim_state["simulationTimes"].get(system_name, time.time() * MS_PER_SECOND)
     simulation_date = format_sim_date(simulation_time, settings_state["timeZone"])
+    elapsed_days_text = format_elapsed_days_text(simulation_time, settings_state["timeZone"])
+    print(elapsed_days_text)
 
     return templates.TemplateResponse(
         request=request,
@@ -124,6 +153,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "sim_state_schema": sim_state_schema,
             "fullscreen": fullscreen,
             "sim_date": simulation_date,
+            "elapsed_days_text": elapsed_days_text,
 
             "systems": all_systems,
             "current_system": current_system,

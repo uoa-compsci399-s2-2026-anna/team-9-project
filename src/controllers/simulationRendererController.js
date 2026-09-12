@@ -16,8 +16,6 @@ import {
     setFontFamily,
     toggleSimulationDarkMode,
 } from "../rendering/simulationRenderer.js";
-import { settings } from "../shared/settingsState.js";
-import { convertToEpoch } from "../utils/utils.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;

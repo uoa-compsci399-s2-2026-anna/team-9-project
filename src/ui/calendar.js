@@ -3,6 +3,9 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { TIMEZONE_MAP, timeToMilliseconds } from "../utils/utils.js";
 
+// The number of milliseconds in a day
+const MS_PER_DAY = timeToMilliseconds(1, "day");
+
 // The last simulation time displayed by the calendar
 let lastSimulationTime = null;
 
@@ -34,6 +37,48 @@ function formatted(date) {
         .replace(" ", "T"); // Replace the ' ' with a 'T' to conform to format
 }
 
+function dateOnly(date) {
+    var timeZone = TIMEZONE_MAP[settings.timeZone];
+
+    return new Intl.DateTimeFormat("sv", {
+        timeZone: timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).format(date);
+}
+
+/**
+ * TODO
+ * @param {*} simulationTime 
+ */
+function updateElapsedDaysText(simulationTime) {
+    const elapsedDays = document.querySelector("#elapsed-days");
+
+    if (!elapsedDays) {
+        return;
+    }
+
+    const simDateString = dateOnly(new Date(simulationTime));
+    const nowDateString = dateOnly(new Date());
+
+    if (simDateString === nowDateString) {
+        elapsedDays.textContent = "Today";
+        return;
+    }
+
+    const simMidnight = new Date(simDateString + "T00:00:00Z").getTime();
+    const nowMidnight = new Date(nowDateString + "T00:00:00Z").getTime();
+
+    const daysCount = Math.round((simMidnight - nowMidnight) / MS_PER_DAY);
+
+    const dayWord = Math.abs(daysCount) === 1 ? "day" : "days";
+
+    elapsedDays.textContent = daysCount > 0
+        ? `${daysCount} ${dayWord} from today`
+        : `${Math.abs(daysCount)} ${dayWord} ago`;
+}
+
 /**
  * Updates all calendars to show the given simulation time in the given time zone,
  * and sets the minimum and maximum of the calendar to +/- 3 years.
@@ -57,4 +102,6 @@ export function updateCalendar(simulationTime) {
         // Update the previousValue field 
         calendar.dataset.previousValue = calendar.value;
     });
+
+    updateElapsedDaysText(simulationTime);
 }
