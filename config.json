@@ -5,7 +5,7 @@
             "objects": {
                 "Sun": {
                     "mass": {
-                        "value": 1.99e30,
+                        "value": 1988410e24,
                         "uncertainty": null
                     },
                     "temp": {
@@ -13,7 +13,7 @@
                         "uncertainty": null
                     },
                     "radius": {
-                        "value": 6.96e8,
+                        "value": 695700e3,
                         "uncertainty": null
                     }
                 },
