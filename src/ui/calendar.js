@@ -3,8 +3,6 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { currentSimulationTime } from "../rendering/simulationRenderer.js";
 
-const MS_IN_S = 1000;
-
 updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
@@ -68,5 +66,5 @@ function updateCalendar(date) {
  * @returns OPIS simulation timestamp in milliseconds since Unix epoch.
  */
 function getSimulationTimeInMillisecondsSinceUnixEpoch() {
-    return new Date(currentSimulationTime * MS_IN_S);
+    return new Date(currentSimulationTime);
 }

@@ -24,14 +24,14 @@ sim_initial_jd_tdb = {
 
 def unix_to_jd_tdb(t: float) -> float:
     """
-    Convert a unix timestamp in seconds to a JD_TDB timestamp in days
+    Convert a unix timestamp in milliseconds to a JD_TDB timestamp in days
     """
-    return Time(t, format="unix", scale="utc").tdb.jd
+    return Time(t / 1000, format="unix", scale="utc").tdb.jd
 
 
 def unix_to_sim_time(system_name: str, t: float) -> float:
     """
-    Convert a unix timestamp in seconds to a simulation time in days
+    Convert a unix timestamp in milliseconds to a simulation time in days
     """
     return unix_to_jd_tdb(t) - sim_initial_jd_tdb[system_name]
 

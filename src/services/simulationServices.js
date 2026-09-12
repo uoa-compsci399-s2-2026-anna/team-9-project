@@ -7,7 +7,7 @@
 export async function getSystemData(name, t) {
     const params = new URLSearchParams({
         system_name: name,
-        t: t / 1000, // TEMP until #150 is merged
+        t: t,
     });
 
     const response = await fetch(`/system?${params}`);

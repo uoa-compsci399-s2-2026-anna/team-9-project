@@ -21,8 +21,9 @@ import {
 
 let timer;
 
-/** The current simulation time in seconds since Unix epoch. */
-export let currentSimulationTime = Date.now() / 1000;
+/** The current simulation time in milliseconds since Unix epoch. */
+export let currentSimulationTime = Date.now();
+console.log(currentSimulationTime);
 
 let currentSystem;
 
