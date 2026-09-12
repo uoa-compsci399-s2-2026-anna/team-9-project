@@ -15,6 +15,8 @@ import {
     setFontFamily,
     toggleSimulationDarkMode,
 } from "../rendering/simulationRenderer.js";
+import { settings } from "../shared/settingsState.js";
+import { convertToEpoch } from "../utils/utils.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -34,6 +36,14 @@ bus.subscribe(EVENTS.SIM.STEP_BACK, () => {
 
 bus.subscribe(EVENTS.SIM.SET_TIME_TO_NOW, () => {
     resetSimulationTimeToNow();
+});
+
+// Calendar change
+
+bus.subscribe(EVENTS.SIM.CALENDAR_CHANGE, (event) => {
+    const { time } = event.detail;
+
+    console.log(time);
 });
 
 // Reset view

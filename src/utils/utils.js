@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 /**
  * Converts a given amount of time (time + unit) into milliseconds.
  *
@@ -19,4 +21,21 @@ export function timeToMilliseconds(time, unit) {
     }
 
     return time * units[unit];
+}
+
+// TODO: use in calendar
+export const TIMEZONE_MAP = {
+    UTC: "UTC",
+    NZT: "Pacific/Auckland",
+};
+
+/**
+ * TODO
+ * @param {*} dateString 
+ * @param {*} timeZone 
+ * @returns 
+ */
+export function convertToEpoch(dateString, timeZone) {
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
+    return DateTime.fromISO(dateString, { zone: formattedTimeZone }).toMillis();
 }

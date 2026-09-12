@@ -4,6 +4,8 @@ import {
     running,
     comparingToSolarSystem,
 } from "../../shared/simulationState.js";
+import { convertToEpoch } from "../../utils/utils.js";
+import { settings } from "../../shared/settingsState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -165,15 +167,12 @@ systemButton.addEventListener("click", () => {
 const calendars = document.getElementsByClassName("calendar");
 
 for (const calendar of calendars) {
-    calendar.addEventListener("change", (event) => {
-        const oldValue = event.target.dataset.previousValue;
-
+    calendar.addEventListener("input", (event) => {
+        // Get the time since epoch in milliseconds for the given date string and the current time zone
+        const epochMs = convertToEpoch(event.target.value, settings.timeZone);
         bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
-            oldValue: oldValue,
-            value: event.target.value,
+            time: epochMs,
         });
-
-        event.target.dataset.previousValue = calendar.value;
     });
 }
 
