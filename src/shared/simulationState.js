@@ -53,9 +53,11 @@ export function getSimulationSpeedMilliseconds() {
 }
 
 /**
- * 
- * @param {*} system 
- * @returns 
+ * Gets the stored simulation time for a system.
+ *
+ * @param {*} system Name of the system
+ * @returns {number} The stored simulation time for the system, in
+ * milliseconds since the Unix epoch, or the current time if none is stored
  */
 export function getSimulationTime(system) {
     simulationState.simulationTimes ??= {};
@@ -63,9 +65,10 @@ export function getSimulationTime(system) {
 }
 
 /**
- * 
- * @param {*} system 
- * @param {*} time 
+ * Sets the stored simulation time for a system.
+ *
+ * @param {*} system Name of the system
+ * @param {*} time Simulation time to store, in milliseconds since the Unix epoch
  */
 export function setSimulationTime(system, time) {
     simulationState.simulationTimes ??= {};
