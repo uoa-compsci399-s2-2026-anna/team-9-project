@@ -13,31 +13,33 @@ import {
  */
 document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     const button = buttonType.querySelector("[data-button]");
-    const onClickEventName = buttonType.dataset.onClickEventName;
+    const onClickEvents = JSON.parse(buttonType.dataset.onClickEvents);
 
     if (!button) {
         return;
     }
 
-    button.addEventListener("click", () => {
-        var eventDetail;
+    for (const event of onClickEvents) {
+        button.addEventListener("click", () => {
+            var eventDetail;
 
-        // Add custom additional event detail for events here
-        switch (onClickEventName) {
-            case EVENTS.TOOLBAR.DARK_MODE_TOGGLE:
-                eventDetail = { enterDarkMode: !settings.darkMode };
-                break;
-            case EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM:
-                eventDetail = { compare: !comparingToSolarSystem };
-                break;
-            case EVENTS.SIM.TOGGLE:
-                eventDetail = { startSimulation: !running };
-                break;
-            case EVENTS.SETTINGS.MENU_TOGGLE:
-                eventDetail = { openMenu: true };
-                break;
-        }
+            // Add custom additional event detail for events here
+            switch (event) {
+                case EVENTS.TOOLBAR.DARK_MODE_TOGGLE:
+                    eventDetail = { enterDarkMode: !settings.darkMode };
+                    break;
+                case EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM:
+                    eventDetail = { compare: !comparingToSolarSystem };
+                    break;
+                case EVENTS.SIM.TOGGLE:
+                    eventDetail = { startSimulation: !running };
+                    break;
+                case EVENTS.SETTINGS.MENU_TOGGLE:
+                    eventDetail = { openMenu: true };
+                    break;
+            }
 
-        bus.publish(onClickEventName, eventDetail);
-    });
+            bus.publish(event, eventDetail);
+        });
+    }
 });
