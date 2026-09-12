@@ -118,7 +118,8 @@ function areParallel(vectorA, vectorB, tolerance = 1e-10) {
 
 /**
  * Calculate the default camera position, at 1 degree from the up vector.
- * This ensures the camera direction is not parallel to the up vector and gives a unique camera orientation.
+ * This ensures the camera direction is not parallel to the up vector.
+ * Otherwise, camera orientation would not be uniquely determined by the position.
  * 
  * @param {THREE.Vector3} upVector The up vector for the camera
  * @param {number} cameraDistance The distance of the camera from the target
@@ -126,14 +127,16 @@ function areParallel(vectorA, vectorB, tolerance = 1e-10) {
  */
 export function calculateDefaultCameraPosition(upVector, cameraDistance) {
     const angleFromUp = Math.PI / 180; // 1 degree in radians
-    let arbitraryVector = new THREE.Vector3(1, 0, 0);
 
-    // Use a different arbitrary vector if it is parallel to the up vector
+    // Get an arbitrary vector that is not parallel to the up vector
+    // This will be used to calculate a vector that is perpendicular to the up vector
+    let arbitraryVector = new THREE.Vector3(1, 0, 0);
     if (areParallel(upVector, arbitraryVector)) {
         arbitraryVector = new THREE.Vector3(0, 1, 0);
     }
 
-    // Calculate a vector perpendicular to the upVector using the cross product
+    // Calculate a vector perpendicular to the up vector using the cross product
+    // This vector will be used to calculate the camera direction
     const perpendicularVector = new THREE.Vector3()
         .crossVectors(upVector, arbitraryVector)
         .normalize();
