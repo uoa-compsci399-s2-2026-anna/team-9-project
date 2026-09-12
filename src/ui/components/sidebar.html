@@ -83,7 +83,6 @@
   <!-- Reset view button -->
   {{
     text_button(
-      "reset-view-button",
       "Reset view",
       on_click_event_name="sim:reset_view"
     )
@@ -93,7 +92,6 @@
   {% if current_system.name != "Solar System" %}
     {{
       text_button(
-        "compare-to-solar-system-button",
         "Compare to Solar System",
         on_click_event_name="sim:compare_to_solar_system"
       )
