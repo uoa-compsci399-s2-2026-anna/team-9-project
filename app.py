@@ -41,9 +41,9 @@ app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name=
 
 # Each init_*() returns (sim, objects); take only the list of string objects
 sims = {
-    "Solar System": init_solar(),
-    "Kepler-16": init_kepler_16(),
-    "TRAPPIST-1": init_trappist_1(),
+    "solar system": init_solar(),
+    "kepler-16": init_kepler_16(),
+    "trappist-1": init_trappist_1(),
 }
 
 
@@ -89,7 +89,7 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     ]
 
     # Get the current system's string object list by lookup
-    objects = sims[current_system["name"]][1]
+    objects = sims[current_system["name"].lower()][1]
 
     return templates.TemplateResponse(
         request=request,
