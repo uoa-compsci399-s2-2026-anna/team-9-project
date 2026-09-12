@@ -24,7 +24,7 @@
     {{
       text_button(
         button_text="Cancel",
-        on_click_event_name=["settings:close_reset_settings_menu"]
+        on_click_events=["settings:close_reset_settings_menu"]
       )
     }}
 
@@ -32,7 +32,7 @@
     {{
       text_button(
         button_text="Reset all settings",
-        on_click_event_name=["settings:close_reset_settings_menu", "settings:reset_all_settings"],
+        on_click_events=["settings:close_reset_settings_menu", "settings:reset_all_settings"],
         button_styling="border-red-700 text-red-600 dark:border-red-500 dark:text-red-400"
       )
     }}
