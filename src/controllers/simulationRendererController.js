@@ -4,6 +4,7 @@ import {
     init,
     stepForward,
     stepBack,
+    resetSimulationTimeToNow,
     resetView,
     compareToSolarSystem,
     hideSolarSystem,
@@ -27,6 +28,12 @@ bus.subscribe(EVENTS.SIM.STEP_FORWARD, () => {
 
 bus.subscribe(EVENTS.SIM.STEP_BACK, () => {
     stepBack();
+});
+
+// Reset simulation time to now
+
+bus.subscribe(EVENTS.SIM.SET_TIME_TO_NOW, () => {
+    resetSimulationTimeToNow();
 });
 
 // Reset view

@@ -402,6 +402,19 @@ export function stepBack() {
     updateCalendar(currentSimulationTime);
 }
 
+export function resetSimulationTimeToNow() {
+    currentSimulationTime = Date.now();
+    updateSimulation();
+    updateCalendar(currentSimulationTime);
+}
+
+export function setSimulationTimeToTime(time) {
+    currentSimulationTime = time;
+    updateSimulation();
+    // TODO: strongly consider moving this to updateSimulation (repeated issue)
+    updateCalendar(currentSimulationTime);
+}
+
 export function resetView() {
     camera.position.copy(cameraDefaults.position);
     controls.target.copy(cameraDefaults.target); // Look at the sun
