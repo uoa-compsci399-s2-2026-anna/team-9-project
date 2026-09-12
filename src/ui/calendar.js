@@ -4,10 +4,12 @@ import { EVENTS } from "../events/events.js";
 import { currentSimulationTime } from "../rendering/simulationRenderer.js";
 import { timeToMilliseconds } from "../utils/utils.js";
 
-// updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
+// The last simulation time displayed by the calendar
+let lastSimulationTime = null;
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
-    // updateCalendar(getSimulationTimeInMillisecondsSinceUnixEpoch());
+    // Refresh the calendar with the last simulation time to reflect the new time zone
+    updateCalendar(lastSimulationTime);
 });
 
 /**
@@ -49,6 +51,8 @@ function formatted(date) {
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  */
 export function updateCalendar(simulationTime) {
+    lastSimulationTime = simulationTime;
+
     const date = new Date(simulationTime);
 
     const calendars = document.querySelectorAll(".calendar");
@@ -65,10 +69,3 @@ export function updateCalendar(simulationTime) {
         calendar.dataset.previousValue = calendar.value;
     });
 }
-
-// /**
-//  * @returns OPIS simulation timestamp in milliseconds since Unix epoch.
-//  */
-// function getSimulationTimeInMillisecondsSinceUnixEpoch() {
-//     return new Date(currentSimulationTime);
-// }
