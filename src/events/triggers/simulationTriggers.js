@@ -36,7 +36,6 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-
 // Triggers for view settings
 const habitableZoneInput = document.getElementById("habitable-zone-input");
 habitableZoneInput.addEventListener("change", (event) => {
@@ -84,24 +83,10 @@ objectsToggles.addEventListener("change", (event) => {
 // event on trigger
 document.querySelectorAll("[data-panel]").forEach((panel) => {
     const button = panel.querySelector("[data-panel-button]");
-
-    var event;
-
-    switch (button.id) {
-        case "view-settings-button":
-            event = EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE;
-            break;
-        case "objects-button":
-            event = EVENTS.SIM.OBJECTS_PANEL_TOGGLE;
-            break;
-    }
+    const toggleEvent = panel.dataset.toggleEvent;
 
     button.addEventListener("click", () => {
-        bus.publish(event, {
-            content: panel.querySelector("[data-panel-content]"),
-            showIcon: panel.querySelector("[data-panel-show-icon]"),
-            hideIcon: panel.querySelector("[data-panel-hide-icon]"),
-        });
+        bus.publish(toggleEvent);
     });
 });
 

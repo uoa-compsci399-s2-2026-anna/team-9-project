@@ -1,12 +1,17 @@
 {%
   macro side_panel(
-    panel_button_id,
     panel_title_text,
     toggles_div_id,
-    reset_button_id
+    reset_button_id,
+    toggle_event,
+    panel_button_id=None
   )
 %}
-  <div class="control relative flex h-auto min-h-0 flex-col p-2" data-panel>
+  <div
+    class="control relative flex h-auto min-h-0 flex-col p-2"
+    data-panel
+    data-toggle-event="{{ toggle_event }}"
+  >
     <!-- Panel button -->
     <button
       id="{{ panel_button_id }}"
@@ -43,7 +48,7 @@
         class="flex min-h-0 flex-col overflow-hidden"
       >
         <!-- Content -->
-        <div class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto">
+        <div class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto" data-scroll-container>
           {{ caller() }}
         </div>
 

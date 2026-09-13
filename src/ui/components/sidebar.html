@@ -11,10 +11,11 @@
     <!-- Objects panel -->
     {%
       call side_panel(
-        panel_button_id="objects-button",
         panel_title_text="Objects",
         toggles_div_id="objects-scroll-container",
-        reset_button_id="reset-objects"
+        reset_button_id="reset-objects",
+
+        toggle_event="sim:objects_panel_toggle"
       )
     %}
       <!-- Objects that are hidden for the current simulation -->
@@ -34,9 +35,10 @@
     <!-- View settings panel -->
     {%
       call side_panel(
-        panel_button_id="view-settings-button",
         panel_title_text="View settings",
-        reset_button_id="reset-view-settings"
+        reset_button_id="reset-view-settings",
+
+        toggle_event="sim:view_settings_panel_toggle"
       )
     %}
       {{
