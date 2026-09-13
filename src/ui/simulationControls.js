@@ -79,46 +79,37 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
 });
 
 // Panel interaction logic
+document.querySelectorAll("[data-panel]").forEach((panel) => {
+    const toggleEvent = panel.dataset.toggleEvent;
+    const scrollContainer = panel.querySelector("[data-scroll-container]");
+    const content = panel.querySelector("[data-panel-content]");
 
-/**
- * Updates the panel associated with the components obtained from `event`, by
- * opening/closing the panel and updating the show/hide icon accordingly.
- * @param {*} event Event as created from trigger for panel buttons in
- * `simulationTriggers.js`
- */
-function updatePanel(event) {
-    const detail = event.detail;
+    bus.subscribe(toggleEvent, () => {
+        const showIcon = panel.querySelector("[data-panel-show-icon]");
+        const hideIcon = panel.querySelector("[data-panel-hide-icon]");
 
-    const content = detail.content;
-    const showIcon = detail.showIcon;
-    const hideIcon = detail.hideIcon;
+        // Update visibility (expand/collapse)
+        content.classList.toggle("grid-rows-[0fr]");
+        content.classList.toggle("grid-rows-[1fr]");
 
-    content.classList.toggle("grid-rows-[0fr]");
-    content.classList.toggle("grid-rows-[1fr]");
+        // Update open/closed icon
+        showIcon.classList.toggle("hidden");
+        hideIcon.classList.toggle("hidden");
 
-    showIcon.classList.toggle("hidden");
-    hideIcon.classList.toggle("hidden");
-}
+        // Do not show scrollbar
+        scrollContainer.classList.add("overflow-hidden");
+        scrollContainer.classList.remove("overflow-y-auto");
+    });
 
-bus.subscribe(EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE, updatePanel);
-bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, updatePanel);
+    // Do not show scrollbar
+    content.addEventListener("transitioned", () => {
+        const isOpen = content.classList.contains("grid-rows-[1fr]");
 
-const objects = document.querySelector("#objects");
-const objectsScrollContainer = document.querySelector("#objects-scroll-container")
-
-bus.subscribe(EVENTS.SIM.OBJECTS_PANEL_TOGGLE, () => {
-    objectsScrollContainer.classList.add("overflow-hidden");
-    objectsScrollContainer.classList.remove("overflow-y-auto");
-})
-
-
-// Only allow scrolling after the open transition has finished
-objects.addEventListener("transitionend", () => {
-    const isOpen = objects.classList.contains("grid-rows-[1fr]");
-    if (isOpen) {
-        objectsScrollContainer.classList.add("overflow-y-auto");
-        objectsScrollContainer.classList.remove("overflow-hidden"); 
-    }
+        if (isOpen) {
+            scrollContainer.classList.add("overflow-y-auto");
+            scrollContainer.classList.remove("overflow-hidden");
+        }
+    });
 });
 
 // COMPARE TO SOLAR SYSTEM BUTTON
