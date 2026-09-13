@@ -32,4 +32,4 @@ Units were converted to SI units via:
 
 ## Spreadsheet
 https://docs.google.com/spreadsheets/d/1KE7ZVozelEonUsZPyBT29NdcSsfFrvfnJ53fg395jJ0/edit?usp=sharing
-Accesesable by anyone within the organisation
+Accessible by anyone within the organisation
