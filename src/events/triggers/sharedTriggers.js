@@ -19,10 +19,12 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         return;
     }
 
+    const existingEvents = Object.values(EVENTS).flatMap((category) =>
+        Object.values(category),
+    );
+
     for (const event of onClickEvents) {
-        const isEventValid = Object.values(EVENTS)
-            .flatMap((category) => Object.values(category))
-            .includes(event);
+        const isEventValid = existingEvents.includes(event);
 
         if (!isEventValid) {
             console.warn(
