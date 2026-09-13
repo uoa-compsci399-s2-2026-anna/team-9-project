@@ -96,6 +96,22 @@ const themes = {
     },
 };
 
+// Temporary
+const HABITABLE_ZONES = {
+    "Solar System": {
+        inner: 0.836,
+        outer: 1.656,
+    },
+    "Kepler-16": {
+        inner: 0.4,
+        outer: 0.7,
+    },
+    "TRAPPIST-1": {
+        inner: 0.019,
+        outer: 0.052,
+    },
+};
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
