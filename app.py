@@ -144,7 +144,7 @@ async def get_system_info(system_name: str = ""):
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    return system_data["objects"]
+    return { "objects": system_data["objects"], "habitable zone": system_data["habitable zone"] }
 
 
 @app.get("/system")
