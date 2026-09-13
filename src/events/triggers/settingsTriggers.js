@@ -17,21 +17,25 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         // Confirm reset settings overlay must be closed before the settings window can be closed
-        if (
-            document
-                .getElementById("confirm-reset-settings-overlay")
-                .checkVisibility({ checkOpacity: true })
-        ) {
+        if (isOverlayVisibleOpacity("confirm-reset-settings-overlay")) {
             bus.publish(EVENTS.SETTINGS.CLOSE_RESET_SETTINGS_MENU);
-        } else if (
-            document
-                .getElementById("settings-overlay")
-                .checkVisibility({ checkOpacity: true })
-        ) {
+        } else if (isOverlayVisibleOpacity("settings-overlay")) {
             bus.publish(EVENTS.SETTINGS.CLOSE_SETTINGS_MENU);
         }
     }
 });
+
+/**
+ * @param {string} overlayId The ID of the overlay
+ * @returns Whether the overlay is visible or not, also taking into account its
+ * opacity (i.e. an element with opacity 0 is not visible, one with 100 is
+ * visible).
+ */
+function isOverlayVisibleOpacity(overlayId) {
+    return document
+        .getElementById(overlayId)
+        .checkVisibility({ checkOpacity: true });
+}
 
 // Add "change" event listeners for each option in the settings menu
 document.querySelectorAll("[data-settings-option]").forEach((option) => {
