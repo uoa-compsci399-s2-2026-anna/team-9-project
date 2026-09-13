@@ -248,6 +248,9 @@ async def get_system_data(
     System_names are in list parameter format ?system_names=1&system_names=2
     """
 
+    if system_names is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
     systems = {}
 
     for original_system_name in system_names:
