@@ -24,9 +24,9 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     );
 
     for (const event of onClickEvents) {
-        const isEventValid = existingEvents.includes(event);
+        const eventExists = existingEvents.includes(event);
 
-        if (!isEventValid) {
+        if (!eventExists) {
             console.warn(
                 `Event '${event}' will not be published to event bus because it is not a recognised event in events.js (did you misspell the event?)`,
             );
