@@ -143,8 +143,14 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
 
     # Simulation times are stored and managed on the frontend in milliseconds
     simulation_time = sim_state["simulationTimes"].get(system_name, time.time() * MS_PER_SECOND)
-    simulation_date = format_sim_date(simulation_time, settings_state["timeZone"])
-    elapsed_days_text = format_elapsed_days_text(simulation_time, settings_state["timeZone"])
+
+    # TODO: clean up
+    simulation_date = sim_state["formattedSimulationDates"].get(system_name, format_sim_date(time.time() * MS_PER_SECOND, settings_state["timeZone"]))
+
+    # TODO: Not sure about hard coding the Today text here or if this is possible in the JSON?
+    elapsed_days_text = sim_state["elapsedDaysTexts"].get(system_name, "Today")
+    #simulation_date = format_sim_date(simulation_time, settings_state["timeZone"])
+    #elapsed_days_text = format_elapsed_days_text(simulation_time, settings_state["timeZone"])
 
     return templates.TemplateResponse(
         request=request,

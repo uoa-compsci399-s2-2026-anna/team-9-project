@@ -1,4 +1,5 @@
 import { timeToMilliseconds } from "../utils/utils.js";
+import { lastCalendarDate, getElapsedDaysText } from "../ui/simulationCalendar.js";
 
 /** 
  * Loads the current simulation state from the simulation-state script element
@@ -55,7 +56,7 @@ export function getSimulationSpeedMilliseconds() {
 /**
  * Gets the stored simulation time for a system.
  *
- * @param {*} system Name of the system
+ * @param {string} system Name of the system
  * @returns {number} The stored simulation time for the system, in
  * milliseconds since the Unix epoch, or the current time if none is stored
  */
@@ -67,13 +68,40 @@ export function getSimulationTime(system) {
 /**
  * Persists the stored simulation time for the given system.
  *
- * @param {*} system Name of the system
- * @param {*} time Simulation time to store, in milliseconds since the Unix epoch
+ * @param {string} system Name of the system
+ * @param {number} time Simulation time to store, in milliseconds since the Unix epoch
  */
 export function setSimulationTime(system, time) {
     simulationState.simulationTimes ??= {};
     simulationState.simulationTimes[system] = time;
     persist();
+}
+
+/**
+ * Persists the formatted simulation date for the given system
+ * 
+ * @param {string} system Name of the system
+ */
+export function setFormattedSimulationDate(system) {
+    simulationState.formattedSimulationDates ??= {}; 
+    // TODO: lastCalendarDate is irrespective of the current system... but this should never be an issue
+    simulationState.formattedSimulationDates[system] = lastCalendarDate;
+    persist();
+}
+
+/**
+ * Persists the elapsed text for the given system
+ * 
+ * @param {string} system Name of the system
+ * @param {number} time Simulation time to persist the elapsed text for
+ */
+export function setElapsedText(system, time) {
+    simulationState.elapsedDaysTexts ??= {};
+    // Get the elapsed days text for the given simulation time
+    const elapsedDaysText = getElapsedDaysText(time);
+    // TODO: this is also irrespective of the current system...
+    simulationState.elapsedDaysTexts[system] = elapsedDaysText;
+    persist(); 
 }
 
 

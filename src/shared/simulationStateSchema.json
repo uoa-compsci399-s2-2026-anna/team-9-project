@@ -5,6 +5,12 @@
   "simulationTimes": {
     "default": {}
   },
+  "formattedSimulationDates": {
+    "default": {}
+  },
+  "elapsedDaysTexts": {
+    "default": {}
+  },
   "simulationSpeedUnit": {
     "default": "day",
     "options": [
