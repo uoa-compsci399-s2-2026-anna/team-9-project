@@ -9,9 +9,6 @@ const MS_PER_DAY = timeToMilliseconds(1, "day");
 // The last simulation time (in ms since the Unix epoch) displayed by the calendar
 let lastSimulationTime = null;
 
-// The last calendar date displayed (in yyyy-MM-dd'T'HH:mm format)
-export let lastCalendarDate = null;
-
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
     // Refresh the calendar with the last simulation time to reflect the new time zone
     updateCalendar(lastSimulationTime);
@@ -38,6 +35,18 @@ function formatted(date) {
     })
         .format(date)
         .replace(" ", "T"); // Replace the ' ' with a 'T' to conform to format
+}
+
+/**
+ * Given the current simulation time in milliseconds since the Unix epoch, return
+ * the formatted simulation date. This is used for persisting the simulation date
+ * displayed by the calendar.
+ * 
+ * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
+ * @returns Formatted simulation date for the given `simulationTime` 
+ */
+export function formatSimulationDate(simulationTime) {
+    return formatted(new Date(simulationTime));
 }
 
 /**
@@ -95,7 +104,6 @@ function updateElapsedDaysText(simulationTime) {
     }
 
     const elapsedDaysText = getElapsedDaysText(simulationTime);
-    console.log(elapsedDaysText);
     elapsedDays.textContent = elapsedDaysText;
 }
 
@@ -118,8 +126,6 @@ export function updateCalendar(simulationTime) {
         calendar.value = formatted(date);
         calendar.min = formatted(new Date(date.getTime() - CALENDAR_RANGE_MS));
         calendar.max = formatted(new Date(date.getTime() + CALENDAR_RANGE_MS));
-
-        lastCalendarDate = calendar.value;
     });
 
     updateElapsedDaysText(simulationTime);

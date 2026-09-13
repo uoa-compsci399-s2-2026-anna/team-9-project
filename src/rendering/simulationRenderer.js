@@ -23,7 +23,11 @@ import {
     calculateUpVector,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
-import { updateCalendar } from "../ui/simulationCalendar.js";
+import { 
+    updateCalendar, 
+    formatSimulationDate, 
+    getElapsedDaysText, 
+} from "../ui/simulationCalendar.js";
 
 let timer;
 
@@ -386,12 +390,18 @@ export async function init(name) {
     initLabelRenderer(canvas);
     initTimer();
 
-    // Persist the current simulation time before the simulation is exited
-    // TODO: update comment
+    /**
+     * Persist the current simulation time, formatted simulation date, and days elapsed text 
+     * before the simulation is exited
+     */
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, currentSimulationTime);
-        setFormattedSimulationDate(currentSystem);
-        setElapsedText(currentSystem, currentSimulationTime);
+        
+        const formattedSimulationDate = formatSimulationDate(currentSimulationTime);
+        setFormattedSimulationDate(currentSystem, formattedSimulationDate);
+
+        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
+        setElapsedText(currentSystem, elapsedDaysText);
     });
 
     // Start rendering frames and updating the simulation

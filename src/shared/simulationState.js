@@ -1,5 +1,4 @@
 import { timeToMilliseconds } from "../utils/utils.js";
-import { lastCalendarDate, getElapsedDaysText } from "../ui/simulationCalendar.js";
 
 /** 
  * Loads the current simulation state from the simulation-state script element
@@ -81,25 +80,22 @@ export function setSimulationTime(system, time) {
  * Persists the formatted simulation date for the given system
  * 
  * @param {string} system Name of the system
+ * @param {string} formattedDate The formatted simulation date string to persist
  */
-export function setFormattedSimulationDate(system) {
+export function setFormattedSimulationDate(system, formattedDate) {
     simulationState.formattedSimulationDates ??= {}; 
-    // TODO: lastCalendarDate is irrespective of the current system... but this should never be an issue
-    simulationState.formattedSimulationDates[system] = lastCalendarDate;
+    simulationState.formattedSimulationDates[system] = formattedDate;
     persist();
 }
 
 /**
- * Persists the elapsed text for the given system
+ * Persists the elapsed days text for the given system
  * 
  * @param {string} system Name of the system
- * @param {number} time Simulation time to persist the elapsed text for
+ * @param {string} elapsedDaysText The elapsed days text to persist
  */
-export function setElapsedText(system, time) {
+export function setElapsedText(system, elapsedDaysText) {
     simulationState.elapsedDaysTexts ??= {};
-    // Get the elapsed days text for the given simulation time
-    const elapsedDaysText = getElapsedDaysText(time);
-    // TODO: this is also irrespective of the current system...
     simulationState.elapsedDaysTexts[system] = elapsedDaysText;
     persist(); 
 }
