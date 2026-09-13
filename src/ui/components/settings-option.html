@@ -12,10 +12,7 @@
     data-on-change-event-name="{{ on_change_event_name }}"
   >
     <span class="text-secondary w-full">{{ label_text }}</span>
-    <select
-      class="w-full min-w-0 truncate"
-      data-settings-select
-    >
+    <select class="control w-full min-w-0 truncate" data-settings-select>
       {% for option in options %}
         <option
           value="{{ option.value }}"
