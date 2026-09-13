@@ -6,7 +6,7 @@
  */
 export async function getSystemData(name, t) {
     const params = new URLSearchParams({
-        system_name: name,
+        system_names: name,
         t: t,
     });
 
@@ -15,5 +15,28 @@ export async function getSystemData(name, t) {
         throw new Error(`Failed to get system data: ${response.status}`);
     }
 
+    // Returns a dict of systems, get the specific system
+    return await response.json()[name];
+}
+
+/**
+ * Fetches the backend for multiple star systems' data at a specified time
+ * 
+ * @param {Array.<string>} names Star system names
+ * @param {number} t Simulation time relative to simulation initialisation time
+ */
+export async function getMultipleSystemsData(names, t) {
+    const params = new URLSearchParams({
+        // Join into list 
+        system_names: names.join(","),
+        t: t,
+    });
+
+    const response = await fetch(`/system?${params}`);
+    if (!response.ok) {
+        throw new Error(`Failed to get system data: ${response.status}`);
+    }
+
+    // Returns a dict of systems, get the specific system
     return await response.json();
 }
