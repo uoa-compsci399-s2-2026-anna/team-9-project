@@ -168,12 +168,13 @@ async def get_system_data(system_names: str = "", t: float = 0.0):
     System_names are in CSV format
     """
 
+    # Split the CSV list
     system_names_list = system_names.split(",")
 
     # Convert the system name to lowercase for API resilience
     systems = {}
-    for system_name in system_names_list:
-        system_name = system_name.lower()
+    for original_system_name in system_names_list:
+        system_name = original_system_name.lower()
         system_data = get_system_with_name(system_name)
 
         # Catch poor input
@@ -204,7 +205,7 @@ async def get_system_data(system_names: str = "", t: float = 0.0):
         orbital_data = {
             objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
         }
-        systems[system_name] = {"positions": positions, "orbital_data": orbital_data}
+        systems[original_system_name] = {"positions": positions, "orbital_data": orbital_data}
 
     return systems
 
