@@ -16,7 +16,8 @@ export async function getSystemData(name, t) {
     }
 
     // Returns a dict of systems, get the specific system
-    return await response.json()[name];
+    var systems_info_dict = await response.json();
+    return systems_info_dict[name];
 }
 
 /**
