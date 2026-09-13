@@ -61,7 +61,7 @@
                 },
                 "Mars": {
                     "mass": {
-                        "value": 6.41691e23,
+                        "value": 0.641691e24,
                         "uncertainty": 3.0e19
                     },
                     "temp": {
