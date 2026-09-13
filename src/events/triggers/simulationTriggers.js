@@ -1,19 +1,8 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import {
-    running,
-    comparingToSolarSystem,
-} from "../../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
-
-// Triggers for the play/pause button
-const playPauseButton = document.getElementById("play-pause-button");
-
-playPauseButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.TOGGLE, { startSimulation: !running });
-});
 
 // Triggers for the speed adjuster
 const speedAdjuster = document.getElementById("speed-adjuster");
@@ -45,38 +34,6 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-// Triggers for step back and step forward buttons
-const stepForward = document.getElementById("step-forward-button");
-const stepBack = document.getElementById("step-back-button");
-
-stepForward.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.STEP_FORWARD);
-});
-
-stepBack.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.STEP_BACK);
-});
-
-// Trigger for resetting the simulation view
-const resetView = document.getElementById("reset-view-button");
-
-resetView.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.RESET_VIEW);
-});
-
-// Trigger for comparing to the solar system
-const compareToSolarSystemButton = document.getElementById(
-    "compare-to-solar-system-button",
-);
-
-if (compareToSolarSystemButton) {
-    // Button does not exist for the solar system itself
-    compareToSolarSystemButton.addEventListener("click", () => {
-        bus.publish(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, {
-            compare: !comparingToSolarSystem,
-        });
-    });
-}
 
 // Triggers for view settings
 const habitableZoneInput = document.getElementById("habitable-zone-input");
@@ -176,10 +133,3 @@ for (const calendar of calendars) {
         event.target.dataset.previousValue = calendar.value;
     });
 }
-
-// 'Now' button
-const setTimeToNowButton = document.getElementById("set-time-to-now-button");
-
-setTimeToNowButton.addEventListener("click", () => {
-    bus.publish(EVENTS.SIM.SET_TIME_TO_NOW);
-});
