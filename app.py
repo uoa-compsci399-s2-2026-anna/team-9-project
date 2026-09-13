@@ -161,6 +161,48 @@ async def get_system_info(system_name: str = ""):
     }
 
 
+@app.get("/reference")
+async def get_reference_data(system_name: str = ""):
+    """
+    GET /reference endpoint
+    Gets a system at a reference timestamp (set in config.json)
+    """
+
+    # Convert the system name to lowercase for API resilience
+    system_name = system_name.lower()
+    system_data = get_system_with_name(system_name)
+
+    # Catch poor input
+    if system_data is None:
+        print("ERROR:", system_name, "not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    sim, objects = sims.get(system_name, (None, None))
+
+    # Init system if it is none
+    if sim is None:
+        sim, objects = init_system(system_data)
+
+    if sim is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    sims[system_name] = (sim, objects)
+
+    # Set time to reference time (t=0)
+    sim.integrate(0)
+
+    # Gather positions
+    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+
+    # Gather orbital data for each object
+    orbital_data = {
+        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+    }
+
+    return {"positions": positions, "orbital_data": orbital_data}
+
+
+
 @app.get("/system")
 async def get_system_data(system_name: str = "", t: float = 0.0):
     """
