@@ -65,7 +65,7 @@ export function getSimulationTime(system) {
 }
 
 /**
- * Sets the stored simulation time for a system.
+ * Persists the stored simulation time for the given system.
  *
  * @param {*} system Name of the system
  * @param {*} time Simulation time to store, in milliseconds since the Unix epoch

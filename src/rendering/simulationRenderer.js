@@ -385,7 +385,9 @@ export async function init(name) {
     initTimer();
 
     // Persist the current simulation time before the simulation is exited
-    window.addEventListener("pagehide", () => setSimulationTime(currentSystem, currentSimulationTime));
+    window.addEventListener("pagehide", () => {
+        setSimulationTime(currentSystem, currentSimulationTime);
+    });
 
     // Start rendering frames and updating the simulation
     updateSimulation();
