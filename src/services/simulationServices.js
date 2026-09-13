@@ -32,7 +32,7 @@ export async function getSystemData(name, t) {
  * Fetches the backend for multiple star systems' data at a specified time
  * 
  * @param {Array.<string>} names Star system names
- * @param {number} t Simulation time relative to simulation initialisation time
+ * @param {number} t Timestamp in milliseconds since epoch
  */
 export async function getMultipleSystemsData(names, t) {
     const params = new URLSearchParams({
