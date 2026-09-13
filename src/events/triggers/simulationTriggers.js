@@ -36,41 +36,20 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-// Triggers for view settings
-const habitableZoneInput = document.getElementById("habitable-zone-input");
-habitableZoneInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, {
-        value: event.target.checked,
-    });
-});
-
-const orbitsInput = document.getElementById("orbits-input");
-orbitsInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.ORBITS_TOGGLE, { value: event.target.checked });
-});
-
-const referenceGridInput = document.getElementById("reference-grid-input");
-referenceGridInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.REFERENCE_GRID_TOGGLE, {
-        value: event.target.checked,
-    });
-});
-
-const labelsInput = document.getElementById("labels-input");
-labelsInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.LABELS_TOGGLE, { value: event.target.checked });
-});
-
 /**
- * Get all checkboxes which toggle visibility of objects in the simulation (i.e.
- * checkboxes in the 'Objects' side panel and add relevant event listener.
+ * Add event listeners for checkboxes in side panels (Objects and View settings)
  */
 document
-    .querySelectorAll("[side-panel-checkbox]")
+    .querySelectorAll("[data-side-panel-checkbox]")
     .forEach((sidePanelCheckbox) => {
+        const toggleEvent = sidePanelCheckbox.dataset.toggleEvent;
+
         const objectCheckbox = sidePanelCheckbox.querySelector("[data-object]");
+        const viewSettingCheckbox =
+            sidePanelCheckbox.querySelector("[data-setting]");
 
         if (objectCheckbox) {
+            // Object checkbox event listeners
             objectCheckbox.addEventListener("change", (event) => {
                 const objectName = event.target.dataset.object;
                 const isEnabled = event.target.checked;
@@ -80,6 +59,11 @@ document
                     name: objectName,
                     value: isEnabled,
                 });
+            });
+        } else if (viewSettingCheckbox) {
+            // View settings event listeners
+            viewSettingCheckbox.addEventListener("change", (event) => {
+                bus.publish(toggleEvent, { value: event.target.checked });
             });
         }
     });
