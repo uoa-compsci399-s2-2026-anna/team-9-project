@@ -1,8 +1,9 @@
 # `config.json` References
+
 ## Solar System
+
 Planets (Mecury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune) radius
 and mass taken from: https://ssd.jpl.nasa.gov/planets/phys_par.html.
-Other data was taken from https://ssd.jpl.nasa.gov/horizons/
 
 Units were converted to SI units via:
 - Mass was multiplied by 10²⁴ and kept in kg
@@ -10,9 +11,16 @@ Units were converted to SI units via:
 
 Halley's Comet mass sourced from Festou et al. 2004, "Comets II" (https://books.google.co.nz/books?id=AHF9ZraafV8C&pg=PA223&redir_esc=y#v=onepage&q=Halley&f=false)
 
+Pluto's temperature was calculated from: https://nssdc.gsfc.nasa.gov/planetary/factsheet/plutofact.html
+
+Atlas' mass was take from: https://iopscience.iop.org/article/10.3847/2515-5172/ae2915
+
 Solar system's habitable zone was sourced from https://arxiv.org/pdf/1205.2429#page=6.
 
+All other data was taken from https://ssd.jpl.nasa.gov/horizons/
+
 ## Kepler-16
+
 Data is taken from Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet", Science, 333, 1602
 https://arxiv.org/abs/1109.3432
 
@@ -25,6 +33,7 @@ Units were converted to SI units via:
 - Kelper-16b's radius was multiplied by the radius of Jupiter × 6.9911e7 m (Nasa\*)
 
 ## TRAPPIST-1
+
 Data is calculated from data given in Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets", The Astrophysical Journal, 922:107
 https://arxiv.org/abs/2010.01074
 
@@ -35,5 +44,6 @@ Units were converted to SI units via:
 - The planets' radius was multiplied by the radius of Jupiter × 6.9911e7 m (Nasa\*)
 
 ## Spreadsheet
+
 https://docs.google.com/spreadsheets/d/1KE7ZVozelEonUsZPyBT29NdcSsfFrvfnJ53fg395jJ0/edit?usp=sharing
 Accessible by anyone within the organisation

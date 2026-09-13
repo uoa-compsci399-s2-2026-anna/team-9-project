@@ -65,6 +65,7 @@ def init_system(system_data, name):
 
         # Get orbit data (and set to None otherwise)
         m = orbit_data.get("m", None)
+        # Orbit only info
         a = orbit_data.get("a", None)
         e = orbit_data.get("e", None)
         P = orbit_data.get("P", None)
@@ -72,8 +73,20 @@ def init_system(system_data, name):
         M = orbit_data.get("M", None)
         inc = orbit_data.get("inc", None)
         Omega = orbit_data.get("Omega", None)
+        # Cartesian only info
+        x = orbit_data.get("x", None)
+        y = orbit_data.get("y", None)
+        z = orbit_data.get("z", None)
+        vx = orbit_data.get("vx", None)
+        vy = orbit_data.get("vy", None)
+        vz = orbit_data.get("vz", None)
 
-        sim.add(m=m, a=a, P=P, e=e, omega=omega, M=M, inc=inc, Omega=Omega)
+        # If orbit only info is given
+        if x is None:
+            sim.add(m=m, a=a, P=P, e=e, omega=omega, M=M, inc=inc, Omega=Omega)
+        # Otherwise use cartesian (cannot use both)
+        else:
+            sim.add(m=m, x=x, y=y, z=z, vx=vx, vy=vy, vz=vz)
 
     sim.move_to_com()
 
