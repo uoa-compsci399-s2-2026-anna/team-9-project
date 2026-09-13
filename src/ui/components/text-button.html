@@ -2,7 +2,8 @@
   macro text_button(
     button_text,
     button_id=None,
-    on_click_events=[]
+    on_click_events=[],
+    button_styling=None
   )
 %}
   <div
@@ -12,7 +13,7 @@
   >
     <button
       id="{{ button_id }}"
-      class="control px-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+      class="{{ button_styling }} control px-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
       data-button
     >
       {{ button_text }}
