@@ -1,5 +1,6 @@
 import signal
-from fastapi import FastAPI, HTTPException, status, Request
+from typing import Annotated
+from fastapi import FastAPI, HTTPException, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import rebound
@@ -162,18 +163,15 @@ async def get_system_info(system_name: str = ""):
 
 
 @app.get("/system")
-async def get_system_data(system_names: str = "", t: float = 0.0):
+async def get_system_data(system_names: Annotated[list[str] | None, Query()] = None, t: float = 0.0):
     """
     GET /system endpoint
     System_names are in CSV format
     """
 
-    # Split the CSV list
-    system_names_list = system_names.split(",")
-
     # Convert the system name to lowercase for API resilience
     systems = {}
-    for original_system_name in system_names_list:
+    for original_system_name in system_names:
         system_name = original_system_name.lower()
         system_data = get_system_with_name(system_name)
 
