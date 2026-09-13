@@ -23,18 +23,8 @@ export async function getSystemInfo(name) {
  * @param {number} t Timestamp in milliseconds since epoch
  */
 export async function getSystemData(name, t) {
-    const params = new URLSearchParams({
-        system_names: name,
-        t: t,
-    });
-
-    const response = await fetch(`/system?${params}`);
-    if (!response.ok) {
-        throw new Error(`Failed to get system data: ${response.status}`);
-    }
-
     // Returns a dict of systems, get the specific system
-    var systems_info_dict = await response.json();
+    var systems_info_dict = await getMultipleSystemsData([name], t);
     return systems_info_dict[name];
 }
 
