@@ -10,7 +10,7 @@ import {
     getSimulationSpeedMilliseconds,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
-import { getSystemData } from "../services/simulationServices.js";
+import { getSystemData, getMultipleSystemsData } from "../services/simulationServices.js";
 import {
     calculateOrbitalPosition,
     calculateRotationMatrix,
@@ -249,7 +249,12 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
  * Update the positions of all objects in the current system.
  */
 async function updateSimulation() {
-    const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
+    var systems = [currentSystem];
+    if (comparingToSolarSystem) {
+        systems.push("Solar System");
+    }
+    const allSystemData = await getMultipleSystemsData(systems, currentSimulationTime);
+    const currentSystemData = allSystemData[currentSystem];
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
         createOrUpdateObjectMesh(name, position, currentSystemGroup);
@@ -259,7 +264,7 @@ async function updateSimulation() {
     }
 
     if (comparingToSolarSystem) {
-        const solarSystemData = await getSystemData("Solar System", currentSimulationTime);
+        const solarSystemData = allSystemData["Solar System"];
 
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
