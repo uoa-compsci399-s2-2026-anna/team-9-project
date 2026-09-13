@@ -21,7 +21,7 @@ import {
     calculateUpVector,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
-import { updateCalendar } from "../ui/calendar.js";
+import { updateCalendar } from "../ui/simulationCalendar.js";
 
 let timer;
 
