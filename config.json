@@ -131,16 +131,16 @@
                 },
                 "Pluto": {
                     "mass": {
-                        "value": null,
-                        "uncertainty": null
+                        "value": 13024.6e18,
+                        "uncertainty": 6.0e18
                     },
                     "temp": {
-                        "value": null,
-                        "uncertainty": null
+                        "value": 31,
+                        "uncertainty": 7
                     },
                     "radius": {
-                        "value": null,
-                        "uncertainty": null
+                        "value": 1188.3e3,
+                        "uncertainty": 1.6e3
                     }
                 },
                 "1P/Halley": {
