@@ -253,9 +253,9 @@ async def get_system_data(
 
     systems = {}
 
-    for original_system_name in system_names:
-        sim_time = unix_to_sim_time(system_name, t)
-        systems[original_system_name] = get_system_data_at_time(system_name, sim_time)
+    for system_name in system_names:
+        sim_time = unix_to_sim_time(system_name.lower(), t)
+        systems[system_name] = get_system_data_at_time(system_name, sim_time)
 
     return systems
 
