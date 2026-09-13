@@ -66,18 +66,22 @@ labelsInput.addEventListener("change", (event) => {
  * checkboxes in the 'Objects' side panel and add relevant event listener.
  */
 document
-    .querySelectorAll('input[type="checkbox"][data-object]')
-    .forEach((objectCheckbox) => {
-        objectCheckbox.addEventListener("change", (event) => {
-            const objectName = event.target.dataset.object;
-            const isEnabled = event.target.checked;
+    .querySelectorAll("[side-panel-checkbox]")
+    .forEach((sidePanelCheckbox) => {
+        const objectCheckbox = sidePanelCheckbox.querySelector("[data-object]");
 
-            bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
-                system: currentSystem,
-                name: objectName,
-                value: isEnabled,
+        if (objectCheckbox) {
+            objectCheckbox.addEventListener("change", (event) => {
+                const objectName = event.target.dataset.object;
+                const isEnabled = event.target.checked;
+
+                bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
+                    system: currentSystem,
+                    name: objectName,
+                    value: isEnabled,
+                });
             });
-        });
+        }
     });
 
 // Add event listeners for buttons for each panel, which publishes the relevant
