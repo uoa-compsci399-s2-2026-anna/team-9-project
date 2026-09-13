@@ -291,8 +291,11 @@ function createHabitableZoneMesh() {
  * Update the calendar to display the current simulation time.
  */
 async function updateSimulation() {
+    // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
+    const areComparingToSolarSystem = comparingToSolarSystem;
+
     const systems = [currentSystem];
-    if (comparingToSolarSystem) {
+    if (areComparingToSolarSystem) {
         systems.push("Solar System");
     }
     const allSystemData = await getMultipleSystemsData(systems, currentSimulationTime);
@@ -307,7 +310,7 @@ async function updateSimulation() {
         createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
     }
 
-    if (comparingToSolarSystem) {
+    if (areComparingToSolarSystem) {
         const solarSystemData = allSystemData["Solar System"];
 
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
