@@ -112,6 +112,10 @@ const HABITABLE_ZONES = {
     },
 };
 
+const habitableZoneColor = 0x00ff00; // Green
+const habitableZoneOpacity = 0.2;
+let habitableZoneMesh;
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -261,6 +265,21 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
+function createHabitableZoneMesh() {
+    const innerRadius = HABITABLE_ZONES[currentSystem].inner;
+    const outerRadius = HABITABLE_ZONES[currentSystem].outer;
+
+    const geometry = new THREE.RingGeometry(innerRadius, outerRadius);
+    const material = new THREE.MeshBasicMaterial({
+        color: habitableZoneColor,
+        opacity: habitableZoneOpacity,
+        transparent: true,
+        side: THREE.DoubleSide,
+    });
+    habitableZoneMesh = new THREE.Mesh(geometry, material);
+    currentSystemGroup.add(habitableZoneMesh);
+}
+
 /**
  * Update the positions of all objects in the current system.
  */
@@ -387,6 +406,8 @@ export async function init(name) {
     const upVector = calculateUpVector(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+
+    createHabitableZoneMesh();
     initOrUpdateCamera(canvas, viewRadius, upVector);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
