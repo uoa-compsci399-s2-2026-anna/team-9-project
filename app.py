@@ -1,16 +1,16 @@
-import signal
-from typing import Annotated
+from datetime import datetime
 from fastapi import FastAPI, HTTPException, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import rebound
-import os
-import json
-import sys
-from datetime import datetime
-from zoneinfo import ZoneInfo
-import time
 from systems import unix_to_sim_time, init_system
+from typing import Annotated
+from zoneinfo import ZoneInfo
+import json
+import os
+import rebound
+import signal
+import sys
+import time
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -122,9 +122,7 @@ async def simulation(
     current_system = get_system_with_name(system_name)
     # Get all other systems, except the current system
     dropdown_systems = [
-        system_data
-        for system_data in all_systems
-        if system_data["name"] != system_name
+        system_data for system_data in all_systems if system_data["name"] != system_name
     ]
 
     # Get the current system's string object list by lookup
@@ -136,11 +134,15 @@ async def simulation(
     else:
         # Fallback to the current time
         # Note: Simulation times are stored and managed on the frontend in milliseconds
-        simulation_date = format_sim_date(time.time() * MS_PER_SECOND, settings_state["timeZone"])
+        simulation_date = format_sim_date(
+            time.time() * MS_PER_SECOND, settings_state["timeZone"]
+        )
 
     # Get the elapsed days text for the system (e.g., "10 days from today")
     elapsed_days_fallback_text = sim_state_schema["elapsedDaysTexts"]["fallbackText"]
-    elapsed_days_text = sim_state["elapsedDaysTexts"].get(system_name, elapsed_days_fallback_text)
+    elapsed_days_text = sim_state["elapsedDaysTexts"].get(
+        system_name, elapsed_days_fallback_text
+    )
 
     return templates.TemplateResponse(
         request=request,
@@ -153,7 +155,6 @@ async def simulation(
             "fullscreen": fullscreen,
             "sim_date": simulation_date,
             "elapsed_days_text": elapsed_days_text,
-
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
@@ -198,7 +199,9 @@ async def get_system_info(system_name: str = ""):
 
 
 @app.get("/system")
-async def get_system_data(system_names: Annotated[list[str] | None, Query()] = None, t: float = 0.0):
+async def get_system_data(
+    system_names: Annotated[list[str] | None, Query()] = None, t: float = 0.0
+):
     """
     GET /system endpoint
     System_names are in list parameter format ?system_names=1&system_names=2
@@ -233,13 +236,18 @@ async def get_system_data(system_names: Annotated[list[str] | None, Query()] = N
         sim.integrate(sim_time)
 
         # Gather positions
-        positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+        positions = {
+            objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)
+        }
 
         # Gather orbital data for each object
         orbital_data = {
             objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
         }
-        systems[original_system_name] = {"positions": positions, "orbital_data": orbital_data}
+        systems[original_system_name] = {
+            "positions": positions,
+            "orbital_data": orbital_data,
+        }
 
     return systems
 
