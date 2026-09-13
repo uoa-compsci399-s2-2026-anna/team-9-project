@@ -24,8 +24,8 @@ export async function getSystemInfo(name) {
  */
 export async function getSystemData(name, t) {
     // Returns a dict of systems, get the specific system
-    var systems_info_dict = await getMultipleSystemsData([name], t);
-    return systems_info_dict[name];
+    const systemsInfoDict = await getMultipleSystemsData([name], t);
+    return systemsInfoDict[name];
 }
 
 /**
