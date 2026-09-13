@@ -1,7 +1,6 @@
-import { settings } from "../shared/settingsState.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { TIMEZONE_MAP, timeToMilliseconds } from "../utils/utils.js";
+import { formatDate, timeToMilliseconds, dateOnly } from "../utils/utils.js";
 
 // The number of milliseconds in a day
 const MS_PER_DAY = timeToMilliseconds(1, "day");
@@ -15,29 +14,6 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
 });
 
 /**
- * @param {Date} date A `Date` object
- * @returns Formatted date/time string in the format taken by
- * `<input type="datetime-local">` (yyyy-MM-dd'T'HH:mm), respecting the time
- * zone setting.
- */
-function formatted(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
-
-    // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
-    return new Intl.DateTimeFormat("sv", {
-        timeZone: timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23",
-    })
-        .format(date)
-        .replace(" ", "T"); // Replace the ' ' with a 'T' to conform to format
-}
-
-/**
  * Given the current simulation time in milliseconds since the Unix epoch, return
  * the formatted simulation date. This is used for persisting the simulation date
  * displayed by the calendar.
@@ -46,22 +22,7 @@ function formatted(date) {
  * @returns Formatted simulation date for the given `simulationTime` 
  */
 export function formatSimulationDate(simulationTime) {
-    return formatted(new Date(simulationTime));
-}
-
-/**
- * @param {Date} date A `Date` object
- * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
- */
-function dateOnly(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
-
-    return new Intl.DateTimeFormat("sv", {
-        timeZone: timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).format(date);
+    return formatDate(new Date(simulationTime));
 }
 
 /**
@@ -123,9 +84,9 @@ export function updateCalendar(simulationTime) {
     const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
 
     calendars.forEach((calendar) => {
-        calendar.value = formatted(date);
-        calendar.min = formatted(new Date(date.getTime() - CALENDAR_RANGE_MS));
-        calendar.max = formatted(new Date(date.getTime() + CALENDAR_RANGE_MS));
+        calendar.value = formatDate(date);
+        calendar.min = formatDate(new Date(date.getTime() - CALENDAR_RANGE_MS));
+        calendar.max = formatDate(new Date(date.getTime() + CALENDAR_RANGE_MS));
     });
 
     updateElapsedDaysText(simulationTime);
