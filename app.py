@@ -158,14 +158,14 @@ async def get_system_info(system_name: str = ""):
     return {
         "objects": system_data["objects"],
         "habitable zone": system_data["habitable zone"],
-        "reference": get_reference_data(system_name),
+        "reference": get_system_data_at_time(system_name, 0),
     }
 
 
-def get_reference_data(system_name: str):
+def get_system_data_at_time(system_name: str, t):
     """
-    Gets a system at a reference timestamp (set in config.json)
-    Returns reference data.
+    Gets a system at a specific sim time (set in config.json)
+    Returns simulation data.
     """
 
     # Convert the system name to lowercase for API resilience
@@ -189,7 +189,7 @@ def get_reference_data(system_name: str):
     sims[system_name] = (sim, objects)
 
     # Set time to reference time (t=0)
-    sim.integrate(0)
+    sim.integrate(t)
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -209,40 +209,8 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
     GET /system endpoint
     """
 
-    # Convert the system name to lowercase for API resilience
-    system_name = system_name.lower()
-    system_data = get_system_with_name(system_name)
-
-    # Catch poor input
-    if system_data is None:
-        print("ERROR:", system_name, "not found")
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
-
-    sim, objects = sims.get(system_name, (None, None))
-
-    # Init system if it is none
-    if sim is None:
-        sim, objects = init_system(system_data)
-
-    if sim is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
-
-    sims[system_name] = (sim, objects)
-
     sim_time = unix_to_sim_time(system_name, t)
-
-    # Set time
-    sim.integrate(sim_time)
-
-    # Gather positions
-    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
-
-    # Gather orbital data for each object
-    orbital_data = {
-        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
-    }
-
-    return {"positions": positions, "orbital_data": orbital_data}
+    return get_system_data_at_time(system_name, sim_time)
 
 
 def get_position_dict(particle):
