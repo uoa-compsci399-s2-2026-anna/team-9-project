@@ -51,7 +51,7 @@
                         "uncertainty": 2.8e20
                     },
                     "temp": {
-                        "value": null,
+                        "value": 287.6,
                         "uncertainty": null
                     },
                     "radius": {
