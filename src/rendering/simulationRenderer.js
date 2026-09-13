@@ -8,9 +8,16 @@ import {
     comparingToSolarSystem,
     isObjectHidden,
     getSimulationSpeedMilliseconds,
+    getSimulationTime,
+    setSimulationTime,
+    setFormattedSimulationDate,
+    setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
-import { getSystemData } from "../services/simulationServices.js";
+import {
+    getSystemInfo,
+    getSystemData,
+} from "../services/simulationServices.js";
 import {
     calculateOrbitalPosition,
     calculateRotationMatrix,
@@ -19,11 +26,16 @@ import {
     calculateUpVector,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
+import { 
+    updateCalendar, 
+    formatSimulationDate, 
+    getElapsedDaysText, 
+} from "../ui/simulationCalendar.js";
 
 let timer;
 
-/** The current simulation time in milliseconds since Unix epoch. */
-export let currentSimulationTime = Date.now();
+// The current simulation time in milliseconds since Unix epoch
+let currentSimulationTime;
 
 let currentSystem;
 
@@ -95,6 +107,12 @@ const themes = {
         orbitColour: "white",
     },
 };
+
+const habitableZoneSegments = 64; // Number of segments to approximate the ring
+const habitableZoneColor = 0x00ff00; // Green
+const habitableZoneOpacity = 0.2;
+let habitableZone;
+let habitableZoneMesh;
 
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
@@ -245,10 +263,35 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
+function createHabitableZoneMesh() {
+    const startRadius = habitableZone.start;
+    const endRadius = habitableZone.end;
+
+    const geometry = new THREE.RingGeometry(startRadius, endRadius, habitableZoneSegments);
+    const material = new THREE.MeshBasicMaterial({
+        color: habitableZoneColor,
+        opacity: habitableZoneOpacity,
+        transparent: true,
+        side: THREE.DoubleSide,
+    });
+    habitableZoneMesh = new THREE.Mesh(geometry, material);
+    habitableZoneMesh.visible = simulationState.habitableZoneShown;
+
+    // Rotate the habitable zone to align its normal with the camera's up vector
+    const normal = new THREE.Vector3(0, 0, 1);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
+    habitableZoneMesh.quaternion.copy(quaternion);
+
+    currentSystemGroup.add(habitableZoneMesh);
+}
+
 /**
  * Update the positions of all objects in the current system.
+ * Update the calendar to display the current simulation time.
  */
 async function updateSimulation() {
+    updateCalendar(currentSimulationTime);
+
     const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
@@ -359,6 +402,10 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
+    currentSimulationTime = getSimulationTime(name);
+
+    const systemInfo = await getSystemInfo(currentSystem);
+    habitableZone = systemInfo["habitable zone"];
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
@@ -371,11 +418,28 @@ export async function init(name) {
     const upVector = calculateUpVector(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+
     initOrUpdateCamera(canvas, viewRadius, upVector);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
+
+    createHabitableZoneMesh();
+
+    /**
+     * Persist the current simulation time, formatted simulation date, and days elapsed text 
+     * before the simulation is exited
+     */
+    window.addEventListener("pagehide", () => {
+        setSimulationTime(currentSystem, currentSimulationTime);
+        
+        const formattedSimulationDate = formatSimulationDate(currentSimulationTime);
+        setFormattedSimulationDate(currentSystem, formattedSimulationDate);
+
+        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
+        setElapsedText(currentSystem, elapsedDaysText);
+    });
 
     // Start rendering frames and updating the simulation
     updateSimulation();
@@ -389,6 +453,16 @@ export function stepForward() {
 
 export function stepBack() {
     currentSimulationTime -= getSimulationSpeedMilliseconds();
+    updateSimulation();
+}
+
+export function resetSimulationTimeToNow() {
+    currentSimulationTime = Date.now();
+    updateSimulation();
+}
+
+export function setSimulationTimeToTime(time) {
+    currentSimulationTime = time;
     updateSimulation();
 }
 
@@ -453,6 +527,12 @@ export async function hideSolarSystem() {
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
     updateSimulation();
+}
+
+export function setHabitableZoneVisibility(value) {
+    if (habitableZoneMesh) {
+        habitableZoneMesh.visible = value;
+    }
 }
 
 export function setLabelsVisibility(value) {

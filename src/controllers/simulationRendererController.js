@@ -4,9 +4,12 @@ import {
     init,
     stepForward,
     stepBack,
+    resetSimulationTimeToNow,
+    setSimulationTimeToTime,
     resetView,
     compareToSolarSystem,
     hideSolarSystem,
+    setHabitableZoneVisibility,
     setLabelsVisibility,
     setOrbitsVisibility,
     setObjectVisibility,
@@ -29,6 +32,18 @@ bus.subscribe(EVENTS.SIM.STEP_BACK, () => {
     stepBack();
 });
 
+// Reset simulation time to now
+
+bus.subscribe(EVENTS.SIM.SET_TIME_TO_NOW, () => {
+    resetSimulationTimeToNow();
+});
+
+// Calendar change
+
+bus.subscribe(EVENTS.SIM.CALENDAR_CHANGE, (event) => {
+    setSimulationTimeToTime(event.detail.time);
+});
+
 // Reset view
 
 bus.subscribe(EVENTS.SIM.RESET_VIEW, () => {
@@ -46,6 +61,10 @@ bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
 });
 
 // View settings
+
+bus.subscribe(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, (event) => {
+    setHabitableZoneVisibility(event.detail.value);
+});
 
 bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
     setLabelsVisibility(event.detail.value);
