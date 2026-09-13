@@ -291,7 +291,7 @@ function createHabitableZoneMesh() {
  * Update the calendar to display the current simulation time.
  */
 async function updateSimulation() {
-    var systems = [currentSystem];
+    const systems = [currentSystem];
     if (comparingToSolarSystem) {
         systems.push("Solar System");
     }
