@@ -36,71 +36,46 @@ speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
 });
 
-// Triggers for view settings
-const habitableZoneInput = document.getElementById("habitable-zone-input");
-habitableZoneInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, {
-        value: event.target.checked,
+/**
+ * Add event listeners for checkboxes in side panels (Objects and View settings)
+ */
+document
+    .querySelectorAll("[data-side-panel-checkbox]")
+    .forEach((sidePanelCheckbox) => {
+        const toggleEvent = sidePanelCheckbox.dataset.toggleEvent;
+
+        const objectCheckbox = sidePanelCheckbox.querySelector("[data-object]");
+        const viewSettingCheckbox =
+            sidePanelCheckbox.querySelector("[data-setting]");
+
+        if (objectCheckbox) {
+            // Object checkbox event listeners
+            objectCheckbox.addEventListener("change", (event) => {
+                const objectName = event.target.dataset.object;
+                const isEnabled = event.target.checked;
+
+                bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
+                    system: currentSystem,
+                    name: objectName,
+                    value: isEnabled,
+                });
+            });
+        } else if (viewSettingCheckbox) {
+            // View settings event listeners
+            viewSettingCheckbox.addEventListener("change", (event) => {
+                bus.publish(toggleEvent, { value: event.target.checked });
+            });
+        }
     });
-});
-
-const orbitsInput = document.getElementById("orbits-input");
-orbitsInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.ORBITS_TOGGLE, { value: event.target.checked });
-});
-
-const referenceGridInput = document.getElementById("reference-grid-input");
-referenceGridInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.REFERENCE_GRID_TOGGLE, {
-        value: event.target.checked,
-    });
-});
-
-const labelsInput = document.getElementById("labels-input");
-labelsInput.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.LABELS_TOGGLE, { value: event.target.checked });
-});
-
-// Triggers for hiding/showing objects
-const objectsToggles = document.getElementById("objects-scroll-container");
-
-objectsToggles.addEventListener("change", (event) => {
-    if (event.target.type !== "checkbox") {
-        return;
-    }
-
-    const objectName = event.target.dataset.object;
-    const isEnabled = event.target.checked;
-
-    bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
-        system: currentSystem,
-        name: objectName,
-        value: isEnabled,
-    });
-});
 
 // Add event listeners for buttons for each panel, which publishes the relevant
 // event on trigger
 document.querySelectorAll("[data-panel]").forEach((panel) => {
     const button = panel.querySelector("[data-panel-button]");
-
-    var event;
-
-    switch (button.id) {
-        case "view-settings-button":
-            event = EVENTS.SIM.VIEW_SETTINGS_PANEL_TOGGLE;
-            break;
-        case "objects-button":
-            event = EVENTS.SIM.OBJECTS_PANEL_TOGGLE;
-            break;
-    }
+    const toggleEvent = panel.dataset.toggleEvent;
 
     button.addEventListener("click", () => {
-        bus.publish(event, {
-            content: panel.querySelector("[data-panel-content]"),
-            showIcon: panel.querySelector("[data-panel-show-icon]"),
-            hideIcon: panel.querySelector("[data-panel-hide-icon]"),
-        });
+        bus.publish(toggleEvent);
     });
 });
 
