@@ -145,6 +145,10 @@
                 }
             },
             "timestamp": 2461295.8545645652,
+            "habitable zone": {
+                "start": 0.836,
+                "end": 1.656
+            }
             "orbits": {
                 "Sun": {
                     "m": 1.0

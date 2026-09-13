@@ -8,7 +8,9 @@ Units were converted to SI units via:
 - Mass was multiplied by 10²⁴ and kept in kg
 - Radius was converted km→m (×10³)
 
-Halley's Comet mass sourced from...
+Halley's Comet mass sourced from Festou et al. 2004, "Comets II" (https://books.google.co.nz/books?id=AHF9ZraafV8C&pg=PA223&redir_esc=y#v=onepage&q=Halley&f=false)
+
+Solar system's habitable zone was sourced from https://arxiv.org/pdf/1205.2429#page=6.
 
 ## Kepler-16
 Data is taken from Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet", Science, 333, 1602
