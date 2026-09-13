@@ -7,6 +7,9 @@ import rebound
 import os
 import json
 import sys
+from datetime import datetime
+from zoneinfo import ZoneInfo
+import time
 from systems import unix_to_sim_time, init_system
 
 # Prevent internal server errors when adding objects to the simulation
@@ -61,6 +64,23 @@ sims = {
     "trappist-1": init_system_with_name("trappist-1"),
 }
 
+MS_PER_SECOND = 1000
+
+TIMEZONE_MAP = {
+    "NZT": "Pacific/Auckland",
+    "UTC": "UTC",
+}
+
+
+def format_sim_date(simulation_time_ms, timezone_key):
+    """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
+    time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
+    time_zone = ZoneInfo(time_zone_name)
+
+    sim_date = datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
+
+    return sim_date.strftime("%Y-%m-%dT%H:%M")
+
 
 @app.get("/")
 async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
@@ -104,11 +124,23 @@ async def simulation(
     dropdown_systems = [
         system_data
         for system_data in all_systems
-        if system_data["name"] != current_system["name"]
+        if system_data["name"] != system_name
     ]
 
     # Get the current system's string object list by lookup
-    objects = sims[current_system["name"].lower()][1]
+    objects = sims[system_name.lower()][1]
+
+    # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
+    if system_name in sim_state["formattedSimulationDates"]:
+        simulation_date = sim_state["formattedSimulationDates"][system_name]
+    else:
+        # Fallback to the current time
+        # Note: Simulation times are stored and managed on the frontend in milliseconds
+        simulation_date = format_sim_date(time.time() * MS_PER_SECOND, settings_state["timeZone"])
+
+    # Get the elapsed days text for the system (e.g., "10 days from today")
+    elapsed_days_fallback_text = sim_state_schema["elapsedDaysTexts"]["fallbackText"]
+    elapsed_days_text = sim_state["elapsedDaysTexts"].get(system_name, elapsed_days_fallback_text)
 
     return templates.TemplateResponse(
         request=request,
@@ -119,6 +151,9 @@ async def simulation(
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
             "fullscreen": fullscreen,
+            "sim_date": simulation_date,
+            "elapsed_days_text": elapsed_days_text,
+
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
