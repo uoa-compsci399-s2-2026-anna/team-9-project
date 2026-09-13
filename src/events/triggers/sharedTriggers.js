@@ -20,6 +20,17 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     }
 
     for (const event of onClickEvents) {
+        const isEventValid = Object.values(EVENTS)
+            .flatMap((category) => Object.values(category))
+            .includes(event);
+
+        if (!isEventValid) {
+            console.warn(
+                `Event '${event}' will not be published to event bus because it is not a recognised event in events.js (did you misspell the event?)`,
+            );
+            continue;
+        }
+
         button.addEventListener("click", () => {
             var eventDetail;
 
