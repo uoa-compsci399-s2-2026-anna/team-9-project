@@ -166,12 +166,13 @@ async def get_system_info(system_name: str = ""):
 async def get_system_data(system_names: Annotated[list[str] | None, Query()] = None, t: float = 0.0):
     """
     GET /system endpoint
-    System_names are in CSV format
+    System_names are in list parameter format ?system_names=1&system_names=2
     """
 
-    # Convert the system name to lowercase for API resilience
     systems = {}
+
     for original_system_name in system_names:
+        # Convert the system name to lowercase for API resilience
         system_name = original_system_name.lower()
         system_data = get_system_with_name(system_name)
 
