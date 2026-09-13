@@ -78,7 +78,7 @@ bus.subscribe(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, (event) => {
 // Font select
 
 bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
-    const selectedFont = event.detail.font;
+    const selectedFont = event.detail.value;
 
     if (selectedFont == "OpenDyslexic") {
         html.classList.add("font-accessible");

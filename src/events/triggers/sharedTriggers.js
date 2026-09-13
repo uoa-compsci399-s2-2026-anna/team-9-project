@@ -1,25 +1,58 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { settings } from "../../shared/settingsState.js";
+import {
+    running,
+    comparingToSolarSystem,
+} from "../../shared/simulationState.js";
 
-// Triggers for the fullscreen button
-const fullscreenButton = document.getElementById("fullscreen-button");
+/**
+ * Register event listeners, event bus publishes, and any additional event
+ * detail (where provided) to all `button_with_tooltip` and `text_button` macro
+ * calls.
+ */
+document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
+    const button = buttonType.querySelector("[data-button]");
+    const onClickEvents = JSON.parse(buttonType.dataset.onClickEvents);
 
-fullscreenButton.addEventListener("click", () => {
-    bus.publish(EVENTS.TOOLBAR.FULLSCREEN_BUTTON_TOGGLE);
+    if (!button) {
+        return;
+    }
+
+    const existingEvents = Object.values(EVENTS).flatMap((category) =>
+        Object.values(category),
+    );
+
+    for (const event of onClickEvents) {
+        const isEventValid = existingEvents.includes(event);
+
+        if (!isEventValid) {
+            console.warn(
+                `Event '${event}' will not be published to event bus because it is not a recognised event in events.js (did you misspell the event?)`,
+            );
+            continue;
+        }
+
+        button.addEventListener("click", () => {
+            var eventDetail;
+
+            // Add custom additional event detail for events here
+            switch (event) {
+                case EVENTS.TOOLBAR.DARK_MODE_TOGGLE:
+                    eventDetail = { enterDarkMode: !settings.darkMode };
+                    break;
+                case EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM:
+                    eventDetail = { compare: !comparingToSolarSystem };
+                    break;
+                case EVENTS.SIM.TOGGLE:
+                    eventDetail = { startSimulation: !running };
+                    break;
+                case EVENTS.SETTINGS.MENU_TOGGLE:
+                    eventDetail = { openMenu: true };
+                    break;
+            }
+
+            bus.publish(event, eventDetail);
+        });
+    }
 });
-
-// Triggers for dark/light mode button
-const darkModeToggleButton = document.getElementById("dark-mode-toggle-button");
-
-darkModeToggleButton.addEventListener("click", () => {
-    bus.publish(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, { enterDarkMode: !settings.darkMode });
-});
-
-// Triggers for home button
-const homeButton = document.getElementById("home-button");
-
-homeButton.addEventListener("click", () => {
-    bus.publish(EVENTS.TOOLBAR.HOME);
-})
-

@@ -4,27 +4,27 @@ import { setSetting } from "../shared/settingsState.js";
 
 // Time zone
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
-    setSetting("timeZone", event.detail.timeZone);
+    setSetting("timeZone", event.detail.value);
 });
 
 // Font
 bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
-    setSetting("font", event.detail.font);
+    setSetting("font", event.detail.value);
 });
 
 // Text size
 bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
-    setSetting("textSize", event.detail.textSize);
+    setSetting("textSize", event.detail.value);
 });
 
 // Object marker size
 bus.subscribe(EVENTS.SETTINGS.OBJECT_MARKER_SIZE_SELECT, (event) => {
-    setSetting("objectMarkerSize", event.detail.objectMarkerSize);
+    setSetting("objectMarkerSize", event.detail.value);
 });
 
 // Orbit lines
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
-    setSetting("orbitLines", event.detail.orbitLines);
+    setSetting("orbitLines", event.detail.value);
 });
 
 // Dark mode
