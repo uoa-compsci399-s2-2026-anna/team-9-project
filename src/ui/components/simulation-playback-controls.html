@@ -10,6 +10,7 @@
       type="datetime-local"
       class="calendar"
       name="calendar"
+      value="{{ sim_date }}"
       onkeydown="return false;"
     />
   </span>
@@ -32,10 +33,11 @@
               type="datetime-local"
               class="calendar"
               name="calendar"
+              value="{{ sim_date }}"
               onkeydown="return false;"
             />
           </p>
-          <p class="text-s italic dark:text-zinc-400">32 days from now</p>
+          <p id="elapsed-days" class="text-s italic dark:text-zinc-400">{{ elapsed_days_text }}</p>
         </div>
       </div>
     </div>

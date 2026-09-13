@@ -2,6 +2,16 @@
   "simulationSpeed": {
     "default": 10
   },
+  "simulationTimes": {
+    "default": {}
+  },
+  "formattedSimulationDates": {
+    "default": {}
+  },
+  "elapsedDaysTexts": {
+    "default": {},
+    "fallbackText": "Today"
+  },
   "simulationSpeedUnit": {
     "default": "day",
     "options": [

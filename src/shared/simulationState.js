@@ -53,6 +53,55 @@ export function getSimulationSpeedMilliseconds() {
 }
 
 /**
+ * Gets the stored simulation time for a system.
+ *
+ * @param {string} system Name of the system
+ * @returns {number} The stored simulation time for the system, in
+ * milliseconds since the Unix epoch, or the current time if none is stored
+ */
+export function getSimulationTime(system) {
+    simulationState.simulationTimes ??= {};
+    return simulationState.simulationTimes[system] ?? Date.now();
+}
+
+/**
+ * Persists the stored simulation time for the given system.
+ *
+ * @param {string} system Name of the system
+ * @param {number} time Simulation time to store, in milliseconds since the Unix epoch
+ */
+export function setSimulationTime(system, time) {
+    simulationState.simulationTimes ??= {};
+    simulationState.simulationTimes[system] = time;
+    persist();
+}
+
+/**
+ * Persists the formatted simulation date for the given system
+ * 
+ * @param {string} system Name of the system
+ * @param {string} formattedDate The formatted simulation date string to persist
+ */
+export function setFormattedSimulationDate(system, formattedDate) {
+    simulationState.formattedSimulationDates ??= {}; 
+    simulationState.formattedSimulationDates[system] = formattedDate;
+    persist();
+}
+
+/**
+ * Persists the elapsed days text for the given system
+ * 
+ * @param {string} system Name of the system
+ * @param {string} elapsedDaysText The elapsed days text to persist
+ */
+export function setElapsedText(system, elapsedDaysText) {
+    simulationState.elapsedDaysTexts ??= {};
+    simulationState.elapsedDaysTexts[system] = elapsedDaysText;
+    persist(); 
+}
+
+
+/**
  * Gets the array of hidden object names for the given system
  * 
  * @param {string} system The system to get hidden objects for
