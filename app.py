@@ -42,11 +42,16 @@ app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name=
 
 def get_system_with_name(name):
     name = name.lower()
-    return next(system_data for system_data in all_systems if system_data["name"].lower() == name)
+    return next(
+        system_data
+        for system_data in all_systems
+        if system_data["name"].lower() == name
+    )
 
 
 def init_system_with_name(name):
     return init_system(get_system_with_name(name), name)
+
 
 # Each init_*() returns (sim, objects); take only the list of string objects
 sims = {
@@ -67,7 +72,6 @@ async def home(request: Request, settings: str = "{}", fullscreen: bool = False)
             "settings": settings_state,
             "settings_schema": settings_schema,
             "fullscreen": fullscreen,
-
             "systems": all_systems,
             "dropdown_systems": all_systems,
             # Control which components are rendered on the html page
@@ -82,7 +86,13 @@ async def home(request: Request, settings: str = "{}", fullscreen: bool = False)
 
 
 @app.get("/simulation/{system_name}")
-async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}", fullscreen: bool = False):
+async def simulation(
+    request: Request,
+    system_name: str,
+    state: str = "{}",
+    settings: str = "{}",
+    fullscreen: bool = False,
+):
     sim_state = json.loads(state)
 
     settings_state = json.loads(settings)
@@ -91,7 +101,9 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     current_system = get_system_with_name(system_name)
     # Get all other systems, except the current system
     dropdown_systems = [
-        system_data for system_data in all_systems if system_data["name"] != current_system["name"]
+        system_data
+        for system_data in all_systems
+        if system_data["name"] != current_system["name"]
     ]
 
     # Get the current system's string object list by lookup
@@ -106,7 +118,6 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
             "fullscreen": fullscreen,
-
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
@@ -144,7 +155,10 @@ async def get_system_info(system_name: str = ""):
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    return { "objects": system_data["objects"], "habitable zone": system_data["habitable zone"] }
+    return {
+        "objects": system_data["objects"],
+        "habitable zone": system_data["habitable zone"],
+    }
 
 
 @app.get("/system")
