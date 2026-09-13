@@ -17,6 +17,7 @@
 @theme {
   --color-primary: var(--color-zinc-800);
   --color-secondary: var(--color-zinc-600);
+  --color-accent: rgb(0.642 0.618 1);
 }
 
 @layer theme {
@@ -25,6 +26,7 @@
     @variant dark {
       --color-primary: var(--color-purple-100);
       --color-secondary: oklch(94.6% 0.033 307.174 / 0.6); /* purple-100/60 */
+      --color-accent: rgb(0.576 0.556 0.902);
     }
   }
 }
