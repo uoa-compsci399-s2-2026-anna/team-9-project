@@ -148,7 +148,7 @@
             "habitable zone": {
                 "start": 0.836,
                 "end": 1.656
-            }
+            },
             "orbits": {
                 "Sun": {
                     "m": 1.0
@@ -431,7 +431,7 @@
             "habitable zone": {
                 "start": 0.019,
                 "end": 0.052
-            }
+            },
             "orbits": {
                 "Trappist-1": {
                     "m": 0.0898
