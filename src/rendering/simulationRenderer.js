@@ -99,6 +99,7 @@ const themes = {
     },
 };
 
+const habitableZoneSegments = 64; // Number of segments to approximate the ring
 const habitableZoneColor = 0x00ff00; // Green
 const habitableZoneOpacity = 0.2;
 let habitableZone;
@@ -257,7 +258,7 @@ function createHabitableZoneMesh() {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
 
-    const geometry = new THREE.RingGeometry(startRadius, endRadius);
+    const geometry = new THREE.RingGeometry(startRadius, endRadius, habitableZoneSegments);
     const material = new THREE.MeshBasicMaterial({
         color: habitableZoneColor,
         opacity: habitableZoneOpacity,
