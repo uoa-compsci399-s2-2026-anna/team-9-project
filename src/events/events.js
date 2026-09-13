@@ -17,8 +17,7 @@ export const EVENTS = {
         COMPARE_TO_SOLAR_SYSTEM: "sim:compare_to_solar_system",
 
         /**
-         * When the calendar is changed (i.e. when the user selects a new
-         * date-time and confirms by exiting the selector).
+         * When the calendar is changed (i.e. when the user selects a new date-time).
          */
         CALENDAR_CHANGE: "sim:calendar_change",
 

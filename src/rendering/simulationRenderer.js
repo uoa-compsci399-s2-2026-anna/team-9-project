@@ -8,6 +8,10 @@ import {
     comparingToSolarSystem,
     isObjectHidden,
     getSimulationSpeedMilliseconds,
+    getSimulationTime,
+    setSimulationTime,
+    setFormattedSimulationDate,
+    setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import {
@@ -22,11 +26,16 @@ import {
     calculateUpVector,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
+import { 
+    updateCalendar, 
+    formatSimulationDate, 
+    getElapsedDaysText, 
+} from "../ui/simulationCalendar.js";
 
 let timer;
 
-/** The current simulation time in milliseconds since Unix epoch. */
-export let currentSimulationTime = Date.now();
+// The current simulation time in milliseconds since Unix epoch
+let currentSimulationTime;
 
 let currentSystem;
 
@@ -278,8 +287,11 @@ function createHabitableZoneMesh() {
 
 /**
  * Update the positions of all objects in the current system.
+ * Update the calendar to display the current simulation time.
  */
 async function updateSimulation() {
+    updateCalendar(currentSimulationTime);
+
     const currentSystemData = await getSystemData(currentSystem, currentSimulationTime);
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
@@ -390,6 +402,7 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
+    currentSimulationTime = getSimulationTime(name);
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone = systemInfo["habitable zone"];
@@ -414,6 +427,20 @@ export async function init(name) {
 
     createHabitableZoneMesh();
 
+    /**
+     * Persist the current simulation time, formatted simulation date, and days elapsed text 
+     * before the simulation is exited
+     */
+    window.addEventListener("pagehide", () => {
+        setSimulationTime(currentSystem, currentSimulationTime);
+        
+        const formattedSimulationDate = formatSimulationDate(currentSimulationTime);
+        setFormattedSimulationDate(currentSystem, formattedSimulationDate);
+
+        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
+        setElapsedText(currentSystem, elapsedDaysText);
+    });
+
     // Start rendering frames and updating the simulation
     updateSimulation();
     renderFrame();
@@ -426,6 +453,16 @@ export function stepForward() {
 
 export function stepBack() {
     currentSimulationTime -= getSimulationSpeedMilliseconds();
+    updateSimulation();
+}
+
+export function resetSimulationTimeToNow() {
+    currentSimulationTime = Date.now();
+    updateSimulation();
+}
+
+export function setSimulationTimeToTime(time) {
+    currentSimulationTime = time;
     updateSimulation();
 }
 
