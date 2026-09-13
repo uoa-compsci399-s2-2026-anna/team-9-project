@@ -102,7 +102,7 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
     });
 
     // Do not show scrollbar
-    content.addEventListener("transitioned", () => {
+    content.addEventListener("transitionend", () => {
         const isOpen = content.classList.contains("grid-rows-[1fr]");
 
         if (isOpen) {
