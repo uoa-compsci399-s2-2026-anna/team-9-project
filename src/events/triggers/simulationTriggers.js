@@ -86,11 +86,7 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
     const toggleEvent = panel.dataset.toggleEvent;
 
     button.addEventListener("click", () => {
-        bus.publish(toggleEvent, {
-            content: panel.querySelector("[data-panel-content]"),
-            showIcon: panel.querySelector("[data-panel-show-icon]"),
-            hideIcon: panel.querySelector("[data-panel-hide-icon]"),
-        });
+        bus.publish(toggleEvent);
     });
 });
 
