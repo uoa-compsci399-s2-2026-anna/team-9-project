@@ -277,6 +277,12 @@ function createHabitableZoneMesh() {
         side: THREE.DoubleSide,
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
+
+    // Rotate the habitable zone to align its normal with the camera's up vector
+    const normal = new THREE.Vector3(0, 0, 1);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
+    habitableZoneMesh.quaternion.copy(quaternion);
+
     currentSystemGroup.add(habitableZoneMesh);
 }
 
@@ -407,12 +413,13 @@ export async function init(name) {
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
 
-    createHabitableZoneMesh();
     initOrUpdateCamera(canvas, viewRadius, upVector);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
+
+    createHabitableZoneMesh();
 
     // Start rendering frames and updating the simulation
     updateSimulation();
