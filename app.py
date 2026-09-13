@@ -158,14 +158,14 @@ async def get_system_info(system_name: str = ""):
     return {
         "objects": system_data["objects"],
         "habitable zone": system_data["habitable zone"],
+        "reference": get_reference_data(system_name),
     }
 
 
-@app.get("/reference")
-async def get_reference_data(system_name: str = ""):
+def get_reference_data(system_name: str):
     """
-    GET /reference endpoint
     Gets a system at a reference timestamp (set in config.json)
+    Returns reference data.
     """
 
     # Convert the system name to lowercase for API resilience
