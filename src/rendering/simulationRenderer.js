@@ -10,7 +10,10 @@ import {
     getSimulationSpeedMilliseconds,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
-import { getSystemData } from "../services/simulationServices.js";
+import {
+    getSystemInfo,
+    getSystemData,
+} from "../services/simulationServices.js";
 import {
     calculateOrbitalPosition,
     calculateRotationMatrix,
@@ -96,24 +99,9 @@ const themes = {
     },
 };
 
-// Temporary
-const HABITABLE_ZONES = {
-    "Solar System": {
-        inner: 0.836,
-        outer: 1.656,
-    },
-    "Kepler-16": {
-        inner: 0.4,
-        outer: 0.7,
-    },
-    "TRAPPIST-1": {
-        inner: 0.019,
-        outer: 0.052,
-    },
-};
-
 const habitableZoneColor = 0x00ff00; // Green
 const habitableZoneOpacity = 0.2;
+let habitableZone;
 let habitableZoneMesh;
 
 function getTheme(isDarkMode = settings.darkMode) {
@@ -266,10 +254,10 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
 }
 
 function createHabitableZoneMesh() {
-    const innerRadius = HABITABLE_ZONES[currentSystem].inner;
-    const outerRadius = HABITABLE_ZONES[currentSystem].outer;
+    const startRadius = habitableZone.start;
+    const endRadius = habitableZone.end;
 
-    const geometry = new THREE.RingGeometry(innerRadius, outerRadius);
+    const geometry = new THREE.RingGeometry(startRadius, endRadius);
     const material = new THREE.MeshBasicMaterial({
         color: habitableZoneColor,
         opacity: habitableZoneOpacity,
@@ -401,6 +389,9 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
+
+    const systemInfo = await getSystemInfo(currentSystem);
+    habitableZone = systemInfo["habitable zone"];
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
