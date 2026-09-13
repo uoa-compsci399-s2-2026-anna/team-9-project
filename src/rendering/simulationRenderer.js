@@ -207,7 +207,12 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
     if (!line) {
         const geometry = new THREE.BufferGeometry();
         const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
-        line = new THREE.LineLoop(geometry, material);
+
+        if (e < 1) { // Closed orbit (elliptical)
+            line = new THREE.LineLoop(geometry, material);
+        } else { // Open orbit (parabolic or hyperbolic)
+            line = new THREE.Line(geometry, material);
+        }
 
         if (group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System");
@@ -221,8 +226,21 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
 
     // Update the geometry of the line to match the orbital parameters
     const points = [];
-    for (let i = 0; i < orbitPoints; i++) {
-        const theta = (i / orbitPoints) * 2 * Math.PI;
+    let thetaStart = 0;
+    let thetaEnd = 2 * Math.PI;
+
+    // Limit the angle range for hyperbolic orbits to its asymptotes
+    if (e > 1) {
+        const thetaLimit = Math.acos(-1 / e);
+        const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
+
+        thetaStart = -thetaLimit + epsilon;
+        thetaEnd = thetaLimit - epsilon;
+    }
+
+    const thetaStep = (thetaEnd - thetaStart) / orbitPoints;
+
+    for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
     }
