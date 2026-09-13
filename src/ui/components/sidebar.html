@@ -45,7 +45,8 @@
           input_id="habitable-zone-input",
           is_checked_initially=sim_state.habitableZoneShown,
           label_text="Habitable zone",
-          data_attributes={ "setting": "habitable-zone" }
+          data_attributes={ "setting": "habitable-zone" },
+          toggle_event="sim:habitable_zone_toggle"
         )
       }}
 
@@ -54,7 +55,8 @@
           input_id="orbits-input",
           is_checked_initially=sim_state.orbitsShown,
           label_text="Orbits",
-          data_attributes={ "setting": "orbits" }
+          data_attributes={ "setting": "orbits" },
+          toggle_event="sim:orbits_toggle"
         )
       }}
 
@@ -63,7 +65,8 @@
           input_id="reference-grid-input",
           is_checked_initially=sim_state.referenceGridShown,
           label_text="Reference grid",
-          data_attributes={ "setting": "reference-grid" }
+          data_attributes={ "setting": "reference-grid" },
+          toggle_event="sim:reference_grid_toggle"
         )
       }}
 
@@ -72,7 +75,8 @@
           input_id="labels-input",
           is_checked_initially=sim_state.labelsShown,
           label_text="Labels",
-          data_attributes={ "setting": "labels" }
+          data_attributes={ "setting": "labels" },
+          toggle_event="sim:labels_toggle"
         )
       }}
     {% endcall %}
