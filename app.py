@@ -225,7 +225,7 @@ def get_system_data_at_time(system_name: str, t):
 
     sims[system_name] = (sim, objects)
 
-    # Set time to reference time (t=0)
+    # Integrate to given time
     sim.integrate(t)
 
     # Gather positions
