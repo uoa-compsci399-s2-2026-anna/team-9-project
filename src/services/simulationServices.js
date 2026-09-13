@@ -47,6 +47,5 @@ export async function getMultipleSystemsData(names, t) {
         throw new Error(`Failed to get system data: ${response.status}`);
     }
 
-    // Returns a dict of systems, get the specific system
     return await response.json();
 }
