@@ -260,16 +260,6 @@ async def get_system_data(
     return systems
 
 
-@app.get("/system")
-async def get_system_data(system_name: str = "", t: float = 0.0):
-    """
-    GET /system endpoint
-    """
-
-    sim_time = unix_to_sim_time(system_name, t)
-    return get_system_data_at_time(system_name, sim_time)
-
-
 def get_position_dict(particle):
     """
     Convert a particle to a dictionary of a positions
