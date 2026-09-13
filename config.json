@@ -157,9 +157,9 @@
                         "uncertainty": null
                     }
                 },
-                "3I/Atlas": {
+                "3I/ATLAS": {
                     "mass": {
-                        "value": null,
+                        "value": 4.4e10,
                         "uncertainty": null
                     },
                     "temp": {
@@ -167,8 +167,8 @@
                         "uncertainty": null
                     },
                     "radius": {
-                        "value": null,
-                        "uncertainty": null
+                        "value": 6371e3,
+                        "uncertainty": 10.6925e3
                     }
                 }
             },
@@ -271,7 +271,7 @@
                     "Omega": 1.032487005982614,
                     "M": 3.3501663068121346
                 },
-                "3I/Atlas": {
+                "3I/ATLAS": {
                     "m": 0.0,
                     "a": -0.26421581493570967,
                     "e": 6.130881561907181,
