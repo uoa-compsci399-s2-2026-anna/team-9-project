@@ -1,7 +1,17 @@
-{% macro overlay(id, title) %}
+{%
+  macro overlay(
+    id,
+    title,
+    toggle_event_name=None,
+    buttons={}
+  )
+%}
   <div
     id="{{ id }}"
     class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
+    data-overlay
+    data-toggle-event-name="{{ toggle_event_name }}"
+    data-buttons="{{ buttons | tojson | forceescape }}"
   >
     <!-- Settings menu itself -->
     <div
@@ -14,8 +24,8 @@
         <!-- Close button -->
         <div>
           <button
-            id="close-{{ id }}-button"
             class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+            data-close-overlay-button
           >
             <svg class="size-7" viewBox="0 0 24 24">
               <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
