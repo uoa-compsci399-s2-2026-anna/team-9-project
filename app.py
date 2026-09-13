@@ -6,7 +6,7 @@ import rebound
 import os
 import json
 import sys
-from systems import init_solar, init_kepler_16, init_trappist_1, unix_to_sim_time
+from systems import unix_to_sim_time, init_system
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -39,11 +39,25 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
+
+def get_system_with_name(name):
+    name = name.lower()
+    return next(
+        system_data
+        for system_data in all_systems
+        if system_data["name"].lower() == name
+    )
+
+
+def init_system_with_name(name):
+    return init_system(get_system_with_name(name), name)
+
+
 # Each init_*() returns (sim, objects); take only the list of string objects
 sims = {
-    "solar system": init_solar(),
-    "kepler-16": init_kepler_16(),
-    "trappist-1": init_trappist_1(),
+    "solar system": init_system_with_name("solar system"),
+    "kepler-16": init_system_with_name("kepler-16"),
+    "trappist-1": init_system_with_name("trappist-1"),
 }
 
 
@@ -58,7 +72,6 @@ async def home(request: Request, settings: str = "{}", fullscreen: bool = False)
             "settings": settings_state,
             "settings_schema": settings_schema,
             "fullscreen": fullscreen,
-
             "systems": all_systems,
             "dropdown_systems": all_systems,
             # Control which components are rendered on the html page
@@ -73,19 +86,24 @@ async def home(request: Request, settings: str = "{}", fullscreen: bool = False)
 
 
 @app.get("/simulation/{system_name}")
-async def simulation(request: Request, system_name: str, state: str = "{}", settings: str = "{}", fullscreen: bool = False):
+async def simulation(
+    request: Request,
+    system_name: str,
+    state: str = "{}",
+    settings: str = "{}",
+    fullscreen: bool = False,
+):
     sim_state = json.loads(state)
 
     settings_state = json.loads(settings)
 
     # Get the current system
-    current_system = next(
-        system for system in all_systems if system["name"] == system_name
-    )
-
+    current_system = get_system_with_name(system_name)
     # Get all other systems, except the current system
     dropdown_systems = [
-        system for system in all_systems if system["name"] != current_system["name"]
+        system_data
+        for system_data in all_systems
+        if system_data["name"] != current_system["name"]
     ]
 
     # Get the current system's string object list by lookup
@@ -100,7 +118,6 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
             "fullscreen": fullscreen,
-
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
@@ -123,6 +140,27 @@ async def kill():
     os.kill(os.getpid(), signal.SIGINT)
 
 
+@app.get("/system_info")
+async def get_system_info(system_name: str = ""):
+    """
+    GET /system_info endpoint
+    """
+    # Convert the system name to lowercase for API resilience
+    system_name = system_name.lower()
+
+    system_data = get_system_with_name(system_name)
+
+    # Catch poor input
+    if system_data is None:
+        print("ERROR:", system_name, "not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    return {
+        "objects": system_data["objects"],
+        "habitable zone": system_data["habitable zone"],
+    }
+
+
 @app.get("/system")
 async def get_system_data(system_name: str = "", t: float = 0.0):
     """
@@ -131,26 +169,18 @@ async def get_system_data(system_name: str = "", t: float = 0.0):
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
+    system_data = get_system_with_name(system_name)
 
     # Catch poor input
-    if not any(system["name"].lower() == system_name for system in all_systems):
+    if system_data is None:
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     sim, objects = sims.get(system_name, (None, None))
 
-    # Hardcode Solar System
-    if system_name == "solar system" and sim is None:
-        # Init state if empty
-        sim, objects = init_solar()
-    # Hardcode Kepler-16
-    elif system_name == "kepler-16" and sim is None:
-        # Init state if empty
-        sim, objects = init_kepler_16()
-    # Hardcode TRAPPIST-1
-    elif system_name == "trappist-1" and sim is None:
-        # Init state if empty
-        sim, objects = init_trappist_1()
+    # Init system if it is none
+    if sim is None:
+        sim, objects = init_system(system_data)
 
     if sim is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)

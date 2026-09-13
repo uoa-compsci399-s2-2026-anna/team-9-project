@@ -1,13 +1,505 @@
 {
     "systems": [
         {
-            "name": "Solar System"
+            "name": "Solar System",
+            "objects": {
+                "Sun": {
+                    "mass": {
+                        "value": 1988410e24,
+                        "uncertainty": null
+                    },
+                    "temp": {
+                        "value": 5772,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 695700e3,
+                        "uncertainty": null
+                    }
+                },
+                "Mercury": {
+                    "mass": {
+                        "value": 0.330103e24,
+                        "uncertainty": 0.000021e24
+                    },
+                    "temp": {
+                        "value": 440,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 2439.4e3,
+                        "uncertainty": 0.1e3
+                    }
+                },
+                "Venus": {
+                    "mass": {
+                        "value": 4.86731e24,
+                        "uncertainty": 0.00023e24
+                    },
+                    "temp": {
+                        "value": 735,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 6051.8e3,
+                        "uncertainty": 1.0e3
+                    }
+                },
+                "Earth": {
+                    "mass": {
+                        "value": 5.97217e24,
+                        "uncertainty": 0.00028e24
+                    },
+                    "temp": {
+                        "value": 287.6,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 6371.0084e3,
+                        "uncertainty": 0.0001e3
+                    }
+                },
+                "Mars": {
+                    "mass": {
+                        "value": 0.641691e24,
+                        "uncertainty": 0.000030e24
+                    },
+                    "temp": {
+                        "value": 210,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 3389.50e3,
+                        "uncertainty": 0.2e3
+                    }
+                },
+                "Jupiter": {
+                    "mass": {
+                        "value": 1898.125e24,
+                        "uncertainty": 0.088e24
+                    },
+                    "temp": {
+                        "value": 165,
+                        "uncertainty": 5
+                    },
+                    "radius": {
+                        "value": 69911e3,
+                        "uncertainty": 6e3
+                    }
+                },
+                "Saturn": {
+                    "mass": {
+                        "value": 568.317e24,
+                        "uncertainty": 0.026e24
+                    },
+                    "temp": {
+                        "value": 134,
+                        "uncertainty": 4
+                    },
+                    "radius": {
+                        "value": 58232e3,
+                        "uncertainty": 6e3
+                    }
+                },
+                "Uranus": {
+                    "mass": {
+                        "value": 86.8099e24,
+                        "uncertainty": 0.0040e24
+                    },
+                    "temp": {
+                        "value": 76,
+                        "uncertainty": 2
+                    },
+                    "radius": {
+                        "value": 25362e3,
+                        "uncertainty": 7e3
+                    }
+                },
+                "Neptune": {
+                    "mass": {
+                        "value": 102.4092e24,
+                        "uncertainty": 0.0048e24
+                    },
+                    "temp": {
+                        "value": 72,
+                        "uncertainty": 2
+                    },
+                    "radius": {
+                        "value": 24622e3,
+                        "uncertainty": 19e3
+                    }
+                },
+                "1P/Halley": {
+                    "mass": {
+                        "value": 2.2e14,
+                        "uncertainty": 9.0e13
+                    },
+                    "temp": {
+                        "value": null,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 5.5e3,
+                        "uncertainty": null
+                    }
+                }
+            },
+            "timestamp": 2461295.8545645652,
+            "habitable zone": {
+                "start": 0.836,
+                "end": 1.656
+            },
+            "orbits": {
+                "Sun": {
+                    "m": 1.0
+                },
+                "Mercury": {
+                    "m": 1.6601208254808336e-07,
+                    "a": 0.3870974285773763,
+                    "e": 0.20563886073103502,
+                    "inc": 0.12223196476344346,
+                    "omega": 0.5096620961898513,
+                    "Omega": 0.8429472503295552,
+                    "M": 2.0690999072787886
+                },
+                "Venus": {
+                    "m": 2.447838287784771e-06,
+                    "a": 0.7233353092496863,
+                    "e": 0.006769909909095696,
+                    "inc": 0.059242458304893685,
+                    "omega": 0.9584376852873158,
+                    "Omega": 1.3370302436634416,
+                    "M": 3.361507806639752
+                },
+                "Earth": {
+                    "m": 3.0404326489511185e-06,
+                    "a": 0.9999969665362416,
+                    "e": 0.016648108913870363,
+                    "inc": 6.0501821231885e-05,
+                    "omega": 5.038352329394988,
+                    "Omega": 3.0434093645040057,
+                    "M": 4.3273914060216505
+                },
+                "Mars": {
+                    "m": 3.2271560828978514e-07,
+                    "a": 1.523633887903625,
+                    "e": 0.09341801392196544,
+                    "inc": 0.032244437094556405,
+                    "omega": 5.002552514988662,
+                    "Omega": 0.8636103935118076,
+                    "M": 1.555406710847068
+                },
+                "Jupiter": {
+                    "m": 0.0009547919099366768,
+                    "a": 5.202584217196554,
+                    "e": 0.04826047922869527,
+                    "inc": 0.022752279357997472,
+                    "omega": 4.774585176954766,
+                    "Omega": 1.7543763705903805,
+                    "M": 1.9285584022756197
+                },
+                "Saturn": {
+                    "m": 0.0002858856700231729,
+                    "a": 9.543900238680138,
+                    "e": 0.05456807522762057,
+                    "inc": 0.04341554613976713,
+                    "omega": 5.907007554191071,
+                    "Omega": 1.982660516885745,
+                    "M": 4.96124608288272
+                },
+                "Uranus": {
+                    "m": 4.366249613200406e-05,
+                    "a": 19.192410812820135,
+                    "e": 0.047237268318451674,
+                    "inc": 0.013474522680464682,
+                    "omega": 1.6916927222724079,
+                    "Omega": 1.2917043523471576,
+                    "M": 4.480006809196696
+                },
+                "Neptune": {
+                    "m": 5.151383772628957e-05,
+                    "a": 30.075663005057525,
+                    "e": 0.008755076598036983,
+                    "inc": 0.030896584277082424,
+                    "omega": 4.757557207948943,
+                    "Omega": 2.300051431855695,
+                    "M": 5.564698059058487
+                },
+                "1P/Halley": {
+                    "m": 0.0,
+                    "a": 18.031319325655073,
+                    "e": 0.9677691010323577,
+                    "inc": 2.828471453799666,
+                    "omega": 1.9553093588070425,
+                    "Omega": 1.0324868973624395,
+                    "M": 3.3499899985517763
+                }
+            }
         },
         {
-            "name": "Kepler-16"
+            "name": "Kepler-16",
+            "objects": {
+                "Kepler-16A": {
+                    "mass": {
+                        "value": 1.372e30,
+                        "uncertainty": 6.962e27
+                    },
+                    "temp": {
+                        "value": 4450,
+                        "uncertainty": 150
+                    },
+                    "radius": {
+                        "value": 4.52e8,
+                        "uncertainty": 9.05e5
+                    }
+                },
+                "Kepler-16B": {
+                    "mass": {
+                        "value": 4.0289e29,
+                        "uncertainty": 1.3128e27
+                    },
+                    "temp": {
+                        "value": null,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 1.57e8,
+                        "uncertainty": 4.11e5
+                    }
+                },
+                "Kepler-16b": {
+                    "mass": {
+                        "value": 6.32e26,
+                        "uncertainty": 3.04e25
+                    },
+                    "temp": {
+                        "value": null,
+                        "uncertainty": null
+                    },
+                    "radius": {
+                        "value": 5.270e07,
+                        "uncertainty": 1.748e05
+                    }
+                }
+            },
+            "timestamp": 2455212.12316,
+            "habitable zone": {
+                "start": 0.4,
+                "end": 0.7
+            },
+            "orbits": {
+                "Kepler-16A": {
+                    "m": 0.6897
+                },
+                "Kepler-16B": {
+                    "m": 0.20255,
+                    "a": 0.22431,
+                    "e": 0.15944,
+                    "inc": 1.5767321916,
+                    "Omega": 0.0,
+                    "omega": 4.5983142605,
+                    "M": -2.9864677897
+                },
+                "Kepler-16b": {
+                    "m": 0.0003178778,
+                    "a": 0.7048,
+                    "e": 0.0069,
+                    "inc": 1.5713583228,
+                    "Omega": 0.0000523599,
+                    "omega": 5.5501470213,
+                    "M": -3.6912491949
+                }
+            }
         },
         {
-            "name": "TRAPPIST-1"
+            "name": "TRAPPIST-1",
+            "objects": {
+                "Trappist-1": {
+                    "mass": {
+                        "value": 1.786e29,
+                        "uncertainty": 4.575e27
+                    },
+                    "temp": {
+                        "value": 2566.0,
+                        "uncertainty": 26.0
+                    },
+                    "radius": {
+                        "value": 8.293e07,
+                        "uncertainty": 9.044e05
+                    }
+                },
+                "Trappist-1b": {
+                    "mass": {
+                        "value": 8.211e25,
+                        "uncertainty": 4.120e24
+                    },
+                    "temp": {
+                        "value": 400.1,
+                        "uncertainty": 7.7
+                    },
+                    "radius": {
+                        "absoulute": 7.119e07,
+                        "uncertainty": 8.700e05
+                    }
+                },
+                "Trappist-1c": {
+                    "mass": {
+                        "value": 7.814e25,
+                        "uncertainty": 3.350e24
+                    },
+                    "temp": {
+                        "value": 341.9,
+                        "uncertainty": 6.6
+                    },
+                    "radius": {
+                        "value": 6.995e07,
+                        "uncertainty": 8.600e05
+                    }
+                },
+                "Trappist-1d": {
+                    "mass": {
+                        "value": 2.316e25,
+                        "uncertainty": 7.400e23
+                    },
+                    "temp": {
+                        "value": 288.0,
+                        "uncertainty": 5.6
+                    },
+                    "radius": {
+                        "value": 5.026e07,
+                        "uncertainty": 7.100e05
+                    }
+                },
+                "Trappist-1e": {
+                    "mass": {
+                        "value": 4.132e25,
+                        "uncertainty": 1.300e24
+                    },
+                    "temp": {
+                        "value": 251.3,
+                        "uncertainty": 4.9
+                    },
+                    "radius": {
+                        "value": 5.868e07,
+                        "uncertainty": 8.200e05
+                    }
+                },
+                "Trappist-1f": {
+                    "mass": {
+                        "value": 6.205e25,
+                        "uncertainty": 1.840e24
+                    },
+                    "temp": {
+                        "value": 219.0,
+                        "uncertainty": 4.2
+                    },
+                    "radius": {
+                        "value": 6.664e07,
+                        "uncertainty": 8.500e05
+                    }
+                },
+                "Trappist-1g": {
+                    "mass": {
+                        "value": 7.890e25,
+                        "uncertainty": 2.260e24
+                    },
+                    "temp": {
+                        "value": 198.6,
+                        "uncertainty": 3.8
+                    },
+                    "radius": {
+                        "value": 7.204e07,
+                        "uncertainty": 9.400e05
+                    }
+                },
+                "Trappist-1h": {
+                    "mass": {
+                        "value": 1.945e25,
+                        "uncertainty": 1.220e24
+                    },
+                    "temp": {
+                        "value": 168.0,
+                        "uncertainty": 28.0
+                    },
+                    "radius": {
+                        "value": 4.817e07,
+                        "uncertainty": 9.100e05
+                    }
+                }
+            },
+            "timestamp": 2457257.93115525,
+            "habitable zone": {
+                "start": 0.019,
+                "end": 0.052
+            },
+            "orbits": {
+                "Trappist-1": {
+                    "m": 0.0898
+                },
+                "Trappist-1b": {
+                    "m": 4.13610554870027e-06,
+                    "P": 1.510826,
+                    "e": 0.0030547340309755285,
+                    "omega": 2.3515648936386335,
+                    "M": 0.806833482602799,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1c": {
+                    "m": 3.93607314034689e-06,
+                    "P": 2.421937,
+                    "e": 0.0005500909015790027,
+                    "omega": 0.01817981507297828,
+                    "M": 6.132529809985432,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1d": {
+                    "m": 1.16685571539471e-06,
+                    "P": 4.049219,
+                    "e": 0.005632983223834418,
+                    "omega": 2.64777152033153,
+                    "M": 0.272782080175814,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1e": {
+                    "m": 2.08201900105949e-06,
+                    "P": 6.101013,
+                    "e": 0.006324634376784163,
+                    "omega": 0.8167078389843289,
+                    "M": 2.485348216981597,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1f": {
+                    "m": 3.12693303808863e-06,
+                    "P": 9.207540,
+                    "e": 0.00841546790143008,
+                    "omega": 3.080952805470817,
+                    "M": 5.253296959827790,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1g": {
+                    "m": 3.97601955222527e-06,
+                    "P": 12.352446,
+                    "e": 0.004009788024322483,
+                    "omega": 0.32490511806511907,
+                    "M": 1.348441163931109,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                },
+                "Trappist-1h": {
+                    "m": 9.79437963423977e-07,
+                    "P": 18.772866,
+                    "e": 0.003650054794109261,
+                    "omega": 3.136113256373088,
+                    "M": 1.217158246012907,
+                    "inc": 1.5707963267948966,
+                    "Omega": 0
+                }
+            }
         }
     ]
 }
