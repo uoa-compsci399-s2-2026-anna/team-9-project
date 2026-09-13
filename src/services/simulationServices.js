@@ -28,10 +28,11 @@ export async function getSystemData(name, t) {
  */
 export async function getMultipleSystemsData(names, t) {
     const params = new URLSearchParams({
-        // Join into list 
-        system_names: names.join(","),
         t: t,
     });
+
+    // Add each member of the list to the parameters
+    names.forEach(name => params.append('system_names', name))
 
     const response = await fetch(`/system?${params}`);
     if (!response.ok) {
