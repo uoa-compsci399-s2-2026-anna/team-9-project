@@ -1,0 +1,29 @@
+{%
+  macro settings_option(
+    label_text,
+    initial_selected,
+    options,
+    on_change_event_name=None
+  )
+%}
+  <label
+    class="flex items-center"
+    data-settings-option
+    data-on-change-event-name="{{ on_change_event_name }}"
+  >
+    <span class="text-secondary w-full">{{ label_text }}</span>
+    <select
+      class="w-full min-w-0 truncate"
+      data-settings-select
+    >
+      {% for option in options %}
+        <option
+          value="{{ option.value }}"
+          {{ "selected" if option.value == initial_selected }}
+        >
+          {{ option.label }}
+        </option>
+      {% endfor %}
+    </select>
+  </label>
+{% endmacro %}

@@ -79,13 +79,13 @@ bus.subscribe(EVENTS.SIM.OBJECT_TOGGLE, (event) => {
 // Font family
 
 bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
-    setFontFamily(event.detail.font);
+    setFontFamily(event.detail.value);
 });
 
 // Text size
 
 bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
-    setFontSize(event.detail.textSize);
+    setFontSize(event.detail.value);
 });
 
 // Dark mode
