@@ -61,23 +61,24 @@ labelsInput.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.LABELS_TOGGLE, { value: event.target.checked });
 });
 
-// Triggers for hiding/showing objects
-const objectsToggles = document.getElementById("objects-scroll-container");
+/**
+ * Get all checkboxes which toggle visibility of objects in the simulation (i.e.
+ * checkboxes in the 'Objects' side panel and add relevant event listener.
+ */
+document
+    .querySelectorAll('input[type="checkbox"][data-object]')
+    .forEach((objectCheckbox) => {
+        objectCheckbox.addEventListener("change", (event) => {
+            const objectName = event.target.dataset.object;
+            const isEnabled = event.target.checked;
 
-objectsToggles.addEventListener("change", (event) => {
-    if (event.target.type !== "checkbox") {
-        return;
-    }
-
-    const objectName = event.target.dataset.object;
-    const isEnabled = event.target.checked;
-
-    bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
-        system: currentSystem,
-        name: objectName,
-        value: isEnabled,
+            bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
+                system: currentSystem,
+                name: objectName,
+                value: isEnabled,
+            });
+        });
     });
-});
 
 // Add event listeners for buttons for each panel, which publishes the relevant
 // event on trigger
