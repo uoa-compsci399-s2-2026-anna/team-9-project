@@ -279,6 +279,10 @@
                 }
             },
             "timestamp": 2455212.12316,
+            "habitable zone": {
+                "start": 0.4,
+                "end": 0.7
+            },
             "orbits": {
                 "Kepler-16A": {
                     "m": 0.6897
@@ -420,6 +424,10 @@
                 }
             },
             "timestamp": 2457257.93115525,
+            "habitable zone": {
+                "start": 0.019,
+                "end": 0.052
+            }
             "orbits": {
                 "Trappist-1": {
                     "m": 0.0898
