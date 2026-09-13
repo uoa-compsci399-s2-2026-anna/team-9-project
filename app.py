@@ -198,7 +198,7 @@ async def get_system_info(system_name: str = ""):
         "reference": get_system_data_at_time(system_name, 0),
     }
 
-  
+
 def get_system_data_at_time(system_name: str, t):
     """
     Gets a system at a specific sim time (set in config.json)
@@ -258,7 +258,6 @@ async def get_system_data(
         systems[original_system_name] = get_system_data_at_time(system_name, sim_time)
 
     return systems
-
 
 
 @app.get("/system")
