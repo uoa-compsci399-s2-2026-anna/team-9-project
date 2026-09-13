@@ -57,44 +57,14 @@ TIMEZONE_MAP = {
 }
 
 
-def resolve_timezone(timezone_key):
-    """Returns the ZoneInfo for the given application time zone setting."""
-    time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
-    return ZoneInfo(time_zone_name)
-
-
-def sim_datetime(simulation_time_ms, time_zone):
-    """Converts a simulation time (ms since epoch) into a datetime in the given time zone."""
-    return datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
-
-
 def format_sim_date(simulation_time_ms, timezone_key):
     """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
-    time_zone = resolve_timezone(timezone_key)
-    sim_date = sim_datetime(simulation_time_ms, time_zone)
+    time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
+    time_zone = ZoneInfo(time_zone_name)
+
+    sim_date = datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
 
     return sim_date.strftime("%Y-%m-%dT%H:%M")
-
-
-def format_elapsed_days_text(simulation_time_ms, timezone_key):
-    """Describes how far the simulation time is from today, in the given time zone
-    (e.g., "Today", "3 days from today", "5 days ago")."""
-    time_zone = resolve_timezone(timezone_key)
-
-    sim_date = sim_datetime(simulation_time_ms, time_zone).date()
-    now_date = datetime.now(tz=time_zone).date()
-
-    days_count = (sim_date - now_date).days
-
-    if days_count == 0:
-        return "Today"
-
-    day_word = "day" if abs(days_count) == 1 else "days"
-
-    if days_count > 0:
-        return f"{days_count} {day_word} from today"
-    else:
-        return f"{abs(days_count)} {day_word} ago"
 
 
 @app.get("/")
@@ -141,16 +111,17 @@ async def simulation(request: Request, system_name: str, state: str = "{}", sett
     # Get the current system's string object list by lookup
     objects = sims[system_name.lower()][1]
 
-    # Simulation times are stored and managed on the frontend in milliseconds
-    simulation_time = sim_state["simulationTimes"].get(system_name, time.time() * MS_PER_SECOND)
+    # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
+    if system_name in sim_state["formattedSimulationDates"]:
+        simulation_date = sim_state["formattedSimulationDates"][system_name]
+    else:
+        # Fallback to the current time
+        # Note: Simulation times are stored and managed on the frontend in milliseconds
+        simulation_date = format_sim_date(time.time() * MS_PER_SECOND, settings_state["timeZone"])
 
-    # TODO: clean up
-    simulation_date = sim_state["formattedSimulationDates"].get(system_name, format_sim_date(time.time() * MS_PER_SECOND, settings_state["timeZone"]))
-
-    # TODO: Not sure about hard coding the Today text here or if this is possible in the JSON?
-    elapsed_days_text = sim_state["elapsedDaysTexts"].get(system_name, "Today")
-    #simulation_date = format_sim_date(simulation_time, settings_state["timeZone"])
-    #elapsed_days_text = format_elapsed_days_text(simulation_time, settings_state["timeZone"])
+    # Get the elapsed days text for the system (e.g., "10 days from today")
+    elapsed_days_fallback_text = sim_state_schema["elapsedDaysTexts"]["fallbackText"]
+    elapsed_days_text = sim_state["elapsedDaysTexts"].get(system_name, elapsed_days_fallback_text)
 
     return templates.TemplateResponse(
         request=request,

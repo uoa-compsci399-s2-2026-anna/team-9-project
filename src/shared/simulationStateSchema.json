@@ -9,7 +9,8 @@
     "default": {}
   },
   "elapsedDaysTexts": {
-    "default": {}
+    "default": {},
+    "fallbackText": "Today"
   },
   "simulationSpeedUnit": {
     "default": "day",

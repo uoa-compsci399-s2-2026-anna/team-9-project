@@ -10,6 +10,8 @@ import {
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
+    setFormattedSimulationDate,
+    setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getSystemData } from "../services/simulationServices.js";
@@ -385,8 +387,11 @@ export async function init(name) {
     initTimer();
 
     // Persist the current simulation time before the simulation is exited
+    // TODO: update comment
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, currentSimulationTime);
+        setFormattedSimulationDate(currentSystem);
+        setElapsedText(currentSystem, currentSimulationTime);
     });
 
     // Start rendering frames and updating the simulation
