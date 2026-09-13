@@ -277,6 +277,7 @@ function createHabitableZoneMesh() {
         side: THREE.DoubleSide,
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
+    habitableZoneMesh.visible = simulationState.habitableZoneShown;
 
     // Rotate the habitable zone to align its normal with the camera's up vector
     const normal = new THREE.Vector3(0, 0, 1);
@@ -497,6 +498,12 @@ export async function hideSolarSystem() {
     initOrUpdateCamera(canvas, viewRadius, camera.up);
     initOrUpdateControls(canvas, viewRadius);
     updateSimulation();
+}
+
+export function setHabitableZoneVisibility(value) {
+    if (habitableZoneMesh) {
+        habitableZoneMesh.visible = value;
+    }
 }
 
 export function setLabelsVisibility(value) {

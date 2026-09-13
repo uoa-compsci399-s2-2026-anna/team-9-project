@@ -7,6 +7,7 @@ import {
     resetView,
     compareToSolarSystem,
     hideSolarSystem,
+    setHabitableZoneVisibility,
     setLabelsVisibility,
     setOrbitsVisibility,
     setObjectVisibility,
@@ -46,6 +47,10 @@ bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
 });
 
 // View settings
+
+bus.subscribe(EVENTS.SIM.HABITABLE_ZONE_TOGGLE, (event) => {
+    setHabitableZoneVisibility(event.detail.value);
+});
 
 bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
     setLabelsVisibility(event.detail.value);
