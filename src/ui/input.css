@@ -54,11 +54,11 @@
 
 @layer components {
   .control {
-    @apply z-10 h-9 rounded-md bg-white p-1 dark:bg-zinc-950;
+    @apply z-10 min-h-9 rounded-md bg-white p-1 dark:bg-zinc-950;
   }
 
   .control-no-background {
-    @apply z-10 h-9 rounded-md p-1;
+    @apply z-10 min-h-9 rounded-md p-1;
   }
 
   .bordered {
