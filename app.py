@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import FastAPI, HTTPException, status, Request, Query
+from fastapi import FastAPI, HTTPException, Response, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from systems import unix_to_sim_time, init_system
@@ -44,7 +44,7 @@ app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="s
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 
-def get_system_with_name(name):
+def get_system_with_name(name: str):
     name = name.lower()
     return next(
         system_data
@@ -53,12 +53,12 @@ def get_system_with_name(name):
     )
 
 
-def init_system_with_name(name):
+def init_system_with_name(name: str):
     return init_system(get_system_with_name(name), name)
 
 
 # Each init_*() returns (sim, objects); take only the list of string objects
-sims = {
+sims: dict[str, tuple[rebound.Simulation, list[str]]] = {
     "solar system": init_system_with_name("solar system"),
     "kepler-16": init_system_with_name("kepler-16"),
     "trappist-1": init_system_with_name("trappist-1"),
@@ -72,7 +72,7 @@ TIMEZONE_MAP = {
 }
 
 
-def format_sim_date(simulation_time_ms, timezone_key):
+def format_sim_date(simulation_time_ms: float, timezone_key: str) -> str:
     """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
     time_zone = ZoneInfo(time_zone_name)
@@ -83,7 +83,7 @@ def format_sim_date(simulation_time_ms, timezone_key):
 
 
 @app.get("/")
-async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
+async def home(request: Request, settings: str = "{}", fullscreen: bool = False) -> Response:
     settings_state = json.loads(settings)
 
     return templates.TemplateResponse(
@@ -113,7 +113,7 @@ async def simulation(
     state: str = "{}",
     settings: str = "{}",
     fullscreen: bool = False,
-):
+) -> Response:
     sim_state = json.loads(state)
 
     settings_state = json.loads(settings)
@@ -178,7 +178,7 @@ async def kill():
 
 
 @app.get("/system_info")
-async def get_system_info(system_name: str = ""):
+async def get_system_info(system_name: str = "") -> dict:
     """
     GET /system_info endpoint
     """
@@ -199,7 +199,7 @@ async def get_system_info(system_name: str = ""):
     }
 
 
-def get_system_data_at_time(system_name: str, t):
+def get_system_data_at_time(system_name: str, t: float) -> dict:
     """
     Gets a system at a specific sim time (set in config.json)
     Returns simulation data.
@@ -218,9 +218,9 @@ def get_system_data_at_time(system_name: str, t):
 
     # Init system if it is none
     if sim is None:
-        sim, objects = init_system(system_data)
+        sim, objects = init_system(system_data, system_name)
 
-    if sim is None:
+    if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     sims[system_name] = (sim, objects)
@@ -242,7 +242,7 @@ def get_system_data_at_time(system_name: str, t):
 @app.get("/system")
 async def get_system_data(
     system_names: Annotated[list[str] | None, Query()] = None, t: float = 0.0
-):
+) -> dict:
     """
     GET /system endpoint
     System_names are in list parameter format ?system_names=1&system_names=2
@@ -260,14 +260,14 @@ async def get_system_data(
     return systems
 
 
-def get_position_dict(particle):
+def get_position_dict(particle: rebound.Particle) -> dict:
     """
     Convert a particle to a dictionary of a positions
     """
     return {"x": particle.x, "y": particle.y, "z": particle.z}
 
 
-def get_osculating_orbit(sim, i):
+def get_osculating_orbit(sim: rebound.Simulation, i: int) -> dict:
     """
     Given a REBOUND simulation, calculate:
     - Barycentric osculating orbital information
@@ -276,7 +276,7 @@ def get_osculating_orbit(sim, i):
         - Longitude of the ascending node: radians (0-2pi)
         - Inclination: radians (0-2pi)
     """
-    particle = sim.particles[i]
+    particle: rebound.Particle = sim.particles.get(i)
 
     total_mass = 0.0
     x = y = z = 0.0
