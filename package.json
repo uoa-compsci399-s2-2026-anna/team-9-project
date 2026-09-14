@@ -32,7 +32,8 @@
     "bin": "electron .",
     "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && touch ./dist/main.exe",
     "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && echo \"\" > .\\dist\\main",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "main": "uv run main.py"
   },
   "allowScripts": {
     "electron-winstaller@5.4.4": true
