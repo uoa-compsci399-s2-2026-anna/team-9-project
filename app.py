@@ -125,20 +125,26 @@ async def simulation(
     objects = sims.get_objects(system_name)
 
     # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
-    if system_name in sim_state["formattedSimulationDates"]:
+    if sim_state and system_name in sim_state["formattedSimulationDates"]:
         simulation_date = sim_state["formattedSimulationDates"][system_name]
-    else:
+    elif settings_state:
         # Fallback to the current time
         # Note: Simulation times are stored and managed on the frontend in milliseconds
         simulation_date = format_sim_date(
             time.time() * MS_PER_SECOND, settings_state["timeZone"]
         )
+    else:
+        simulation_date = format_sim_date(time.time() * MS_PER_SECOND, None)
 
     # Get the elapsed days text for the system (e.g., "10 days from today")
     elapsed_days_fallback_text = sim_state_schema["elapsedDaysTexts"]["fallbackText"]
-    elapsed_days_text = sim_state["elapsedDaysTexts"].get(
-        system_name, elapsed_days_fallback_text
-    )
+
+    if sim_state:
+        elapsed_days_text = sim_state["elapsedDaysTexts"].get(
+            system_name, elapsed_days_fallback_text
+        )
+    else:
+        elapsed_days_text = "Today"
 
     return templates.TemplateResponse(
         request=request,
