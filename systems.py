@@ -6,7 +6,7 @@ UNITS = ("AU", "day", "Msun")
 
 # Time when sim.t = 0 for each system
 sim_initial_jd_tdb: dict[str, float | None] = {
-    "solar system": None, # Will be set to the current time when initialised
+    "solar system": None,  # Will be set to the current time when initialised
     "kepler-16": None,
     "trappist-1": None,
 }
@@ -16,6 +16,7 @@ class SimulationState:
     """
     Class that wraps the simulation state (named tuple)
     """
+
     sim: rebound.Simulation | None = None
     objects: list[str] | None = None
     reference: dict | None = None
@@ -30,8 +31,9 @@ class Simulations:
     """
     Class that wraps the simulation state dictionary
     """
+
     __sims: dict[str, SimulationState] = {}
-    
+
     def __init__(self, all_systems: list[dict]):
         for system_data in all_systems:
             system_name = system_data["name"].lower()

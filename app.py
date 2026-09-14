@@ -81,7 +81,9 @@ def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
 
 
 @app.get("/")
-async def home(request: Request, settings: str = "{}", fullscreen: bool = False) -> Response:
+async def home(
+    request: Request, settings: str = "{}", fullscreen: bool = False
+) -> Response:
     settings_state = json.loads(settings)
 
     return templates.TemplateResponse(
@@ -229,7 +231,6 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
 
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
-
 
     # Integrate to given time
     sim.integrate(t)
