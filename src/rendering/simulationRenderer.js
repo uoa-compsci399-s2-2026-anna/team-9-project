@@ -32,6 +32,7 @@ import {
     formatSimulationDate, 
     getElapsedDaysText, 
 } from "../ui/simulationCalendar.js";
+import { hexToCssString } from "../utils/utils.js";
 
 let timer;
 
@@ -207,7 +208,7 @@ function createOrUpdateObjectMesh(name, position, group) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = colourToCss(getObjectColour(name));
+        labelDiv.style.color = hexToCssString(getObjectColour(name));
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
         labelDiv.style.fontWeight = "bold";
