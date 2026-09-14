@@ -3,10 +3,15 @@
     input_id,
     is_checked_initially,
     label_text,
-    data_attributes={}
+    data_attributes={},
+    toggle_event=None
   )
 %}
-  <label class="flex items-center gap-2">
+  <label
+    class="flex items-center gap-2"
+    data-side-panel-checkbox
+    data-toggle-event="{{ toggle_event }}"
+  >
     <input
       type="checkbox"
       id="{{ input_id }}"

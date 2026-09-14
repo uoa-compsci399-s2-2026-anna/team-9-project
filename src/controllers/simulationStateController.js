@@ -49,10 +49,13 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
     setRunning(event.detail.startSimulation);
 });
 
-// Freeze the simulation when the settings menu is opened (unfreeze when closed)
-bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
-    setFrozen(event.detail.openMenu);
-});
+bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, () => {
+    setFrozen(true);
+})
+
+bus.subscribe(EVENTS.SETTINGS.CLOSE_SETTINGS_MENU, () => {
+    setFrozen(false);
+})
 
 bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
     setComparingToSolarSystem(event.detail.compare);

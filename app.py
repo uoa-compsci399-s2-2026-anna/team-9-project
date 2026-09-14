@@ -1,15 +1,16 @@
-import signal
-from fastapi import FastAPI, HTTPException, status, Request
+from datetime import datetime
+from fastapi import FastAPI, HTTPException, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import rebound
-import os
-import json
-import sys
-from datetime import datetime
-from zoneinfo import ZoneInfo
-import time
 from systems import unix_to_sim_time, init_system
+from typing import Annotated
+from zoneinfo import ZoneInfo
+import json
+import os
+import rebound
+import signal
+import sys
+import time
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -121,25 +122,33 @@ async def simulation(
     current_system = get_system_with_name(system_name)
     # Get all other systems, except the current system
     dropdown_systems = [
-        system_data
-        for system_data in all_systems
-        if system_data["name"] != system_name
+        system_data for system_data in all_systems if system_data["name"] != system_name
     ]
 
     # Get the current system's string object list by lookup
     objects = sims[system_name.lower()][1]
 
     # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
-    if system_name in sim_state["formattedSimulationDates"]:
+    if sim_state and system_name in sim_state["formattedSimulationDates"]:
         simulation_date = sim_state["formattedSimulationDates"][system_name]
-    else:
+    elif settings_state:
         # Fallback to the current time
         # Note: Simulation times are stored and managed on the frontend in milliseconds
-        simulation_date = format_sim_date(time.time() * MS_PER_SECOND, settings_state["timeZone"])
+        simulation_date = format_sim_date(
+            time.time() * MS_PER_SECOND, settings_state["timeZone"]
+        )
+    else:
+        simulation_date = format_sim_date(time.time() * MS_PER_SECOND, None)
 
     # Get the elapsed days text for the system (e.g., "10 days from today")
     elapsed_days_fallback_text = sim_state_schema["elapsedDaysTexts"]["fallbackText"]
-    elapsed_days_text = sim_state["elapsedDaysTexts"].get(system_name, elapsed_days_fallback_text)
+
+    if sim_state:
+        elapsed_days_text = sim_state["elapsedDaysTexts"].get(
+            system_name, elapsed_days_fallback_text
+        )
+    else:
+        elapsed_days_text = "Today"
 
     return templates.TemplateResponse(
         request=request,
@@ -152,7 +161,6 @@ async def simulation(
             "fullscreen": fullscreen,
             "sim_date": simulation_date,
             "elapsed_days_text": elapsed_days_text,
-
             "systems": all_systems,
             "current_system": current_system,
             "dropdown_systems": dropdown_systems,
@@ -171,7 +179,7 @@ async def kill():
     API Endpoint to kill the application as CTRL+C does not always work
     """
     for sim in sims.values():
-        sim.stop()
+        sim[0].stop()
     os.kill(os.getpid(), signal.SIGINT)
 
 
@@ -197,45 +205,57 @@ async def get_system_info(system_name: str = ""):
 
 
 @app.get("/system")
-async def get_system_data(system_name: str = "", t: float = 0.0):
+async def get_system_data(
+    system_names: Annotated[list[str] | None, Query()] = None, t: float = 0.0
+):
     """
     GET /system endpoint
+    System_names are in list parameter format ?system_names=1&system_names=2
     """
 
-    # Convert the system name to lowercase for API resilience
-    system_name = system_name.lower()
-    system_data = get_system_with_name(system_name)
+    systems = {}
 
-    # Catch poor input
-    if system_data is None:
-        print("ERROR:", system_name, "not found")
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
+    for original_system_name in system_names:
+        # Convert the system name to lowercase for API resilience
+        system_name = original_system_name.lower()
+        system_data = get_system_with_name(system_name)
 
-    sim, objects = sims.get(system_name, (None, None))
+        # Catch poor input
+        if system_data is None:
+            print("ERROR:", system_name, "not found")
+            raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Init system if it is none
-    if sim is None:
-        sim, objects = init_system(system_data)
+        sim, objects = sims.get(system_name, (None, None))
 
-    if sim is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
+        # Init system if it is none
+        if sim is None:
+            sim, objects = init_system(system_data)
 
-    sims[system_name] = (sim, objects)
+        if sim is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    sim_time = unix_to_sim_time(system_name, t)
+        sims[system_name] = (sim, objects)
 
-    # Set time
-    sim.integrate(sim_time)
+        sim_time = unix_to_sim_time(system_name, t)
 
-    # Gather positions
-    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+        # Set time
+        sim.integrate(sim_time)
 
-    # Gather orbital data for each object
-    orbital_data = {
-        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
-    }
+        # Gather positions
+        positions = {
+            objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)
+        }
 
-    return {"positions": positions, "orbital_data": orbital_data}
+        # Gather orbital data for each object
+        orbital_data = {
+            objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+        }
+        systems[original_system_name] = {
+            "positions": positions,
+            "orbital_data": orbital_data,
+        }
+
+    return systems
 
 
 def get_position_dict(particle):

@@ -42,37 +42,23 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     updateDarkModeButtonAppearance(enterDarkMode);
 });
 
-// Settings menu overlay
+// Overlays
 
-const settingsOverlay = document.querySelector("#settings-overlay");
+document.querySelectorAll("[data-overlay]").forEach((overlay) => {
+    const openOverlayEvent = overlay.dataset.openOverlayEvent;
+    const closeOverlayEvent = overlay.dataset.closeOverlayEvent;
 
-bus.subscribe(EVENTS.SETTINGS.MENU_TOGGLE, (event) => {
-    const { openMenu } = event.detail;
+    bus.subscribe(openOverlayEvent, () => {
+        overlay.classList.add("opacity-100");
+        overlay.classList.remove("opacity-0");
+        overlay.classList.remove("pointer-events-none");
+    });
 
-    settingsOverlay.classList.toggle("opacity-100", openMenu);
-    document.body.classList.toggle("settings-menu-open", openMenu);
-
-    settingsOverlay.classList.toggle("opacity-0", !openMenu);
-    settingsOverlay.classList.toggle("pointer-events-none", !openMenu);
-});
-
-// Confirm reset settings overlay
-
-const confirmResetOverlay = document.querySelector(
-    "#confirm-reset-settings-overlay",
-);
-
-bus.subscribe(EVENTS.SETTINGS.RESET_SETTINGS_MENU_TOGGLE, (event) => {
-    const { openMenu } = event.detail;
-
-    confirmResetOverlay.classList.toggle("opacity-100", openMenu);
-    document.body.classList.toggle(
-        `confirm-reset-settings-overlay-open`,
-        openMenu,
-    );
-
-    confirmResetOverlay.classList.toggle("opacity-0", !openMenu);
-    confirmResetOverlay.classList.toggle("pointer-events-none", !openMenu);
+    bus.subscribe(closeOverlayEvent, () => {
+        overlay.classList.remove("opacity-100");
+        overlay.classList.add("opacity-0");
+        overlay.classList.add("pointer-events-none");
+    });
 });
 
 // Font select

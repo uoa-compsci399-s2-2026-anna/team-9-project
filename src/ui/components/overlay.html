@@ -1,9 +1,12 @@
+{% from "components/button-with-tooltip.html" import button_with_tooltip %}
+
 {%
   macro overlay(
     id,
     title,
     toggle_event_name=None,
-    buttons={}
+    open_overlay_event=None,
+    close_overlay_event=None
   )
 %}
   <div
@@ -11,7 +14,8 @@
     class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
     data-overlay
     data-toggle-event-name="{{ toggle_event_name }}"
-    data-buttons="{{ buttons | tojson | forceescape }}"
+    data-open-overlay-event="{{ open_overlay_event }}"
+    data-close-overlay-event="{{ close_overlay_event }}"
   >
     <!-- Settings menu itself -->
     <div
@@ -22,19 +26,13 @@
         <h1 class="flex-1 text-2xl font-bold">{{ title }}</h1>
 
         <!-- Close button -->
-        <div>
-          <button
-            class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
-            data-close-overlay-button
-          >
-            <svg class="size-7" viewBox="0 0 24 24">
-              <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-              <path
-                d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"
-              />
-            </svg>
-          </button>
-        </div>
+        {{
+          button_with_tooltip(
+            tooltip_text="Close",
+            svg_path="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z",
+            on_click_events=[close_overlay_event]
+          )
+        }}
       </div>
 
       <!-- Actual settings -->

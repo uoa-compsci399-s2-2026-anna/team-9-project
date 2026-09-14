@@ -8,7 +8,7 @@
   <span class="self-center text-sm sm:hidden">
     <input
       type="datetime-local"
-      class="calendar"
+      class="calendar tabular-nums"
       name="calendar"
       value="{{ sim_date }}"
       onkeydown="return false;"
@@ -31,13 +31,18 @@
           <p class="text-lg">
             <input
               type="datetime-local"
-              class="calendar"
+              class="calendar tabular-nums"
               name="calendar"
               value="{{ sim_date }}"
               onkeydown="return false;"
             />
           </p>
-          <p id="elapsed-days" class="text-s italic dark:text-zinc-400">{{ elapsed_days_text }}</p>
+          <p
+            id="elapsed-days"
+            class="text-s italic tabular-nums dark:text-zinc-400"
+          >
+            {{ elapsed_days_text }}
+          </p>
         </div>
       </div>
     </div>
@@ -91,11 +96,11 @@
         type="number"
         inputmode="numeric"
         min="0"
-        class="control w-18"
+        class="control bordered w-18 tabular-nums"
         value="{{ sim_state.simulationSpeed }}"
       />
 
-      <select id="speed-unit-selector" class="control w-18">
+      <select id="speed-unit-selector" class="control bordered w-18">
         {% for option in sim_state_schema.simulationSpeedUnit.options %}
           <option
             value="{{ option.value }}"

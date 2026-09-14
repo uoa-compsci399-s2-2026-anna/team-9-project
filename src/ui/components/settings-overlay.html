@@ -1,5 +1,6 @@
 {% from "components/overlay.html" import overlay %}
 {% from "components/settings-option.html" import settings_option %}
+{% from "components/text-button.html" import text_button %}
 
 {%
   macro settings_section(
@@ -29,7 +30,9 @@
   call overlay(
     "settings-overlay",
     "Settings",
-    toggle_event_name="settings:menu_toggle",
+
+    open_overlay_event="settings:open_settings_menu",
+    close_overlay_event="settings:close_settings_menu"
   )
 %}
   <!-- General settings section -->
@@ -94,7 +97,13 @@
   {% endcall %}
 
   <!-- Restore defaults button -->
-  <button id="reset-settings-button" class="self-end">
-    <span class="text-sm">Reset all settings to defaults</span>
-  </button>
+  <!-- TODO: styling -->
+  <div class="self-end">
+    {{
+      text_button(
+        button_text="Reset all settings to default",
+        on_click_events=["settings:open_reset_settings_menu"]
+      )
+    }}
+  </div>
 {% endcall %}
