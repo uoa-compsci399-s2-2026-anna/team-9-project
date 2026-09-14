@@ -98,7 +98,7 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system_data: dict, name: str) -> tuple[rebound.Simulation, list[str], dict]:
+def init_system(system_data: dict, name: str) -> SimulationState:
     """
     Initialises the given system
     Returns simulation and objects
@@ -157,4 +157,4 @@ def init_system(system_data: dict, name: str) -> tuple[rebound.Simulation, list[
 
     reference = {"positions": positions, "orbital_data": orbital_data}
 
-    return sim, objects, reference
+    return SimulationState(sim, objects, reference)
