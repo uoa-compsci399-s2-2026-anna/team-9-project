@@ -218,9 +218,11 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * @param {THREE.Group} group The group to add the orbital line to
  */
 function createOrUpdateOrbitalLine(name, orbitalData, group) {
-    let line = orbitalLines.get(name);
-
     const { a, e, inc, Omega, omega } = orbitalData;
+
+    if (e === 1) return; // Parabolic orbits are not supported for now
+
+    let line = orbitalLines.get(name);
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
