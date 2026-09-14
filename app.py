@@ -54,8 +54,9 @@ def get_system_with_name(name: str):
     )
 
 
-# Each init_*() returns (sim, objects); take only the list of string objects
+# Initialise simulation states
 sims = Simulations(all_systems)
+
 MS_PER_SECOND = 1000
 
 TIMEZONE_MAP = {
