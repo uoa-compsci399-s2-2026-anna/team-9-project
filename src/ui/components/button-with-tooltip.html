@@ -18,7 +18,7 @@
   >
     <button
       id="{{ button_id }}"
-      class="rounded-md p-1 leading-none outline-0 hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
+      class="control-no-background clickable"
       data-button
     >
       <svg class="size-{{ svg_size }}" viewBox="0 0 24 24">
@@ -43,7 +43,7 @@
     <!-- Tooltip -->
     <div
       id="{{ tooltip_id }}"
-      class="{{ tooltip_positions[tooltip_position] }} {{ tooltip_aligns[tooltip_align] }} pointer-events-none absolute block rounded-md bg-zinc-100 p-1 text-center whitespace-nowrap opacity-0 outline-1 outline-zinc-900 group-hover:opacity-100 dark:bg-zinc-900 dark:outline-1 dark:outline-zinc-500"
+      class="{{ tooltip_positions[tooltip_position] }} {{ tooltip_aligns[tooltip_align] }} control bordered pointer-events-none absolute block px-2 text-center text-nowrap opacity-0 group-hover:opacity-100"
     >
       {{ tooltip_text }}
     </div>
