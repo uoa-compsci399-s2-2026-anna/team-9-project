@@ -16,7 +16,6 @@ import {
 import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
-    getSystemData,
     getMultipleSystemsData
 } from "../services/simulationServices.js";
 import {
@@ -46,10 +45,6 @@ let controls;
 let renderer;
 let labelRenderer;
 
-// Camera settings are calculated using orbital data at the reference timestamp.
-// TODO: Backend endpoint for getting reference system data,
-// which will be at the initial BJD_TDB of each system.
-const referenceTimestamp = 1767225600000; // 2026-01-01 00:00:00 UTC in ms
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
