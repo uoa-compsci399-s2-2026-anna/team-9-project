@@ -84,6 +84,44 @@ const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
+/**
+ * Palette of distinct colours assigned to objects' orbit lines and labels.
+ * 
+ * Colours are given in order of assignment and cached per object name so that 
+ * a given object keeps the same colour for the simulation.
+ * 
+ * If there are more objects than colours, the palette repeats.
+ */
+const colorPalette = [
+    0xe74c3c, // Red
+    0xf39c12, // Orange
+    0xf1c40f, // Yellow
+    0x17a2b8, // Teal
+    0x2e86de, // Blue
+    0x8e44ad, // Purple
+    0xe84393, // Magenta
+    0x6d4c41, // Brown
+];
+
+// Cache of assigned colour per object name
+const objectColours = new Map();
+let nextPaletteIndex = 0;
+
+/**
+ * Get the colour for the given object name. If the object has not been assigned a colour,
+ * then it is assigned the next colour from the palette.
+ * 
+ * @param {string} name Name of the object
+ * @returns {number} Hex colour
+ */
+function getObjectColour(name) {
+    if (!objectColours.has(name)) {
+        objectColours.set(name, colorPalette[nextPaletteIndex % colorPalette.length]);
+        nextPaletteIndex++;
+    }
+    return objectColours.get(name);
+}
+
 const fontSizes = {
     Default: "12px",
     Larger: "18px",
@@ -97,15 +135,11 @@ const fontFamilies = {
 const themes = {
     light: {
         background: new THREE.Color("white"),
-        labelColour: "black",
-        textShadow: "0 0 3px white",
-        orbitColour: "black",
+        labelBackground: "rgba(255, 255, 255, 0.85)",
     },
     dark: {
         background: new THREE.Color("black"),
-        labelColour: "white",
-        textShadow: "0 0 3px black",
-        orbitColour: "white",
+        labelBackground: "rgba(0, 0, 0, 0.85)",
     },
 };
 
@@ -173,10 +207,14 @@ function createOrUpdateObjectMesh(name, position, group) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = getTheme().labelColour;
+        labelDiv.style.color = colourToCss(getObjectColour(name));
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.textShadow = getTheme().textShadow;
+        labelDiv.style.fontWeight = "bold";
+        labelDiv.style.backgroundColor = getTheme().labelBackground;
+        labelDiv.style.padding = "1px 5px";
+        labelDiv.style.borderRadius = "4px";
+        labelDiv.style.whiteSpace = "nowrap";
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
@@ -214,6 +252,8 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  * 
+ * The orbital line is coloured to match its object.
+ * 
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
@@ -225,7 +265,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
+        const material = new THREE.LineBasicMaterial({ color: getObjectColour(name) });
         line = new THREE.LineLoop(geometry, material);
 
         if (group === solarSystemGroup) {
@@ -591,18 +631,13 @@ export function setFontFamily(chosenFont) {
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
-    scene.background = getTheme(isDarkMode).background;
+    const theme = getTheme(isDarkMode);
 
-    let labelColour = getTheme(isDarkMode).labelColour;
-    let labelTextShadow = getTheme(isDarkMode).textShadow;
+    scene.background = theme.background;
+
+    let labelBackground = theme.labelBackground;
     for (const label of objectLabels.values()) {
-        label.element.style.color = labelColour;
-        label.element.style.textShadow = labelTextShadow;
-    }
-
-    let orbitColour = getTheme(isDarkMode).orbitColour;
-    for (const orbit of orbitalLines.values()) {
-        orbit.material.color.set(orbitColour);
+        label.element.style.backgroundColor = labelBackground;
     }
 }
 
