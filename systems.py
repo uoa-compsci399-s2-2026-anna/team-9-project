@@ -1,5 +1,6 @@
 import rebound
 from astropy.time import Time
+from utility import *
 
 UNITS = ("AU", "day", "Msun")
 
@@ -69,7 +70,7 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system_data: dict, name: str) -> tuple[rebound.Simulation, list[str]]:
+def init_system(system_data: dict, name: str) -> tuple[rebound.Simulation, list[str], dict]:
     """
     Initialises the given system
     Returns simulation and objects
@@ -115,4 +116,17 @@ def init_system(system_data: dict, name: str) -> tuple[rebound.Simulation, list[
 
     sim.move_to_com()
 
-    return sim, objects
+    # Integrate to reference time (t=0)
+    sim.integrate(0)
+
+    # Gather positions
+    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+
+    # Gather orbital data for each object
+    orbital_data = {
+        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+    }
+
+    reference = {"positions": positions, "orbital_data": orbital_data}
+
+    return sim, objects, reference
