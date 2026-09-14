@@ -197,7 +197,8 @@ async def get_system_info(system_name: str = "") -> dict:
 
 def get_system_data_at_time(system_name: str, t: float) -> dict:
     """
-    Gets a system at a specific sim time (set in config.json)
+    Gets a system at a specific sim time.
+    Sim time is relative to reference time (t=0 -> reference time)
     Returns simulation data.
     """
 
