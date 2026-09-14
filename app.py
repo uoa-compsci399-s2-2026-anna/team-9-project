@@ -2,8 +2,8 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, Response, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from systems import Simulations, SimulationState, unix_to_sim_time, init_system
-from utility import *
+from systems import Simulations, unix_to_sim_time, init_system
+from utility import get_position_dict, get_osculating_orbit
 from typing import Annotated
 from zoneinfo import ZoneInfo
 import json
@@ -52,10 +52,6 @@ def get_system_with_name(name: str):
         for system_data in all_systems
         if system_data["name"].lower() == name
     )
-
-
-def init_system_with_name(name: str):
-    return init_system(get_system_with_name(name), name)
 
 
 # Each init_*() returns (sim, objects); take only the list of string objects
