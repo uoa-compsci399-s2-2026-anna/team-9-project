@@ -5,8 +5,9 @@ from utility import get_position_dict, get_osculating_orbit
 UNITS = ("AU", "day", "Msun")
 
 # Time when sim.t = 0 for each system
+# Updated to stored timestamp in config.json when systems are initialised
 sim_initial_jd_tdb: dict[str, float] = {
-    "solar system": 0,  # Will be set to the current time when initialised
+    "solar system": 0,
     "kepler-16": 0,
     "trappist-1": 0,
 }
