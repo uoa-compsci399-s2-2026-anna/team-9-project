@@ -132,7 +132,7 @@ function getFontFamily(chosenFont) {
  * If the data is not in the cache, it will be fetched and stored.
  * 
  * @param {string} system The name of the system
- * @param {?Object} systemInfo The system info object if it exists
+ * @param {Object|undefined} systemInfo The system info object if it exists
  * @returns {Promise<Object>} The reference system data
  */
 async function getReferenceSystemData(system, systemInfo = undefined) {
