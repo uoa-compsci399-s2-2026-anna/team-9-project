@@ -2,7 +2,7 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, Response, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from systems import unix_to_sim_time, init_system
+from systems import SimulationState, unix_to_sim_time, init_system
 from utility import *
 from typing import Annotated
 from zoneinfo import ZoneInfo
@@ -59,12 +59,7 @@ def init_system_with_name(name: str):
 
 
 # Each init_*() returns (sim, objects); take only the list of string objects
-sims: dict[str, tuple[rebound.Simulation, list[str]]] = {
-    "solar system": init_system_with_name("solar system"),
-    "kepler-16": init_system_with_name("kepler-16"),
-    "trappist-1": init_system_with_name("trappist-1"),
-}
-
+sims = SimulationState(all_systems)
 MS_PER_SECOND = 1000
 
 TIMEZONE_MAP = {
@@ -127,7 +122,7 @@ async def simulation(
     ]
 
     # Get the current system's string object list by lookup
-    objects = sims[system_name.lower()][1]
+    objects = sims.get_objects(system_name)
 
     # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
     if system_name in sim_state["formattedSimulationDates"]:
@@ -173,7 +168,7 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
-    for sim in sims.values():
+    for sim in sims.get_all().values():
         sim[0].stop()
     os.kill(os.getpid(), signal.SIGINT)
 
@@ -196,7 +191,7 @@ async def get_system_info(system_name: str = "") -> dict:
     return {
         "objects": system_data["objects"],
         "habitable zone": system_data["habitable zone"],
-        "reference": get_system_data_at_time(system_name, 0),
+        "reference": sims.get_reference(system_name),
     }
 
 
@@ -215,16 +210,17 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
         print("ERROR:", system_name, "not found")
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    sim, objects = sims.get(system_name, (None, None))
+    sim = sims.get_sim(system_name)
+    objects = sims.get_objects(system_name)
 
     # Init system if it is none
     if sim is None:
-        sim, objects = init_system(system_data, system_name)
+        sim, objects, reference = init_system(system_data, system_name)
+        sims.set_sim(system_name, sim, objects, reference)
 
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    sims[system_name] = (sim, objects)
 
     # Integrate to given time
     sim.integrate(t)
