@@ -37,14 +37,32 @@ class SimulationState:
     def get_all(self) -> dict[str, tuple[rebound.Simulation, list[str], dict]]:
         return self.__sims
 
-    def get_sim(self, system_name: str) -> rebound.Simulation:
-        return self.__sims[system_name.lower()][0]
+    def get(self, system_name) -> tuple[rebound.Simulation | None, list[str] | None, dict | None]:
+        return self.__sims.get(system_name.lower(), (None, None, None))
 
-    def get_objects(self, system_name: str) -> list[str]:
-        return self.__sims[system_name.lower()][1]
+    def get_sim(self, system_name: str) -> rebound.Simulation | None:
+        system_name = system_name.lower()
+        if system_name in self.__sims:
+            return self.__sims[system_name.lower()][0]
+        else:
+            return None
 
-    def get_reference(self, system_name: str) -> dict:
-        return self.__sims[system_name.lower()][2]
+    def get_objects(self, system_name: str) -> list[str] | None:
+        system_name = system_name.lower()
+        if system_name in self.__sims:
+            return self.__sims[system_name.lower()][1]
+        else:
+            return None
+
+    def get_reference(self, system_name: str) -> dict | None:
+        system_name = system_name.lower()
+        if system_name in self.__sims:
+            return self.__sims[system_name.lower()][2]
+        else:
+            return None
+
+    def set_sim(self, system_name: str, sim: rebound.Simulation, objects: list[str], reference: dict):
+        self.__sims[system_name] = (sim, objects, reference)
 
 
 
