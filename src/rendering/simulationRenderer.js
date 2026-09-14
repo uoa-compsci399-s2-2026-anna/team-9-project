@@ -261,11 +261,12 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ 
-            color: colour,
-            transparent: group === solarSystemGroup,
-            opacity: group === solarSystemGroup ? comparisonOrbitOpacity : 1,
-        });
+        const material = new THREE.LineBasicMaterial({ color: colour });
+
+        if (group === solarSystemGroup) {
+            material.transparent = true;
+            material.opacity = comparisonOrbitOpacity;
+        }
 
         line = new THREE.Line(geometry, material);
 
