@@ -223,8 +223,7 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
 
     # Init system if it is none
     if sim is None:
-        sim, objects, reference = init_system(system_data, system_name)
-        sims.set_sim(system_name, sim, objects, reference)
+        sims.reinitialise_sim(system_data, system_name)
 
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)

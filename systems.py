@@ -61,8 +61,8 @@ class Simulations:
         else:
             return None
 
-    def set_sim(self, system_name: str, sim: rebound.Simulation, objects: list[str], reference: dict):
-        self.__sims[system_name] = (sim, objects, reference)
+    def reinitialise_sim(self, system_data: dict, system_name: str):
+        self.__sims[system_name] = init_system(system_data, system_name)
 
 
 def unix_to_jd_tdb(t: float) -> float:
