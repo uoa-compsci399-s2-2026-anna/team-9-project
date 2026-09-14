@@ -103,7 +103,7 @@ const comparisonLabelOpacity = 0.8;
  * no configured colour, or if currentSystemColours hasn't been populated yet.
  *
  * @param {string} name Name of the object
- * @param {boolean} isDarkMode Whether to use the dark-mode variant
+ * @param {boolean} isDarkMode Whether to use the dark mode variant
  * @returns {string} CSS colour string
  */
 function getCurrentSystemColour(name, isDarkMode) {
@@ -198,7 +198,9 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
         labelDiv.style.color = colour;
-        labelDiv.style.opacity = group === solarSystemGroup ? comparisonLabelOpacity : 1;
+        if (group === solarSystemGroup) {
+            labelDiv.style.opacity = comparisonLabelOpacity;
+        }
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
         labelDiv.style.fontWeight = "bold";
