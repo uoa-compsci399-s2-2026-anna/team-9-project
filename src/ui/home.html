@@ -1,20 +1,12 @@
+{% from "components/logo.html" import logo %}
 {% extends "base.html" %}
 
 <!-- Page title -->
 {% block title %}Home{% endblock %}
 {% block content %}
   <!-- Main OPIS logo -->
-  <div class="mt-12 flex w-full justify-center pt-0.5">
-    <img
-      src="/src/assets/logo-purple.svg"
-      class="pointer-events-none h-auto w-55 dark:hidden"
-      alt="Logo"
-    />
-    <img
-      src="/src/assets/logo-white.svg"
-      class="pointer-events-none hidden h-auto w-55 dark:block"
-      alt="Logo"
-    />
+  <div class="mt-12 flex w-55 self-center pt-0.5">
+    {% include "components/logo.html" %}
   </div>
 
   <!-- Available systems -->
