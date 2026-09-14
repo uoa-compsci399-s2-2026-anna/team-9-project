@@ -2,7 +2,7 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, Response, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from systems import SimulationState, unix_to_sim_time, init_system
+from systems import Simulations, SimulationState, unix_to_sim_time, init_system
 from utility import *
 from typing import Annotated
 from zoneinfo import ZoneInfo
@@ -59,7 +59,7 @@ def init_system_with_name(name: str):
 
 
 # Each init_*() returns (sim, objects); take only the list of string objects
-sims = SimulationState(all_systems)
+sims = Simulations(all_systems)
 MS_PER_SECOND = 1000
 
 TIMEZONE_MAP = {
@@ -168,8 +168,9 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
-    for sim in sims.get_all().values():
-        sim[0].stop()
+    for sim_state in sims.get_all().values():
+        if sim_state is not None and sim_state.sim is not None:
+            sim_state.sim.stop()
     os.kill(os.getpid(), signal.SIGINT)
 
 

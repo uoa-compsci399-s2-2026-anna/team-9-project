@@ -25,45 +25,55 @@ sim_initial_jd_tdb: dict[str, float] = {
 
 class SimulationState:
     """
+    Class that wraps the simulation state (named tuple)
+    """
+    sim: rebound.Simulation | None = None
+    objects: list[str] | None = None
+    reference: dict | None = None
+
+    def __init__(self, sim: rebound.Simulation, objects: list[str], reference: dict):
+        self.sim = sim
+        self.objects = objects
+        self.reference = reference
+
+
+class Simulations:
+    """
     Class that wraps the simulation state dictionary
     """
-    __sims: dict[str, tuple[rebound.Simulation, list[str], dict]] = {}
-
+    __sims: dict[str, SimulationState] = {}
+    
     def __init__(self, all_systems: list[dict]):
         for system_data in all_systems:
             system_name = system_data["name"].lower()
             self.__sims[system_name] = init_system(system_data, system_name)
 
-    def get_all(self) -> dict[str, tuple[rebound.Simulation, list[str], dict]]:
+    def get_all(self) -> dict[str, SimulationState]:
         return self.__sims
-
-    def get(self, system_name) -> tuple[rebound.Simulation | None, list[str] | None, dict | None]:
-        return self.__sims.get(system_name.lower(), (None, None, None))
 
     def get_sim(self, system_name: str) -> rebound.Simulation | None:
         system_name = system_name.lower()
         if system_name in self.__sims:
-            return self.__sims[system_name.lower()][0]
+            return self.__sims[system_name.lower()].sim
         else:
             return None
 
     def get_objects(self, system_name: str) -> list[str] | None:
         system_name = system_name.lower()
         if system_name in self.__sims:
-            return self.__sims[system_name.lower()][1]
+            return self.__sims[system_name.lower()].objects
         else:
             return None
 
     def get_reference(self, system_name: str) -> dict | None:
         system_name = system_name.lower()
         if system_name in self.__sims:
-            return self.__sims[system_name.lower()][2]
+            return self.__sims[system_name.lower()].reference
         else:
             return None
 
     def set_sim(self, system_name: str, sim: rebound.Simulation, objects: list[str], reference: dict):
         self.__sims[system_name] = (sim, objects, reference)
-
 
 
 def unix_to_jd_tdb(t: float) -> float:
