@@ -88,7 +88,7 @@ const orbitPoints = 360; // Number of points to approximate the ellipse
 
 /**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
- * only as a comparison overlay,.
+ * only as a comparison overlay.
  */
 const comparisonOverlayColour = {
     dark: "#c3911c",
