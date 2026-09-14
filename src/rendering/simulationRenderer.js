@@ -32,7 +32,6 @@ import {
     formatSimulationDate, 
     getElapsedDaysText, 
 } from "../ui/simulationCalendar.js";
-import { hexToCssString } from "../utils/utils.js";
 
 let timer;
 
@@ -89,22 +88,27 @@ const orbitPoints = 360; // Number of points to approximate the ellipse
 
 /**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
- * only as a comparison overlay.
+ * only as a comparison overlay,.
  */
-const comparisonOverlayColour = "#f4d35e";
+const comparisonOverlayColour = {
+    dark: "#c3911c",
+    light: "#7d5c12",
+};
 const comparisonOrbitOpacity = 0.5;
 const comparisonLabelOpacity = 0.8;
 
 /**
- * Get the configured colour for an object in the current system. Falls back
- * to the default object colour if the object has no configured colour, or if
- * currentSystemColours hasn't been populated yet.
+ * Get the configured colour for an object in the current system, appropriate for the
+ * current light/dark theme. Falls back to the default object colour if the
+ * object has no configured colour, or if currentSystemColours hasn't been populated yet.
  *
  * @param {string} name Name of the object
+ * @param {boolean} isDarkMode Whether to use the dark-mode variant
  * @returns {string} CSS colour string
  */
-function getCurrentSystemColour(name) {
-    return currentSystemColours?.[name] ?? objectColour;
+function getCurrentSystemColour(name, isDarkMode) {
+    const variant = isDarkMode ? "dark" : "light";
+    return currentSystemColours?.[name]?.[variant] ?? objectColour;
 }
 
 const fontSizes = {
@@ -341,6 +345,7 @@ function createHabitableZoneMesh() {
 async function updateSimulation() {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
+    const isDarkMode = settings.darkMode;
 
     const systems = [currentSystem];
     if (isComparingToSolarSystem) {
@@ -352,23 +357,24 @@ async function updateSimulation() {
 
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
-        createOrUpdateObjectMesh(name, position, currentSystemGroup, getCurrentSystemColour(name));
+        createOrUpdateObjectMesh(name, position, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
     }
     for (const [name, orbitalData] of Object.entries(currentSystemData.orbital_data)) {
-        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup, getCurrentSystemColour(name));
+        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
     }
 
     if (isComparingToSolarSystem) {
         const solarSystemData = allSystemData["Solar System"];
+        const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
 
         // The comparison overlay uses a single colour for every object label and orbit
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateObjectMesh(name, position, solarSystemGroup, comparisonOverlayColour);
+            createOrUpdateObjectMesh(name, position, solarSystemGroup, overlayColour);
         }
         for (const [name, orbitalData] of Object.entries(solarSystemData.orbital_data)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup, comparisonOverlayColour);
+            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup, overlayColour);
         }
     }
 }
@@ -647,9 +653,25 @@ export function toggleSimulationDarkMode(isDarkMode) {
 
     scene.background = theme.background;
 
-    let labelBackground = theme.labelBackground;
-    for (const label of objectLabels.values()) {
+    const labelBackground = theme.labelBackground;
+    const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+
+    for (const [name, label] of objectLabels) {
+        const mesh = objectMeshes.get(name);
+        const isComparisonOverlay = mesh?.parent === solarSystemGroup;
+
         label.element.style.backgroundColor = labelBackground;
+        label.element.style.color = isComparisonOverlay
+            ? overlayColour
+            : getCurrentSystemColour(name, isDarkMode);
+    }
+
+    for (const [name, orbit] of orbitalLines) {
+        const isComparisonOverlay = orbit.parent === solarSystemGroup;
+
+        orbit.material.color.set(
+            isComparisonOverlay ? overlayColour : getCurrentSystemColour(name, isDarkMode)
+        );
     }
 }
 
