@@ -7,7 +7,7 @@
   )
 %}
   <div
-    class="control relative flex h-auto min-h-0 flex-col p-2"
+    class="control bordered relative flex h-auto min-h-0 flex-col p-2"
     data-panel
     data-toggle-event="{{ toggle_event }}"
   >
@@ -42,11 +42,12 @@
       data-panel-content
     >
       <!-- Checkboxes -->
-      <div
-        class="flex min-h-0 flex-col overflow-hidden"
-      >
+      <div class="flex min-h-0 flex-col overflow-hidden">
         <!-- Content -->
-        <div class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto" data-scroll-container>
+        <div
+          class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto"
+          data-scroll-container
+        >
           {{ caller() }}
         </div>
 
