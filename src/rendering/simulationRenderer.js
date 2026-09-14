@@ -92,6 +92,8 @@ const orbitPoints = 360; // Number of points to approximate the ellipse
  * only as a comparison overlay.
  */
 const comparisonOverlayColour = "#f4d35e";
+const comparisonOrbitOpacity = 0.5;
+const comparisonLabelOpacity = 0.8;
 
 /**
  * Get the configured colour for an object in the current system. Falls back
@@ -118,11 +120,11 @@ const fontFamilies = {
 const themes = {
     light: {
         background: new THREE.Color("white"),
-        labelBackground: "rgba(255, 255, 255, 0.85)",
+        labelBackground: "rgba(255, 255, 255, 0.5)",
     },
     dark: {
         background: new THREE.Color("black"),
-        labelBackground: "rgba(0, 0, 0, 0.85)",
+        labelBackground: "rgba(0, 0, 0, 0.5)",
     },
 };
 
@@ -192,6 +194,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
         labelDiv.style.color = colour;
+        labelDiv.style.opacity = group === solarSystemGroup ? comparisonLabelOpacity : 1;
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
         labelDiv.style.fontWeight = "bold";
@@ -250,7 +253,11 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: colour });
+        const material = new THREE.LineBasicMaterial({ 
+            color: colour,
+            transparent: group === solarSystemGroup,
+            opacity: group === solarSystemGroup ? comparisonOrbitOpacity : 1,
+        });
         line = new THREE.LineLoop(geometry, material);
 
         if (group === solarSystemGroup) {
