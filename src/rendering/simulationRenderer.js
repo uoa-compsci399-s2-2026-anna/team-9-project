@@ -132,14 +132,11 @@ function getFontFamily(chosenFont) {
  * If the data is not in the cache, it will be fetched and stored.
  * 
  * @param {string} system The name of the system
- * @param {Object|undefined} systemInfo The system info object if it exists
  * @returns {Promise<Object>} The reference system data
  */
-async function getReferenceSystemData(system, systemInfo = undefined) {
+async function getReferenceSystemData(system) {
     if (!referenceSystemData.has(system)) {
-        if (systemInfo === undefined) {
-            systemInfo = await getSystemInfo(system);
-        }
+        const systemInfo = await getSystemInfo(system);
         referenceSystemData.set(
             system,
             systemInfo["reference"]
@@ -423,7 +420,12 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem, systemInfo);
+    referenceSystemData.set( // Add this system's reference data to cache
+        currentSystem,
+        systemInfo["reference"]
+    );
+
+    const referenceDataForCurrentSystem = systemInfo["reference"];
     const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
