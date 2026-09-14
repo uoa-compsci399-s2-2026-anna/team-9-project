@@ -4,22 +4,11 @@ from utility import *
 
 UNITS = ("AU", "day", "Msun")
 
-# From Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet"
-# https://arxiv.org/abs/1109.3432
-KEPLER_16_INITIAL_BJD_TDB = 2_455_212.12316
-
-# From Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets"
-# https://arxiv.org/abs/2010.01074
-TRAPPIST_1_INITIAL_BJD_TDB = 2_457_257.93115525
-
-
 # Time when sim.t = 0 for each system
-# Note: Kepler-16 and TRAPPIST-1 use BJD_TDB, while the Solar System uses JD_TDB,
-# so there is a small difference in the time representation.
-sim_initial_jd_tdb: dict[str, float] = {
+sim_initial_jd_tdb: dict[str, float | None] = {
     "solar system": None, # Will be set to the current time when initialised
-    "kepler-16": KEPLER_16_INITIAL_BJD_TDB,
-    "trappist-1": TRAPPIST_1_INITIAL_BJD_TDB,
+    "kepler-16": None,
+    "trappist-1": None,
 }
 
 
