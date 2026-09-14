@@ -1,6 +1,6 @@
 import rebound
 from astropy.time import Time
-from utility import *
+from utility import get_position_dict, get_osculating_orbit
 
 UNITS = ("AU", "day", "Msun")
 
