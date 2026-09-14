@@ -22,6 +22,31 @@ sim_initial_jd_tdb: dict[str, float] = {
 }
 
 
+class SimulationState:
+    """
+    Class that wraps the simulation state dictionary
+    """
+    __sims: dict[str, tuple[rebound.Simulation, list[str], dict]] = {}
+
+    def __init__(self, all_systems: list[dict]):
+        for system_data in all_systems:
+            system_name = system_data["name"].lower()
+            self.__sims[system_name] = init_system(system_data, system_name)
+
+    def get_all(self) -> dict[str, tuple[rebound.Simulation, list[str], dict]]:
+        return self.__sims
+
+    def get_sim(self, system_name: str) -> rebound.Simulation:
+        return self.__sims[system_name.lower()][0]
+
+    def get_objects(self, system_name: str) -> list[str]:
+        return self.__sims[system_name.lower()][1]
+
+    def get_reference(self, system_name: str) -> dict:
+        return self.__sims[system_name.lower()][2]
+
+
+
 def unix_to_jd_tdb(t: float) -> float:
     """
     Convert a unix timestamp in milliseconds to a JD_TDB timestamp in days
