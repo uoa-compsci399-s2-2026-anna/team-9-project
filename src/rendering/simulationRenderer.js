@@ -41,6 +41,8 @@ let currentSimulationTime;
 
 let currentSystem;
 
+let currentSystemColours;
+
 let scene;
 let camera;
 let controls;
@@ -86,41 +88,21 @@ const objectColour = "white";
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
 /**
- * Palette of distinct colours assigned to objects' orbit lines and labels.
- * 
- * Colours are given in order of assignment and cached per object name so that 
- * a given object keeps the same colour for the simulation.
- * 
- * If there are more objects than colours, the palette repeats.
+ * Colour used for every object and orbit belonging to the Solar System when it's shown
+ * only as a comparison overlay.
  */
-const colorPalette = [
-    0xe74c3c, // Red
-    0xf39c12, // Orange
-    0xf1c40f, // Yellow
-    0x17a2b8, // Teal
-    0x2e86de, // Blue
-    0x8e44ad, // Purple
-    0xe84393, // Magenta
-    0x6d4c41, // Brown
-];
-
-// Cache of assigned colour per object name
-const objectColours = new Map();
-let nextPaletteIndex = 0;
+const comparisonOverlayColour = "#f4d35e";
 
 /**
- * Get the colour for the given object name. If the object has not been assigned a colour,
- * then it is assigned the next colour from the palette.
- * 
+ * Get the configured colour for an object in the current system. Falls back
+ * to the default object colour if the object has no configured colour, or if
+ * currentSystemColours hasn't been populated yet.
+ *
  * @param {string} name Name of the object
- * @returns {number} Hex colour
+ * @returns {string} CSS colour string
  */
-function getObjectColour(name) {
-    if (!objectColours.has(name)) {
-        objectColours.set(name, colorPalette[nextPaletteIndex % colorPalette.length]);
-        nextPaletteIndex++;
-    }
-    return objectColours.get(name);
+function getCurrentSystemColour(name) {
+    return currentSystemColours?.[name] ?? objectColour;
 }
 
 const fontSizes = {
@@ -186,8 +168,9 @@ async function getReferenceSystemData(system) {
  * @param {string} name Name of the object
  * @param {Object} position Position of the object
  * @param {THREE.Group} group The group to add the object to
+ * @param {string} colour CSS colour string used for this object's label
  */
-function createOrUpdateObjectMesh(name, position, group) {
+function createOrUpdateObjectMesh(name, position, group, colour) {
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -208,7 +191,7 @@ function createOrUpdateObjectMesh(name, position, group) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = hexToCssString(getObjectColour(name));
+        labelDiv.style.color = colour;
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
         labelDiv.style.fontWeight = "bold";
@@ -258,15 +241,16 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
+ * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, orbitalData, group) {
+function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     let line = orbitalLines.get(name);
 
     const { a, e, inc, Omega, omega } = orbitalData;
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: getObjectColour(name) });
+        const material = new THREE.LineBasicMaterial({ color: colour });
         line = new THREE.LineLoop(geometry, material);
 
         if (group === solarSystemGroup) {
@@ -345,22 +329,23 @@ async function updateSimulation() {
 
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
-        createOrUpdateObjectMesh(name, position, currentSystemGroup);
+        createOrUpdateObjectMesh(name, position, currentSystemGroup, getCurrentSystemColour(name));
     }
     for (const [name, orbitalData] of Object.entries(currentSystemData.orbital_data)) {
-        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
+        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup, getCurrentSystemColour(name));
     }
 
     if (isComparingToSolarSystem) {
         const solarSystemData = allSystemData["Solar System"];
 
+        // The comparison overlay uses a single colour for every object label and orbit
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateObjectMesh(name, position, solarSystemGroup);
+            createOrUpdateObjectMesh(name, position, solarSystemGroup, comparisonOverlayColour);
         }
         for (const [name, orbitalData] of Object.entries(solarSystemData.orbital_data)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
+            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup, comparisonOverlayColour);
         }
     }
 }
@@ -456,6 +441,9 @@ export async function init(name) {
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone = systemInfo["habitable zone"];
+    currentSystemColours = Object.fromEntries(
+        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.colour])
+    );
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
