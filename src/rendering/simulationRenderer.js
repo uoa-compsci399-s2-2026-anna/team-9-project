@@ -228,11 +228,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
         const geometry = new THREE.BufferGeometry();
         const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
 
-        if (e < 1) { // Closed orbit (elliptical)
-            line = new THREE.LineLoop(geometry, material);
-        } else { // Open orbit (parabolic or hyperbolic)
-            line = new THREE.Line(geometry, material);
-        }
+        line = new THREE.Line(geometry, material);
 
         if (group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System");
