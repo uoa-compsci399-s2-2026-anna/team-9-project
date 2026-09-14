@@ -131,8 +131,8 @@
                 },
                 "Uranus": {
                     "colour": { 
-                        "dark": "#4fa3cc",
-                        "light": "#276788"
+                        "dark": "#4ca5bb",
+                        "light": "#2d6978"
                     },
                     "mass": {
                         "value": 86.8099e24,
@@ -149,8 +149,8 @@
                 },
                 "Neptune": {
                     "colour": { 
-                        "dark": "#57a1ce",
-                        "light": "#29668d"
+                        "dark": "#8296e2",
+                        "light": "#3756d0"
                     },
                     "mass": {
                         "value": 102.4092e24,
