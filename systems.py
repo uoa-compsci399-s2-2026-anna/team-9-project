@@ -135,9 +135,6 @@ def init_system(system_data: dict, name: str) -> SimulationState:
 
     sim.move_to_com()
 
-    # Integrate to reference time (t=0)
-    sim.integrate(0)
-
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
