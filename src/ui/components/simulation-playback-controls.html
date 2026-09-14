@@ -1,5 +1,6 @@
 {% from "components/button-with-tooltip.html" import button_with_tooltip %}
 {% from "components/text-button.html" import text_button %}
+{% from "components/container.html" import container %}
 
 <div class="z-10 flex flex-col bg-transparent px-6 py-6">
   <!-- Simulation timestamp (narrow screens) -->
@@ -46,44 +47,49 @@
     </div>
 
     <!-- Playback controls -->
-    <div class="flex flex-nowrap items-start gap-1 justify-self-center">
-      <!-- Step back button -->
-      {{
-        button_with_tooltip(
-          tooltip_text="Step back",
-          svg_path="M7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1m3.66 6.82l5.77 4.07c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-5.77 4.07a1 1 0 0 0 0 1.64",
-          tooltip_position="above",
-          svg_size=10,
 
-          on_click_events=["sim:step_back"]
-        )
-      }}
+    <div
+      class="flex flex-nowrap items-start gap-1 self-center justify-self-center"
+    >
+      {% call container() %}
+        <!-- Step back button -->
+        {{
+          button_with_tooltip(
+            tooltip_text="Step back",
+            svg_path="M7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1m3.66 6.82l5.77 4.07c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-5.77 4.07a1 1 0 0 0 0 1.64",
+            tooltip_position="above",
+            svg_size=10,
 
-      <!-- Play/pause button -->
-      {{
-        button_with_tooltip(
-          tooltip_id="play-pause-tooltip",
-          svg_path_id="play-pause-svg-path",
-          tooltip_position="above",
-          svg_size=10,
-          tooltip_text="Play",
-          svg_path="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82",
+            on_click_events=["sim:step_back"]
+          )
+        }}
 
-          on_click_events=["sim:toggle"]
-        )
-      }}
+        <!-- Play/pause button -->
+        {{
+          button_with_tooltip(
+            tooltip_id="play-pause-tooltip",
+            svg_path_id="play-pause-svg-path",
+            tooltip_position="above",
+            svg_size=10,
+            tooltip_text="Play",
+            svg_path="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.69L9.54 5.98A.998.998 0 0 0 8 6.82",
 
-      <!-- Step forward button -->
-      {{
-        button_with_tooltip(
-          tooltip_text="Step forward",
-          svg_path="m7.58 16.89l5.77-4.07c.56-.4.56-1.24 0-1.63L7.58 7.11C6.91 6.65 6 7.12 6 7.93v8.14c0 .81.91 1.28 1.58.82M16 7v10c0 .55.45 1 1 1s1-.45 1-1V7c0-.55-.45-1-1-1s-1 .45-1 1",
-          tooltip_position="above",
-          svg_size=10,
+            on_click_events=["sim:toggle"]
+          )
+        }}
 
-          on_click_events=["sim:step_forward"]
-        )
-      }}
+        <!-- Step forward button -->
+        {{
+          button_with_tooltip(
+            tooltip_text="Step forward",
+            svg_path="m7.58 16.89l5.77-4.07c.56-.4.56-1.24 0-1.63L7.58 7.11C6.91 6.65 6 7.12 6 7.93v8.14c0 .81.91 1.28 1.58.82M16 7v10c0 .55.45 1 1 1s1-.45 1-1V7c0-.55-.45-1-1-1s-1 .45-1 1",
+            tooltip_position="above",
+            svg_size=10,
+
+            on_click_events=["sim:step_forward"]
+          )
+        }}
+      {% endcall %}
     </div>
 
     <!-- Simulation speed adjuster -->
