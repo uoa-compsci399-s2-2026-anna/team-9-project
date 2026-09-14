@@ -247,9 +247,11 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * @param {string} colour CSS colour string used for this orbit's line
  */
 function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
-    let line = orbitalLines.get(name);
-
     const { a, e, inc, Omega, omega } = orbitalData;
+
+    if (e === 1) return; // Parabolic orbits are not supported for now
+
+    let line = orbitalLines.get(name);
 
     if (!line) {
         const geometry = new THREE.BufferGeometry();
@@ -258,7 +260,8 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
             transparent: group === solarSystemGroup,
             opacity: group === solarSystemGroup ? comparisonOrbitOpacity : 1,
         });
-        line = new THREE.LineLoop(geometry, material);
+
+        line = new THREE.Line(geometry, material);
 
         if (group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System");
@@ -272,8 +275,21 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     // Update the geometry of the line to match the orbital parameters
     const points = [];
-    for (let i = 0; i < orbitPoints; i++) {
-        const theta = (i / orbitPoints) * 2 * Math.PI;
+    let thetaStart = 0;
+    let thetaEnd = 2 * Math.PI;
+
+    // Limit the angle range for hyperbolic orbits to its asymptotes
+    if (e > 1) {
+        const thetaLimit = Math.acos(-1 / e);
+        const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
+
+        thetaStart = -thetaLimit + epsilon;
+        thetaEnd = thetaLimit - epsilon;
+    }
+
+    const thetaStep = (thetaEnd - thetaStart) / orbitPoints;
+
+    for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
     }
