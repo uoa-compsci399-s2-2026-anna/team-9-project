@@ -14,7 +14,7 @@
     />
   </span>
 
-  <div class="grid w-full grid-cols-3 items-center gap-4">
+  <div class="grid w-full grid-cols-3 items-stretch">
     <div class="justify-self-start">
       {% call container() %}
         <div class="flex items-center gap-3 p-2">
@@ -50,9 +50,7 @@
 
     <!-- Playback controls -->
 
-    <div
-      class="flex flex-nowrap items-start gap-1 self-center justify-self-center"
-    >
+    <div class="self-end justify-self-center">
       {% call container() %}
         <!-- Step back button -->
         {{
@@ -95,7 +93,7 @@
     </div>
 
     <div class="justify-self-end max-sm:hidden">
-      {% call container() %}
+      {% call container(style="h-full") %}
         <!-- Simulation speed adjuster -->
         <div class="flex items-center gap-3 p-2">
           <label class="text-secondary">speed</label>
