@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import {
     simulationState,
@@ -256,15 +259,20 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     let line = orbitalLines.get(name);
 
     if (!line) {
-        const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: colour });
+        const canvas = renderer.domElement;
+        const geometry = new LineGeometry();
+        const material = new LineMaterial({ 
+            color: colour,
+            linewidth: 4,
+        });
+        material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
         if (group === solarSystemGroup) {
             material.transparent = true;
             material.opacity = comparisonOrbitOpacity;
         }
 
-        line = new THREE.Line(geometry, material);
+        line = new Line2(geometry, material);
 
         if (group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System");
@@ -298,17 +306,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     }
 
     // Create or update the position attribute of the line's geometry
-    const geometry = line.geometry;
-    const position = geometry.getAttribute("position");
-    if (!position) {
-        geometry.setAttribute(
-            "position",
-            new THREE.Float32BufferAttribute(points, 3)
-        );
-    } else {
-        position.array.set(points);
-        position.needsUpdate = true;
-    }
+    line.geometry.setPositions(points);
 
     // Rotate the line to match the orbital parameters
     const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
@@ -694,6 +692,10 @@ function resizeRendererToDisplaySize() {
         labelRenderer.setSize(width, height);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
+
+        for (const line of orbitalLines.values()) {
+            line.material.resolution.set(width, height);
+        }
     }
 
     return needResize;
