@@ -220,8 +220,10 @@ async function createWindow(python_url) {
     var url;
 
     // Load external spinner while python starts
-    // TODO: Make a local spinner
+    // TODO: Make this a local spinner
     mainWindow.loadURL('https://loading-screen.github.io/');
+    // Set title
+    mainWindow.setTitle('Loading OPIS...');
 
     // Maximise the window and then show it
     mainWindow.maximize();
