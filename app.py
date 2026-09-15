@@ -1,8 +1,9 @@
 from datetime import datetime
-from fastapi import FastAPI, HTTPException, status, Request, Query
+from fastapi import FastAPI, HTTPException, Response, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from systems import unix_to_sim_time, init_system
+from systems import Simulations, unix_to_sim_time, init_system
+from utility import get_position_dict, get_osculating_orbit
 from typing import Annotated
 from zoneinfo import ZoneInfo
 import json
@@ -44,7 +45,7 @@ app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="s
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 
-def get_system_with_name(name):
+def get_system_with_name(name: str):
     name = name.lower()
     return next(
         system_data
@@ -53,16 +54,8 @@ def get_system_with_name(name):
     )
 
 
-def init_system_with_name(name):
-    return init_system(get_system_with_name(name), name)
-
-
-# Each init_*() returns (sim, objects); take only the list of string objects
-sims = {
-    "solar system": init_system_with_name("solar system"),
-    "kepler-16": init_system_with_name("kepler-16"),
-    "trappist-1": init_system_with_name("trappist-1"),
-}
+# Initialise simulation states
+sims = Simulations(all_systems)
 
 MS_PER_SECOND = 1000
 
@@ -72,8 +65,10 @@ TIMEZONE_MAP = {
 }
 
 
-def format_sim_date(simulation_time_ms, timezone_key):
+def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
     """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
+    if timezone_key is None:
+        raise ValueError("Invalid timezone")
     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
     time_zone = ZoneInfo(time_zone_name)
 
@@ -83,7 +78,9 @@ def format_sim_date(simulation_time_ms, timezone_key):
 
 
 @app.get("/")
-async def home(request: Request, settings: str = "{}", fullscreen: bool = False):
+async def home(
+    request: Request, settings: str = "{}", fullscreen: bool = False
+) -> Response:
     settings_state = json.loads(settings)
 
     return templates.TemplateResponse(
@@ -113,7 +110,7 @@ async def simulation(
     state: str = "{}",
     settings: str = "{}",
     fullscreen: bool = False,
-):
+) -> Response:
     sim_state = json.loads(state)
 
     settings_state = json.loads(settings)
@@ -126,7 +123,7 @@ async def simulation(
     ]
 
     # Get the current system's string object list by lookup
-    objects = sims[system_name.lower()][1]
+    objects = sims.get_objects(system_name)
 
     # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
     if sim_state and system_name in sim_state["formattedSimulationDates"]:
@@ -178,13 +175,12 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
-    for sim in sims.values():
-        sim[0].stop()
+    sims.stop_all()
     os.kill(os.getpid(), signal.SIGINT)
 
 
 @app.get("/system_info")
-async def get_system_info(system_name: str = ""):
+async def get_system_info(system_name: str = "") -> dict:
     """
     GET /system_info endpoint
     """
@@ -201,125 +197,66 @@ async def get_system_info(system_name: str = ""):
     return {
         "objects": system_data["objects"],
         "habitable zone": system_data["habitable zone"],
+        "reference": sims.get_reference(system_name),
     }
+
+
+def get_system_data_at_time(system_name: str, t: float) -> dict:
+    """
+    Gets a system at a specific sim time.
+    Sim time is relative to reference time (t=0 -> reference time)
+    Returns simulation data.
+    """
+
+    # Convert the system name to lowercase for API resilience
+    system_name = system_name.lower()
+    system_data = get_system_with_name(system_name)
+
+    # Catch poor input
+    if system_data is None:
+        print("ERROR:", system_name, "not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    sim = sims.get_sim(system_name)
+    objects = sims.get_objects(system_name)
+
+    # Init system if it is none
+    if sim is None:
+        sims.reinitialise_sim(system_data, system_name)
+
+    if sim is None or objects is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
+    # Integrate to given time
+    sim.integrate(t)
+
+    # Gather positions
+    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+
+    # Gather orbital data for each object
+    orbital_data = {
+        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+    }
+
+    return {"positions": positions, "orbital_data": orbital_data}
 
 
 @app.get("/system")
 async def get_system_data(
     system_names: Annotated[list[str] | None, Query()] = None, t: float = 0.0
-):
+) -> dict:
     """
     GET /system endpoint
     System_names are in list parameter format ?system_names=1&system_names=2
     """
 
+    if system_names is None or len(system_names) == 0:
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
+
     systems = {}
 
-    for original_system_name in system_names:
-        # Convert the system name to lowercase for API resilience
-        system_name = original_system_name.lower()
-        system_data = get_system_with_name(system_name)
-
-        # Catch poor input
-        if system_data is None:
-            print("ERROR:", system_name, "not found")
-            raise HTTPException(status.HTTP_404_NOT_FOUND)
-
-        sim, objects = sims.get(system_name, (None, None))
-
-        # Init system if it is none
-        if sim is None:
-            sim, objects = init_system(system_data)
-
-        if sim is None:
-            raise HTTPException(status.HTTP_404_NOT_FOUND)
-
-        sims[system_name] = (sim, objects)
-
-        sim_time = unix_to_sim_time(system_name, t)
-
-        # Set time
-        sim.integrate(sim_time)
-
-        # Gather positions
-        positions = {
-            objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)
-        }
-
-        # Gather orbital data for each object
-        orbital_data = {
-            objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
-        }
-        systems[original_system_name] = {
-            "positions": positions,
-            "orbital_data": orbital_data,
-        }
+    for system_name in system_names:
+        sim_time = unix_to_sim_time(system_name.lower(), t)
+        systems[system_name] = get_system_data_at_time(system_name, sim_time)
 
     return systems
-
-
-def get_position_dict(particle):
-    """
-    Convert a particle to a dictionary of a positions
-    """
-    return {"x": particle.x, "y": particle.y, "z": particle.z}
-
-
-def get_osculating_orbit(sim, i):
-    """
-    Given a REBOUND simulation, calculate:
-    - Barycentric osculating orbital information
-        - Semi-major axis: AU
-        - Eccentricity: -1 - 1
-        - Longitude of the ascending node: radians (0-2pi)
-        - Inclination: radians (0-2pi)
-    """
-    particle = sim.particles[i]
-
-    total_mass = 0.0
-    x = y = z = 0.0
-    vx = vy = vz = 0.0
-
-    # Loop through all other particles
-    for j, other in enumerate(sim.particles):
-        if i == j:
-            continue
-
-        total_mass += other.m
-        x += other.m * other.x
-        y += other.m * other.y
-        z += other.m * other.z
-        vx += other.m * other.vx
-        vy += other.m * other.vy
-        vz += other.m * other.vz
-
-    # The orbital pseudo-particle to calculate the orbit from
-    primary = rebound.Particle(
-        m=total_mass,
-        x=x / total_mass,
-        y=y / total_mass,
-        z=z / total_mass,
-        vx=vx / total_mass,
-        vy=vy / total_mass,
-        vz=vz / total_mass,
-    )
-
-    orbit = particle.orbit(primary=primary)
-
-    """
-    Return only necessary orbital information
-    https://rebound.hanno-rein.de/particles/orbitalelements/
-    
-    a 	    semi-major axis
-    e 	    eccentricity
-    inc 	inclination, in radians
-    Omega 	longitude of ascending node, in radians
-    omega 	argument of pericenter, in radians
-    """
-    return {
-        "a": orbit.a * total_mass / (total_mass + particle.m),
-        "e": orbit.e,
-        "inc": orbit.inc,
-        "Omega": orbit.Omega,
-        "omega": orbit.omega,
-    }

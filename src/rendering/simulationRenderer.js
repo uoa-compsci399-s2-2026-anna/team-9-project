@@ -16,7 +16,6 @@ import {
 import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
-    getSystemData,
     getMultipleSystemsData
 } from "../services/simulationServices.js";
 import {
@@ -46,10 +45,6 @@ let controls;
 let renderer;
 let labelRenderer;
 
-// Camera settings are calculated using orbital data at the reference timestamp.
-// TODO: Backend endpoint for getting reference system data,
-// which will be at the initial BJD_TDB of each system.
-const referenceTimestamp = 1767225600000; // 2026-01-01 00:00:00 UTC in ms
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
@@ -136,9 +131,10 @@ function getFontFamily(chosenFont) {
  */
 async function getReferenceSystemData(system) {
     if (!referenceSystemData.has(system)) {
+        const systemInfo = await getSystemInfo(system);
         referenceSystemData.set(
             system,
-            await getSystemData(system, referenceTimestamp)
+            systemInfo["reference"]
         );
     }
     return referenceSystemData.get(system);
@@ -435,7 +431,12 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
+    referenceSystemData.set( // Add this system's reference data to cache
+        currentSystem,
+        systemInfo["reference"]
+    );
+
+    const referenceDataForCurrentSystem = systemInfo["reference"];
     const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);

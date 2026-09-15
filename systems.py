@@ -1,25 +1,72 @@
 import rebound
 from astropy.time import Time
+from utility import get_position_dict, get_osculating_orbit
 
 UNITS = ("AU", "day", "Msun")
 
-# From Doyle et al. 2011, "Kepler-16: A Transiting Circumbinary Planet"
-# https://arxiv.org/abs/1109.3432
-KEPLER_16_INITIAL_BJD_TDB = 2_455_212.12316
-
-# From Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets"
-# https://arxiv.org/abs/2010.01074
-TRAPPIST_1_INITIAL_BJD_TDB = 2_457_257.93115525
-
-
 # Time when sim.t = 0 for each system
-# Note: Kepler-16 and TRAPPIST-1 use BJD_TDB, while the Solar System uses JD_TDB,
-# so there is a small difference in the time representation.
-sim_initial_jd_tdb = {
-    "solar system": None, # Will be set to the current time when initialised
-    "kepler-16": KEPLER_16_INITIAL_BJD_TDB,
-    "trappist-1": TRAPPIST_1_INITIAL_BJD_TDB,
+# Updated to stored timestamp in config.json when systems are initialised
+sim_initial_jd_tdb: dict[str, float] = {
+    "solar system": 0,
+    "kepler-16": 0,
+    "trappist-1": 0,
 }
+
+
+class SimulationData:
+    """
+    Class that wraps the simulation data (named tuple)
+    """
+
+    sim: rebound.Simulation | None = None
+    objects: list[str] | None = None
+    reference: dict | None = None
+
+    def __init__(self, sim: rebound.Simulation, objects: list[str], reference: dict):
+        self.sim = sim
+        self.objects = objects
+        self.reference = reference
+
+
+class Simulations:
+    """
+    Class that wraps the simulation data dictionary
+    """
+
+    __sims: dict[str, SimulationData] = {}
+
+    def __init__(self, all_systems: list[dict]):
+        for system_data in all_systems:
+            system_name = system_data["name"].lower()
+            self.__sims[system_name] = init_system(system_data, system_name)
+
+    def stop_all(self):
+        for sim in self.__sims.values():
+            sim.stop()
+
+    def get_sim(self, system_name: str) -> rebound.Simulation | None:
+        system_name = system_name.lower()
+        if system_name in self.__sims:
+            return self.__sims[system_name.lower()].sim
+        else:
+            return None
+
+    def get_objects(self, system_name: str) -> list[str] | None:
+        system_name = system_name.lower()
+        if system_name in self.__sims:
+            return self.__sims[system_name.lower()].objects
+        else:
+            return None
+
+    def get_reference(self, system_name: str) -> dict | None:
+        system_name = system_name.lower()
+        if system_name in self.__sims:
+            return self.__sims[system_name.lower()].reference
+        else:
+            return None
+
+    def reinitialise_sim(self, system_data: dict, system_name: str):
+        self.__sims[system_name] = init_system(system_data, system_name)
 
 
 def unix_to_jd_tdb(t: float) -> float:
@@ -44,7 +91,7 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system_data, name):
+def init_system(system_data: dict, name: str) -> SimulationData:
     """
     Initialises the given system
     Returns simulation and objects
@@ -90,4 +137,14 @@ def init_system(system_data, name):
 
     sim.move_to_com()
 
-    return sim, objects
+    # Gather positions
+    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+
+    # Gather orbital data for each object
+    orbital_data = {
+        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+    }
+
+    reference = {"positions": positions, "orbital_data": orbital_data}
+
+    return SimulationData(sim, objects, reference)
