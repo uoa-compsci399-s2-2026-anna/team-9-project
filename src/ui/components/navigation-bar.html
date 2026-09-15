@@ -1,12 +1,12 @@
 {% from "components/button-with-tooltip.html" import button_with_tooltip %}
 {% from "components/container.html" import container %}
 
-<nav class="flex flex-wrap items-start justify-between gap-4">
+<nav class="flex flex-wrap items-stretch justify-between gap-4">
   <!-- COMPONENT: System dropdown -->
   <!-- Hidden setting to maintain consistient toolbar position -->
   {% if system_dropdown %}
     {% call container() %}
-      <div class="flex h-fit p-1">
+      <div class="flex p-1">
         <!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
         {{
           button_with_tooltip(
