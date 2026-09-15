@@ -16,34 +16,36 @@
 
   <div class="grid w-full grid-cols-3 items-center gap-4">
     <div class="justify-self-start">
-      <div class="flex items-center gap-3">
-        <!-- 'Now' button (to reset time to current time) -->
-        {{
-          text_button(
-            button_text="Now",
-            on_click_events=["sim:set_time_to_now"]
-          )
-        }}
+      {% call container() %}
+        <div class="flex items-center gap-3">
+          <!-- 'Now' button (to reset time to current time) -->
+          {{
+            text_button(
+              button_text="Now",
+              on_click_events=["sim:set_time_to_now"]
+            )
+          }}
 
-        <!-- Simulation timestamp / date picker -->
-        <div class="text-left max-sm:hidden">
-          <p class="text-lg">
-            <input
-              type="datetime-local"
-              class="calendar tabular-nums"
-              name="calendar"
-              value="{{ sim_date }}"
-              onkeydown="return false;"
-            />
-          </p>
-          <p
-            id="elapsed-days"
-            class="text-s italic tabular-nums dark:text-zinc-400"
-          >
-            {{ elapsed_days_text }}
-          </p>
+          <!-- Simulation timestamp / date picker -->
+          <div class="text-left max-sm:hidden">
+            <p class="text-lg">
+              <input
+                type="datetime-local"
+                class="calendar tabular-nums"
+                name="calendar"
+                value="{{ sim_date }}"
+                onkeydown="return false;"
+              />
+            </p>
+            <p
+              id="elapsed-days"
+              class="text-s italic tabular-nums dark:text-zinc-400"
+            >
+              {{ elapsed_days_text }}
+            </p>
+          </div>
         </div>
-      </div>
+      {% endcall %}
     </div>
 
     <!-- Playback controls -->
