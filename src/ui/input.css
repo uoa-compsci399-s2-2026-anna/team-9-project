@@ -72,7 +72,7 @@
   }
 
   .container {
-    @apply z-10 rounded-xl bg-white/50 p-1 backdrop-blur-md dark:bg-zinc-900/50;
+    @apply z-10 rounded-xl border-black/10 bg-white/50 p-1 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/50;
   }
 
   .shadowed {
