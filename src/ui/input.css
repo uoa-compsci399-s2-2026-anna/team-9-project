@@ -15,8 +15,8 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --color-primary: var(--color-zinc-800);
-  --color-secondary: var(--color-zinc-600);
+  --color-primary: var(--color-zinc-700);
+  --color-secondary: var(--color-zinc-500);
   --color-accent: rgb(64.2% 61.8% 100%);
 }
 
