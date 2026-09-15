@@ -67,12 +67,16 @@
     @apply border border-black/50 dark:border-white/30;
   }
 
+  .bordered-light {
+    @apply border border-black/10 dark:border-white/10;
+  }
+
   .clickable {
     @apply hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-700;
   }
 
   .container {
-    @apply z-10 rounded-xl border-black/10 bg-white/50 p-1 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/50;
+    @apply z-10 rounded-xl bg-white/50 p-1 backdrop-blur-md dark:bg-zinc-900/50;
   }
 
   .shadowed {
