@@ -97,8 +97,8 @@ const comparisonLabelOpacity = 0.8;
 
 /**
  * Get the configured colour for an object in the current system, appropriate for the
- * current light/dark theme. Falls back to the default object colour if the object has 
- * no configured colour, or if currentSystemColours hasn't been populated yet.
+ * current light/dark theme. Falls back to black in light mode and white in dark mode if the
+ * object has no configured colour, or if currentSystemColours hasn't been populated yet.
  *
  * @param {string} name Name of the object
  * @param {boolean} isDarkMode Whether to use the dark mode variant
@@ -106,7 +106,8 @@ const comparisonLabelOpacity = 0.8;
  */
 function getCurrentSystemColour(name, isDarkMode) {
     const variant = isDarkMode ? "dark" : "light";
-    return currentSystemColours?.[name]?.[variant] ?? objectColour;
+    const fallbackColour = isDarkMode ? "white" : "black";
+    return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
 
 const fontSizes = {
