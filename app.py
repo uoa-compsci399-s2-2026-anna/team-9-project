@@ -175,9 +175,7 @@ async def kill():
     """
     API Endpoint to kill the application as CTRL+C does not always work
     """
-    for sim_state in sims.get_all().values():
-        if sim_state is not None and sim_state.sim is not None:
-            sim_state.sim.stop()
+    sims.stop_all()
     os.kill(os.getpid(), signal.SIGINT)
 
 

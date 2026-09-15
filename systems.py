@@ -13,7 +13,7 @@ sim_initial_jd_tdb: dict[str, float] = {
 }
 
 
-class SimulationState:
+class SimulationData:
     """
     Class that wraps the simulation state (named tuple)
     """
@@ -33,15 +33,16 @@ class Simulations:
     Class that wraps the simulation state dictionary
     """
 
-    __sims: dict[str, SimulationState] = {}
+    __sims: dict[str, SimulationData] = {}
 
     def __init__(self, all_systems: list[dict]):
         for system_data in all_systems:
             system_name = system_data["name"].lower()
             self.__sims[system_name] = init_system(system_data, system_name)
 
-    def get_all(self) -> dict[str, SimulationState]:
-        return self.__sims
+    def stop_all(self):
+        for sim in self.__sims.values():
+            sim.stop()
 
     def get_sim(self, system_name: str) -> rebound.Simulation | None:
         system_name = system_name.lower()
@@ -90,7 +91,7 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system_data: dict, name: str) -> SimulationState:
+def init_system(system_data: dict, name: str) -> SimulationData:
     """
     Initialises the given system
     Returns simulation and objects
@@ -146,4 +147,4 @@ def init_system(system_data: dict, name: str) -> SimulationState:
 
     reference = {"positions": positions, "orbital_data": orbital_data}
 
-    return SimulationState(sim, objects, reference)
+    return SimulationData(sim, objects, reference)
