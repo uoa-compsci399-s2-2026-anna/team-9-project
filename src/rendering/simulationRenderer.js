@@ -306,6 +306,12 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         points.push(x, y, 0);
     }
 
+    if (e > 1) {
+        // Add the last point at the end of the range to ensure the line reaches the asymptote
+        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+        points.push(x, y, 0);
+    }
+
     // Create or update the position attribute of the line's geometry
     line.geometry.setPositions(points);
 
