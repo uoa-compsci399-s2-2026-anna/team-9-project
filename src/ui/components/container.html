@@ -1,3 +1,5 @@
 {% macro container() %}
-  <div class="bordered container inline-flex h-fit w-fit">{{ caller() }}</div>
+  <div class="shadowed bordered container inline-flex h-fit w-fit">
+    {{ caller() }}
+  </div>
 {% endmacro %}
