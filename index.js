@@ -219,6 +219,14 @@ async function createWindow(python_url) {
 
     var url;
 
+    // Load external spinner while python starts
+    // TODO: Make a local spinner
+    mainWindow.loadURL('https://loading-screen.github.io/');
+
+    // Maximise the window and then show it
+    mainWindow.maximize();
+    mainWindow.show();
+
     try {
         url = await python_url;
     } catch(exception) {
@@ -237,10 +245,6 @@ async function createWindow(python_url) {
 
     // Change the window to the given url
     mainWindow.loadURL(url);
-
-    // Maximise the window and then show it
-    mainWindow.maximize();
-    mainWindow.show();
 }
 
 // Handle the application quitting
