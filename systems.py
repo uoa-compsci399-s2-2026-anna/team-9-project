@@ -15,7 +15,7 @@ sim_initial_jd_tdb: dict[str, float] = {
 
 class SimulationData:
     """
-    Class that wraps the simulation state (named tuple)
+    Class that wraps the simulation data (named tuple)
     """
 
     sim: rebound.Simulation | None = None
@@ -30,7 +30,7 @@ class SimulationData:
 
 class Simulations:
     """
-    Class that wraps the simulation state dictionary
+    Class that wraps the simulation data dictionary
     """
 
     __sims: dict[str, SimulationData] = {}
