@@ -76,6 +76,6 @@
   }
 
   .shadowed {
-    @apply shadow-2xl/50 shadow-black/50 dark:shadow-purple-300/30;
+    @apply shadow-2xl/50 shadow-black/50 dark:shadow-purple-300/50;
   }
 }
