@@ -64,7 +64,7 @@
   }
 
   .bordered {
-    @apply border border-black/50 dark:border-white/10;
+    @apply border border-black/50 dark:border-white/30;
   }
 
   .clickable {
