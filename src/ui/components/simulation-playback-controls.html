@@ -92,30 +92,34 @@
       {% endcall %}
     </div>
 
-    <!-- Simulation speed adjuster -->
-    <div class="flex items-center gap-3 justify-self-end max-sm:hidden">
-      <label class="text-secondary">speed</label>
-      <input
-        id="speed-adjuster"
-        type="number"
-        inputmode="numeric"
-        min="0"
-        class="control bordered w-18 tabular-nums"
-        value="{{ sim_state.simulationSpeed }}"
-      />
+    <div class="justify-self-end max-sm:hidden">
+      {% call container() %}
+        <!-- Simulation speed adjuster -->
+        <div class="flex items-center gap-3 p-1">
+          <label class="text-secondary">speed</label>
+          <input
+            id="speed-adjuster"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            class="control bordered w-18 tabular-nums"
+            value="{{ sim_state.simulationSpeed }}"
+          />
 
-      <select id="speed-unit-selector" class="control bordered w-18">
-        {% for option in sim_state_schema.simulationSpeedUnit.options %}
-          <option
-            value="{{ option.value }}"
-            {{ "selected" if option.value == sim_state.simulationSpeedUnit }}
-          >
-            {{ option.label }}
-          </option>
-        {% endfor %}
-      </select>
+          <select id="speed-unit-selector" class="control bordered w-18">
+            {% for option in sim_state_schema.simulationSpeedUnit.options %}
+              <option
+                value="{{ option.value }}"
+                {{ "selected" if option.value == sim_state.simulationSpeedUnit }}
+              >
+                {{ option.label }}
+              </option>
+            {% endfor %}
+          </select>
 
-      <p class="text-secondary pr-3">per second</p>
+          <p class="text-secondary pr-3">per second</p>
+        </div>
+      {% endcall %}
     </div>
 
     <!-- Simulation speed adjustor (small; only shown on narrow screens) -->
