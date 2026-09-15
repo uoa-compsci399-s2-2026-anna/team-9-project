@@ -17,18 +17,6 @@ export async function getSystemInfo(name) {
 }
 
 /**
- * Fetches the backend for star system data at a specified time
- * 
- * @param {string} name Star system name
- * @param {number} t Timestamp in milliseconds since epoch
- */
-export async function getSystemData(name, t) {
-    // Returns a dict of systems, get the specific system
-    const systemsInfoDict = await getMultipleSystemsData([name], t);
-    return systemsInfoDict[name];
-}
-
-/**
  * Fetches the backend for multiple star systems' data at a specified time
  * 
  * @param {Array.<string>} names Star system names
