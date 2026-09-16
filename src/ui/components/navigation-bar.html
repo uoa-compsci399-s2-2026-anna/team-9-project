@@ -1,22 +1,23 @@
 {% from "components/button-with-tooltip.html" import button_with_tooltip %}
 {% from "components/container.html" import container %}
 
-<nav class="flex flex-wrap items-stretch justify-between gap-4">
+<nav class="flex flex-wrap items-start justify-between gap-4">
   <!-- COMPONENT: System dropdown -->
   <!-- Hidden setting to maintain consistient toolbar position -->
   {% if system_dropdown %}
     {% call container() %}
       <div class="flex items-center p-1">
         <!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
-        {{
-          button_with_tooltip(
-            tooltip_text="Home",
-            svg_path="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19",
-            tooltip_position="below",
-
-            on_click_events=["toolbar:home"],
-          )
-        }}
+        <a href="/" class="relative z-30 mt-1 self-start max-sm:hidden">
+          <svg
+            viewBox="0 0 150 166.27"
+            class="fill-primary h-14 -translate-y-1"
+          >
+            <path
+              d="M128.11,42.14c-13.86-12.43-28-14.88-43.6-14.88a94.57,94.57,0,0,0-16.35,1.36L77.51,0,50.56,27.16,15.1,15.57,41.85,42.11l-11.41,35L56.33,51,92.07,62.71l-24.13-24a31.27,31.27,0,0,1,14.41-2.6c15.82,0,39.37,22.61,32.83,63.86-2.44,15.44-15.31,57.45-50.15,57.45-15.22,0-39.27-16.25-33.51-61.57-7,12.48-16.2,19.8-24.71,18.22A13.87,13.87,0,0,1,0,110.54C.13,131.7,9.61,147.2,19.79,154c13.42,9.22,29.33,12.24,42.33,12.24,29.76,0,47.56-11.3,62.22-26.56,11.88-13.18,18.48-27.5,20.65-41.25C149.11,72.47,140.63,53.44,128.11,42.14Z"
+            />
+          </svg>
+        </a>
       </div>
     {% endcall %}
 
