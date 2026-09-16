@@ -147,4 +147,8 @@ def init_system(system_data: dict, name: str) -> SimulationData:
 
     reference = {"positions": positions, "orbital_data": orbital_data}
 
+    # Pre-emptively integrate sim to now
+    now_in_sim_time = get_current_jd_tdb() - system_data["timestamp"]
+    sim.integrate(now_in_sim_time)
+
     return SimulationData(sim, objects, reference)
