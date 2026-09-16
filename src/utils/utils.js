@@ -84,3 +84,13 @@ export function dateOnly(date) {
         day: "2-digit",
     }).format(date);
 }
+
+/**
+ * Convert a hex colour number (e.g., 0xe74c3c) into a CSS colour string (e.g., "#e74c3c").
+ *
+ * @param {number} hex Hex colour
+ * @returns {string} CSS colour string
+ */
+export function hexToCssString(hex) {
+    return "#" + hex.toString(16).padStart(6, "0");
+}

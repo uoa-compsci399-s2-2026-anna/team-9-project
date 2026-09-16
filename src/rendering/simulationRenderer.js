@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import {
     simulationState,
@@ -38,6 +41,8 @@ let timer;
 let currentSimulationTime;
 
 let currentSystem;
+
+let currentSystemColours;
 
 let scene;
 let camera;
@@ -79,6 +84,39 @@ const objectColour = "white";
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
+/**
+ * The width (thickness) of the orbit lines for regular orbits and for orbits
+ * belonging to the Solar System when it's shown only as a comparison overlay.
+ */
+const orbitLineWidth = 4;
+const comparisonOrbitLineWidth = 2;
+
+/**
+ * Colour used for every object and orbit belonging to the Solar System when it's shown
+ * only as a comparison overlay.
+ */
+const comparisonOverlayColour = {
+    dark: "#c3911c",
+    light: "#7d5c12",
+};
+const comparisonOrbitOpacity = 0.5;
+const comparisonLabelOpacity = 0.8;
+
+/**
+ * Get the configured colour for an object in the current system, appropriate for the
+ * current light/dark theme. Falls back to black in light mode and white in dark mode if the
+ * object has no configured colour, or if currentSystemColours hasn't been populated yet.
+ *
+ * @param {string} name Name of the object
+ * @param {boolean} isDarkMode Whether to use the dark mode variant
+ * @returns {string} CSS colour string
+ */
+function getCurrentSystemColour(name, isDarkMode) {
+    const variant = isDarkMode ? "dark" : "light";
+    const fallbackColour = isDarkMode ? "white" : "black";
+    return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
+}
+
 const fontSizes = {
     Default: "12px",
     Larger: "18px",
@@ -92,15 +130,11 @@ const fontFamilies = {
 const themes = {
     light: {
         background: new THREE.Color("white"),
-        labelColour: "black",
-        textShadow: "0 0 3px white",
-        orbitColour: "black",
+        labelBackground: "rgba(255, 255, 255, 0.5)",
     },
     dark: {
         background: new THREE.Color("black"),
-        labelColour: "white",
-        textShadow: "0 0 3px black",
-        orbitColour: "white",
+        labelBackground: "rgba(0, 0, 0, 0.5)",
     },
 };
 
@@ -147,8 +181,9 @@ async function getReferenceSystemData(system) {
  * @param {string} name Name of the object
  * @param {Object} position Position of the object
  * @param {THREE.Group} group The group to add the object to
+ * @param {string} colour CSS colour string used for this object's label
  */
-function createOrUpdateObjectMesh(name, position, group) {
+function createOrUpdateObjectMesh(name, position, group, colour) {
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -169,10 +204,17 @@ function createOrUpdateObjectMesh(name, position, group) {
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = getTheme().labelColour;
+        labelDiv.style.color = colour;
+        if (group === solarSystemGroup) {
+            labelDiv.style.opacity = comparisonLabelOpacity;
+        }
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.textShadow = getTheme().textShadow;
+        labelDiv.style.fontWeight = "bold";
+        labelDiv.style.backgroundColor = getTheme().labelBackground;
+        labelDiv.style.padding = "1px 5px";
+        labelDiv.style.borderRadius = "4px";
+        labelDiv.style.whiteSpace = "nowrap";
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
@@ -210,11 +252,14 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  * 
+ * The orbital line is coloured to match its object.
+ * 
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
+ * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, orbitalData, group) {
+function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     const { a, e, inc, Omega, omega } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
@@ -222,10 +267,21 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
     let line = orbitalLines.get(name);
 
     if (!line) {
-        const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
+        const canvas = renderer.domElement;
+        const geometry = new LineGeometry();
+        const material = new LineMaterial({ color: colour });
 
-        line = new THREE.Line(geometry, material);
+        if (group === solarSystemGroup) {
+            material.transparent = true;
+            material.opacity = comparisonOrbitOpacity;
+            material.linewidth = comparisonOrbitLineWidth;
+        } else {
+            material.linewidth = orbitLineWidth;
+        }
+
+        material.resolution.set(canvas.clientWidth, canvas.clientHeight);
+
+        line = new Line2(geometry, material);
 
         if (group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System");
@@ -258,18 +314,14 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
         points.push(x, y, 0);
     }
 
-    // Create or update the position attribute of the line's geometry
-    const geometry = line.geometry;
-    const position = geometry.getAttribute("position");
-    if (!position) {
-        geometry.setAttribute(
-            "position",
-            new THREE.Float32BufferAttribute(points, 3)
-        );
-    } else {
-        position.array.set(points);
-        position.needsUpdate = true;
+    if (e > 1) {
+        // Add the last point at the end of the range to ensure the line reaches the asymptote
+        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+        points.push(x, y, 0);
     }
+
+    // Create or update the position attribute of the line's geometry
+    line.geometry.setPositions(points);
 
     // Rotate the line to match the orbital parameters
     const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
@@ -305,6 +357,7 @@ function createHabitableZoneMesh() {
 async function updateSimulation() {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
+    const isDarkMode = settings.darkMode;
 
     const systems = [currentSystem];
     if (isComparingToSolarSystem) {
@@ -316,22 +369,24 @@ async function updateSimulation() {
 
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
-        createOrUpdateObjectMesh(name, position, currentSystemGroup);
+        createOrUpdateObjectMesh(name, position, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
     }
     for (const [name, orbitalData] of Object.entries(currentSystemData.orbital_data)) {
-        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
+        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
     }
 
     if (isComparingToSolarSystem) {
         const solarSystemData = allSystemData["Solar System"];
+        const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
 
+        // The comparison overlay uses a single colour for every object label and orbit
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateObjectMesh(name, position, solarSystemGroup);
+            createOrUpdateObjectMesh(name, position, solarSystemGroup, overlayColour);
         }
         for (const [name, orbitalData] of Object.entries(solarSystemData.orbital_data)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
+            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup, overlayColour);
         }
     }
 }
@@ -427,6 +482,9 @@ export async function init(name) {
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone = systemInfo["habitable zone"];
+    currentSystemColours = Object.fromEntries(
+        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.colour])
+    );
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
@@ -608,18 +666,29 @@ export function setFontFamily(chosenFont) {
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
-    scene.background = getTheme(isDarkMode).background;
+    const theme = getTheme(isDarkMode);
 
-    let labelColour = getTheme(isDarkMode).labelColour;
-    let labelTextShadow = getTheme(isDarkMode).textShadow;
-    for (const label of objectLabels.values()) {
-        label.element.style.color = labelColour;
-        label.element.style.textShadow = labelTextShadow;
+    scene.background = theme.background;
+
+    const labelBackground = theme.labelBackground;
+    const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+
+    for (const [name, label] of objectLabels) {
+        const mesh = objectMeshes.get(name);
+        const isComparisonOverlay = mesh?.parent === solarSystemGroup;
+
+        label.element.style.backgroundColor = labelBackground;
+        label.element.style.color = isComparisonOverlay
+            ? overlayColour
+            : getCurrentSystemColour(name, isDarkMode);
     }
 
-    let orbitColour = getTheme(isDarkMode).orbitColour;
-    for (const orbit of orbitalLines.values()) {
-        orbit.material.color.set(orbitColour);
+    for (const [name, orbit] of orbitalLines) {
+        const isComparisonOverlay = orbit.parent === solarSystemGroup;
+
+        orbit.material.color.set(
+            isComparisonOverlay ? overlayColour : getCurrentSystemColour(name, isDarkMode)
+        );
     }
 }
 
@@ -638,6 +707,10 @@ function resizeRendererToDisplaySize() {
         labelRenderer.setSize(width, height);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
+
+        for (const line of orbitalLines.values()) {
+            line.material.resolution.set(width, height);
+        }
     }
 
     return needResize;
