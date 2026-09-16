@@ -85,6 +85,13 @@ const objectColour = "white";
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
 /**
+ * The width (thickness) of the orbit lines for regular orbits and for orbits
+ * belonging to the Solar System when it's shown only as a comparison overlay.
+ */
+const orbitLineWidth = 4;
+const comparisonOrbitLineWidth = 2;
+
+/**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
  * only as a comparison overlay.
  */
@@ -262,16 +269,17 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     if (!line) {
         const canvas = renderer.domElement;
         const geometry = new LineGeometry();
-        const material = new LineMaterial({ 
-            color: colour,
-            linewidth: 4,
-        });
-        material.resolution.set(canvas.clientWidth, canvas.clientHeight);
+        const material = new LineMaterial({ color: colour });
 
         if (group === solarSystemGroup) {
             material.transparent = true;
             material.opacity = comparisonOrbitOpacity;
+            material.linewidth = comparisonOrbitLineWidth;
+        } else {
+            material.linewidth = orbitLineWidth;
         }
+
+        material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
         line = new Line2(geometry, material);
 
