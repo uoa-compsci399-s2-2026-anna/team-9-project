@@ -8,7 +8,8 @@
     tooltip_position="below",
     tooltip_align="center",
     svg_size=7,
-    on_click_events=[]
+    on_click_events=[],
+    tooltip_margin=2
   )
 %}
   <div
@@ -28,8 +29,8 @@
 
     {%
       set tooltip_positions = {
-        "above": "top-0 -mt-2 -translate-y-full",
-        "below": "top-full mt-2"
+        "above": "top-0 -translate-y-full -mt-" ~ tooltip_margin ,
+        "below": "top-full mt-" ~ tooltip_margin
       }
     %}
 
