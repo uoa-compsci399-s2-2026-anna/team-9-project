@@ -37,6 +37,21 @@ const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
     }),
 );
 
+// Set Flatpickr theme
+const flatpickrLightTheme = document.getElementById("flatpickr-light-theme");
+const flatpickrDarkTheme = document.getElementById("flatpickr-dark-theme");
+
+function setFlatpickrTheme(isDarkMode) {
+    flatpickrLightTheme.disabled = isDarkMode;
+    flatpickrDarkTheme.disabled = !isDarkMode;
+}
+
+setFlatpickrTheme(document.documentElement.dataset.theme === "dark");
+
+bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
+    setFlatpickrTheme(event.detail.enterDarkMode);
+});
+
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     const newTimeZone = event.detail.value;
 
