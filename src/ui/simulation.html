@@ -27,10 +27,15 @@
 
   <!-- Simulation playback controls -->
   {% include "components/simulation-playback-controls.html" %}
+
+  <!-- TESTING: Flatpickr proof of concept -->
+  <input type="text" id="poc-calendar" placeholder="Flatpickr test" class="fixed top-2 right-2 z-50"/>
 {% endblock %}
 
 <!-- Scripts block -->
 {% block scripts %}
+  <script src="/src/flatpickr/flatpickr.min.js"></script>
+
   <script
     type="module"
     src="/src/events/triggers/sharedTriggers.js"
@@ -72,5 +77,9 @@
     defer
   ></script>
   <script type="module" src="/src/ui/simulationCalendar.js" defer></script>
-  <script type="module" src="/src/flatpickr/flatpickr.min.js" defer></script>
+
+<script>
+  flatpickr("#poc-calendar");
+</script>
+
 {% endblock %}
