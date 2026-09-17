@@ -24,7 +24,7 @@ const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
         enableTime: true,
         dateFormat: "Y-m-d\\TH:i",
         altInput: true,
-        altFormat: "d-m-Y h:i K",
+        altFormat: "d-m-Y G:i K",
         allowInput: false,
         onChange: (_selectedDates, dateStr) => {
             const timeZone = input.dataset.timezone;
