@@ -959,6 +959,12 @@ export function setOrbitsVisibility(value) {
     }
 }
 
+export function setReferenceGridVisibility(value) {
+    if (referenceGrid) {
+        referenceGrid.visible = value;
+    }
+}
+
 export function setObjectVisibility(name, value) {
     const mesh = objectMeshes.get(name);
     if (mesh) {
