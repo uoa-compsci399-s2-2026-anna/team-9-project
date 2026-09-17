@@ -334,6 +334,10 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
+/**
+ * Create a mesh representing the habitable zone of the current system.
+ * The habitable zone is represented as a ring with a specified inner and outer radius.
+ */
 function createHabitableZoneMesh() {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
@@ -356,6 +360,10 @@ function createHabitableZoneMesh() {
     currentSystemGroup.add(habitableZoneMesh);
 }
 
+/**
+ * Create a reference grid in the scene.
+ * @param {number} viewRadius The view radius of the current system to determine the grid size
+ */
 function createReferenceGrid(viewRadius) {
     const referenceGridColor = getTheme().referenceGrid;
     referenceGrid = new THREE.GridHelper(
