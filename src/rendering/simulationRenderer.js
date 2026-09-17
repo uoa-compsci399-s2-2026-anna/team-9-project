@@ -131,10 +131,12 @@ const themes = {
     light: {
         background: new THREE.Color("white"),
         labelBackground: "rgba(255, 255, 255, 0.5)",
+        referenceGrid: 0xcccccc,
     },
     dark: {
         background: new THREE.Color("black"),
         labelBackground: "rgba(0, 0, 0, 0.5)",
+        referenceGrid: 0x333333,
     },
 };
 
@@ -146,7 +148,6 @@ let habitableZoneMesh;
 
 const referenceGridSizeMultiplier = 20; // Relative to view radius, to ensure it extends beyond the visible area
 const referenceGridDivisions = 100;
-const referenceGridColor = 0x888888; // Grey
 let referenceGrid;
 
 function getTheme(isDarkMode = settings.darkMode) {
@@ -356,12 +357,13 @@ function createHabitableZoneMesh() {
 }
 
 function createReferenceGrid(viewRadius) {
+    const referenceGridColor = getTheme().referenceGrid;
     referenceGrid = new THREE.GridHelper(
         referenceGridSizeMultiplier * viewRadius,
         referenceGridDivisions,
-        referenceGridColor, // Same color for the centre line and the grid lines
-        referenceGridColor
     );
+    referenceGrid.material.color.set(referenceGridColor);
+    referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
     referenceGrid.visible = simulationState.referenceGridShown;
 
     // Rotate the grid to align its normal with the camera's up vector
@@ -698,6 +700,7 @@ export function toggleSimulationDarkMode(isDarkMode) {
     const theme = getTheme(isDarkMode);
 
     scene.background = theme.background;
+    referenceGrid.material.color.set(theme.referenceGrid);
 
     const labelBackground = theme.labelBackground;
     const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
