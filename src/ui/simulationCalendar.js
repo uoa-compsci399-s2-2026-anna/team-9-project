@@ -43,6 +43,10 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
         input.dataset.timezone = newTimeZone;
     });
 
+    document.querySelectorAll(".calendar-timezone-label").forEach((label) => {
+        label.textContent = `(${newTimeZone})`;
+    });
+
     // Refresh the calendar with the last simulation time to reflect the new time zone
     updateCalendar(lastSimulationTime);
 });
