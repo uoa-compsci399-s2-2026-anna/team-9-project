@@ -144,6 +144,11 @@ const habitableZoneOpacity = 0.2;
 let habitableZone;
 let habitableZoneMesh;
 
+const referenceGridSizeMultiplier = 20; // Relative to view radius, to ensure it extends beyond the visible area
+const referenceGridDivisions = 100;
+const referenceGridColor = 0x888888; // Grey
+let referenceGrid;
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -350,6 +355,23 @@ function createHabitableZoneMesh() {
     currentSystemGroup.add(habitableZoneMesh);
 }
 
+function createReferenceGrid(viewRadius) {
+    referenceGrid = new THREE.GridHelper(
+        referenceGridSizeMultiplier * viewRadius,
+        referenceGridDivisions,
+        referenceGridColor, // Same color for the centre line and the grid lines
+        referenceGridColor
+    );
+    referenceGrid.visible = simulationState.referenceGridShown;
+
+    // Rotate the grid to align its normal with the camera's up vector
+    const normal = new THREE.Vector3(0, 1, 0);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
+    referenceGrid.quaternion.copy(quaternion);
+
+    currentSystemGroup.add(referenceGrid);
+}
+
 /**
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
@@ -510,6 +532,7 @@ export async function init(name) {
     initTimer();
 
     createHabitableZoneMesh();
+    createReferenceGrid(viewRadius);
 
     /**
      * Persist the current simulation time, formatted simulation date, and days elapsed text 
