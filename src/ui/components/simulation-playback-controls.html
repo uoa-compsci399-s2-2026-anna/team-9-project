@@ -7,11 +7,11 @@
   <!-- Simulation timestamp (narrow screens) -->
   <span class="self-center text-sm sm:hidden">
     <input
-      type="datetime-local"
+      type="text"
       class="calendar tabular-nums"
       name="calendar"
       value="{{ sim_date }}"
-      onkeydown="return false;"
+      data-timezine=" {{ settings.timeZone }}"
     />
   </span>
 
@@ -30,11 +30,11 @@
         <div class="text-left max-sm:hidden">
           <p class="text-lg">
             <input
-              type="datetime-local"
+              type="text"
               class="calendar tabular-nums"
               name="calendar"
               value="{{ sim_date }}"
-              onkeydown="return false;"
+              data-timezone="{{ settings.TimeZone }}"
             />
           </p>
           <p
