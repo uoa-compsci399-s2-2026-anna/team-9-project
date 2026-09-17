@@ -79,7 +79,36 @@
   <script type="module" src="/src/ui/simulationCalendar.js" defer></script>
 
 <script>
-  flatpickr("#poc-calendar");
+
+  const CALENDAR_RANGE_YEARS = 10;
+
+  function getRangeDates(centreDate) {
+    const min = new Date(centreDate);
+    min.setFullYear(min.getFullYear() - CALENDAR_RANGE_YEARS);
+
+    const max = new Date(centreDate);
+    max.setFullYear(max.getFullYear() + CALENDAR_RANGE_YEARS);
+
+    return { min, max };
+  }
+
+  let centreDate= new Date();
+  const { min, max } = getRangeDates(centreDate);
+  
+  const pocInstance = flatpickr("#poc-calendar", {
+    enableTime: true,
+    dateFormat:"d-m-Y H:i",
+    allowInput: false,
+    minDate: min,
+    maxDate: max,
+    onChange: (selectedDates) => {
+
+      centreDate = selectedDates[0];
+      const { min, max } = getRangeDates(centreDate);
+      pocInstance.set("minDate", min);
+      pocInstance.set("maxDate", max);
+    },
+});
 </script>
 
 {% endblock %}
