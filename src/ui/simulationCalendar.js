@@ -1,14 +1,48 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { formatDate, timeToMilliseconds, dateOnly } from "../utils/utils.js";
+import {
+    formatDate,
+    timeToMilliseconds,
+    dateOnly,
+    convertToEpoch,
+} from "../utils/utils.js";
 
 // The number of milliseconds in a day
 const MS_PER_DAY = timeToMilliseconds(1, "day");
 
+// Date range for calender
+const CALENDAR_RANGE_YEARS = 10;
+
 // The last simulation time (in ms since the Unix epoch) displayed by the calendar
 let lastSimulationTime = null;
 
-bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
+// Initialise Flatpickr on every calendar input
+const calendarInputs = document.querySelectorAll(".calendar");
+
+const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
+    flatpickr(input, {
+        enableTime: true,
+        dateFormat: "Y-m-d\\TH:i",
+        altInput: true,
+        altFormat: "d-m-Y h:i K",
+        allowInput: false,
+        onChange: (_selectedDates, dateStr) => {
+            const timeZone = input.dataset.timezone;
+            const epochMs = convertToEpoch(dateStr, timeZone);
+            bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
+                time: epochMs,
+            });
+        },
+    }),
+);
+
+bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
+    const newTimeZone = event.detail.value;
+
+    calendarInputs.forEach((input) => {
+        input.dataset.timezone = newTimeZone;
+    });
+
     // Refresh the calendar with the last simulation time to reflect the new time zone
     updateCalendar(lastSimulationTime);
 });
@@ -17,9 +51,9 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, () => {
  * Given the current simulation time in milliseconds since the Unix epoch, return
  * the formatted simulation date. This is used for persisting the simulation date
  * displayed by the calendar.
- * 
+ *
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
- * @returns Formatted simulation date for the given `simulationTime` 
+ * @returns Formatted simulation date for the given `simulationTime`
  */
 export function formatSimulationDate(simulationTime) {
     return formatDate(new Date(simulationTime));
@@ -78,15 +112,12 @@ export function updateCalendar(simulationTime) {
 
     const date = new Date(simulationTime);
 
-    const calendars = document.querySelectorAll(".calendar");
-
-    const CALENDAR_RANGE_YEARS = 3;
     const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
 
-    calendars.forEach((calendar) => {
-        calendar.value = formatDate(date);
-        calendar.min = formatDate(new Date(date.getTime() - CALENDAR_RANGE_MS));
-        calendar.max = formatDate(new Date(date.getTime() + CALENDAR_RANGE_MS));
+    FlatpickrInstances.forEach((instance) => {
+        instance.setDate(date, false);
+        instance.set("minDate", new Date(date.getTime() - CALENDAR_RANGE_MS));
+        instance.set("maxDate", new Date(date.getTime() + CALENDAR_RANGE_MS));
     });
 
     updateElapsedDaysText(simulationTime);
