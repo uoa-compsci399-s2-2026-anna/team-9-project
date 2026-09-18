@@ -5,9 +5,9 @@
   <!-- COMPONENT: System dropdown -->
   <!-- Hidden setting to maintain consistient toolbar position -->
   {% if system_dropdown %}
+    <!-- OPIS 'O' logo -->
     {% call container() %}
       <div class="flex items-center p-1">
-        <!-- Home button (only shown at max-sm; serves same functionality as OPIS button) -->
         <a href="/" class="relative z-30 mt-1 self-start max-sm:hidden">
           <svg
             viewBox="0 0 150 166.27"
@@ -21,8 +21,8 @@
       </div>
     {% endcall %}
 
+    <!-- System selector -->
     {% call container() %}
-      <!-- System information -->
       <div
         id="system-dropdown-wrapper"
         class="relative z-30 items-center rounded-md text-left opacity-100 transition-opacity duration-200 ease-in-out hover:bg-zinc-100 hover:outline-1 hover:outline-zinc-900 dark:hover:bg-zinc-900 dark:hover:outline-zinc-500"
