@@ -70,4 +70,8 @@
   .clickable {
     @apply hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-700;
   }
+
+  .flatpickr-day.today {
+    border-color: transparent !important;
+  }
 }
