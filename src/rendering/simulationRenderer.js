@@ -342,13 +342,6 @@ function createHabitableZoneMesh() {
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
-
-    // Rotate the habitable zone to align its normal with the camera's up vector
-    const normal = new THREE.Vector3(0, 0, 1);
-    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
-    habitableZoneMesh.quaternion.copy(quaternion);
-
-    currentSystemGroup.add(habitableZoneMesh);
 }
 
 /**
@@ -459,6 +452,7 @@ function initScene() {
     scene.add(new THREE.AmbientLight(0xffffff, 1));
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);
+    scene.add(habitableZoneMesh);
 }
 
 /**
@@ -518,13 +512,13 @@ export async function init(name) {
     const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
     alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
 
+    createHabitableZoneMesh();
+
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
-
-    createHabitableZoneMesh();
 
     /**
      * Persist the current simulation time, formatted simulation date, and days elapsed text 
