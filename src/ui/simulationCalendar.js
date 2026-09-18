@@ -34,6 +34,16 @@ const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
                 time: epochMs,
             });
         },
+
+        // Stop scrollbar bug
+        onOpen: () => {
+            document.documentElement.style.overflow = "hidden";
+        },
+        onClose: () => {
+            requestAnimationFrame(() => {
+                document.documentElement.style.overflow = "";
+            });
+        },
     }),
 );
 
