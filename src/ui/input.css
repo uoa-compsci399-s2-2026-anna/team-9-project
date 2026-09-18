@@ -71,7 +71,47 @@
     @apply hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-700;
   }
 
+  :where([data-theme="dark"]) {
+    .flatpickr-calendar {
+      background-color: var(--color-zinc-900) !important;
+    }
+
+    .flatpickr-weekdays,
+    span.flatpickr-weekday,
+    .flatpickr-next-month,
+    .flatpickr-prev-month,
+    .flatpickr-month,
+    .flatpickr-current-month,
+    .flatpickr-monthDropdown-months,
+    .flatpickr-monthDropdown-month,
+    .flatpickr-current-month input.cur-year {
+      background-color: var(--color-zinc-900) !important;
+    }
+
+    .flatpickr-am-pm:hover,
+    .flatpickr-am-pm:focus,
+    .flatpickr-am-pm:active,
+    .flatpickr-time input:hover,
+    .flatpickr-time input:focus {
+      background-color: var(--color-zinc-800) !important;
+    }
+
+    .flatpickr-day:hover {
+      background-color: var(--color-zinc-800) !important;
+      border-color: var(--color-zinc-800) !important;
+    }
+  }
+
   .flatpickr-day.today {
     border-color: transparent !important;
+  }
+
+  .flatpickr-day.selected {
+    @apply bg-accent! border-accent!;
+  }
+
+  .flatpickr-prev-month:hover svg,
+  .flatpickr-next-month:hover svg {
+    fill: var(--color-accent) !important;
   }
 }
