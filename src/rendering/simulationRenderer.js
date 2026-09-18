@@ -393,6 +393,18 @@ async function updateSimulation() {
 }
 
 /**
+ * Align the system's average normal with the up vector.
+ * 
+ * @param {THREE.Group} group The group to align
+ * @param {THREE.Vector3} averageNormal The average normal vector of the system's orbital planes
+ */
+function alignSystemToCameraUp(group, averageNormal) {
+    const quaternion = new THREE.Quaternion()
+        .setFromUnitVectors(averageNormal, cameraDefaults.up);
+    group.quaternion.copy(quaternion);
+}
+
+/**
  * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} viewRadius The radius of view to fit within the camera
@@ -502,6 +514,10 @@ export async function init(name) {
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
 
+    // Align the system's average normal with the up vector (Z-axis)
+    const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
+    alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
+
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
@@ -577,10 +593,9 @@ export async function compareToSolarSystem() {
     const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
     objectScale = comparisonObjectSize / objectSize;
 
-    // Rotate solar system to align with the current system's up vector
+    // Align the solar system's average normal with the up vector (Z-axis)
     const solarSystemAverageNormal = calculateAverageNormal(solarOrbitalDataValues);
-    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarSystemAverageNormal, camera.up);
-    solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
+    alignSystemToCameraUp(solarSystemGroup, solarSystemAverageNormal);
 
     solarSystemGroup.visible = true;
 
