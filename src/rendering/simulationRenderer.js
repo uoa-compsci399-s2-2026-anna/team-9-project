@@ -26,7 +26,7 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateCameraDistance,
-    calculateUpVector,
+    calculateAverageNormal,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
 import { 
@@ -499,11 +499,11 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    const upVector = calculateUpVector(orbitalDataValues);
+    const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
 
-    initOrUpdateCamera(canvas, viewRadius, upVector);
+    initOrUpdateCamera(canvas, viewRadius, currentSystemAverageNormal);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
@@ -579,8 +579,8 @@ export async function compareToSolarSystem() {
     objectScale = comparisonObjectSize / objectSize;
 
     // Rotate solar system to align with the current system's up vector
-    const solarUpVector = calculateUpVector(solarOrbitalDataValues);
-    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarUpVector, camera.up);
+    const solarSystemAverageNormal = calculateAverageNormal(solarOrbitalDataValues);
+    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarSystemAverageNormal, camera.up);
     solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
 
     solarSystemGroup.visible = true;
