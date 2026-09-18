@@ -67,6 +67,7 @@ const controlsZoomSpeed = 2.5;
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
+    up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
 const currentSystemGroup = new THREE.Group();
@@ -395,12 +396,11 @@ async function updateSimulation() {
  * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} viewRadius The radius of view to fit within the camera
- * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initOrUpdateCamera(canvas, viewRadius, upVector) {
+function initOrUpdateCamera(canvas, viewRadius) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = calculateDefaultCameraPosition(
-        upVector,
+        cameraDefaults.up,
         cameraDistance
     );
 
@@ -410,7 +410,7 @@ function initOrUpdateCamera(canvas, viewRadius, upVector) {
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
         camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-        camera.up.copy(upVector); // Stays fixed for the current system
+        camera.up.copy(cameraDefaults.up);
         camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
 
     } else {
@@ -499,11 +499,10 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
 
-    initOrUpdateCamera(canvas, viewRadius, currentSystemAverageNormal);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
@@ -585,7 +584,7 @@ export async function compareToSolarSystem() {
 
     solarSystemGroup.visible = true;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
     resetView();
@@ -608,7 +607,7 @@ export async function hideSolarSystem() {
 
     solarSystemGroup.visible = false;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     updateSimulation();
 }
