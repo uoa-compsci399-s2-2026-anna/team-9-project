@@ -249,6 +249,22 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
 }
 
 /**
+ * Approximate a given opacity by blending the given colour towards the current background.
+ * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
+ * 
+ * @param {string} colour The base colour to fade 
+ * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
+ * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
+ * @returns A new colour faded towards the background colour by (1 - opacity)
+ */
+function getFadedColour(colour, opacity, isDarkMode = settings.isDarkMode) {
+    const theme = getTheme(isDarkMode);
+    const backgroundColour = theme.background;
+
+    return new THREE.Color(colour).lerp(backgroundColour, 1 - opacity);
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  * 
@@ -264,19 +280,21 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     if (e === 1) return; // Parabolic orbits are not supported for now
 
+    const comparisonColour = getFadedColour(colour, comparisonOrbitOpacity);
+
     let line = orbitalLines.get(name);
 
     if (!line) {
         const canvas = renderer.domElement;
         const geometry = new LineGeometry();
-        const material = new LineMaterial({ color: colour });
+        const material = new LineMaterial();
 
         if (group === solarSystemGroup) {
-            material.transparent = true;
-            material.opacity = comparisonOrbitOpacity;
             material.linewidth = comparisonOrbitLineWidth;
+            material.color.set(comparisonColour);
         } else {
             material.linewidth = orbitLineWidth;
+            material.color.set(colour);
         }
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
@@ -683,11 +701,13 @@ export function toggleSimulationDarkMode(isDarkMode) {
             : getCurrentSystemColour(name, isDarkMode);
     }
 
+    const fadedOverlayColour = getFadedColour(overlayColour, comparisonOrbitOpacity, isDarkMode);
+
     for (const [name, orbit] of orbitalLines) {
         const isComparisonOverlay = orbit.parent === solarSystemGroup;
 
         orbit.material.color.set(
-            isComparisonOverlay ? overlayColour : getCurrentSystemColour(name, isDarkMode)
+            isComparisonOverlay ? fadedOverlayColour : getCurrentSystemColour(name, isDarkMode)
         );
     }
 }
