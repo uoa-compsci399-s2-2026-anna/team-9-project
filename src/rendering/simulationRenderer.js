@@ -561,7 +561,7 @@ export function setSimulationTimeToTime(time) {
 
 export function resetView() {
     camera.position.copy(cameraDefaults.position);
-    controls.target.copy(cameraDefaults.target); // Look at the sun
+    controls.target.copy(cameraDefaults.target); // Look at the barycenter
     controls.update();
 }
 
