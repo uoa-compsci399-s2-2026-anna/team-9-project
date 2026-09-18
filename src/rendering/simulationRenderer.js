@@ -50,6 +50,9 @@ let controls;
 let renderer;
 let labelRenderer;
 
+// Stores whether the user is currently dragging the camera
+let isDragging = false;
+
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
@@ -172,6 +175,17 @@ async function getReferenceSystemData(system) {
         );
     }
     return referenceSystemData.get(system);
+}
+
+/**
+ * (1) Check if the object itself was clicked
+ * (2) Check if the object's label was clicked
+ * (3) Check if the object's hitbox was clicked
+ * 
+ * @param {*} event 
+ */
+function onCanvasClick(event) {
+    console.log("Clicked canvas!");
 }
 
 /**
@@ -436,6 +450,29 @@ function initOrUpdateControls(canvas, viewRadius) {
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
+
+    // Detect when the user is moving the camera
+    controls.addEventListener("change", () => {
+        isDragging = true;
+    });
+}
+
+/**
+ * 
+ * @param {*} canvas 
+ */
+function initRaycastingEvents(canvas) {
+    // Detect when the user holds their mouse down on the canvas
+    canvas.addEventListener("pointerdown", () => {
+        isDragging = false;
+    });
+
+    canvas.addEventListener("click", (event) => {
+        // Handle the event as long as the user isn't dragging the camera
+        if (!isDragging) {
+            onCanvasClick(event);
+        }
+    });
 }
 
 /**
@@ -505,6 +542,7 @@ export async function init(name) {
 
     initOrUpdateCamera(canvas, viewRadius, upVector);
     initOrUpdateControls(canvas, viewRadius);
+    initRaycastingEvents(canvas);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
