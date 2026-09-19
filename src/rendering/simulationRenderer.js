@@ -243,8 +243,8 @@ function onCanvasClick(event, canvas) {
     let intersects = raycaster.intersectObjects(meshes, false);
     if (intersects.length > 0) {
         // Get the nearest object intersected
-        const hitmesh = intersects[0].object;
-        const name = hitmesh.userData.name;
+        const meshHit = intersects[0].object;
+        const name = meshHit.userData.name;
 
         console.log(name);
 
@@ -263,10 +263,10 @@ function onCanvasClick(event, canvas) {
     intersects = raycaster.intersectObjects(meshes, true);
     
     if (intersects.length > 0) {
-        const hitMesh = intersects[0].object;
+        // Get the nearest object hitbox intersected
+        const meshHit = intersects[0].object;
 
-        // TODO: Do I have to set the name on the hitbox or can I access the parent directly?
-        const name = hitMesh.userData.name;
+        const name = meshHit.parent.userData.name;
 
         console.log("Hitbox clicked")
         console.log(name);
@@ -310,7 +310,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
 
         const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
-        hitbox.userData.name = name; // TODO: surely this could be managed by getting the parent of the hitbox and their name? As is done with labels
 
         // Add the hitbox as a child of the mesh
         mesh.add(hitbox);
