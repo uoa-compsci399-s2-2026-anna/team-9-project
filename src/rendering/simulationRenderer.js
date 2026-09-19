@@ -184,8 +184,41 @@ async function getReferenceSystemData(system) {
  * 
  * @param {*} event 
  */
-function onCanvasClick(event) {
+function onCanvasClick(event, canvas) {
     console.log("Clicked canvas!");
+
+    const rect = canvas.getBoundingClientRect();
+
+    // TODO: make helper
+    const mouseCoordinates = new THREE.Vector2();
+
+    // Raycaster only accepts NDC coordinates
+    mouseCoordinates.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouseCoordinates.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouseCoordinates, camera);
+
+    // Get all the meshes for all of the objects in the scene
+    const meshes = Array.from(objectMeshes.values());
+
+    // TODO: make magic value clearer?
+    // Check if any parent meshes were clicked (excludes hitboxes)
+    let intersects = raycaster.intersectObjects(meshes, true);
+    if (intersects.length > 0) {
+        // Get the nearest object intersected
+        const hitmesh = intersects[0].object;
+        const name = hitmesh.userData.name;
+
+        console.log(name);
+
+        return;
+    }
+
+    // TODO: detect label click
+
+    // TODO: detect hitbox click
+
 }
 
 /**
@@ -211,6 +244,9 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
+
+        // Give the mesh a name to identify the mesh with raycasting
+        mesh.userData.name = name;
 
         group.add(mesh);
         objectMeshes.set(name, mesh);
@@ -470,7 +506,7 @@ function initRaycastingEvents(canvas) {
     canvas.addEventListener("click", (event) => {
         // Handle the event as long as the user isn't dragging the camera
         if (!isDragging) {
-            onCanvasClick(event);
+            onCanvasClick(event, canvas);
         }
     });
 }
