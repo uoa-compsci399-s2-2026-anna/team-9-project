@@ -202,7 +202,7 @@ function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
  * @param {*} event 
  * @returns 
  */
-function getClickedLabel(event) {
+function getClickedLabelName(event) {
     let closestName = null;
     let closestDistanceSquared = Infinity;
     const labelWorldPosition = new THREE.Vector3();
@@ -231,62 +231,63 @@ function getClickedLabel(event) {
     return closestName;
 }
 
-// TODO: decide how the event will fire given that I am doing a lot of early returns
 /**
  * (1) Check if the object itself was clicked
  * (2) Check if the object's label was clicked
  * (3) Check if the object's hitbox was clicked
  * 
  * @param {*} event 
+ * 
+ * Null if nothing hit
  */
-function onCanvasClick(event, canvas) {
-    console.log("Clicked canvas!");
-
+function getClickedObjectName(event, canvas) {
     // The three.js raycaster expects NDC coordinates
     const mouseNdc = getNormalisedDeviceCoordinates(event.clientX, event.clientY, canvas);
 
+    // Create a ray from the camera through the mouse's position on the screen
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouseNdc, camera);
 
     // Get all the meshes for all of the objects in the scene
     const meshes = Array.from(objectMeshes.values());
 
-    // Check if any parent meshes were clicked (excludes hitboxes)
-    let intersects = raycaster.intersectObjects(meshes, false);
-    if (intersects.length > 0) {
-        // Get the nearest object intersected
-        const meshHit = intersects[0].object;
-        const name = meshHit.userData.name;
-
-        console.log(name);
-
-        return;
+    // Check whether the ray intersects any object meshes (excludes hitboxes)
+    let meshHits = raycaster.intersectObjects(meshes, false);
+    if (meshHits.length > 0) {
+        // Return the name of the nearest object the ray intersected
+        return meshHits[0].object.userData.name;
     }
 
     // Get the closest clicked label
-    const labelName = getClickedLabel(event);
+    const labelName = getClickedLabelName(event);
     if (labelName) {
-        console.log("Label clicked");
-        console.log(labelName);
-        return;
+        return labelName;
     }
 
-    // Check if any hitboxes were clicked (by checking children of objects)
-    intersects = raycaster.intersectObjects(meshes, true);
+    // Check whether the ray intersects any hitboxes (by checking children of objects)
+    const hitboxHits = raycaster.intersectObjects(meshes, true);
     
-    if (intersects.length > 0) {
-        // Get the nearest object hitbox intersected
-        const meshHit = intersects[0].object;
+    if (hitboxHits.length > 0) {
+        return hitboxHits[0].object.parent.userData.name;
+    }
 
-        const name = meshHit.parent.userData.name;
+    return null;
+}
 
-        console.log("Hitbox clicked")
-        console.log(name);
+/**
+ * 
+ * @param {*} event 
+ * @param {*} canvas 
+ */
+function onCanvasClick(event, canvas) {
+    const name = getClickedObjectName(event, canvas);
 
+    if (!name) {
         return;
     }
 
-    console.log("Nothing found");
+    // TODO: publish event
+    console.log(name);
 }
 
 /**
