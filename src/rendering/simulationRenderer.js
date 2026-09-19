@@ -383,14 +383,8 @@ function createReferenceGrid(viewRadius) {
     );
     referenceGrid.material.color.set(referenceGridColor);
     referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
+    referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
     referenceGrid.visible = simulationState.referenceGridShown;
-
-    // Rotate the grid to align its normal with the camera's up vector
-    const normal = new THREE.Vector3(0, 1, 0);
-    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
-    referenceGrid.quaternion.copy(quaternion);
-
-    currentSystemGroup.add(referenceGrid);
 }
 
 /**
@@ -502,6 +496,7 @@ function initScene() {
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);
     scene.add(habitableZoneMesh);
+    scene.add(referenceGrid);
 }
 
 /**
