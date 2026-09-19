@@ -1,9 +1,9 @@
 {
   "timeZone": {
-    "default": "UTC",
+    "default": "NZT",
     "options": [
-      { "value": "UTC", "label": "Coordinated Universal Time (UTC)" },
-      { "value": "NZT", "label": "New Zealand Time (NZT)" }
+      { "value": "NZT", "label": "New Zealand Time (NZT)" },
+      { "value": "UTC", "label": "Coordinated Universal Time (UTC)" }
     ]
   },
   "font": {
