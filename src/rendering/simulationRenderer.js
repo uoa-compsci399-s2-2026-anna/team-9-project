@@ -178,6 +178,49 @@ async function getReferenceSystemData(system) {
 }
 
 /**
+ * Get the name of the object of the closest clicked label
+ * @param {*} event 
+ * @returns 
+ */
+function getClickedLabel(event) {
+    let closestName = null;
+    let closestDistanceSquared = Infinity;
+
+    for (const mesh of objectMeshes.values()) {
+        // TODO: is this the most idiomatic way of doing this?
+        // Get the label associated with the mesh
+        const label = mesh.children.find(child => child instanceof CSS2DObject);
+        if (!label) {
+            continue;
+        }
+
+        // TODO: consider helper
+        // Get the clickable area of the label in viewport coordinates
+        const labelBoundingRect = label.element.getBoundingClientRect();
+        const labelClicked =
+            event.clientX >= labelBoundingRect.left &&
+            event.clientX <= labelBoundingRect.right &&
+            event.clientY >= labelBoundingRect.top &&
+            event.clientY <= labelBoundingRect.bottom;
+
+        if (!labelClicked) {
+            continue;
+        }
+
+        const labelWorldPosition = new THREE.Vector3();
+        mesh.getWorldPosition(labelWorldPosition);
+        const labelDistanceSquared = camera.position.distanceToSquared(labelWorldPosition);
+
+        if (labelDistanceSquared < closestDistanceSquared) {
+            closestDistanceSquared = labelDistanceSquared;
+            closestName = mesh.userData.name;
+        }
+    }
+
+    return closestName;
+}
+
+/**
  * (1) Check if the object itself was clicked
  * (2) Check if the object's label was clicked
  * (3) Check if the object's hitbox was clicked
@@ -215,7 +258,13 @@ function onCanvasClick(event, canvas) {
         return;
     }
 
-    // TODO: detect label click
+    // Get the closest clicked label
+    const labelName = getClickedLabel(event);
+    if (labelName) {
+        console.log("Label clicked");
+        console.log(labelName);
+        return;
+    }
 
     // TODO: detect hitbox click
 
