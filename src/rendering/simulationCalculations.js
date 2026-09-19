@@ -69,6 +69,20 @@ export function calculateCameraDistance(fov, viewRadius) {
 }
 
 /**
+ * Calculate the view radius based on the camera's field of view and distance from the target.
+ * The view radius is the radius of the area that can be seen by the camera at a given distance.
+ * 
+ * @param {number} fov The field of view of the camera in degrees
+ * @param {number} cameraDistance The distance of the camera from the target
+ * @returns {number} The calculated view radius
+ */
+export function calculateViewRadius(fov, cameraDistance) {
+    const fovRad = fov * (Math.PI / 180);
+    return cameraDistance * Math.tan(fovRad / 2); // Calculate the view radius based on camera distance
+}
+
+/**
+ * 
  * Calculate the average normal vector of the orbital planes of all objects in the system.
  * 
  * @param {Array} orbitalDataValues Array of orbital data values for all objects
