@@ -373,12 +373,12 @@ function createHabitableZoneMesh() {
 
 /**
  * Create a reference grid in the scene.
- * @param {number} viewRadius The view radius of the current system to determine the grid size
+ * @param {number} defaultViewRadius The view radius of the current system to determine the grid size
  */
-function createReferenceGrid(viewRadius) {
+function createReferenceGrid(defaultViewRadius) {
     const referenceGridColor = getTheme().referenceGrid;
     referenceGrid = new THREE.GridHelper(
-        referenceGridSizeMultiplier * viewRadius,
+        referenceGridSizeMultiplier * defaultViewRadius,
         referenceGridDivisions,
     );
     referenceGrid.material.color.set(referenceGridColor);
@@ -443,17 +443,17 @@ function alignSystemToCameraUp(group, averageNormal) {
 /**
  * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} viewRadius The radius of view to fit within the camera
+ * @param {number} defaultViewRadius The default radius of view to fit within the camera
  */
-function initOrUpdateCamera(canvas, viewRadius) {
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+function initOrUpdateCamera(canvas, defaultViewRadius) {
+    const defaultCameraDistance = calculateCameraDistance(fov, defaultViewRadius);
     cameraDefaults.position = calculateDefaultCameraPosition(
         cameraDefaults.up,
-        cameraDistance
+        defaultCameraDistance
     );
 
     const cameraNear = objectSize * cameraNearMultiplier;
-    const cameraFar = cameraDistance * cameraFarMultiplier;
+    const cameraFar = defaultCameraDistance * cameraFarMultiplier;
 
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
@@ -471,17 +471,17 @@ function initOrUpdateCamera(canvas, viewRadius) {
 /**
  * Initialise the controls for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} viewRadius The radius of view to fit within the camera
+ * @param {number} defaultViewRadius The default radius of view to fit within the camera
  */
-function initOrUpdateControls(canvas, viewRadius) {
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+function initOrUpdateControls(canvas, defaultViewRadius) {
+    const defaultCameraDistance = calculateCameraDistance(fov, defaultViewRadius);
 
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
     }
     controls.target.copy(cameraDefaults.target);
     controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
-    controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.maxDistance = defaultCameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
 }
@@ -548,19 +548,21 @@ export async function init(name) {
     const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
 
-    objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+    // Default view radius (in AU) with a multiplier for padding
+    const defaultViewRadius = maxApoapsis * viewRadiusMultiplier;
+
+    objectSize = defaultViewRadius * objectSizeMultiplier;
 
     // Align the system's average normal with the up vector (Z-axis)
     const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
     alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
 
     createHabitableZoneMesh();
-    createReferenceGrid(viewRadius);
+    createReferenceGrid(defaultViewRadius);
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    initOrUpdateCamera(canvas, defaultViewRadius);
+    initOrUpdateControls(canvas, defaultViewRadius);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
@@ -624,7 +626,7 @@ export async function compareToSolarSystem() {
 
     const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
     const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
-    const viewRadius = Math.max(currentViewRadius, solarViewRadius);
+    const defaultViewRadius = Math.max(currentViewRadius, solarViewRadius);
 
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
@@ -638,8 +640,8 @@ export async function compareToSolarSystem() {
 
     solarSystemGroup.visible = true;
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    initOrUpdateCamera(canvas, defaultViewRadius);
+    initOrUpdateControls(canvas, defaultViewRadius);
 
     resetView();
 
@@ -657,12 +659,12 @@ export async function hideSolarSystem() {
     const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const viewRadius = maxApoapsis * viewRadiusMultiplier;
+    const defaultViewRadius = maxApoapsis * viewRadiusMultiplier;
 
     solarSystemGroup.visible = false;
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    initOrUpdateCamera(canvas, defaultViewRadius);
+    initOrUpdateControls(canvas, defaultViewRadius);
     updateSimulation();
 }
 
