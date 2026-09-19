@@ -180,6 +180,24 @@ async function getReferenceSystemData(system) {
 }
 
 /**
+ * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
+ * NDC range from -1 to 1 on both axes.
+ *
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas to normalise against
+ * @returns {THREE.Vector2} The position in NDC
+ */
+function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
+    const rect = canvas.getBoundingClientRect();
+
+    return new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1
+    );
+}
+
+/**
  * Get the name of the object of the closest clicked label
  * @param {*} event 
  * @returns 
@@ -224,17 +242,11 @@ function getClickedLabel(event) {
 function onCanvasClick(event, canvas) {
     console.log("Clicked canvas!");
 
-    const rect = canvas.getBoundingClientRect();
-
-    // TODO: make helper
-    const mouseCoordinates = new THREE.Vector2();
-
-    // Raycaster only accepts NDC coordinates
-    mouseCoordinates.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouseCoordinates.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    // The three.js raycaster expects NDC coordinates
+    const mouseNdc = getNormalisedDeviceCoordinates(event.clientX, event.clientY, canvas);
 
     const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouseCoordinates, camera);
+    raycaster.setFromCamera(mouseNdc, camera);
 
     // Get all the meshes for all of the objects in the scene
     const meshes = Array.from(objectMeshes.values());
