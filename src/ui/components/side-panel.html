@@ -1,3 +1,5 @@
+{% from "components/container.html" import container %}
+
 {%
   macro side_panel(
     panel_title_text,
@@ -6,59 +8,62 @@
     panel_button_id=None
   )
 %}
-  <div
-    class="control bordered relative flex h-auto min-h-0 flex-col p-2"
-    data-panel
-    data-toggle-event="{{ toggle_event }}"
-  >
-    <!-- Panel button -->
-    <button
-      id="{{ panel_button_id }}"
-      class="flex w-full items-center font-bold"
-      data-panel-button
-    >
-      <span class="flex-1 text-left">{{ panel_title_text }}</span>
-
-      <!-- Show icon -->
-      <svg data-panel-show-icon class="size-7" viewBox="0 0 24 24">
-        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-        <path
-          d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
-        />
-      </svg>
-
-      <!-- Hide icon -->
-      <svg data-panel-hide-icon class="hidden size-7" viewBox="0 0 24 24">
-        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-        <path
-          d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
-        />
-      </svg>
-    </button>
-
-    <!-- Hidden content (shown when expanded) -->
+  {% set panel_content = caller %}
+  {% call container(width="w-full") %}
     <div
-      class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
-      data-panel-content
+      class="relative flex h-auto min-h-0 w-full flex-col p-3"
+      data-panel
+      data-toggle-event="{{ toggle_event }}"
     >
-      <!-- Checkboxes -->
-      <div class="flex min-h-0 flex-col overflow-hidden">
-        <!-- Content -->
-        <div
-          class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto"
-          data-scroll-container
-        >
-          {{ caller() }}
-        </div>
+      <!-- Panel button -->
+      <button
+        id="{{ panel_button_id }}"
+        class="flex w-full items-center font-bold"
+        data-panel-button
+      >
+        <span class="flex-1 text-left">{{ panel_title_text }}</span>
 
-        <!-- Restore defaults button -->
-        <button
-          id="{{ reset_button_id }}"
-          class="mt-2 self-end overflow-hidden"
-        >
-          <span class="text-sm">Reset to defaults</span>
-        </button>
+        <!-- Show icon -->
+        <svg data-panel-show-icon class="size-7" viewBox="0 0 24 24">
+          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+          <path
+            d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
+          />
+        </svg>
+
+        <!-- Hide icon -->
+        <svg data-panel-hide-icon class="hidden size-7" viewBox="0 0 24 24">
+          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+          <path
+            d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
+          />
+        </svg>
+      </button>
+
+      <!-- Hidden content (shown when expanded) -->
+      <div
+        class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
+        data-panel-content
+      >
+        <!-- Checkboxes -->
+        <div class="flex min-h-0 flex-col overflow-hidden">
+          <!-- Content -->
+          <div
+            class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto"
+            data-scroll-container
+          >
+            {{ panel_content() }}
+          </div>
+
+          <!-- Restore defaults button -->
+          <button
+            id="{{ reset_button_id }}"
+            class="mt-2 self-end overflow-hidden"
+          >
+            <span class="text-sm">Reset to defaults</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  {% endcall %}
 {% endmacro %}
