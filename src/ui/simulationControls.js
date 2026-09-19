@@ -89,16 +89,16 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
     const content = panel.querySelector("[data-panel-content]");
 
     bus.subscribe(toggleEvent, () => {
-        const showIcon = panel.querySelector("[data-panel-show-icon]");
-        const hideIcon = panel.querySelector("[data-panel-hide-icon]");
+        const showHideIcon = panel.querySelector("[data-panel-show-hide-icon]");
 
         // Update visibility (expand/collapse)
         content.classList.toggle("grid-rows-[0fr]");
         content.classList.toggle("grid-rows-[1fr]");
 
         // Update open/closed icon
-        showIcon.classList.toggle("hidden");
-        hideIcon.classList.toggle("hidden");
+        showHideIcon.querySelectorAll("path").forEach((path) => {
+            path.classList.toggle("hidden");
+        });
 
         // Do not show scrollbar
         scrollContainer.classList.add("overflow-hidden");

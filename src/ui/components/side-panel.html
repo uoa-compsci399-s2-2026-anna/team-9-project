@@ -23,19 +23,18 @@
       >
         <span class="flex-1 text-left">{{ panel_title_text }}</span>
 
-        <!-- Show icon -->
-        <svg data-panel-show-icon class="size-7" viewBox="0 0 24 24">
+        <!-- Show/hide icon -->
+        <svg class="size-7" viewBox="0 0 24 24" data-panel-show-hide-icon>
           <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+          <!-- Down arrow -->
           <path
-            d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
+            d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
           />
-        </svg>
 
-        <!-- Hide icon -->
-        <svg data-panel-hide-icon class="hidden size-7" viewBox="0 0 24 24">
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+          <!-- Up arrow -->
           <path
-            d="M6 13q-.425 0-.712-.288T5 12t.288-.712T6 11h12q.425 0 .713.288T19 12t-.288.713T18 13z"
+            d="M8.71 12.29L11.3 9.7a.996.996 0 0 1 1.41 0l2.59 2.59c.63.63.18 1.71-.71 1.71H9.41c-.89 0-1.33-1.08-.7-1.71"
+            class="hidden"
           />
         </svg>
       </button>
