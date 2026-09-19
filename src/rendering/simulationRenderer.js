@@ -39,11 +39,8 @@ import {
 
 let timer;
 
-// The current simulation time in milliseconds since Unix epoch
-let currentSimulationTime;
-
+let currentSimulationTime; // The current simulation time in milliseconds since Unix epoch
 let currentSystem;
-
 let currentSystemColours;
 
 let scene;
@@ -53,6 +50,9 @@ let renderer;
 let labelRenderer;
 
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
+
+// The default view radius in AU, calculated based on the maximum apoapsis.
+let defaultViewRadius;
 
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
@@ -575,9 +575,7 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
 
-    // Default view radius (in AU) with a multiplier for padding
-    const defaultViewRadius = maxApoapsis * viewRadiusMultiplier;
-
+    defaultViewRadius = maxApoapsis * viewRadiusMultiplier; // Multiplier for padding
     objectSize = defaultViewRadius * objectSizeMultiplier;
 
     // Align the system's average normal with the up vector (Z-axis)
@@ -652,7 +650,7 @@ export async function compareToSolarSystem() {
 
     const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
     const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
-    const defaultViewRadius = Math.max(currentViewRadius, solarViewRadius);
+    defaultViewRadius = Math.max(currentViewRadius, solarViewRadius);
 
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
@@ -685,7 +683,7 @@ export async function hideSolarSystem() {
     const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const defaultViewRadius = maxApoapsis * viewRadiusMultiplier;
+    defaultViewRadius = maxApoapsis * viewRadiusMultiplier;
 
     solarSystemGroup.visible = false;
 
