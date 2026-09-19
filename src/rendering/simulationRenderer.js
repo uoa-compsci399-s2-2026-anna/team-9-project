@@ -500,7 +500,8 @@ function initOrUpdateControls(canvas, defaultViewRadius) {
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
         controls.addEventListener("change", () => {
-            const viewRadius = calculateViewRadius(fov, camera.position.z);
+            const cameraDistanceToReference = Math.abs(camera.position.z);
+            const viewRadius = calculateViewRadius(fov, cameraDistanceToReference);
             updateReferenceGridScale(viewRadius);
         });
     }
