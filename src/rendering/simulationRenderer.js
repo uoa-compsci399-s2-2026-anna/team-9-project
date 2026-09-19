@@ -187,35 +187,26 @@ async function getReferenceSystemData(system) {
 function getClickedLabel(event) {
     let closestName = null;
     let closestDistanceSquared = Infinity;
+    const labelWorldPosition = new THREE.Vector3();
 
-    for (const mesh of objectMeshes.values()) {
-        // TODO: is this the most idiomatic way of doing this?
-        // Get the label associated with the mesh
-        const label = mesh.children.find(child => child instanceof CSS2DObject);
-        if (!label) {
-            continue;
-        }
-
-        // TODO: consider helper
-        // Get the clickable area of the label in viewport coordinates
-        const labelBoundingRect = label.element.getBoundingClientRect();
+    for (const [name, label] of objectLabels) {
+        const rect = label.element.getBoundingClientRect();
         const labelClicked =
-            event.clientX >= labelBoundingRect.left &&
-            event.clientX <= labelBoundingRect.right &&
-            event.clientY >= labelBoundingRect.top &&
-            event.clientY <= labelBoundingRect.bottom;
+            event.clientX >= rect.left &&
+            event.clientX <= rect.right &&
+            event.clientY >= rect.top &&
+            event.clientY <= rect.bottom;
 
         if (!labelClicked) {
             continue;
         }
 
-        const labelWorldPosition = new THREE.Vector3();
-        mesh.getWorldPosition(labelWorldPosition);
+        label.getWorldPosition(labelWorldPosition);
         const labelDistanceSquared = camera.position.distanceToSquared(labelWorldPosition);
 
         if (labelDistanceSquared < closestDistanceSquared) {
             closestDistanceSquared = labelDistanceSquared;
-            closestName = mesh.userData.name;
+            closestName = name;
         }
     }
 
@@ -248,7 +239,6 @@ function onCanvasClick(event, canvas) {
     // Get all the meshes for all of the objects in the scene
     const meshes = Array.from(objectMeshes.values());
 
-    // TODO: make magic value clearer?
     // Check if any parent meshes were clicked (excludes hitboxes)
     let intersects = raycaster.intersectObjects(meshes, false);
     if (intersects.length > 0) {
@@ -262,7 +252,6 @@ function onCanvasClick(event, canvas) {
     }
 
     // Get the closest clicked label
-    // TODO: I believe this can be rewritten to avoid that annoying bounding rectangle logic and just base it off being a child of the mesh?
     const labelName = getClickedLabel(event);
     if (labelName) {
         console.log("Label clicked");
