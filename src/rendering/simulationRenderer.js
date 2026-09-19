@@ -500,6 +500,7 @@ function initOrUpdateControls(canvas, defaultViewRadius) {
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
         controls.addEventListener("change", () => {
+            limitCameraPan();
             const cameraDistanceToReference = Math.abs(camera.position.z);
             const viewRadius = calculateViewRadius(fov, cameraDistanceToReference);
             updateReferenceGridScale(viewRadius);
@@ -510,6 +511,26 @@ function initOrUpdateControls(canvas, defaultViewRadius) {
     controls.maxDistance = defaultCameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
+}
+
+/**
+ * Limit the camera's pan to ensure it doesn't go beyond the maximum pan distance.
+ * The maximum pan distance is set to the default view radius.
+ */
+function limitCameraPan() {
+    const distanceToOrigin = controls.target.length();
+    const maxPanDistance = defaultViewRadius;
+
+    if (distanceToOrigin > maxPanDistance) {
+        const directionToOrigin = controls.target
+            .clone()
+            .normalize();
+
+        const newTargetPosition = directionToOrigin
+            .multiplyScalar(maxPanDistance);
+        controls.target.copy(newTargetPosition);
+        controls.update();
+    }
 }
 
 /**
