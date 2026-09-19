@@ -436,8 +436,17 @@ async function updateSimulation() {
     }
 }
 
+/**
+ * Update the scale of the reference grid based on the view radius.
+ * @param {number} viewRadius The radius of the view
+ */
 function updateReferenceGridScale(viewRadius) {
-    console.log(viewRadius);
+    const desiredSquareSize = calculateReferenceGridSquareSize(
+        viewRadius,
+        numSquaresInViewRadius
+    );
+    const referenceGridScale = desiredSquareSize / referenceGridSquareSize;
+    referenceGrid.scale.set(referenceGridScale, referenceGridScale, referenceGridScale);
 };
 
 /**
