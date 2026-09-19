@@ -151,7 +151,7 @@ let habitableZoneMesh;
 
 const referenceGridSquareSize = 1; // in AU, will be scaled based on the camera position
 const numSquaresInViewRadius = 5;
-const referenceGridSizeMultiplier = 20; // To ensure the grid extends beyond the view radius
+const referenceGridSizeMultiplier = 50; // To ensure the grid extends beyond the view radius
 const referenceGridSize = referenceGridSquareSize * numSquaresInViewRadius * referenceGridSizeMultiplier;
 
 let referenceGrid;
