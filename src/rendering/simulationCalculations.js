@@ -69,13 +69,12 @@ export function calculateCameraDistance(fov, viewRadius) {
 }
 
 /**
- * Calculate the average up vector for the camera based on the orbital planes of all objects.
- * The up vector is calculated as the average of the normal vectors of all orbital planes.
+ * Calculate the average normal vector of the orbital planes of all objects in the system.
  * 
  * @param {Array} orbitalDataValues Array of orbital data values for all objects
- * @returns {THREE.Vector3} The calculated up vector
+ * @returns {THREE.Vector3} The calculated average normal
  */
-export function calculateUpVector(orbitalDataValues) {
+export function calculateAverageNormal(orbitalDataValues) {
     const averageNormal = new THREE.Vector3();
     let reference = null;
 
