@@ -280,8 +280,6 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     if (e === 1) return; // Parabolic orbits are not supported for now
 
-    const comparisonColour = getFadedColour(colour, comparisonOrbitOpacity);
-
     let line = orbitalLines.get(name);
 
     if (!line) {
@@ -290,6 +288,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         const material = new LineMaterial();
 
         if (group === solarSystemGroup) {
+            const comparisonColour = getFadedColour(colour, comparisonOrbitOpacity);
             material.linewidth = comparisonOrbitLineWidth;
             material.color.set(comparisonColour);
         } else {
