@@ -26,7 +26,7 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateCameraDistance,
-    calculateUpVector,
+    calculateAverageNormal,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
 import { 
@@ -67,6 +67,7 @@ const controlsZoomSpeed = 2.5;
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
+    up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
 const currentSystemGroup = new THREE.Group();
@@ -255,6 +256,22 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
 }
 
 /**
+ * Approximate a given opacity by blending the given colour towards the current background.
+ * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
+ * 
+ * @param {string} colour The base colour to fade 
+ * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
+ * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
+ * @returns A new colour faded towards the background colour by (1 - opacity)
+ */
+function getFadedColour(colour, opacity, isDarkMode = settings.isDarkMode) {
+    const theme = getTheme(isDarkMode);
+    const backgroundColour = theme.background;
+
+    return new THREE.Color(colour).lerp(backgroundColour, 1 - opacity);
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  * 
@@ -275,14 +292,15 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     if (!line) {
         const canvas = renderer.domElement;
         const geometry = new LineGeometry();
-        const material = new LineMaterial({ color: colour });
+        const material = new LineMaterial();
 
         if (group === solarSystemGroup) {
-            material.transparent = true;
-            material.opacity = comparisonOrbitOpacity;
+            const comparisonColour = getFadedColour(colour, comparisonOrbitOpacity);
             material.linewidth = comparisonOrbitLineWidth;
+            material.color.set(comparisonColour);
         } else {
             material.linewidth = orbitLineWidth;
+            material.color.set(colour);
         }
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
@@ -351,13 +369,6 @@ function createHabitableZoneMesh() {
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
-
-    // Rotate the habitable zone to align its normal with the camera's up vector
-    const normal = new THREE.Vector3(0, 0, 1);
-    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
-    habitableZoneMesh.quaternion.copy(quaternion);
-
-    currentSystemGroup.add(habitableZoneMesh);
 }
 
 /**
@@ -424,15 +435,26 @@ async function updateSimulation() {
 }
 
 /**
+ * Align the system's average normal with the up vector.
+ * 
+ * @param {THREE.Group} group The group to align
+ * @param {THREE.Vector3} averageNormal The average normal vector of the system's orbital planes
+ */
+function alignSystemToCameraUp(group, averageNormal) {
+    const quaternion = new THREE.Quaternion()
+        .setFromUnitVectors(averageNormal, cameraDefaults.up);
+    group.quaternion.copy(quaternion);
+}
+
+/**
  * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} viewRadius The radius of view to fit within the camera
- * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initOrUpdateCamera(canvas, viewRadius, upVector) {
+function initOrUpdateCamera(canvas, viewRadius) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = calculateDefaultCameraPosition(
-        upVector,
+        cameraDefaults.up,
         cameraDistance
     );
 
@@ -442,7 +464,7 @@ function initOrUpdateCamera(canvas, viewRadius, upVector) {
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
         camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-        camera.up.copy(upVector); // Stays fixed for the current system
+        camera.up.copy(cameraDefaults.up);
         camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
 
     } else {
@@ -479,6 +501,7 @@ function initScene() {
     scene.add(new THREE.AmbientLight(0xffffff, 1));
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);
+    scene.add(habitableZoneMesh);
 }
 
 /**
@@ -531,18 +554,21 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    const upVector = calculateUpVector(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
 
-    initOrUpdateCamera(canvas, viewRadius, upVector);
+    // Align the system's average normal with the up vector (Z-axis)
+    const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
+    alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
+
+    createHabitableZoneMesh();
+    createReferenceGrid(viewRadius);
+
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
-
-    createHabitableZoneMesh();
-    createReferenceGrid(viewRadius);
 
     /**
      * Persist the current simulation time, formatted simulation date, and days elapsed text 
@@ -585,7 +611,7 @@ export function setSimulationTimeToTime(time) {
 
 export function resetView() {
     camera.position.copy(cameraDefaults.position);
-    controls.target.copy(cameraDefaults.target); // Look at the sun
+    controls.target.copy(cameraDefaults.target); // Look at the barycenter
     controls.update();
 }
 
@@ -611,14 +637,13 @@ export async function compareToSolarSystem() {
     const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
     objectScale = comparisonObjectSize / objectSize;
 
-    // Rotate solar system to align with the current system's up vector
-    const solarUpVector = calculateUpVector(solarOrbitalDataValues);
-    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarUpVector, camera.up);
-    solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
+    // Align the solar system's average normal with the up vector (Z-axis)
+    const solarSystemAverageNormal = calculateAverageNormal(solarOrbitalDataValues);
+    alignSystemToCameraUp(solarSystemGroup, solarSystemAverageNormal);
 
     solarSystemGroup.visible = true;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
     resetView();
@@ -641,7 +666,7 @@ export async function hideSolarSystem() {
 
     solarSystemGroup.visible = false;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     updateSimulation();
 }
@@ -723,11 +748,13 @@ export function toggleSimulationDarkMode(isDarkMode) {
             : getCurrentSystemColour(name, isDarkMode);
     }
 
+    const fadedOverlayColour = getFadedColour(overlayColour, comparisonOrbitOpacity, isDarkMode);
+
     for (const [name, orbit] of orbitalLines) {
         const isComparisonOverlay = orbit.parent === solarSystemGroup;
 
         orbit.material.color.set(
-            isComparisonOverlay ? overlayColour : getCurrentSystemColour(name, isDarkMode)
+            isComparisonOverlay ? fadedOverlayColour : getCurrentSystemColour(name, isDarkMode)
         );
     }
 }

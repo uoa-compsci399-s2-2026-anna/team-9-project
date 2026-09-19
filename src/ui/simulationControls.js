@@ -43,6 +43,10 @@ const systemDropdownWrapper = document.getElementById(
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
 
+    systemDropdownWrapper.querySelectorAll("path").forEach((path) => {
+        path.classList.toggle("hidden");
+    });
+
     if (showDropdown) {
         systemDropdown.classList.remove("grid-rows-[0fr]");
         systemDropdown.classList.add("grid-rows-[1fr]");
