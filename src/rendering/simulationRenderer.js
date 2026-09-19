@@ -220,6 +220,7 @@ function getClickedLabel(event) {
     return closestName;
 }
 
+// TODO: decide how the event will fire given that I am doing a lot of early returns
 /**
  * (1) Check if the object itself was clicked
  * (2) Check if the object's label was clicked
@@ -247,7 +248,7 @@ function onCanvasClick(event, canvas) {
 
     // TODO: make magic value clearer?
     // Check if any parent meshes were clicked (excludes hitboxes)
-    let intersects = raycaster.intersectObjects(meshes, true);
+    let intersects = raycaster.intersectObjects(meshes, false);
     if (intersects.length > 0) {
         // Get the nearest object intersected
         const hitmesh = intersects[0].object;
@@ -259,6 +260,7 @@ function onCanvasClick(event, canvas) {
     }
 
     // Get the closest clicked label
+    // TODO: I believe this can be rewritten to avoid that annoying bounding rectangle logic and just base it off being a child of the mesh?
     const labelName = getClickedLabel(event);
     if (labelName) {
         console.log("Label clicked");
@@ -266,8 +268,22 @@ function onCanvasClick(event, canvas) {
         return;
     }
 
-    // TODO: detect hitbox click
+    // Check if any hitboxes were clicked (by checking children of objects)
+    intersects = raycaster.intersectObjects(meshes, true);
+    
+    if (intersects.length > 0) {
+        const hitMesh = intersects[0].object;
 
+        // TODO: Do I have to set the name on the hitbox or can I access the parent directly?
+        const name = hitMesh.userData.name;
+
+        console.log("Hitbox clicked")
+        console.log(name);
+
+        return;
+    }
+
+    console.log("Nothing found");
 }
 
 /**
@@ -296,6 +312,18 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
         // Give the mesh a name to identify the mesh with raycasting
         mesh.userData.name = name;
+
+        // Create a larger invisible sphere for click detection
+        // TODO: multiplier is temporary for now. This should be additive and based on the current system (same for all objects as discussed in meeting).
+        const hitboxSize = objectSize * 2;
+        const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
+        const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
+
+        const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
+        hitbox.userData.name = name; // TODO: surely this could be managed by getting the parent of the hitbox and their name? As is done with labels
+
+        // Add the hitbox as a child of the mesh
+        mesh.add(hitbox);
 
         group.add(mesh);
         objectMeshes.set(name, mesh);
