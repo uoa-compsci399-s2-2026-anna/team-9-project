@@ -428,6 +428,10 @@ async function updateSimulation() {
     }
 }
 
+function updateReferenceGridScale(viewRadius) {
+    console.log(viewRadius);
+};
+
 /**
  * Align the system's average normal with the up vector.
  * 
@@ -478,6 +482,10 @@ function initOrUpdateControls(canvas, defaultViewRadius) {
 
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
+        controls.addEventListener("change", () => {
+            const viewRadius = calculateViewRadius(fov, camera.position.z);
+            updateReferenceGridScale(viewRadius);
+        });
     }
     controls.target.copy(cameraDefaults.target);
     controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
