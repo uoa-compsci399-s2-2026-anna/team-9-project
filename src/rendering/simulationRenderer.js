@@ -58,6 +58,7 @@ const referenceSystemData = new Map(); // Cache for orbital data at the referenc
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
 const objectSizeMultiplier = 0.002;
+const hitboxPaddingMultiplier = 0.0005;
 
 const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 1;
@@ -84,6 +85,7 @@ const objectLabels = new Map();
 let objectSize;
 let objectScale = 1;
 const objectColour = "white";
+let hitboxPadding;
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
@@ -314,8 +316,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         mesh.userData.name = name;
 
         // Create a larger invisible sphere for click detection
-        // TODO: multiplier is temporary for now. This should be additive and based on the current system (same for all objects as discussed in meeting).
-        const hitboxSize = objectSize * 2;
+        const hitboxSize = objectSize + hitboxPadding;
         const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
         const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
 
@@ -652,6 +653,7 @@ export async function init(name) {
     const upVector = calculateUpVector(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+    hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
     initOrUpdateCamera(canvas, viewRadius, upVector);
     initOrUpdateControls(canvas, viewRadius);
