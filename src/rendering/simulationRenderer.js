@@ -26,8 +26,10 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateCameraDistance,
+    calculateViewRadius,
     calculateAverageNormal,
     calculateDefaultCameraPosition,
+    calculateReferenceGridSquareSize,
 } from "./simulationCalculations.js";
 import { 
     updateCalendar, 
@@ -147,8 +149,11 @@ const habitableZoneOpacity = 0.2;
 let habitableZone;
 let habitableZoneMesh;
 
-const referenceGridSizeMultiplier = 20; // Relative to view radius, to ensure it extends beyond the visible area
-const referenceGridDivisions = 100;
+const referenceGridSquareSize = 1; // in AU, will be scaled based on the camera position
+const numSquaresInViewRadius = 5;
+const referenceGridSizeMultiplier = 20; // To ensure the grid extends beyond the view radius
+const referenceGridSize = referenceGridSquareSize * numSquaresInViewRadius * referenceGridSizeMultiplier;
+
 let referenceGrid;
 
 function getTheme(isDarkMode = settings.darkMode) {
@@ -378,13 +383,16 @@ function createHabitableZoneMesh() {
 function createReferenceGrid(defaultViewRadius) {
     const referenceGridColor = getTheme().referenceGrid;
     referenceGrid = new THREE.GridHelper(
-        referenceGridSizeMultiplier * defaultViewRadius,
-        referenceGridDivisions,
+        referenceGridSize,
+        referenceGridSize / referenceGridSquareSize
     );
+
     referenceGrid.material.color.set(referenceGridColor);
     referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
     referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
     referenceGrid.visible = simulationState.referenceGridShown;
+
+    updateReferenceGridScale(defaultViewRadius);
 }
 
 /**
