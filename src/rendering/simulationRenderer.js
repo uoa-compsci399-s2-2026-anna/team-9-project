@@ -479,7 +479,7 @@ function initScene() {
 function initLabelRenderer(canvas) {
     labelRenderer = new CSS2DRenderer();
     labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.position = "fixed";
     labelRenderer.domElement.style.top = "0px";
     labelRenderer.domElement.style.left = "0px";
     labelRenderer.domElement.style.pointerEvents = "none";
