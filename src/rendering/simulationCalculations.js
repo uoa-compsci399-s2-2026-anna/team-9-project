@@ -167,3 +167,43 @@ export function calculateDefaultCameraPosition(upVector, cameraDistance) {
 
     return cameraDirection.multiplyScalar(cameraDistance);
 }
+
+/**
+ * Round a number to the closest value in the set {1, 2, 5} multiplied by a power of 10.
+ * @param {number} x The number to round
+ * @returns {number} The rounded number
+ */
+function roundToNiceNumber(x) {
+    if (x <= 0) {
+        throw new Error("Input must be positive");
+    }
+
+    const exponent = Math.floor(Math.log10(x));
+    const magnitude = Math.pow(10, exponent);
+
+    const normalized = x / magnitude;
+    let closest;
+
+    if (normalized < 1.5) {
+        closest = 1;
+    } else if (normalized < 3.5) {
+        closest = 2;
+    } else if (normalized < 7.5) {
+        closest = 5;
+    } else {
+        closest = 10;
+    }
+
+    return closest * magnitude;
+}
+
+/**
+ * Calculate the reference grid square size based on view radius and the number of squares within that radius.
+ * @param {number} viewRadius The radius of the area that can be seen by the camera in AU
+ * @param {number} numSquares The number of squares within the view radius
+ * @returns {number} The calculated square size in AU
+ */
+export function calculateReferenceGridSquareSize(viewRadius, numSquares) {
+    const squareSize = viewRadius / numSquares;
+    return roundToNiceNumber(squareSize);
+}
