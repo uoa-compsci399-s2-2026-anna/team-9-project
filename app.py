@@ -247,16 +247,16 @@ def quick_integrate(sim: rebound.Simulation, t: float, system_name: str):
     integrate from there.
     """
 
-    system_data = get_system_with_name(system_name)
+    system_data: dict = get_system_with_name(system_name)
 
     # Get the timestamp in sim time
-    sim_time = unix_to_sim_time(system_name.lower(), t)
+    sim_time: float = unix_to_sim_time(system_name.lower(), t)
 
     # Calculate the time from the given time to where the sim is 
     current_temporal_distance: float = abs(sim_time - sim.t)
 
     # Calculate the time from the given time to the initial timestamp of the system
-    jd_tdb_time = unix_to_jd_tdb(t)
+    jd_tdb_time: float = unix_to_jd_tdb(t)
     initial_timestamp: float = system_data["timestamp"]
     initial_temporal_distance: float = abs(jd_tdb_time - initial_timestamp)
 
