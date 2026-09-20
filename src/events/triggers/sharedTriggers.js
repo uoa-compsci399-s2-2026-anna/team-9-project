@@ -6,6 +6,20 @@ import {
     comparingToSolarSystem,
 } from "../../shared/simulationState.js";
 
+const EVENT_DETAIL = {
+    [EVENTS.TOOLBAR.DARK_MODE_TOGGLE]: () => {
+        eventDetail = { enterDarkMode: !settings.darkMode };
+    },
+
+    [EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM]: () => {
+        eventDetail = { compare: !comparingToSolarSystem };
+    },
+
+    [EVENTS.SIM.TOGGLE]: () => {
+        eventDetail = { startSimulation: !running };
+    },
+};
+
 /**
  * Register event listeners, event bus publishes, and any additional event
  * detail (where provided) to all `button_with_tooltip` and `text_button` macro
@@ -36,17 +50,8 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         button.addEventListener("click", () => {
             var eventDetail;
 
-            // Add custom additional event detail for events here
-            switch (event) {
-                case EVENTS.TOOLBAR.DARK_MODE_TOGGLE:
-                    eventDetail = { enterDarkMode: !settings.darkMode };
-                    break;
-                case EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM:
-                    eventDetail = { compare: !comparingToSolarSystem };
-                    break;
-                case EVENTS.SIM.TOGGLE:
-                    eventDetail = { startSimulation: !running };
-                    break;
+            if (EVENT_DETAIL[eventDetail]) {
+                EVENT_DETAIL[eventDetail]();
             }
 
             bus.publish(event, eventDetail);
