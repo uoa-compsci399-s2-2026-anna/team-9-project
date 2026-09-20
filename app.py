@@ -241,6 +241,11 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
 
 
 def quick_integrate(sim: rebound.Simulation, t: float, system_name: str):
+    """
+    Integrates a simulation to the given unix time.
+    If it is a shorter time distance it will reinitialised the simulation and
+    integrate from there.
+    """
     system_data = get_system_with_name(system_name)
 
     current_temporal_distance: float = abs(t - sim.t)
