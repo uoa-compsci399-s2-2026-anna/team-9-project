@@ -2,7 +2,7 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, Response, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from systems import Simulations, unix_to_sim_time, init_system
+from systems import Simulations, unix_to_jd_tdb, unix_to_sim_time, init_system
 from utility import get_position_dict, get_osculating_orbit
 from typing import Annotated
 from zoneinfo import ZoneInfo
@@ -239,6 +239,20 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
     }
 
     return {"positions": positions, "orbital_data": orbital_data}
+
+
+def quick_integrate(sim: rebound.Simulation, t: float, system_name: str):
+    system_data = get_system_with_name(system_name)
+
+    current_temporal_distance: float = abs(t - sim.t)
+    initial_timestamp: float = system_data["timestamp"]
+    initial_temporal_distance: float = abs(t - initial_timestamp)
+    
+    if current_temporal_distance > initial_temporal_distance:
+        sims.reinitialise_sim(system_data, system_name, unix_to_jd_tdb(t))
+    else:
+        sim_time = unix_to_sim_time(system_name.lower(), t)
+        sim.integrate(sim_time)
 
 
 @app.get("/system")
