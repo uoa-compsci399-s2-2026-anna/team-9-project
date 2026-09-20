@@ -34,6 +34,8 @@ import {
     formatSimulationDate, 
     getElapsedDaysText, 
 } from "../ui/simulationCalendar.js";
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
 
 let timer;
 
@@ -287,20 +289,19 @@ function getObjectNameAt(clientX, clientY, canvas) {
 /**
  * Handles when the canvas is clicked on while the user is not moving the camera.
  * Detects if an object was clicked and, if so, fires an event to notify other components
- * what object was clicked.
+ * that an object was clicked.
  * 
  * @param {MouseEvent} event The click event 
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on 
  */
 function onCanvasClick(event, canvas) {
-    const name = getObjectNameAt(event, canvas);
+    const name = getObjectNameAt(event.clientX, event.clientY, canvas);
 
     if (!name) {
         return;
     }
 
-    // TODO: publish event
-    console.log(name);
+    bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
 }
 
 /**
