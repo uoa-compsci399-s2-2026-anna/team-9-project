@@ -249,14 +249,22 @@ def quick_integrate(sim: rebound.Simulation, t: float, system_name: str):
 
     system_data = get_system_with_name(system_name)
 
-    current_temporal_distance: float = abs(t - sim.t)
-    initial_timestamp: float = system_data["timestamp"]
-    initial_temporal_distance: float = abs(t - initial_timestamp)
+    # Get the timestamp in sim time
+    sim_time = unix_to_sim_time(system_name.lower(), t)
 
-    if current_temporal_distance > initial_temporal_distance:
-        sims.reinitialise_sim(system_data, system_name, unix_to_jd_tdb(t))
+    # Calculate the time from the given time to where the sim is 
+    current_temporal_distance: float = abs(sim_time - sim.t)
+
+    # Calculate the time from the given time to the initial timestamp of the system
+    jd_tdb_time = unix_to_jd_tdb(t)
+    initial_timestamp: float = system_data["timestamp"]
+    initial_temporal_distance: float = abs(jd_tdb_time - initial_timestamp)
+
+    if initial_temporal_distance < current_temporal_distance:
+        # If the difference is smaller to reinitialise do so
+        sims.reinitialise_sim(system_data, system_name, jd_tdb_time)
     else:
-        sim_time = unix_to_sim_time(system_name.lower(), t)
+        # If the difference is greater, integrate normally
         sim.integrate(sim_time)
 
 
