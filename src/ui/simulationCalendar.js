@@ -60,7 +60,7 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     });
 
     document.querySelectorAll(".calendar-timezone-label").forEach((label) => {
-        label.textContent = `(${newTimeZone})`;
+        label.textContent = `${newTimeZone}`;
     });
 
     // Refresh the calendar with the last simulation time to reflect the new time zone
