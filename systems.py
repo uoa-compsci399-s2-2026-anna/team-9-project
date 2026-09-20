@@ -141,7 +141,7 @@ def init_system(
     system_data: dict, name: str, time_to_integrate_to: float
 ) -> SimulationData:
     """
-    Initialises the given system
+    Initialises the given system and integrates it to the given JD TDB time
     Returns simulation and objects
     """
     # Initialise the simulation
