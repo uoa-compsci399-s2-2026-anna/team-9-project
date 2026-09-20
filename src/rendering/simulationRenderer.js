@@ -26,7 +26,7 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateCameraDistance,
-    calculateUpVector,
+    calculateAverageNormal,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
 import { 
@@ -34,6 +34,8 @@ import {
     formatSimulationDate, 
     getElapsedDaysText, 
 } from "../ui/simulationCalendar.js";
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
 
 let timer;
 
@@ -50,11 +52,15 @@ let controls;
 let renderer;
 let labelRenderer;
 
+// Stores whether the user is currently dragging the camera
+let isDragging = false;
+
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
 const objectSizeMultiplier = 0.002;
+const hitboxPaddingMultiplier = 0.0005;
 
 const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 1;
@@ -67,7 +73,10 @@ const controlsZoomSpeed = 2.5;
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
+    up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
+
+const raycaster = new THREE.Raycaster();
 
 const currentSystemGroup = new THREE.Group();
 const solarSystemGroup = new THREE.Group();
@@ -81,6 +90,7 @@ const objectLabels = new Map();
 let objectSize;
 let objectScale = 1;
 const objectColour = "white";
+let hitboxPadding;
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
@@ -175,6 +185,128 @@ async function getReferenceSystemData(system) {
 }
 
 /**
+ * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
+ * NDC range from -1 to 1 on both axes.
+ *
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas to normalise against
+ * @returns {THREE.Vector2} The position in NDC
+ */
+function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
+    const rect = canvas.getBoundingClientRect();
+
+    return new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1
+    );
+}
+
+/**
+ * Finds the label at the given screen coordinates and returns the name of the object that 
+ * the label belongs to. If several labels overlap, then the object name corresponding to 
+ * the closest label to the camera is returned.
+ * 
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @returns {string|null} The name of the object owning the closest label at the given 
+ * coordinates, or null if no labels were found at this coordinates.
+ */
+function getLabelNameAt(clientX, clientY) {
+    let closestName = null;
+    let closestDistanceSquared = Infinity;
+    const labelWorldPosition = new THREE.Vector3();
+
+    for (const [name, label] of objectLabels) {
+        const rect = label.element.getBoundingClientRect();
+        // Check whether the given point is inside the label's bounding rectangle
+        const isOverLabel =
+            clientX >= rect.left &&
+            clientX <= rect.right &&
+            clientY >= rect.top &&
+            clientY <= rect.bottom;
+
+        if (!isOverLabel) {
+            continue;
+        }
+
+        label.getWorldPosition(labelWorldPosition);
+        const labelDistanceSquared = camera.position.distanceToSquared(labelWorldPosition);
+
+        if (labelDistanceSquared < closestDistanceSquared) {
+            closestDistanceSquared = labelDistanceSquared;
+            closestName = name;
+        }
+    }
+
+    return closestName;
+}
+
+/**
+ * Determines which object in the scene is at the given coordinates (if any). Checks are made 
+ * in the following order and the first match is returned:
+ * 1. The object's own mesh (hitboxes excluded)
+ * 2. The object's HTML label
+ * 3. The object's hitbox (a child of the object's mesh)
+ * 
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @returns {string|null} The name of the object at the given coordinates, or null if no
+ * object was found at these coordinates.
+ */
+function getObjectNameAt(clientX, clientY, canvas) {
+    // The three.js raycaster expects NDC coordinates
+    const mouseNdc = getNormalisedDeviceCoordinates(clientX, clientY, canvas);
+
+    // Create a ray from the camera through the mouse's position on the screen
+    raycaster.setFromCamera(mouseNdc, camera);
+
+    // Get all the meshes for all of the objects in the scene
+    const meshes = Array.from(objectMeshes.values());
+
+    // Check whether the ray intersects any object meshes (excludes hitboxes)
+    let meshHits = raycaster.intersectObjects(meshes, false);
+    if (meshHits.length > 0) {
+        // Return the name of the nearest object the ray intersected
+        return meshHits[0].object.userData.name;
+    }
+
+    // Get the label name at the given coordinates (if any)
+    const labelName = getLabelNameAt(clientX, clientY);
+    if (labelName) {
+        return labelName;
+    }
+
+    // Check whether the ray intersects any hitboxes (by checking children of objects)
+    const hitboxHits = raycaster.intersectObjects(meshes, true);
+    
+    if (hitboxHits.length > 0) {
+        return hitboxHits[0].object.parent.userData.name;
+    }
+
+    return null;
+}
+
+/**
+ * Handles when the canvas is clicked on while the user is not moving the camera.
+ * Detects if an object was clicked and, if so, fires an event to notify other components
+ * that an object was clicked.
+ * 
+ * @param {MouseEvent} event The click event 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on 
+ */
+function onCanvasClick(event, canvas) {
+    const name = getObjectNameAt(event.clientX, event.clientY, canvas);
+
+    if (!name) {
+        return;
+    }
+
+    bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
+}
+
+/**
  * If the target object does not exist, then its mesh is created at the given position.
  * If the target object does exist, then its position is updated.
  * 
@@ -197,6 +329,19 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
+
+        // Give the mesh a name to identify the mesh with raycasting
+        mesh.userData.name = name;
+
+        // Create a larger invisible sphere for click detection
+        const hitboxSize = objectSize + hitboxPadding;
+        const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
+        const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
+
+        const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
+
+        // Add the hitbox as a child of the mesh
+        mesh.add(hitbox);
 
         group.add(mesh);
         objectMeshes.set(name, mesh);
@@ -249,6 +394,22 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
 }
 
 /**
+ * Approximate a given opacity by blending the given colour towards the current background.
+ * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
+ * 
+ * @param {string} colour The base colour to fade 
+ * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
+ * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
+ * @returns A new colour faded towards the background colour by (1 - opacity)
+ */
+function getFadedColour(colour, opacity, isDarkMode = settings.isDarkMode) {
+    const theme = getTheme(isDarkMode);
+    const backgroundColour = theme.background;
+
+    return new THREE.Color(colour).lerp(backgroundColour, 1 - opacity);
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  * 
@@ -269,14 +430,15 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     if (!line) {
         const canvas = renderer.domElement;
         const geometry = new LineGeometry();
-        const material = new LineMaterial({ color: colour });
+        const material = new LineMaterial();
 
         if (group === solarSystemGroup) {
-            material.transparent = true;
-            material.opacity = comparisonOrbitOpacity;
+            const comparisonColour = getFadedColour(colour, comparisonOrbitOpacity);
             material.linewidth = comparisonOrbitLineWidth;
+            material.color.set(comparisonColour);
         } else {
             material.linewidth = orbitLineWidth;
+            material.color.set(colour);
         }
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
@@ -341,13 +503,6 @@ function createHabitableZoneMesh() {
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
-
-    // Rotate the habitable zone to align its normal with the camera's up vector
-    const normal = new THREE.Vector3(0, 0, 1);
-    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
-    habitableZoneMesh.quaternion.copy(quaternion);
-
-    currentSystemGroup.add(habitableZoneMesh);
 }
 
 /**
@@ -392,15 +547,26 @@ async function updateSimulation() {
 }
 
 /**
+ * Align the system's average normal with the up vector.
+ * 
+ * @param {THREE.Group} group The group to align
+ * @param {THREE.Vector3} averageNormal The average normal vector of the system's orbital planes
+ */
+function alignSystemToCameraUp(group, averageNormal) {
+    const quaternion = new THREE.Quaternion()
+        .setFromUnitVectors(averageNormal, cameraDefaults.up);
+    group.quaternion.copy(quaternion);
+}
+
+/**
  * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} viewRadius The radius of view to fit within the camera
- * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initOrUpdateCamera(canvas, viewRadius, upVector) {
+function initOrUpdateCamera(canvas, viewRadius) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = calculateDefaultCameraPosition(
-        upVector,
+        cameraDefaults.up,
         cameraDistance
     );
 
@@ -410,7 +576,7 @@ function initOrUpdateCamera(canvas, viewRadius, upVector) {
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
         camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-        camera.up.copy(upVector); // Stays fixed for the current system
+        camera.up.copy(cameraDefaults.up);
         camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
 
     } else {
@@ -436,6 +602,32 @@ function initOrUpdateControls(canvas, viewRadius) {
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
+
+    // Detect when the user is moving the camera
+    controls.addEventListener("change", () => {
+        isDragging = true;
+    });
+}
+
+/**
+ * Register pointer listeners on the canvas for raycasting. A click is ignored if it was part
+ * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
+ * objects on the scene.
+ * 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ */
+function initRaycastingEvents(canvas) {
+    // Detect when the user holds their mouse down on the canvas
+    canvas.addEventListener("pointerdown", () => {
+        isDragging = false;
+    });
+
+    canvas.addEventListener("click", (event) => {
+        // Handle the event as long as the user isn't dragging the camera
+        if (!isDragging) {
+            onCanvasClick(event, canvas);
+        }
+    });
 }
 
 /**
@@ -447,6 +639,7 @@ function initScene() {
     scene.add(new THREE.AmbientLight(0xffffff, 1));
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);
+    scene.add(habitableZoneMesh);
 }
 
 /**
@@ -456,7 +649,7 @@ function initScene() {
 function initLabelRenderer(canvas) {
     labelRenderer = new CSS2DRenderer();
     labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.position = "fixed";
     labelRenderer.domElement.style.top = "0px";
     labelRenderer.domElement.style.left = "0px";
     labelRenderer.domElement.style.pointerEvents = "none";
@@ -499,17 +692,22 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    const upVector = calculateUpVector(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+    hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
-    initOrUpdateCamera(canvas, viewRadius, upVector);
+    // Align the system's average normal with the up vector (Z-axis)
+    const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
+    alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
+
+    createHabitableZoneMesh();
+
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
+    initRaycastingEvents(canvas);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
-
-    createHabitableZoneMesh();
 
     /**
      * Persist the current simulation time, formatted simulation date, and days elapsed text 
@@ -552,7 +750,7 @@ export function setSimulationTimeToTime(time) {
 
 export function resetView() {
     camera.position.copy(cameraDefaults.position);
-    controls.target.copy(cameraDefaults.target); // Look at the sun
+    controls.target.copy(cameraDefaults.target); // Look at the barycenter
     controls.update();
 }
 
@@ -578,14 +776,13 @@ export async function compareToSolarSystem() {
     const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
     objectScale = comparisonObjectSize / objectSize;
 
-    // Rotate solar system to align with the current system's up vector
-    const solarUpVector = calculateUpVector(solarOrbitalDataValues);
-    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarUpVector, camera.up);
-    solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
+    // Align the solar system's average normal with the up vector (Z-axis)
+    const solarSystemAverageNormal = calculateAverageNormal(solarOrbitalDataValues);
+    alignSystemToCameraUp(solarSystemGroup, solarSystemAverageNormal);
 
     solarSystemGroup.visible = true;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
     resetView();
@@ -608,7 +805,7 @@ export async function hideSolarSystem() {
 
     solarSystemGroup.visible = false;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     updateSimulation();
 }
@@ -683,11 +880,13 @@ export function toggleSimulationDarkMode(isDarkMode) {
             : getCurrentSystemColour(name, isDarkMode);
     }
 
+    const fadedOverlayColour = getFadedColour(overlayColour, comparisonOrbitOpacity, isDarkMode);
+
     for (const [name, orbit] of orbitalLines) {
         const isComparisonOverlay = orbit.parent === solarSystemGroup;
 
         orbit.material.color.set(
-            isComparisonOverlay ? overlayColour : getCurrentSystemColour(name, isDarkMode)
+            isComparisonOverlay ? fadedOverlayColour : getCurrentSystemColour(name, isDarkMode)
         );
     }
 }
