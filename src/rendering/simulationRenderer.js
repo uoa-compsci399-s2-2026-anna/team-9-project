@@ -34,6 +34,8 @@ import {
     formatSimulationDate, 
     getElapsedDaysText, 
 } from "../ui/simulationCalendar.js";
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
 
 let timer;
 
@@ -50,11 +52,15 @@ let controls;
 let renderer;
 let labelRenderer;
 
+// Stores whether the user is currently dragging the camera
+let isDragging = false;
+
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
 const objectSizeMultiplier = 0.002;
+const hitboxPaddingMultiplier = 0.0005;
 
 const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 1;
@@ -70,6 +76,8 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
+const raycaster = new THREE.Raycaster();
+
 const currentSystemGroup = new THREE.Group();
 const solarSystemGroup = new THREE.Group();
 solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
@@ -82,6 +90,7 @@ const objectLabels = new Map();
 let objectSize;
 let objectScale = 1;
 const objectColour = "white";
+let hitboxPadding;
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
 
@@ -176,6 +185,128 @@ async function getReferenceSystemData(system) {
 }
 
 /**
+ * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
+ * NDC range from -1 to 1 on both axes.
+ *
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas to normalise against
+ * @returns {THREE.Vector2} The position in NDC
+ */
+function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
+    const rect = canvas.getBoundingClientRect();
+
+    return new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1
+    );
+}
+
+/**
+ * Finds the label at the given screen coordinates and returns the name of the object that 
+ * the label belongs to. If several labels overlap, then the object name corresponding to 
+ * the closest label to the camera is returned.
+ * 
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @returns {string|null} The name of the object owning the closest label at the given 
+ * coordinates, or null if no labels were found at this coordinates.
+ */
+function getLabelNameAt(clientX, clientY) {
+    let closestName = null;
+    let closestDistanceSquared = Infinity;
+    const labelWorldPosition = new THREE.Vector3();
+
+    for (const [name, label] of objectLabels) {
+        const rect = label.element.getBoundingClientRect();
+        // Check whether the given point is inside the label's bounding rectangle
+        const isOverLabel =
+            clientX >= rect.left &&
+            clientX <= rect.right &&
+            clientY >= rect.top &&
+            clientY <= rect.bottom;
+
+        if (!isOverLabel) {
+            continue;
+        }
+
+        label.getWorldPosition(labelWorldPosition);
+        const labelDistanceSquared = camera.position.distanceToSquared(labelWorldPosition);
+
+        if (labelDistanceSquared < closestDistanceSquared) {
+            closestDistanceSquared = labelDistanceSquared;
+            closestName = name;
+        }
+    }
+
+    return closestName;
+}
+
+/**
+ * Determines which object in the scene is at the given coordinates (if any). Checks are made 
+ * in the following order and the first match is returned:
+ * 1. The object's own mesh (hitboxes excluded)
+ * 2. The object's HTML label
+ * 3. The object's hitbox (a child of the object's mesh)
+ * 
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @returns {string|null} The name of the object at the given coordinates, or null if no
+ * object was found at these coordinates.
+ */
+function getObjectNameAt(clientX, clientY, canvas) {
+    // The three.js raycaster expects NDC coordinates
+    const mouseNdc = getNormalisedDeviceCoordinates(clientX, clientY, canvas);
+
+    // Create a ray from the camera through the mouse's position on the screen
+    raycaster.setFromCamera(mouseNdc, camera);
+
+    // Get all the meshes for all of the objects in the scene
+    const meshes = Array.from(objectMeshes.values());
+
+    // Check whether the ray intersects any object meshes (excludes hitboxes)
+    let meshHits = raycaster.intersectObjects(meshes, false);
+    if (meshHits.length > 0) {
+        // Return the name of the nearest object the ray intersected
+        return meshHits[0].object.userData.name;
+    }
+
+    // Get the label name at the given coordinates (if any)
+    const labelName = getLabelNameAt(clientX, clientY);
+    if (labelName) {
+        return labelName;
+    }
+
+    // Check whether the ray intersects any hitboxes (by checking children of objects)
+    const hitboxHits = raycaster.intersectObjects(meshes, true);
+    
+    if (hitboxHits.length > 0) {
+        return hitboxHits[0].object.parent.userData.name;
+    }
+
+    return null;
+}
+
+/**
+ * Handles when the canvas is clicked on while the user is not moving the camera.
+ * Detects if an object was clicked and, if so, fires an event to notify other components
+ * that an object was clicked.
+ * 
+ * @param {MouseEvent} event The click event 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on 
+ */
+function onCanvasClick(event, canvas) {
+    const name = getObjectNameAt(event.clientX, event.clientY, canvas);
+
+    if (!name) {
+        return;
+    }
+
+    bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
+}
+
+/**
  * If the target object does not exist, then its mesh is created at the given position.
  * If the target object does exist, then its position is updated.
  * 
@@ -198,6 +329,19 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
+
+        // Give the mesh a name to identify the mesh with raycasting
+        mesh.userData.name = name;
+
+        // Create a larger invisible sphere for click detection
+        const hitboxSize = objectSize + hitboxPadding;
+        const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
+        const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
+
+        const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
+
+        // Add the hitbox as a child of the mesh
+        mesh.add(hitbox);
 
         group.add(mesh);
         objectMeshes.set(name, mesh);
@@ -458,6 +602,32 @@ function initOrUpdateControls(canvas, viewRadius) {
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
+
+    // Detect when the user is moving the camera
+    controls.addEventListener("change", () => {
+        isDragging = true;
+    });
+}
+
+/**
+ * Register pointer listeners on the canvas for raycasting. A click is ignored if it was part
+ * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
+ * objects on the scene.
+ * 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ */
+function initRaycastingEvents(canvas) {
+    // Detect when the user holds their mouse down on the canvas
+    canvas.addEventListener("pointerdown", () => {
+        isDragging = false;
+    });
+
+    canvas.addEventListener("click", (event) => {
+        // Handle the event as long as the user isn't dragging the camera
+        if (!isDragging) {
+            onCanvasClick(event, canvas);
+        }
+    });
 }
 
 /**
@@ -524,6 +694,7 @@ export async function init(name) {
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+    hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
     // Align the system's average normal with the up vector (Z-axis)
     const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
@@ -533,6 +704,7 @@ export async function init(name) {
 
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
+    initRaycastingEvents(canvas);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
