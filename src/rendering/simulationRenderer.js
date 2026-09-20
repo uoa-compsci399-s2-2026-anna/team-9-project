@@ -731,7 +731,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             //                                          ==> return 1 (max width)
             const distance = (planetProgress - progress + 1) % 1;
 
-            return 1 - distance;
+            return 1 - distance * 0.9;
         });
     } else {
         // Display non-elliptical orbits as constant width
