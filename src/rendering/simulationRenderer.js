@@ -198,11 +198,16 @@ function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
 }
 
 /**
- * Get the name of the object of the closest clicked label
- * @param {*} event 
- * @returns 
+ * Finds the label at the given screen coordinates and returns the name of the object that 
+ * the label belongs to. If several labels overlap, then the object name corresponding to 
+ * the closest label to the camera is returned.
+ * 
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @returns {string|null} The name of the object owning the closest label at the given 
+ * coordinates, or null if no labels were found at this coordinates.
  */
-function getClickedLabelName(event) {
+function getLabelNameAt(clientX, clientY) {
     let closestName = null;
     let closestDistanceSquared = Infinity;
     const labelWorldPosition = new THREE.Vector3();
@@ -210,10 +215,10 @@ function getClickedLabelName(event) {
     for (const [name, label] of objectLabels) {
         const rect = label.element.getBoundingClientRect();
         const labelClicked =
-            event.clientX >= rect.left &&
-            event.clientX <= rect.right &&
-            event.clientY >= rect.top &&
-            event.clientY <= rect.bottom;
+            clientX >= rect.left &&
+            clientX <= rect.right &&
+            clientY >= rect.top &&
+            clientY <= rect.bottom;
 
         if (!labelClicked) {
             continue;
@@ -232,17 +237,21 @@ function getClickedLabelName(event) {
 }
 
 /**
- * (1) Check if the object itself was clicked
- * (2) Check if the object's label was clicked
- * (3) Check if the object's hitbox was clicked
+ * Determines which object in the scene is at the given coordinates (if any). Checks are made 
+ * in the following order and the first match is returned:
+ * 1. The object's own mesh (hitboxes excluded)
+ * 2. The object's HTML label
+ * 3. The object's hitbox (a child of the object's mesh)
  * 
- * @param {*} event 
- * 
- * Null if nothing hit
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @returns {string|null} The name of the object at the given coordinates, or null if no
+ * object was found at these coordinates.
  */
-function getClickedObjectName(event, canvas) {
+function getObjectNameAt(clientX, clientY, canvas) {
     // The three.js raycaster expects NDC coordinates
-    const mouseNdc = getNormalisedDeviceCoordinates(event.clientX, event.clientY, canvas);
+    const mouseNdc = getNormalisedDeviceCoordinates(clientX, clientY, canvas);
 
     // Create a ray from the camera through the mouse's position on the screen
     const raycaster = new THREE.Raycaster();
@@ -259,7 +268,7 @@ function getClickedObjectName(event, canvas) {
     }
 
     // Get the closest clicked label
-    const labelName = getClickedLabelName(event);
+    const labelName = getLabelNameAt(clientX, clientY);
     if (labelName) {
         return labelName;
     }
@@ -275,12 +284,15 @@ function getClickedObjectName(event, canvas) {
 }
 
 /**
+ * Handles when the canvas is clicked on while the user is not moving the camera.
+ * Detects if an object was clicked and, if so, fires an event to notify other components
+ * what object was clicked.
  * 
- * @param {*} event 
- * @param {*} canvas 
+ * @param {MouseEvent} event The click event 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on 
  */
 function onCanvasClick(event, canvas) {
-    const name = getClickedObjectName(event, canvas);
+    const name = getObjectNameAt(event, canvas);
 
     if (!name) {
         return;
@@ -573,8 +585,11 @@ function initOrUpdateControls(canvas, viewRadius) {
 }
 
 /**
+ * Register pointer listeners on the canvas for raycasting. A click is ignored if it was part
+ * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
+ * objects on the scene.
  * 
- * @param {*} canvas 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function initRaycastingEvents(canvas) {
     // Detect when the user holds their mouse down on the canvas
