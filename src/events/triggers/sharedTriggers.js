@@ -48,7 +48,11 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         }
 
         button.addEventListener("click", () => {
-            bus.publish(event, EVENT_DETAIL[event]());
+            let eventDetail = EVENT_DETAIL[event]
+                ? EVENT_DETAIL[event]()
+                : null;
+
+            bus.publish(event, eventDetail);
         });
     }
 });
