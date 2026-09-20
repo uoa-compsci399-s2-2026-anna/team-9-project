@@ -131,3 +131,25 @@ bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
         }
     }
 });
+
+// SIMULATION SPEED INCREASE/DECREASE BUTTONS
+
+bus.subscribe(EVENTS.SIM.INCREASE_SPEED, () => increaseSpeedAdjusterValue(1));
+bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () => increaseSpeedAdjusterValue(-1));
+
+/**
+ * Increases the numeric value of the simulation speed adjuster by the given
+ * amount.
+ * @param {int} value The value to increase the value of the simulation speed 
+ * adjuster by.
+ */
+function increaseSpeedAdjusterValue(value) {
+    const speedAdjuster = document.getElementById("speed-adjuster");
+
+    speedAdjuster.value = parseInt(speedAdjuster.value, 10) + value;
+    const event = new Event("input", {
+        bubbles: true,
+        cancelable: true,
+    });
+    speedAdjuster.dispatchEvent(event);
+}
