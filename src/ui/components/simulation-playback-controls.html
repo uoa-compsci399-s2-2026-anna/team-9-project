@@ -98,6 +98,15 @@
         <!-- Simulation speed adjuster -->
         <div class="flex items-center gap-3 p-2">
           <label class="text-secondary">speed</label>
+
+          {{
+            button_with_tooltip(
+              tooltip_text="Decrease speed",
+              svg_path="M18 12.998H6a1 1 0 0 1 0-2h12a1 1 0 0 1 0 2",
+              tooltip_position="above"
+            )
+          }}
+
           <input
             id="speed-adjuster"
             type="number"
