@@ -37,11 +37,10 @@ class Simulations:
 
     def __init__(self, all_systems: list[dict]):
         now_jd_tdb = get_current_jd_tdb()
-        for system_data in all_systems:
-            now_in_sim_time = now_jd_tdb - system_data["timestamp"]
 
+        for system_data in all_systems:
             system_name = system_data["name"].lower()
-            self.__sims[system_name] = init_system(system_data, system_name, now_in_sim_time)
+            self.__sims[system_name] = init_system(system_data, system_name, now_jd_tdb)
 
     def stop_all(self):
         for sim in self.__sims.values():
@@ -76,7 +75,7 @@ class Simulations:
         
         # If not given, the time to integrate to defaults to now
         if time_to_integrate_to is None:
-            time_to_integrate_to = get_current_jd_tdb() - system_data["timestamp"]
+            time_to_integrate_to = get_current_jd_tdb()
 
         self.__sims[system_name] = init_system(system_data, system_name, time_to_integrate_to)
 
@@ -160,6 +159,7 @@ def init_system(system_data: dict, name: str, time_to_integrate_to: float) -> Si
     reference = {"positions": positions, "orbital_data": orbital_data}
 
     # Pre-emptively integrate sim to the given time
-    sim.integrate(time_to_integrate_to)
+    sim_time = time_to_integrate_to - system_data["timestamp"]
+    sim.integrate(sim_time)
 
     return SimulationData(sim, objects, reference)
