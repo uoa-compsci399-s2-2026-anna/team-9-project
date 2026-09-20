@@ -67,17 +67,21 @@ class Simulations:
         else:
             return None
 
-    def reinitialise_sim(self, system_data: dict, system_name: str, time_to_integrate_to: float = None):
+    def reinitialise_sim(
+        self, system_data: dict, system_name: str, time_to_integrate_to: float = None
+    ):
         """
         Reinitialises a simulation with the (optionally) given time to integrate to.
         If no time is given, it integrates to now.
         """
-        
+
         # If not given, the time to integrate to defaults to now
         if time_to_integrate_to is None:
             time_to_integrate_to = get_current_jd_tdb()
 
-        self.__sims[system_name] = init_system(system_data, system_name, time_to_integrate_to)
+        self.__sims[system_name] = init_system(
+            system_data, system_name, time_to_integrate_to
+        )
 
 
 def unix_to_jd_tdb(t: float) -> float:
@@ -102,7 +106,9 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system_data: dict, name: str, time_to_integrate_to: float) -> SimulationData:
+def init_system(
+    system_data: dict, name: str, time_to_integrate_to: float
+) -> SimulationData:
     """
     Initialises the given system
     Returns simulation and objects
