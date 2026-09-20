@@ -99,6 +99,7 @@
         <div class="flex items-center gap-3 p-2">
           <label class="text-secondary">speed</label>
 
+          <!-- Decrease speed button -->
           {{
             button_with_tooltip(
               tooltip_text="Decrease speed",
@@ -107,6 +108,7 @@
             )
           }}
 
+          <!-- Simulation speed input -->
           <input
             id="speed-adjuster"
             type="number"
@@ -116,6 +118,7 @@
             value="{{ sim_state.simulationSpeed }}"
           />
 
+          <!-- Increase speed button -->
           {{
             button_with_tooltip(
               tooltip_text="Increase speed",
