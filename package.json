@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
-    "electron-store": "^8.2.0",
-    "flatpickr": "^4.6.13"
+    "electron-store": "^8.2.0"
   }
 }
