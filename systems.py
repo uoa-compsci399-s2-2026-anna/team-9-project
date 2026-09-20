@@ -36,7 +36,7 @@ class Simulations:
     __sims: dict[str, SimulationData] = {}
 
     def __init__(self, all_systems: list[dict]):
-        # Get the current jd_tdb time so that we can pre-integrate the systems to now
+        # Get the current JD TDB time so that we can pre-integrate the systems to now
         now_jd_tdb: float = get_current_jd_tdb()
 
         for system_data in all_systems:
