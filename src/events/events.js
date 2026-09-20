@@ -15,6 +15,7 @@ export const EVENTS = {
         OBJECTS_PANEL_TOGGLE: "sim:objects_panel_toggle",
         SYSTEM_DROPDOWN_TOGGLE: "sim:system_dropdown_toggle",
         COMPARE_TO_SOLAR_SYSTEM: "sim:compare_to_solar_system",
+        OBJECT_CLICK: "sim:object_click",
 
         /**
          * When the calendar is changed (i.e. when the user selects a new date-time).
