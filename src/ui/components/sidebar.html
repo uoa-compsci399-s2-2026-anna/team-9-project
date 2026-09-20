@@ -2,7 +2,7 @@
 {% from "components/side-panel.html" import side_panel %}
 {% from "components/text-button.html" import text_button %}
 
-<div class="flex min-h-0 flex-1 items-end gap-3 px-6 pt-6">
+<div class="flex min-h-0 flex-1 items-end gap-3">
   <!-- Left sidebar -->
   <div class="flex h-full min-h-0 w-48 flex-col gap-2">
     <!-- Spacer -->
@@ -85,14 +85,6 @@
   <!-- Spacer -->
   <div class="flex-1"></div>
 
-  <!-- Reset view button -->
-  {{
-    text_button(
-      "Reset view",
-      on_click_events=["sim:reset_view"]
-    )
-  }}
-
   <!-- Compare to solar system button -->
   {% if current_system.name != "Solar System" %}
     {{
@@ -103,4 +95,12 @@
       )
     }}
   {% endif %}
+
+  <!-- Reset view button -->
+  {{
+    text_button(
+      "Reset view",
+      on_click_events=["sim:reset_view"]
+    )
+  }}
 </div>
