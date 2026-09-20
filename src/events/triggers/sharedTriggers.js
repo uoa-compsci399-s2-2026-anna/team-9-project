@@ -47,12 +47,33 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             continue;
         }
 
-        button.addEventListener("click", () => {
-            let eventDetail = EVENT_DETAIL[event]
-                ? EVENT_DETAIL[event]()
-                : null;
+        if (buttonType.dataset.allowRepeat) {
+            // Handle button repeat
+            let intervalId;
 
-            bus.publish(event, eventDetail);
-        });
+            button.addEventListener("mousedown", () => {
+                bus.publish(event, getEventDetail());
+
+                intervalId = setInterval(() => {
+                    bus.publish(event, getEventDetail());
+                }, buttonType.dataset.repeatPeriodMs);
+            });
+
+            button.addEventListener("mouseup", resetInterval);
+            button.addEventListener("mouseleave", resetInterval);
+
+            function resetInterval() {
+                clearInterval(intervalId);
+            }
+        } else {
+            // Handle non-repeating button
+            button.addEventListener("click", () => {
+                bus.publish(event, getEventDetail());
+            });
+        }
+
+        function getEventDetail() {
+            return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : null;
+        }
     }
 });
