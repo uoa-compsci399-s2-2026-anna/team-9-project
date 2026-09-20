@@ -8,15 +8,15 @@ import {
 
 const EVENT_DETAIL = {
     [EVENTS.TOOLBAR.DARK_MODE_TOGGLE]: () => {
-        eventDetail = { enterDarkMode: !settings.darkMode };
+        return { enterDarkMode: !settings.darkMode };
     },
 
     [EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM]: () => {
-        eventDetail = { compare: !comparingToSolarSystem };
+        return { compare: !comparingToSolarSystem };
     },
 
     [EVENTS.SIM.TOGGLE]: () => {
-        eventDetail = { startSimulation: !running };
+        return { startSimulation: !running };
     },
 };
 
@@ -48,13 +48,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         }
 
         button.addEventListener("click", () => {
-            var eventDetail;
-
-            if (EVENT_DETAIL[eventDetail]) {
-                EVENT_DETAIL[eventDetail]();
-            }
-
-            bus.publish(event, eventDetail);
+            bus.publish(event, EVENT_DETAIL[event]());
         });
     }
 });
