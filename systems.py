@@ -142,7 +142,7 @@ def init_system(
 ) -> SimulationData:
     """
     Initialises the given system and integrates it to the given JD TDB time
-    Returns simulation and objects
+    Returns SimulationData containing simulation, objects and reference data
     """
     # Initialise the simulation
     sim = rebound.Simulation()
