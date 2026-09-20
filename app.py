@@ -203,8 +203,7 @@ async def get_system_info(system_name: str = "") -> dict:
 
 def get_system_data_at_time(system_name: str, t: float) -> dict:
     """
-    Gets a system at a specific sim time.
-    Sim time is relative to reference time (t=0 -> reference time)
+    Gets a system at a specific unix time.
     Returns simulation data.
     """
 
@@ -228,7 +227,7 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Integrate to given time
-    sim.integrate(t)
+    quick_integrate(sim, t, system_name)
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -270,7 +269,6 @@ async def get_system_data(
     systems = {}
 
     for system_name in system_names:
-        sim_time = unix_to_sim_time(system_name.lower(), t)
-        systems[system_name] = get_system_data_at_time(system_name, sim_time)
+        systems[system_name] = get_system_data_at_time(system_name, t)
 
     return systems
