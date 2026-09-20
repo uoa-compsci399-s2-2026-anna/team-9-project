@@ -214,13 +214,14 @@ function getLabelNameAt(clientX, clientY) {
 
     for (const [name, label] of objectLabels) {
         const rect = label.element.getBoundingClientRect();
-        const labelClicked =
+        // Check whether the given point is inside the label's bounding rectangle
+        const isOverLabel =
             clientX >= rect.left &&
             clientX <= rect.right &&
             clientY >= rect.top &&
             clientY <= rect.bottom;
 
-        if (!labelClicked) {
+        if (!isOverLabel) {
             continue;
         }
 
@@ -267,7 +268,7 @@ function getObjectNameAt(clientX, clientY, canvas) {
         return meshHits[0].object.userData.name;
     }
 
-    // Get the closest clicked label
+    // Get the label name at the given coordinates (if any)
     const labelName = getLabelNameAt(clientX, clientY);
     if (labelName) {
         return labelName;
