@@ -10,12 +10,12 @@
       class="calendar tabular-nums"
       name="calendar"
       value="{{ sim_date }}"
-      data-timezone=" {{ settings.timeZone }}"
+      data-timezone="{{ settings.timeZone }}"
     />
     <span
-      class="calendar-timezone-label dark text-xs text-zinc-500 dark:text-zinc-400"
+      class="calendar-timezone-label text-xs text-zinc-500 dark:text-zinc-400"
     >
-      ({{ settings.timeZone }})
+      {{ settings.timeZone }}
     </span>
   </span>
 
@@ -36,12 +36,17 @@
           <div class="text-left max-sm:hidden">
             <p class="text-lg">
               <input
-                type="datetime-local"
+                type="text"
                 class="calendar tabular-nums"
                 name="calendar"
                 value="{{ sim_date }}"
-                onkeydown="return false;"
+                data-timezone="{{ settings.timeZone }}"
               />
+              <span
+                class="calendar-timezone-label text-sm text-zinc-500 dark:text-zinc-400"
+              >
+                {{ settings.timeZone }}
+              </span>
             </p>
             <p
               id="elapsed-days"
