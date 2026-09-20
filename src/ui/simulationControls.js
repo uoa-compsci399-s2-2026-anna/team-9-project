@@ -147,6 +147,8 @@ function increaseSpeedAdjusterValue(value) {
     const speedAdjuster = document.getElementById("speed-adjuster");
 
     speedAdjuster.value = parseInt(speedAdjuster.value, 10) + value;
+
+    // Dispatch event (received in simulationTriggers.js, to sanitise input)
     const event = new Event("input", {
         bubbles: true,
         cancelable: true,
