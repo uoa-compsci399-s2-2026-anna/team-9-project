@@ -84,6 +84,36 @@ class Simulations:
             system_data, system_name, time_to_integrate_to
         )
 
+    def quick_integrate(self, t: float, system_data: str):
+        """
+        Integrates a simulation to the given unix time.
+        If it is a shorter time distance it will reinitialised the simulation and
+        integrate from there.
+        """
+
+        system_name: str = system_data["name"].lower()
+        sim: rebound.Simulation = self.get_sim(system_name)
+
+        # Get the timestamp in sim time
+        sim_time: float = unix_to_sim_time(system_name.lower(), t)
+
+        # Calculate the time from the given time to where the sim is
+        current_temporal_distance: float = abs(sim_time - sim.t)
+
+        # Calculate the time from the given time to the initial timestamp of the system
+        jd_tdb_time: float = unix_to_jd_tdb(t)
+        initial_timestamp: float = system_data["timestamp"]
+        initial_temporal_distance: float = abs(jd_tdb_time - initial_timestamp)
+
+        if initial_temporal_distance < current_temporal_distance:
+            # If the difference is smaller to reinitialise do so
+            self.reinitialise_sim(system_data, system_name, jd_tdb_time)
+            return self.get_sim(system_name)
+        else:
+            # If the difference is greater, integrate normally
+            sim.integrate(sim_time)
+            return sim
+
 
 def unix_to_jd_tdb(t: float) -> float:
     """

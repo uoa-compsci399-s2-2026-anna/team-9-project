@@ -227,7 +227,7 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Integrate to given time
-    quick_integrate(sim, t, system_name)
+    sim = sims.quick_integrate(t, system_data)
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -238,34 +238,6 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
     }
 
     return {"positions": positions, "orbital_data": orbital_data}
-
-
-def quick_integrate(sim: rebound.Simulation, t: float, system_name: str):
-    """
-    Integrates a simulation to the given unix time.
-    If it is a shorter time distance it will reinitialised the simulation and
-    integrate from there.
-    """
-
-    system_data: dict = get_system_with_name(system_name)
-
-    # Get the timestamp in sim time
-    sim_time: float = unix_to_sim_time(system_name.lower(), t)
-
-    # Calculate the time from the given time to where the sim is 
-    current_temporal_distance: float = abs(sim_time - sim.t)
-
-    # Calculate the time from the given time to the initial timestamp of the system
-    jd_tdb_time: float = unix_to_jd_tdb(t)
-    initial_timestamp: float = system_data["timestamp"]
-    initial_temporal_distance: float = abs(jd_tdb_time - initial_timestamp)
-
-    if initial_temporal_distance < current_temporal_distance:
-        # If the difference is smaller to reinitialise do so
-        sims.reinitialise_sim(system_data, system_name, jd_tdb_time)
-    else:
-        # If the difference is greater, integrate normally
-        sim.integrate(sim_time)
 
 
 @app.get("/system")
