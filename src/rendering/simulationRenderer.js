@@ -7,6 +7,7 @@ import {
     CSS2DRenderer,
     CSS2DObject,
 } from "three/addons/renderers/CSS2DRenderer.js";
+import { MeshLineGeometry, MeshLineMaterial } from "three.meshline";
 import {
     simulationState,
     running,
@@ -613,7 +614,7 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
  * @param {THREE.Group} group The group to add the orbital line to
  * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
+function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     const { a, e, inc, Omega, omega } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
@@ -622,24 +623,27 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     if (!line) {
         const canvas = renderer.domElement;
-        const geometry = new LineGeometry();
-        const material = new LineMaterial();
+        const geometry = new MeshLineGeometry();
+
+        const material = new MeshLineMaterial({
+            sizeAttenuation: false,
+        });
 
         if (group === solarSystemGroup) {
             const comparisonColour = getFadedColour(
                 colour,
                 comparisonOrbitOpacity,
             );
-            material.linewidth = comparisonOrbitLineWidth;
+            material.lineWidth = comparisonOrbitLineWidth * 10;
             material.color.set(comparisonColour);
         } else {
-            material.linewidth = orbitLineWidth;
+            material.lineWidth = orbitLineWidth * 10;
             material.color.set(colour);
         }
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
-        line = new Line2(geometry, material);
+        line = new THREE.Mesh(geometry, material);
 
         if (comparingToSolarSystem && group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System", {
@@ -680,11 +684,61 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         points.push(x, y, 0);
     }
 
-    // Create or update the position attribute of the line's geometry
-    line.geometry.setPositions(points);
+    /**
+     * Rotation matrix: local (coordinate system of orbit plane) -> world
+     */
+    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
+
+    if (e < 1) {
+        /**
+         * The position of the planet in world (xyz) coordinate space.
+         */
+        const worldPlanetPosition = new THREE.Vector3(
+            position.x,
+            position.y,
+            position.z,
+        );
+
+        /**
+         * World -> local (coordinate system of orbit plane)
+         */
+        const inverseRotationMatrix = rotationMatrix.clone().invert();
+
+        /**
+         * Position of planet in local (orbit plane) coordinates
+         */
+        const localPosition = worldPlanetPosition.applyMatrix4(
+            inverseRotationMatrix,
+        );
+
+        /**
+         * Angle between positive x-axis (in local coordinates) and the point
+         * (localPosition.x, localPosition.y) from the 2-argument arctangent.
+         */
+        let planetTheta = Math.atan2(localPosition.y, localPosition.x);
+        if (planetTheta < 0) planetTheta += 2 * Math.PI;
+
+        // Normalise
+        const planetProgress = THREE.MathUtils.clamp(
+            (planetTheta - thetaStart) / (thetaEnd - thetaStart),
+            0,
+            1,
+        );
+
+        // Create or update the position attribute and widen the line at the planet
+        line.geometry.setPoints(points, (progress) => {
+            // At the planet, planetProgress = progress ==> distance = 0
+            //                                          ==> return 1 (max width)
+            const distance = (planetProgress - progress + 1) % 1;
+
+            return 1 - distance;
+        });
+    } else {
+        // Display non-elliptical orbits as constant width
+        line.geometry.setPoints(points);
+    }
 
     // Rotate the line to match the orbital parameters
-    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
@@ -806,6 +860,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
     )) {
         createOrUpdateOrbitalLine(
             name,
+            currentSystemData.positions[name],
             orbitalData,
             currentSystemGroup,
             getCurrentSystemColour(name, isDarkMode),
@@ -835,6 +890,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(
                 name,
+                solarSystemData.positions[name],
                 orbitalData,
                 solarSystemGroup,
                 overlayColour,
