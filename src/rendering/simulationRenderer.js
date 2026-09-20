@@ -76,6 +76,8 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
+const raycaster = new THREE.Raycaster();
+
 const currentSystemGroup = new THREE.Group();
 const solarSystemGroup = new THREE.Group();
 solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
@@ -258,7 +260,6 @@ function getObjectNameAt(clientX, clientY, canvas) {
     const mouseNdc = getNormalisedDeviceCoordinates(clientX, clientY, canvas);
 
     // Create a ray from the camera through the mouse's position on the screen
-    const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouseNdc, camera);
 
     // Get all the meshes for all of the objects in the scene
