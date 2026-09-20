@@ -36,9 +36,12 @@ class Simulations:
     __sims: dict[str, SimulationData] = {}
 
     def __init__(self, all_systems: list[dict]):
+        now_jd_tdb = get_current_jd_tdb()
         for system_data in all_systems:
+            now_in_sim_time = now_jd_tdb - system_data["timestamp"]
+
             system_name = system_data["name"].lower()
-            self.__sims[system_name] = init_system(system_data, system_name)
+            self.__sims[system_name] = init_system(system_data, system_name, now_in_sim_time)
 
     def stop_all(self):
         for sim in self.__sims.values():
@@ -65,8 +68,17 @@ class Simulations:
         else:
             return None
 
-    def reinitialise_sim(self, system_data: dict, system_name: str):
-        self.__sims[system_name] = init_system(system_data, system_name)
+    def reinitialise_sim(self, system_data: dict, system_name: str, time_to_integrate_to: float = None):
+        """
+        Reinitialises a simulation with the (optionally) given time to integrate to.
+        If no time is given, it integrates to now.
+        """
+        
+        # If not given, the time to integrate to defaults to now
+        if time_to_integrate_to is None:
+            time_to_integrate_to = get_current_jd_tdb() - system_data["timestamp"]
+
+        self.__sims[system_name] = init_system(system_data, system_name, time_to_integrate_to)
 
 
 def unix_to_jd_tdb(t: float) -> float:
@@ -91,7 +103,7 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system_data: dict, name: str) -> SimulationData:
+def init_system(system_data: dict, name: str, time_to_integrate_to: float) -> SimulationData:
     """
     Initialises the given system
     Returns simulation and objects
@@ -147,8 +159,7 @@ def init_system(system_data: dict, name: str) -> SimulationData:
 
     reference = {"positions": positions, "orbital_data": orbital_data}
 
-    # Pre-emptively integrate sim to now
-    now_in_sim_time = get_current_jd_tdb() - system_data["timestamp"]
-    sim.integrate(now_in_sim_time)
+    # Pre-emptively integrate sim to the given time
+    sim.integrate(time_to_integrate_to)
 
     return SimulationData(sim, objects, reference)
