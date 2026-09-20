@@ -620,6 +620,7 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
  * The orbital line is coloured to match its object.
  *
  * @param {string} name Name of the object associated with the orbital line
+ * @param {Object} position The position in real coordinates (xyz) of the object
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
  * @param {string} colour CSS colour string used for this orbit's line
