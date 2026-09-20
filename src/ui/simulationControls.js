@@ -140,13 +140,18 @@ bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () => increaseSpeedAdjusterValue(-1));
 /**
  * Increases the numeric value of the simulation speed adjuster by the given
  * amount.
- * @param {int} value The value to increase the value of the simulation speed 
+ * @param {int} value The value to increase the value of the simulation speed
  * adjuster by.
  */
 function increaseSpeedAdjusterValue(value) {
     const speedAdjuster = document.getElementById("speed-adjuster");
 
-    speedAdjuster.value = parseInt(speedAdjuster.value, 10) + value;
+    const currentValue = parseInt(speedAdjuster.value, 10);
+    const newValue = currentValue + value;
+
+    if (newValue >= 0) {
+        speedAdjuster.value = newValue;
+    }
 
     // Dispatch event (received in simulationTriggers.js, to sanitise input)
     const event = new Event("input", {
