@@ -72,7 +72,7 @@ class Simulations:
         self, system_data: dict, system_name: str, time_to_integrate_to: float = None
     ):
         """
-        Reinitialises a simulation with the (optionally) given time to integrate to.
+        Reinitialises a simulation with the (optionally) given JD TDB time to integrate to.
         If no time is given, it integrates to now.
         """
 
