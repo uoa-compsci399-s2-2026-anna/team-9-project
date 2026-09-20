@@ -262,8 +262,9 @@ function getObjectNameAt(clientX, clientY, canvas) {
     // Create a ray from the camera through the mouse's position on the screen
     raycaster.setFromCamera(mouseNdc, camera);
 
-    // Get all the meshes for all of the objects in the scene
-    const meshes = Array.from(objectMeshes.values());
+    // Get all the meshes for all of the visible objects in the scene
+    const meshes = Array.from(objectMeshes.values())
+        .filter((mesh) => mesh.visible && mesh.parent.visible);
 
     // Check whether the ray intersects any object meshes (excludes hitboxes)
     let meshHits = raycaster.intersectObjects(meshes, false);
