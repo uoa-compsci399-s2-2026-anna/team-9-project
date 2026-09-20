@@ -246,12 +246,13 @@ def quick_integrate(sim: rebound.Simulation, t: float, system_name: str):
     If it is a shorter time distance it will reinitialised the simulation and
     integrate from there.
     """
+
     system_data = get_system_with_name(system_name)
 
     current_temporal_distance: float = abs(t - sim.t)
     initial_timestamp: float = system_data["timestamp"]
     initial_temporal_distance: float = abs(t - initial_timestamp)
-    
+
     if current_temporal_distance > initial_temporal_distance:
         sims.reinitialise_sim(system_data, system_name, unix_to_jd_tdb(t))
     else:
