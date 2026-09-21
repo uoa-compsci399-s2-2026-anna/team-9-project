@@ -146,7 +146,7 @@ bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () => increaseSpeedAdjusterValue(-1));
 function increaseSpeedAdjusterValue(value) {
     const speedAdjuster = document.getElementById("speed-adjuster");
 
-    const currentValue = parseInt(speedAdjuster.value, 10);
+    const currentValue = parseInt(speedAdjuster.value);
     const newValue = currentValue + value;
 
     if (newValue >= 0) {
