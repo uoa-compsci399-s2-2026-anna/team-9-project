@@ -242,9 +242,8 @@ async function createWindow(python_url) {
 
     var url;
 
-    // Load external spinner while python starts
-    // TODO: Make this a local spinner
-    mainWindow.loadURL('https://loading-screen.github.io/');
+    // Show spinner while app is launching
+    mainWindow.loadFile(getPathToLoader());
     // Set title
     mainWindow.setTitle('Loading OPIS...');
 
