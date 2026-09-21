@@ -29,6 +29,7 @@ import {
     calculateAverageNormal,
     calculateDefaultCameraPosition,
     calculateCameraDistanceToTargetProjection,
+    calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import { 
     updateCalendar, 
@@ -157,6 +158,8 @@ const habitableZoneOpacity = 0.2;
 let habitableZone;
 let habitableZoneMesh;
 
+const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
+const referenceGridDivisionSize = 1; // This will be scaled based on the camera's position
 let referenceGrid;
 
 function getTheme(isDarkMode = settings.darkMode) {
@@ -548,6 +551,15 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
         cameraPosition,
         targetPosition
     );
+
+    const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
+        fov,
+        cameraDistanceToTargetProjection,
+        divisionsInView
+    );
+
+    const scaleFactor = desiredReferenceGridDivisionSize / referenceGridDivisionSize;
+    referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
 }
 
 /**
