@@ -17,6 +17,9 @@ Atlas' mass was take from: https://iopscience.iop.org/article/10.3847/2515-5172/
 
 Solar system's habitable zone was sourced from https://arxiv.org/pdf/1205.2429#page=6.
 
+Solar system's orbital periods were calculated via Rebound via data from the
+NASA horizons API
+
 All other data was taken from https://ssd.jpl.nasa.gov/horizons/
 
 ## Kepler-16
