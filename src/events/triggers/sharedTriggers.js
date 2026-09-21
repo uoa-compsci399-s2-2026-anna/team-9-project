@@ -82,7 +82,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
 
             function resetInterval() {
                 if (timeoutId !== null) {
-                    clearInterval(timeoutId);
+                    clearTimeout(timeoutId);
                     timeoutId = null;
                 }
 
