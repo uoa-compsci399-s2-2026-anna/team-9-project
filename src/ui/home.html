@@ -4,26 +4,34 @@
 <!-- Page title -->
 {% block title %}Home{% endblock %}
 {% block content %}
-  <!-- Main OPIS logo -->
-  <div class="mt-12 flex w-55 self-center pt-0.5">
-    {% include "components/logo.html" %}
-  </div>
+  <!-- Absolute positioning to position relative to parent -->
+  <div class="absolute h-full w-full">
+    <!-- Center content div -->
+    <div class="flex h-full w-full items-center justify-center">
+      <!-- Content div -->
+      <div class="-mt-12 flex flex-col items-center justify-center gap-7">
+        <!-- Main OPIS logo -->
+        <div class="flex w-55">{% include "components/logo.html" %}</div>
 
-  <!-- Available systems -->
-  <div class="mx-auto mt-18 w-fit">
-    <p class="mb-7 text-center">Select a simulation</p>
-    <div
-      class="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3"
-    >
-      {% for system in systems %}
-        <a
-          id="{{ system.name }}"
-          class="system-path-button control bordered clickable flex h-35 w-55 flex-col items-center justify-center gap-2 font-semibold"
-          href="/simulation/{{ system.name }}"
-        >
-          {{ system.name }}
-        </a>
-      {% endfor %}
+        <p class="text-secondary mt-15 italic">Select a simulation</p>
+
+        <!-- Available systems -->
+        <div class="mx-auto w-fit">
+          <div
+            class="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {% for system in systems %}
+              <a
+                id="{{ system.name }}"
+                class="system-path-button control bordered-light clickable shadowed flex h-35 w-55 grid-flow-col flex-col items-center justify-center gap-2 text-xl font-semibold"
+                href="/simulation/{{ system.name }}"
+              >
+                {{ system.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}

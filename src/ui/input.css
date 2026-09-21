@@ -15,8 +15,8 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --color-primary: var(--color-zinc-800);
-  --color-secondary: var(--color-zinc-600);
+  --color-primary: var(--color-zinc-700);
+  --color-secondary: var(--color-zinc-500);
   --color-accent: rgb(64.2% 61.8% 100%);
 }
 
@@ -64,10 +64,22 @@
   }
 
   .bordered {
-    @apply border border-black/50 dark:border-white/10;
+    @apply border border-black/50 dark:border-white/30;
+  }
+
+  .bordered-light {
+    @apply border border-black/10 dark:border-white/10;
   }
 
   .clickable {
-    @apply hover:bg-zinc-100 active:bg-zinc-200 dark:hover:bg-zinc-900 dark:active:bg-zinc-700;
+    @apply hover:bg-zinc-100 active:inset-shadow-sm dark:hover:bg-zinc-900 dark:active:bg-zinc-700;
+  }
+
+  .container {
+    @apply z-10 rounded-xl bg-white/60 p-1 backdrop-blur-md dark:bg-zinc-950/60;
+  }
+
+  .shadowed {
+    @apply p-1 shadow-2xl/50 shadow-black/50 dark:shadow-purple-300/30;
   }
 }

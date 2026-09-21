@@ -1,10 +1,11 @@
 {% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
 {% from "components/side-panel.html" import side_panel %}
 {% from "components/text-button.html" import text_button %}
+{% from "components/container.html" import container %}
 
-<div class="flex min-h-0 flex-1 items-end gap-3 px-6 pt-6">
+<div class="flex min-h-0 flex-1 items-end gap-3">
   <!-- Left sidebar -->
-  <div class="flex h-full min-h-0 w-48 flex-col gap-2">
+  <div class="flex h-full min-h-0 w-48 flex-col items-stretch gap-2">
     <!-- Spacer -->
     <div class="flex-1"></div>
 
@@ -85,22 +86,24 @@
   <!-- Spacer -->
   <div class="flex-1"></div>
 
-  <!-- Reset view button -->
-  {{
-    text_button(
-      "Reset view",
-      on_click_events=["sim:reset_view"]
-    )
-  }}
+  {% call container(style="flex gap-2 p-2") %}
+    <!-- Compare to solar system button -->
+    {% if current_system.name != "Solar System" %}
+      {{
+        text_button(
+          "Compare to Solar System",
+          button_id="compare-to-solar-system-button",
+          on_click_events=["sim:compare_to_solar_system"]
+        )
+      }}
+    {% endif %}
 
-  <!-- Compare to solar system button -->
-  {% if current_system.name != "Solar System" %}
+    <!-- Reset view button -->
     {{
       text_button(
-        "Compare to Solar System",
-        button_id="compare-to-solar-system-button",
-        on_click_events=["sim:compare_to_solar_system"]
+        "Reset view",
+        on_click_events=["sim:reset_view"]
       )
     }}
-  {% endif %}
+  {% endcall %}
 </div>

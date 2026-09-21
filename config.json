@@ -4,6 +4,10 @@
             "name": "Solar System",
             "objects": {
                 "Sun": {
+                    "colour": { 
+                        "dark": "#d68811",
+                        "light": "#89570b"
+                    },
                     "mass": {
                         "value": 1988410e24,
                         "uncertainty": null
@@ -18,6 +22,10 @@
                     }
                 },
                 "Mercury": {
+                    "colour": { 
+                        "dark": "#b89176",
+                        "light": "#7d5a40"
+                    },
                     "mass": {
                         "value": 0.330103e24,
                         "uncertainty": 0.000021e24
@@ -32,6 +40,10 @@
                     }
                 },
                 "Venus": {
+                    "colour": { 
+                        "dark": "#e1812e",
+                        "light": "#a15717"
+                    },
                     "mass": {
                         "value": 4.86731e24,
                         "uncertainty": 0.00023e24
@@ -46,6 +58,10 @@
                     }
                 },
                 "Earth": {
+                    "colour": { 
+                        "dark": "#44a1de",
+                        "light": "#1b6698"
+                    },
                     "mass": {
                         "value": 5.97217e24,
                         "uncertainty": 0.00028e24
@@ -60,6 +76,10 @@
                     }
                 },
                 "Mars": {
+                    "colour": { 
+                        "dark": "#e67b6f",
+                        "light": "#b52f20"
+                    },
                     "mass": {
                         "value": 0.641691e24,
                         "uncertainty": 0.000030e24
@@ -74,6 +94,10 @@
                     }
                 },
                 "Jupiter": {
+                    "colour": { 
+                        "dark": "#d5864e",
+                        "light": "#915122"
+                    },
                     "mass": {
                         "value": 1898.125e24,
                         "uncertainty": 0.088e24
@@ -88,6 +112,10 @@
                     }
                 },
                 "Saturn": {
+                    "colour": { 
+                        "dark": "#bb85d1",
+                        "light": "#8b40a9"
+                    },
                     "mass": {
                         "value": 568.317e24,
                         "uncertainty": 0.026e24
@@ -102,6 +130,10 @@
                     }
                 },
                 "Uranus": {
+                    "colour": { 
+                        "dark": "#4ca5bb",
+                        "light": "#2d6978"
+                    },
                     "mass": {
                         "value": 86.8099e24,
                         "uncertainty": 0.0040e24
@@ -116,6 +148,10 @@
                     }
                 },
                 "Neptune": {
+                    "colour": { 
+                        "dark": "#8296e2",
+                        "light": "#3756d0"
+                    },
                     "mass": {
                         "value": 102.4092e24,
                         "uncertainty": 0.0048e24
@@ -130,6 +166,10 @@
                     }
                 },
                 "Pluto": {
+                    "colour": {
+                        "dark": "#b19574",
+                        "light": "#755d42"
+                    },
                     "mass": {
                         "value": 13024.6e18,
                         "uncertainty": 6.0e18
@@ -144,6 +184,10 @@
                     }
                 },
                 "1P/Halley": {
+                    "colour": {
+                        "dark": "#8f9ba4",
+                        "light": "#57636b"
+                    },
                     "mass": {
                         "value": 2.2e14,
                         "uncertainty": 9.0e13
@@ -158,6 +202,10 @@
                     }
                 },
                 "3I/ATLAS": {
+                    "colour": {
+                        "dark": "#e275ac",
+                        "light": "#b3266c"
+                    },
                     "mass": {
                         "value": 4.4e10,
                         "uncertainty": null
@@ -286,6 +334,10 @@
             "name": "Kepler-16",
             "objects": {
                 "Kepler-16A": {
+                    "colour": {
+                        "dark": "#e1812e",
+                        "light": "#945015"
+                    },
                     "mass": {
                         "value": 1.372e30,
                         "uncertainty": 6.962e27
@@ -300,6 +352,10 @@
                     }
                 },
                 "Kepler-16B": {
+                    "colour": {
+                        "dark": "#e67b6f",
+                        "light": "#b52f20"
+                    },
                     "mass": {
                         "value": 4.0289e29,
                         "uncertainty": 1.3128e27
@@ -314,6 +370,10 @@
                     }
                 },
                 "Kepler-16b": {
+                    "colour": {
+                        "dark": "#32ab93",
+                        "light": "#206d5d"
+                    },
                     "mass": {
                         "value": 6.32e26,
                         "uncertainty": 3.04e25
@@ -361,6 +421,10 @@
             "name": "TRAPPIST-1",
             "objects": {
                 "Trappist-1": {
+                    "colour": {
+                        "dark": "#d88379",
+                        "light": "#a93d31"
+                    },
                     "mass": {
                         "value": 1.786e29,
                         "uncertainty": 4.575e27
@@ -375,6 +439,10 @@
                     }
                 },
                 "Trappist-1b": {
+                    "colour": {
+                        "dark": "#e1812e",
+                        "light": "#945015"
+                    },
                     "mass": {
                         "value": 8.211e25,
                         "uncertainty": 4.120e24
@@ -389,6 +457,10 @@
                     }
                 },
                 "Trappist-1c": {
+                    "colour": {
+                        "dark": "#b79614",
+                        "light": "#74600d"
+                    },
                     "mass": {
                         "value": 7.814e25,
                         "uncertainty": 3.350e24
@@ -403,6 +475,10 @@
                     }
                 },
                 "Trappist-1d": {
+                    "colour": {
+                        "dark": "#29a7c1",
+                        "light": "#1a6a7b"
+                    },
                     "mass": {
                         "value": 2.316e25,
                         "uncertainty": 7.400e23
@@ -417,6 +493,10 @@
                     }
                 },
                 "Trappist-1e": {
+                    "colour": {
+                        "dark": "#44a1de",
+                        "light": "#1b6698"
+                    },
                     "mass": {
                         "value": 4.132e25,
                         "uncertainty": 1.300e24
@@ -431,6 +511,10 @@
                     }
                 },
                 "Trappist-1f": {
+                    "colour": {
+                        "dark": "#bb85d1",
+                        "light": "#8b40a9"
+                    },
                     "mass": {
                         "value": 6.205e25,
                         "uncertainty": 1.840e24
@@ -445,6 +529,10 @@
                     }
                 },
                 "Trappist-1g": {
+                    "colour": {
+                        "dark": "#e274b1",
+                        "light": "#b12673"
+                    },
                     "mass": {
                         "value": 7.890e25,
                         "uncertainty": 2.260e24
@@ -459,6 +547,10 @@
                     }
                 },
                 "Trappist-1h": {
+                    "colour": {
+                        "dark": "#9f92c5",
+                        "light": "#68559f"
+                    },
                     "mass": {
                         "value": 1.945e25,
                         "uncertainty": 1.220e24

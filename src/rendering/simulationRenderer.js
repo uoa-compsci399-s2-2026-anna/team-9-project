@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import {
     simulationState,
@@ -23,7 +26,7 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateCameraDistance,
-    calculateUpVector,
+    calculateAverageNormal,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
 import { 
@@ -31,6 +34,8 @@ import {
     formatSimulationDate, 
     getElapsedDaysText, 
 } from "../ui/simulationCalendar.js";
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
 
 let timer;
 
@@ -39,17 +44,23 @@ let currentSimulationTime;
 
 let currentSystem;
 
+let currentSystemColours;
+
 let scene;
 let camera;
 let controls;
 let renderer;
 let labelRenderer;
 
+// Stores whether the user is currently dragging the camera
+let isDragging = false;
+
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
 const viewRadiusMultiplier = 1.2;
 const objectSizeMultiplier = 0.002;
+const hitboxPaddingMultiplier = 0.0005;
 
 const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 1;
@@ -62,7 +73,10 @@ const controlsZoomSpeed = 2.5;
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
+    up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
+
+const raycaster = new THREE.Raycaster();
 
 const currentSystemGroup = new THREE.Group();
 const solarSystemGroup = new THREE.Group();
@@ -76,8 +90,42 @@ const objectLabels = new Map();
 let objectSize;
 let objectScale = 1;
 const objectColour = "white";
+let hitboxPadding;
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
+
+/**
+ * The width (thickness) of the orbit lines for regular orbits and for orbits
+ * belonging to the Solar System when it's shown only as a comparison overlay.
+ */
+const orbitLineWidth = 4;
+const comparisonOrbitLineWidth = 2;
+
+/**
+ * Colour used for every object and orbit belonging to the Solar System when it's shown
+ * only as a comparison overlay.
+ */
+const comparisonOverlayColour = {
+    dark: "#c3911c",
+    light: "#7d5c12",
+};
+const comparisonOrbitOpacity = 0.5;
+const comparisonLabelOpacity = 0.8;
+
+/**
+ * Get the configured colour for an object in the current system, appropriate for the
+ * current light/dark theme. Falls back to black in light mode and white in dark mode if the
+ * object has no configured colour, or if currentSystemColours hasn't been populated yet.
+ *
+ * @param {string} name Name of the object
+ * @param {boolean} isDarkMode Whether to use the dark mode variant
+ * @returns {string} CSS colour string
+ */
+function getCurrentSystemColour(name, isDarkMode) {
+    const variant = isDarkMode ? "dark" : "light";
+    const fallbackColour = isDarkMode ? "white" : "black";
+    return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
+}
 
 const fontSizes = {
     Default: "12px",
@@ -92,15 +140,11 @@ const fontFamilies = {
 const themes = {
     light: {
         background: new THREE.Color("white"),
-        labelColour: "black",
-        textShadow: "0 0 3px white",
-        orbitColour: "black",
+        labelBackground: "rgba(255, 255, 255, 0.5)",
     },
     dark: {
         background: new THREE.Color("black"),
-        labelColour: "white",
-        textShadow: "0 0 3px black",
-        orbitColour: "white",
+        labelBackground: "rgba(0, 0, 0, 0.5)",
     },
 };
 
@@ -141,14 +185,144 @@ async function getReferenceSystemData(system) {
 }
 
 /**
+ * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
+ * NDC range from -1 to 1 on both axes.
+ *
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas to normalise against
+ * @returns {THREE.Vector2} The position in NDC
+ */
+function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
+    const rect = canvas.getBoundingClientRect();
+
+    return new THREE.Vector2(
+        ((clientX - rect.left) / rect.width) * 2 - 1,
+        -((clientY - rect.top) / rect.height) * 2 + 1
+    );
+}
+
+/**
+ * Finds the label at the given screen coordinates and returns the name of the object that 
+ * the label belongs to. If several labels overlap, then the object name corresponding to 
+ * the closest label to the camera is returned.
+ * 
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @returns {string|null} The name of the object owning the closest label at the given 
+ * coordinates, or null if no labels were found at this coordinates.
+ */
+function getLabelNameAt(clientX, clientY) {
+    let closestName = null;
+    let closestDistanceSquared = Infinity;
+    const labelWorldPosition = new THREE.Vector3();
+
+    for (const [name, label] of objectLabels) {
+        // Skip any labels whose objects are not visible
+        const mesh = objectMeshes.get(name);
+        if (!mesh.visible || !mesh.parent.visible) {
+            continue;
+        }
+
+        const rect = label.element.getBoundingClientRect();
+        // Check whether the given point is inside the label's bounding rectangle
+        const isOverLabel =
+            clientX >= rect.left &&
+            clientX <= rect.right &&
+            clientY >= rect.top &&
+            clientY <= rect.bottom;
+
+        if (!isOverLabel) {
+            continue;
+        }
+
+        label.getWorldPosition(labelWorldPosition);
+        const labelDistanceSquared = camera.position.distanceToSquared(labelWorldPosition);
+
+        if (labelDistanceSquared < closestDistanceSquared) {
+            closestDistanceSquared = labelDistanceSquared;
+            closestName = name;
+        }
+    }
+
+    return closestName;
+}
+
+/**
+ * Determines which object in the scene is at the given coordinates (if any). Checks are made 
+ * in the following order and the first match is returned:
+ * 1. The object's own mesh (hitboxes excluded)
+ * 2. The object's HTML label
+ * 3. The object's hitbox (a child of the object's mesh)
+ * 
+ * @param {number} clientX The x position in viewport coordinates
+ * @param {number} clientY The y position in viewport coordinates
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @returns {string|null} The name of the object at the given coordinates, or null if no
+ * object was found at these coordinates.
+ */
+function getObjectNameAt(clientX, clientY, canvas) {
+    // The three.js raycaster expects NDC coordinates
+    const mouseNdc = getNormalisedDeviceCoordinates(clientX, clientY, canvas);
+
+    // Create a ray from the camera through the mouse's position on the screen
+    raycaster.setFromCamera(mouseNdc, camera);
+
+    // Get all the meshes for all of the visible objects in the scene
+    const meshes = Array.from(objectMeshes.values())
+        .filter((mesh) => mesh.visible && mesh.parent.visible);
+
+    // Check whether the ray intersects any object meshes (excludes hitboxes)
+    let meshHits = raycaster.intersectObjects(meshes, false);
+    if (meshHits.length > 0) {
+        // Return the name of the nearest object the ray intersected
+        return meshHits[0].object.userData.name;
+    }
+
+    // Get the label name at the given coordinates (if any)
+    const labelName = getLabelNameAt(clientX, clientY);
+    if (labelName) {
+        return labelName;
+    }
+
+    // Check whether the ray intersects any hitboxes (by checking children of objects)
+    const hitboxHits = raycaster.intersectObjects(meshes, true);
+    
+    if (hitboxHits.length > 0) {
+        return hitboxHits[0].object.parent.userData.name;
+    }
+
+    return null;
+}
+
+/**
+ * Handles when the canvas is clicked on while the user is not moving the camera.
+ * Detects if an object was clicked and, if so, fires an event to notify other components
+ * that an object was clicked.
+ * 
+ * @param {MouseEvent} event The click event 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on 
+ */
+function onCanvasClick(event, canvas) {
+    const name = getObjectNameAt(event.clientX, event.clientY, canvas);
+
+    if (!name) {
+        return;
+    }
+
+    bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
+}
+
+/**
  * If the target object does not exist, then its mesh is created at the given position.
  * If the target object does exist, then its position is updated.
  * 
  * @param {string} name Name of the object
  * @param {Object} position Position of the object
  * @param {THREE.Group} group The group to add the object to
+ * @param {string} colour CSS colour string used for this object's label
  */
-function createOrUpdateObjectMesh(name, position, group) {
+function createOrUpdateObjectMesh(name, position, group, colour) {
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -163,16 +337,36 @@ function createOrUpdateObjectMesh(name, position, group) {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
 
+        // Give the mesh a name to identify the mesh with raycasting
+        mesh.userData.name = name;
+
+        // Create a larger invisible sphere for click detection
+        const hitboxSize = objectSize + hitboxPadding;
+        const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
+        const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
+
+        const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
+
+        // Add the hitbox as a child of the mesh
+        mesh.add(hitbox);
+
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
         const labelDiv = document.createElement("div");
         labelDiv.className = "planet-label";
         labelDiv.textContent = name;
-        labelDiv.style.color = getTheme().labelColour;
+        labelDiv.style.color = colour;
+        if (group === solarSystemGroup) {
+            labelDiv.style.opacity = comparisonLabelOpacity;
+        }
         labelDiv.style.fontSize = getFontSize(settings.textSize);
         labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.textShadow = getTheme().textShadow;
+        labelDiv.style.fontWeight = "bold";
+        labelDiv.style.backgroundColor = getTheme().labelBackground;
+        labelDiv.style.padding = "1px 5px";
+        labelDiv.style.borderRadius = "4px";
+        labelDiv.style.whiteSpace = "nowrap";
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
@@ -207,14 +401,33 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
 }
 
 /**
+ * Approximate a given opacity by blending the given colour towards the current background.
+ * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
+ * 
+ * @param {string} colour The base colour to fade 
+ * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
+ * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
+ * @returns A new colour faded towards the background colour by (1 - opacity)
+ */
+function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
+    const theme = getTheme(isDarkMode);
+    const backgroundColour = theme.background;
+
+    return new THREE.Color(colour).lerp(backgroundColour, 1 - opacity);
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
+ * 
+ * The orbital line is coloured to match its object.
  * 
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
+ * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, orbitalData, group) {
+function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     const { a, e, inc, Omega, omega } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
@@ -222,10 +435,22 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
     let line = orbitalLines.get(name);
 
     if (!line) {
-        const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: getTheme().orbitColour });
+        const canvas = renderer.domElement;
+        const geometry = new LineGeometry();
+        const material = new LineMaterial();
 
-        line = new THREE.Line(geometry, material);
+        if (group === solarSystemGroup) {
+            const comparisonColour = getFadedColour(colour, comparisonOrbitOpacity);
+            material.linewidth = comparisonOrbitLineWidth;
+            material.color.set(comparisonColour);
+        } else {
+            material.linewidth = orbitLineWidth;
+            material.color.set(colour);
+        }
+
+        material.resolution.set(canvas.clientWidth, canvas.clientHeight);
+
+        line = new Line2(geometry, material);
 
         if (group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System");
@@ -258,18 +483,14 @@ function createOrUpdateOrbitalLine(name, orbitalData, group) {
         points.push(x, y, 0);
     }
 
-    // Create or update the position attribute of the line's geometry
-    const geometry = line.geometry;
-    const position = geometry.getAttribute("position");
-    if (!position) {
-        geometry.setAttribute(
-            "position",
-            new THREE.Float32BufferAttribute(points, 3)
-        );
-    } else {
-        position.array.set(points);
-        position.needsUpdate = true;
+    if (e > 1) {
+        // Add the last point at the end of the range to ensure the line reaches the asymptote
+        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+        points.push(x, y, 0);
     }
+
+    // Create or update the position attribute of the line's geometry
+    line.geometry.setPositions(points);
 
     // Rotate the line to match the orbital parameters
     const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
@@ -289,13 +510,6 @@ function createHabitableZoneMesh() {
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
-
-    // Rotate the habitable zone to align its normal with the camera's up vector
-    const normal = new THREE.Vector3(0, 0, 1);
-    const quaternion = new THREE.Quaternion().setFromUnitVectors(normal, camera.up);
-    habitableZoneMesh.quaternion.copy(quaternion);
-
-    currentSystemGroup.add(habitableZoneMesh);
 }
 
 /**
@@ -305,6 +519,7 @@ function createHabitableZoneMesh() {
 async function updateSimulation() {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
+    const isDarkMode = settings.darkMode;
 
     const systems = [currentSystem];
     if (isComparingToSolarSystem) {
@@ -316,36 +531,49 @@ async function updateSimulation() {
 
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
-        createOrUpdateObjectMesh(name, position, currentSystemGroup);
+        createOrUpdateObjectMesh(name, position, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
     }
     for (const [name, orbitalData] of Object.entries(currentSystemData.orbital_data)) {
-        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup);
+        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
     }
 
     if (isComparingToSolarSystem) {
         const solarSystemData = allSystemData["Solar System"];
+        const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
 
+        // The comparison overlay uses a single colour for every object label and orbit
         for (const [name, position] of Object.entries(solarSystemData.positions)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateObjectMesh(name, position, solarSystemGroup);
+            createOrUpdateObjectMesh(name, position, solarSystemGroup, overlayColour);
         }
         for (const [name, orbitalData] of Object.entries(solarSystemData.orbital_data)) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup);
+            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup, overlayColour);
         }
     }
+}
+
+/**
+ * Align the system's average normal with the up vector.
+ * 
+ * @param {THREE.Group} group The group to align
+ * @param {THREE.Vector3} averageNormal The average normal vector of the system's orbital planes
+ */
+function alignSystemToCameraUp(group, averageNormal) {
+    const quaternion = new THREE.Quaternion()
+        .setFromUnitVectors(averageNormal, cameraDefaults.up);
+    group.quaternion.copy(quaternion);
 }
 
 /**
  * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  * @param {number} viewRadius The radius of view to fit within the camera
- * @param {THREE.Vector3} upVector The up vector for the camera
  */
-function initOrUpdateCamera(canvas, viewRadius, upVector) {
+function initOrUpdateCamera(canvas, viewRadius) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = calculateDefaultCameraPosition(
-        upVector,
+        cameraDefaults.up,
         cameraDistance
     );
 
@@ -355,7 +583,7 @@ function initOrUpdateCamera(canvas, viewRadius, upVector) {
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
         camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
-        camera.up.copy(upVector); // Stays fixed for the current system
+        camera.up.copy(cameraDefaults.up);
         camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
 
     } else {
@@ -381,6 +609,32 @@ function initOrUpdateControls(canvas, viewRadius) {
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
+
+    // Detect when the user is moving the camera
+    controls.addEventListener("change", () => {
+        isDragging = true;
+    });
+}
+
+/**
+ * Register pointer listeners on the canvas for raycasting. A click is ignored if it was part
+ * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
+ * objects on the scene.
+ * 
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ */
+function initRaycastingEvents(canvas) {
+    // Detect when the user holds their mouse down on the canvas
+    canvas.addEventListener("pointerdown", () => {
+        isDragging = false;
+    });
+
+    canvas.addEventListener("click", (event) => {
+        // Handle the event as long as the user isn't dragging the camera
+        if (!isDragging) {
+            onCanvasClick(event, canvas);
+        }
+    });
 }
 
 /**
@@ -392,6 +646,7 @@ function initScene() {
     scene.add(new THREE.AmbientLight(0xffffff, 1));
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);
+    scene.add(habitableZoneMesh);
 }
 
 /**
@@ -401,7 +656,7 @@ function initScene() {
 function initLabelRenderer(canvas) {
     labelRenderer = new CSS2DRenderer();
     labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.position = "fixed";
     labelRenderer.domElement.style.top = "0px";
     labelRenderer.domElement.style.left = "0px";
     labelRenderer.domElement.style.pointerEvents = "none";
@@ -427,6 +682,9 @@ export async function init(name) {
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone = systemInfo["habitable zone"];
+    currentSystemColours = Object.fromEntries(
+        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.colour])
+    );
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
@@ -441,17 +699,22 @@ export async function init(name) {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
-    const upVector = calculateUpVector(orbitalDataValues);
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
+    hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
-    initOrUpdateCamera(canvas, viewRadius, upVector);
+    // Align the system's average normal with the up vector (Z-axis)
+    const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
+    alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
+
+    createHabitableZoneMesh();
+
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
+    initRaycastingEvents(canvas);
     initScene();
     initLabelRenderer(canvas);
     initTimer();
-
-    createHabitableZoneMesh();
 
     /**
      * Persist the current simulation time, formatted simulation date, and days elapsed text 
@@ -494,7 +757,7 @@ export function setSimulationTimeToTime(time) {
 
 export function resetView() {
     camera.position.copy(cameraDefaults.position);
-    controls.target.copy(cameraDefaults.target); // Look at the sun
+    controls.target.copy(cameraDefaults.target); // Look at the barycenter
     controls.update();
 }
 
@@ -520,14 +783,13 @@ export async function compareToSolarSystem() {
     const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
     objectScale = comparisonObjectSize / objectSize;
 
-    // Rotate solar system to align with the current system's up vector
-    const solarUpVector = calculateUpVector(solarOrbitalDataValues);
-    const solarToCurrentQuaternion = new THREE.Quaternion().setFromUnitVectors(solarUpVector, camera.up);
-    solarSystemGroup.quaternion.copy(solarToCurrentQuaternion);
+    // Align the solar system's average normal with the up vector (Z-axis)
+    const solarSystemAverageNormal = calculateAverageNormal(solarOrbitalDataValues);
+    alignSystemToCameraUp(solarSystemGroup, solarSystemAverageNormal);
 
     solarSystemGroup.visible = true;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
     resetView();
@@ -550,7 +812,7 @@ export async function hideSolarSystem() {
 
     solarSystemGroup.visible = false;
 
-    initOrUpdateCamera(canvas, viewRadius, camera.up);
+    initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     updateSimulation();
 }
@@ -608,18 +870,31 @@ export function setFontFamily(chosenFont) {
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
-    scene.background = getTheme(isDarkMode).background;
+    const theme = getTheme(isDarkMode);
 
-    let labelColour = getTheme(isDarkMode).labelColour;
-    let labelTextShadow = getTheme(isDarkMode).textShadow;
-    for (const label of objectLabels.values()) {
-        label.element.style.color = labelColour;
-        label.element.style.textShadow = labelTextShadow;
+    scene.background = theme.background;
+
+    const labelBackground = theme.labelBackground;
+    const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+
+    for (const [name, label] of objectLabels) {
+        const mesh = objectMeshes.get(name);
+        const isComparisonOverlay = mesh?.parent === solarSystemGroup;
+
+        label.element.style.backgroundColor = labelBackground;
+        label.element.style.color = isComparisonOverlay
+            ? overlayColour
+            : getCurrentSystemColour(name, isDarkMode);
     }
 
-    let orbitColour = getTheme(isDarkMode).orbitColour;
-    for (const orbit of orbitalLines.values()) {
-        orbit.material.color.set(orbitColour);
+    const fadedOverlayColour = getFadedColour(overlayColour, comparisonOrbitOpacity, isDarkMode);
+
+    for (const [name, orbit] of orbitalLines) {
+        const isComparisonOverlay = orbit.parent === solarSystemGroup;
+
+        orbit.material.color.set(
+            isComparisonOverlay ? fadedOverlayColour : getCurrentSystemColour(name, isDarkMode)
+        );
     }
 }
 
@@ -638,6 +913,10 @@ function resizeRendererToDisplaySize() {
         labelRenderer.setSize(width, height);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
+
+        for (const line of orbitalLines.values()) {
+            line.material.resolution.set(width, height);
+        }
     }
 
     return needResize;

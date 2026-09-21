@@ -1,0 +1,7 @@
+{% macro container(style=None, width="w-fit") %}
+  <div
+    class="{{ style }} shadowed bordered-light {{ width }} container inline-flex"
+  >
+    {{ caller() }}
+  </div>
+{% endmacro %}
