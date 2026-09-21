@@ -4,7 +4,7 @@
     button_id=None,
     on_click_events=[],
     button_styling=None,
-    allow_repeat=false,
+    repeat_event_on_hold=false,
     repeat_period_ms=50,
     repeat_delay_ms=300
   )
@@ -12,7 +12,7 @@
   <div
     data-button-type
     data-on-click-events="{{ on_click_events | tojson | forceescape }}"
-    data-allow-repeat="{{ allow_repeat }}"
+    data-allow-repeat="{{ repeat_event_on_hold }}"
     data-repeat-period-ms="{{ repeat_period_ms }}"
     data-repeat-delay-ms="{{ repeat_delay_ms }}"
     class="z-10"

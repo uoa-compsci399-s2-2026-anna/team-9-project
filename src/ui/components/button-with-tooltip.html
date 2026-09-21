@@ -9,7 +9,7 @@
     tooltip_align="center",
     svg_size=7,
     on_click_events=[],
-    allow_repeat=false,
+    repeat_event_on_hold=false,
     repeat_period_ms=50,
     repeat_delay_ms=300
   )
@@ -17,7 +17,7 @@
   <div
     class="group relative z-30 inline-flex h-fit w-fit rounded-md"
     data-button-type
-    data-allow-repeat="{{ allow_repeat }}"
+    data-allow-repeat="{{ repeat_event_on_hold }}"
     data-repeat-period-ms="{{ repeat_period_ms }}"
     data-on-click-events="{{ on_click_events | tojson | forceescape }}"
     data-repeat-delay-ms="{{ repeat_delay_ms }}"
