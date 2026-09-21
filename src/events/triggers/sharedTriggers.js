@@ -54,7 +54,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             // Handle repeating buttons
 
             let repeatIntervalId = null;
-            let delayTimeoutId = null;
+            let repeatDelayTimeoutId = null;
 
             /**
              * The duration to wait for while the button is pressed down before
@@ -64,12 +64,15 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
 
             // Add event when pointer (mouse, touch, stylus, etc.) pressed down
             button.addEventListener("pointerdown", () => {
-                if (repeatIntervalId !== null || delayTimeoutId !== null) {
+                if (
+                    repeatIntervalId !== null ||
+                    repeatDelayTimeoutId !== null
+                ) {
                     return;
                 }
 
-                delayTimeoutId = setTimeout(() => {
-                    delayTimeoutId = null;
+                repeatDelayTimeoutId = setTimeout(() => {
+                    repeatDelayTimeoutId = null;
                     repeatIntervalId = setInterval(() => {
                         bus.publish(event, getEventDetail());
                     }, Number(buttonType.dataset.repeatPeriodMs));
@@ -80,9 +83,9 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             document.addEventListener("pointercancel", resetAllTimers);
 
             function resetAllTimers() {
-                if (delayTimeoutId !== null) {
-                    clearTimeout(delayTimeoutId);
-                    delayTimeoutId = null;
+                if (repeatDelayTimeoutId !== null) {
+                    clearTimeout(repeatDelayTimeoutId);
+                    repeatDelayTimeoutId = null;
                 }
 
                 if (repeatIntervalId !== null) {
