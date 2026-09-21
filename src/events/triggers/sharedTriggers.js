@@ -53,8 +53,8 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         if (allowRepeat) {
             // Handle repeating buttons
 
-            let intervalId = null;
-            let timeoutId = null;
+            let repeatIntervalId = null;
+            let delayTimeoutId = null;
 
             /**
              * The duration to wait for while the button is pressed down before
@@ -64,13 +64,13 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
 
             // Add event when pointer (mouse, touch, stylus, etc.) pressed down
             button.addEventListener("pointerdown", () => {
-                if (intervalId !== null || timeoutId !== null) {
+                if (repeatIntervalId !== null || delayTimeoutId !== null) {
                     return;
                 }
 
-                timeoutId = setTimeout(() => {
-                    timeoutId = null;
-                    intervalId = setInterval(() => {
+                delayTimeoutId = setTimeout(() => {
+                    delayTimeoutId = null;
+                    repeatIntervalId = setInterval(() => {
                         bus.publish(event, getEventDetail());
                     }, Number(buttonType.dataset.repeatPeriodMs));
                 }, repeatDelayMs);
@@ -80,14 +80,14 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             document.addEventListener("pointercancel", resetAllTimers);
 
             function resetAllTimers() {
-                if (timeoutId !== null) {
-                    clearTimeout(timeoutId);
-                    timeoutId = null;
+                if (delayTimeoutId !== null) {
+                    clearTimeout(delayTimeoutId);
+                    delayTimeoutId = null;
                 }
 
-                if (intervalId !== null) {
-                    clearInterval(intervalId);
-                    intervalId = null;
+                if (repeatIntervalId !== null) {
+                    clearInterval(repeatIntervalId);
+                    repeatIntervalId = null;
                 }
             }
         }
