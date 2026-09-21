@@ -99,38 +99,39 @@
       {% call container(style="h-full") %}
         <!-- Simulation speed adjuster -->
         <div class="flex items-center gap-2 p-2">
-          <!-- Decrease speed button -->
-          {{
-            button_with_tooltip(
-              tooltip_text="Decrease speed",
-              svg_path="M18 12.998H6a1 1 0 0 1 0-2h12a1 1 0 0 1 0 2",
-              tooltip_position="above",
-              on_click_events=["sim:decrease_speed"],
-              repeat_event_on_hold=true
-            )
-          }}
+          <div class="control bordered flex items-center gap-1 p-0">
+            <!-- Decrease speed button -->
+            {{
+              button_with_tooltip(
+                tooltip_text="Decrease speed",
+                svg_path="M18 12.998H6a1 1 0 0 1 0-2h12a1 1 0 0 1 0 2",
+                tooltip_position="above",
+                on_click_events=["sim:decrease_speed"],
+                repeat_event_on_hold=true
+              )
+            }}
 
-          <!-- Simulation speed input -->
-          <input
-            id="speed-adjuster"
-            type="number"
-            inputmode="numeric"
-            min="0"
-            class="control bordered w-18 tabular-nums"
-            value="{{ sim_state.simulationSpeed }}"
-          />
+            <!-- Simulation speed input -->
+            <input
+              id="speed-adjuster"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              class="w-14 tabular-nums"
+              value="{{ sim_state.simulationSpeed }}"
+            />
 
-          <!-- Increase speed button -->
-          {{
-            button_with_tooltip(
-              tooltip_text="Increase speed",
-              svg_path="M18 12.998h-5v5a1 1 0 0 1-2 0v-5H6a1 1 0 0 1 0-2h5v-5a1 1 0 0 1 2 0v5h5a1 1 0 0 1 0 2",
-              tooltip_position="above",
-              on_click_events=["sim:increase_speed"],
-              repeat_event_on_hold=true
-            )
-          }}
-
+            <!-- Increase speed button -->
+            {{
+              button_with_tooltip(
+                tooltip_text="Increase speed",
+                svg_path="M18 12.998h-5v5a1 1 0 0 1-2 0v-5H6a1 1 0 0 1 0-2h5v-5a1 1 0 0 1 2 0v5h5a1 1 0 0 1 0 2",
+                tooltip_position="above",
+                on_click_events=["sim:increase_speed"],
+                repeat_event_on_hold=true
+              )
+            }}
+          </div>
           <select id="speed-unit-selector" class="control bordered w-18">
             {% for option in sim_state_schema.simulationSpeedUnit.options %}
               <option
