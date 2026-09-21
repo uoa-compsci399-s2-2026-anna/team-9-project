@@ -768,7 +768,26 @@ export function setSimulationTimeToTime(time) {
     updateSimulation();
 }
 
-export function resetView() {
+export async function resetView() {
+    const canvas = renderer.domElement;
+
+    const currentSystemData = await getReferenceSystemData(currentSystem);
+    const currentSystemValues = getVisibleOrbitalDataValues(currentSystem, currentSystemData.orbital_data);
+    let maxApoapsis = calculateMaxApoapsis(currentSystemValues);
+
+    if (comparingToSolarSystem) {
+        const solarSystemData = await getReferenceSystemData("Solar System");
+        const solarSystemValues = getVisibleOrbitalDataValues("Solar System", solarSystemData.orbital_data);
+        maxApoapsis = Math.max(maxApoapsis, calculateMaxApoapsis(solarSystemValues));
+    }
+
+    const viewRadius = maxApoapsis * viewRadiusMultiplier;
+
+    // Update the camera and controls for the new view radius
+    initOrUpdateCamera(canvas, viewRadius);
+    initOrUpdateControls(canvas, viewRadius);
+
+    // Move camera to the default position and target
     camera.position.copy(cameraDefaults.position);
     controls.target.copy(cameraDefaults.target); // Look at the barycenter
     controls.update();
