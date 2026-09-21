@@ -3,12 +3,16 @@
     button_text,
     button_id=None,
     on_click_events=[],
-    button_styling=None
+    button_styling=None,
+    allow_repeat=false,
+    repeat_period_ms=50
   )
 %}
   <div
     data-button-type
     data-on-click-events="{{ on_click_events | tojson | forceescape }}"
+    data-allow-repeat="{{ allow_repeat }}"
+    data-repeat-period-ms="{{ repeat_period_ms }}"
     class="z-10"
   >
     <button
