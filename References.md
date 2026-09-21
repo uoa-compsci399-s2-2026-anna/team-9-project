@@ -54,6 +54,10 @@ Units were converted to SI units via:
 TRAPPIST-1's orbital periods were calculated via Rebound via data from the cited
 paper above.
 
+TRAPPIST-1's habitable zone was given by Dr. Larissa Markwardt (Research Fellow
+in the Department of Physics University of Auckland) and verified with figure 1
+of: https://arxiv.org/pdf/1702.06936#page=2
+
 ## Spreadsheet
 
 https://docs.google.com/spreadsheets/d/1KE7ZVozelEonUsZPyBT29NdcSsfFrvfnJ53fg395jJ0/edit?usp=sharing
