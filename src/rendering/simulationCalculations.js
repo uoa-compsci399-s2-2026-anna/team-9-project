@@ -153,3 +153,50 @@ export function calculateDefaultCameraPosition(upVector, cameraDistance) {
 
     return cameraDirection.multiplyScalar(cameraDistance);
 }
+
+/**
+ * Round a number to the closest value in the set {1, 2, 5} multiplied by a power of 10.
+ * @param {number} x The number to round
+ * @returns {number} The rounded number
+ */
+function roundToNiceNumber(x) {
+    if (x <= 0) {
+        throw new Error("Input must be positive");
+    }
+
+    const exponent = Math.floor(Math.log10(x));
+    const magnitude = Math.pow(10, exponent);
+
+    const normalized = x / magnitude;
+    let closest;
+
+    if (normalized < 1.5) {
+        closest = 1;
+    } else if (normalized < 3.5) {
+        closest = 2;
+    } else if (normalized < 7.5) {
+        closest = 5;
+    } else {
+        closest = 10;
+    }
+
+    return closest * magnitude;
+}
+
+/**
+ * Calculate the size of each division in the reference grid.
+ * @param {number} fov The field of view of the camera in degrees
+ * @param {number} cameraDistanceToTargetProjection The distance from the camera to the target projection on the reference plane
+ * @param {number} divisionsInView The number of divisions visible in the view
+ * @returns {number} The calculated size of each division in the reference grid
+ */
+export function calculateReferenceGridDivisionSize(
+    fov,
+    cameraDistanceToTargetProjection,
+    divisionsInView
+) {
+    const fovRad = fov * (Math.PI / 180);
+    const viewRadius = cameraDistanceToTargetProjection * Math.tan(fovRad / 2);
+    const divisionSize = 2*viewRadius / divisionsInView;
+    return roundToNiceNumber(divisionSize);
+}
