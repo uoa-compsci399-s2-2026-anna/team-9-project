@@ -155,6 +155,17 @@ export function calculateDefaultCameraPosition(upVector, cameraDistance) {
 }
 
 /**
+ * Calculate the distance from the camera to the target projection on the reference plane.
+ * @param {THREE.Vector3} cameraPosition The position of the camera
+ * @param {THREE.Vector3} targetPosition The position of the target
+ * @returns {number} The calculated distance
+ */
+export function calculateCameraDistanceToTargetProjection(cameraPosition, targetPosition) {
+    const targetProjection = new THREE.Vector3(targetPosition.x, targetPosition.y, 0);
+    return cameraPosition.distanceTo(targetProjection);
+}
+
+/**
  * Round a number to the closest value in the set {1, 2, 5} multiplied by a power of 10.
  * @param {number} x The number to round
  * @returns {number} The rounded number

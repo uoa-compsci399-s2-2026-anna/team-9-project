@@ -28,6 +28,7 @@ import {
     calculateCameraDistance,
     calculateAverageNormal,
     calculateDefaultCameraPosition,
+    calculateCameraDistanceToTargetProjection,
 } from "./simulationCalculations.js";
 import { 
     updateCalendar, 
@@ -543,6 +544,10 @@ function createReferenceGrid() {
 }
 
 function updateReferenceGridScale(cameraPosition, targetPosition) {
+    const cameraDistanceToTargetProjection = calculateCameraDistanceToTargetProjection(
+        cameraPosition,
+        targetPosition
+    );
 }
 
 /**
