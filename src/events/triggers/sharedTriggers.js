@@ -67,8 +67,6 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
                     return;
                 }
 
-                bus.publish(event, getEventDetail());
-
                 timeoutId = setTimeout(() => {
                     timeoutId = null;
                     intervalId = setInterval(() => {
@@ -91,13 +89,11 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
                     intervalId = null;
                 }
             }
-        } else {
-            // Handle non-repeating buttons
-
-            button.addEventListener("click", () => {
-                bus.publish(event, getEventDetail());
-            });
         }
+
+        button.addEventListener("click", () => {
+            bus.publish(event, getEventDetail());
+        });
 
         function getEventDetail() {
             return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : {};
