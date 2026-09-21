@@ -100,7 +100,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         }
 
         function getEventDetail() {
-            return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : null;
+            return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : {};
         }
     }
 });
