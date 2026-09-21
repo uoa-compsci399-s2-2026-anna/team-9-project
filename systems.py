@@ -72,7 +72,7 @@ class Simulations:
             return None
 
     def reinitialise_sim(
-        self, system_data: dict, system_name: str, time_to_integrate_to: float = None
+        self, system_data: dict, system_name: str, time_to_integrate_to: float | None = None
     ):
         """
         Reinitialises a simulation with the (optionally) given JD TDB time to integrate to.
