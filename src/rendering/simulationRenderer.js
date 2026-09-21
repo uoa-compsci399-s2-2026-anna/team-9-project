@@ -402,7 +402,7 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
  * @returns A new colour faded towards the background colour by (1 - opacity)
  */
-function getFadedColour(colour, opacity, isDarkMode = settings.isDarkMode) {
+function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
     const theme = getTheme(isDarkMode);
     const backgroundColour = theme.background;
 
