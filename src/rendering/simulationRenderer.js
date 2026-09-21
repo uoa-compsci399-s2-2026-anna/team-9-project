@@ -623,10 +623,12 @@ function initOrUpdateControls(canvas, viewRadius) {
     // Detect when the user is moving the camera
     controls.addEventListener("change", () => {
         isDragging = true;
+        const cameraOffset = camera.position.clone().sub(controls.target);
         controls.target.clamp(
             controlsBoundingBox.min,
             controlsBoundingBox.max
         );
+        camera.position.copy(controls.target.clone().add(cameraOffset));
     });
 }
 
