@@ -35,6 +35,9 @@ Units were converted to SI units via:
 - Kepler-16b's mass was multiplied by the mass of Jupiter × 1.898125e27 kg (Nasa\*)
 - Kelper-16b's radius was multiplied by the radius of Jupiter × 6.9911e7 m (Nasa\*)
 
+Kepler-16's orbital periods were calculated via Rebound via data from the cited
+paper above.
+
 ## TRAPPIST-1
 
 Data is calculated from data given in Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets", The Astrophysical Journal, 922:107

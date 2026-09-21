@@ -358,6 +358,7 @@
                         "value": 4450,
                         "uncertainty": 150
                     },
+                    "period": null,
                     "radius": {
                         "value": 4.52e8,
                         "uncertainty": 9.05e5
@@ -376,6 +377,7 @@
                         "value": null,
                         "uncertainty": null
                     },
+                    "period": 3549292.9307794133,
                     "radius": {
                         "value": 1.57e8,
                         "uncertainty": 4.11e5
@@ -394,6 +396,7 @@
                         "value": null,
                         "uncertainty": null
                     },
+                    "period": 19764707.241229557,
                     "radius": {
                         "value": 5.270e07,
                         "uncertainty": 1.748e05
