@@ -62,6 +62,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
              */
             const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
 
+            // Add event when pointer (mouse, touch, stylus, etc.) pressed down
             button.addEventListener("pointerdown", () => {
                 if (intervalId !== null || timeoutId !== null) {
                     return;
