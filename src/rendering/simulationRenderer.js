@@ -538,6 +538,11 @@ function createReferenceGrid() {
     );
     referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
     referenceGrid.visible = simulationState.referenceGridShown;
+
+    updateReferenceGridScale(cameraDefaults.position, cameraDefaults.target);
+}
+
+function updateReferenceGridScale(cameraPosition, targetPosition) {
 }
 
 /**
@@ -661,6 +666,7 @@ function createControlsChangeHandler(viewRadius) {
         controls.target.clampLength(minLength, maxLength);
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
+        updateReferenceGridScale(camera.position, controls.target);
     };
 }
 
@@ -756,15 +762,16 @@ export async function init(name) {
     const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
     alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
 
-    createHabitableZoneMesh();
-    createReferenceGrid();
-
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     initRaycastingEvents(canvas);
-    initScene();
     initLabelRenderer(canvas);
     initTimer();
+
+    createHabitableZoneMesh();
+    createReferenceGrid();
+
+    initScene();
 
     /**
      * Persist the current simulation time, formatted simulation date, and days elapsed text 
