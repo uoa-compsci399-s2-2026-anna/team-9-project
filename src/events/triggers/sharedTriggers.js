@@ -75,10 +75,10 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
                 }, repeatDelayMs);
             });
 
-            document.addEventListener("pointerup", resetInterval);
-            document.addEventListener("pointercancel", resetInterval);
+            document.addEventListener("pointerup", resetAllTimers);
+            document.addEventListener("pointercancel", resetAllTimers);
 
-            function resetInterval() {
+            function resetAllTimers() {
                 if (timeoutId !== null) {
                     clearTimeout(timeoutId);
                     timeoutId = null;
