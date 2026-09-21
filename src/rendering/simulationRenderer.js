@@ -58,7 +58,7 @@ let isDragging = false;
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
-const viewRadiusMultiplier = 1.2;
+const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
 
