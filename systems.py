@@ -2,7 +2,8 @@ from typing import cast
 
 import rebound
 from astropy.time import Time
-from utility import get_position_dict, get_osculating_orbit
+
+from utility import get_osculating_orbit, get_position_dict
 
 UNITS = ("AU", "day", "Msun")
 
