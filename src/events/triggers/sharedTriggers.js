@@ -51,7 +51,8 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             buttonType.dataset.allowRepeat.toLowerCase() === "true";
 
         if (allowRepeat) {
-            // Handle button repeat
+            // Handle repeating buttons
+
             let intervalId = null;
             let timeoutId = null;
 
@@ -91,7 +92,8 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
                 }
             }
         } else {
-            // Handle non-repeating button
+            // Handle non-repeating buttons
+
             button.addEventListener("click", () => {
                 bus.publish(event, getEventDetail());
             });
