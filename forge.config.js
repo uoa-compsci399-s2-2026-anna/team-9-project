@@ -12,6 +12,7 @@ module.exports = {
             './dist/',
             './src/',
             './config.json',
+            './src/ui/loader.html',
         ],
         ignore: [
             /^\/\.git/,
