@@ -244,8 +244,6 @@ async function createWindow(python_url) {
 
     // Show spinner while app is launching
     mainWindow.loadFile(getPathToLoader());
-    // Set title
-    mainWindow.setTitle('Loading OPIS...');
 
     // Maximise the window and then show it
     mainWindow.maximize();
