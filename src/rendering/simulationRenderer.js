@@ -70,6 +70,16 @@ const controlsMinMultiplier = 10;
 const controlsMaxMultiplier = 1.5;
 const controlsZoomSpeed = 2.5;
 
+const controlsBoundingBox = new THREE.Box3(
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0, 0, 0)
+); // Will be updated to fit the current system's view radius
+
+function updateControlsBoundingBox(viewRadius) {
+    controlsBoundingBox.min.set(-viewRadius, -viewRadius, -viewRadius);
+    controlsBoundingBox.max.set(viewRadius, viewRadius, viewRadius);
+}
+
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
@@ -700,6 +710,8 @@ export async function init(name) {
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
 
+    updateControlsBoundingBox(viewRadius);
+
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
@@ -777,6 +789,8 @@ export async function compareToSolarSystem() {
     const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
     const viewRadius = Math.max(currentViewRadius, solarViewRadius);
 
+    updateControlsBoundingBox(viewRadius);
+
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
     const solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
@@ -809,6 +823,8 @@ export async function hideSolarSystem() {
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const viewRadius = maxApoapsis * viewRadiusMultiplier;
+
+    updateControlsBoundingBox(viewRadius);
 
     solarSystemGroup.visible = false;
 
