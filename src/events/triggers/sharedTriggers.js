@@ -64,6 +64,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
 
             // Add event when pointer (mouse, touch, stylus, etc.) pressed down
             button.addEventListener("pointerdown", () => {
+                // Prevent registering duplicate timers
                 if (
                     repeatIntervalId !== null ||
                     repeatDelayTimeoutId !== null
@@ -71,17 +72,29 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
                     return;
                 }
 
+                // Wait repeatDelayMs milliseconds...
                 repeatDelayTimeoutId = setTimeout(() => {
+                    // Then reset timeout timer
                     repeatDelayTimeoutId = null;
+
+                    // Start interval (repeating) timer repeating every
+                    // repeatPeriodMs milliseconds
                     repeatIntervalId = setInterval(() => {
+                        // Publish event on each callback
                         bus.publish(event, getEventDetail());
                     }, Number(buttonType.dataset.repeatPeriodMs));
                 }, repeatDelayMs);
             });
 
+            // Clear all timers (stop firing events) when pointerup (mouse etc.
+            // released) or pointercancel ('unlikely to be any more pointer
+            // events')
             document.addEventListener("pointerup", resetAllTimers);
             document.addEventListener("pointercancel", resetAllTimers);
 
+            /**
+             * Resets all existing active timers.
+             */
             function resetAllTimers() {
                 if (repeatDelayTimeoutId !== null) {
                     clearTimeout(repeatDelayTimeoutId);
