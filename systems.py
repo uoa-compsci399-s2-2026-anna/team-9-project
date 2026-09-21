@@ -1,3 +1,5 @@
+from typing import cast
+
 import rebound
 from astropy.time import Time
 from utility import get_position_dict, get_osculating_orbit
@@ -84,7 +86,7 @@ class Simulations:
             system_data, system_name, time_to_integrate_to
         )
 
-    def quick_integrate(self, t: float, system_data: str):
+    def quick_integrate(self, t: float, system_data: dict) -> rebound.Simulation:
         """
         Integrates a simulation to the given unix time.
         If it is a shorter time distance it will reinitialised the simulation and
@@ -92,10 +94,16 @@ class Simulations:
         """
 
         system_name: str = system_data["name"].lower()
-        sim: rebound.Simulation = self.get_sim(system_name)
+        sim: rebound.Simulation | None = self.get_sim(system_name)
 
         # Get the timestamp in sim time
         sim_time: float = unix_to_sim_time(system_name.lower(), t)
+
+        # Init system if it is none
+        if sim is None:
+            self.reinitialise_sim(system_data, system_name, sim_time)
+            # get_sim cannot return None so we cast
+            return cast(rebound.Simulation, self.get_sim(system_name))
 
         # Calculate the time from the given time to where the sim is
         current_temporal_distance: float = abs(sim_time - sim.t)
@@ -108,7 +116,8 @@ class Simulations:
         if initial_temporal_distance < current_temporal_distance:
             # If the difference is smaller to reinitialise do so
             self.reinitialise_sim(system_data, system_name, jd_tdb_time)
-            return self.get_sim(system_name)
+            # get_sim cannot return None so we cast
+            return cast(rebound.Simulation, self.get_sim(system_name))
         else:
             # If the difference is greater, integrate normally
             sim.integrate(sim_time)
