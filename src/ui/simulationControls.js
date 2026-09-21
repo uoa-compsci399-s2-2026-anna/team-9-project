@@ -154,6 +154,7 @@ function increaseSpeedAdjusterValue(value) {
     }
 
     // Dispatch event (received in simulationTriggers.js, to sanitise input)
+    // to speedAdjuster.addEventListener("input", (event) => { ... })
     const event = new Event("input", {
         bubbles: true,
         cancelable: true,
