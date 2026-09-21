@@ -156,6 +156,8 @@ const habitableZoneOpacity = 0.2;
 let habitableZone;
 let habitableZoneMesh;
 
+let referenceGrid;
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -527,6 +529,17 @@ function createHabitableZoneMesh() {
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
 }
 
+function createReferenceGrid() {
+    referenceGrid = new THREE.GridHelper(
+        1000, // Size of the grid
+        1000,  // Number of divisions
+        0x888888,
+        0x888888
+    );
+    referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
+    referenceGrid.visible = simulationState.referenceGridShown;
+}
+
 /**
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
@@ -682,6 +695,7 @@ function initScene() {
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);
     scene.add(habitableZoneMesh);
+    scene.add(referenceGrid);
 }
 
 /**
@@ -743,6 +757,7 @@ export async function init(name) {
     alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
 
     createHabitableZoneMesh();
+    createReferenceGrid();
 
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
