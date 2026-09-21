@@ -623,6 +623,10 @@ function initOrUpdateControls(canvas, viewRadius) {
     // Detect when the user is moving the camera
     controls.addEventListener("change", () => {
         isDragging = true;
+        controls.target.clamp(
+            controlsBoundingBox.min,
+            controlsBoundingBox.max
+        );
     });
 }
 
