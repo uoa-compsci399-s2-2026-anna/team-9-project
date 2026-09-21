@@ -53,23 +53,38 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         if (allowRepeat) {
             // Handle button repeat
             let intervalId = null;
+            let timeoutId = null;
+
+            /**
+             * The duration to wait for while the button is pressed down before
+             * repeating begins.
+             */
+            const REPEAT_BUTTON_TIMEOUT_MS = 300;
 
             button.addEventListener("pointerdown", () => {
-                if (intervalId !== null) {
+                if (intervalId !== null || timeoutId !== null) {
                     return;
                 }
 
                 bus.publish(event, getEventDetail());
 
-                intervalId = setInterval(() => {
-                    bus.publish(event, getEventDetail());
-                }, Number(buttonType.dataset.repeatPeriodMs));
+                timeoutId = setTimeout(() => {
+                    timeoutId = null;
+                    intervalId = setInterval(() => {
+                        bus.publish(event, getEventDetail());
+                    }, Number(buttonType.dataset.repeatPeriodMs));
+                }, REPEAT_BUTTON_TIMEOUT_MS);
             });
 
             document.addEventListener("pointerup", resetInterval);
             document.addEventListener("pointercancel", resetInterval);
 
             function resetInterval() {
+                if (timeoutId !== null) {
+                    clearInterval(timeoutId);
+                    timeoutId = null;
+                }
+
                 if (intervalId !== null) {
                     clearInterval(intervalId);
                     intervalId = null;
