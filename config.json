@@ -448,6 +448,7 @@
                         "value": 2566.0,
                         "uncertainty": 26.0
                     },
+                    "period": null,
                     "radius": {
                         "value": 8.293e07,
                         "uncertainty": 9.044e05
@@ -466,6 +467,7 @@
                         "value": 400.1,
                         "uncertainty": 7.7
                     },
+                    "period": 130535.36640000013,
                     "radius": {
                         "absoulute": 7.119e07,
                         "uncertainty": 8.700e05
@@ -484,6 +486,7 @@
                         "value": 341.9,
                         "uncertainty": 6.6
                     },
+                    "period": 209255.3568000002,
                     "radius": {
                         "value": 6.995e07,
                         "uncertainty": 8.600e05
@@ -502,6 +505,7 @@
                         "value": 288.0,
                         "uncertainty": 5.6
                     },
+                    "period": 349852.52160000004,
                     "radius": {
                         "value": 5.026e07,
                         "uncertainty": 7.100e05
@@ -520,6 +524,7 @@
                         "value": 251.3,
                         "uncertainty": 4.9
                     },
+                    "period": 527127.5231999999,
                     "radius": {
                         "value": 5.868e07,
                         "uncertainty": 8.200e05
@@ -538,6 +543,7 @@
                         "value": 219.0,
                         "uncertainty": 4.2
                     },
+                    "period": 795531.4560000001,
                     "radius": {
                         "value": 6.664e07,
                         "uncertainty": 8.500e05
@@ -556,6 +562,7 @@
                         "value": 198.6,
                         "uncertainty": 3.8
                     },
+                    "period": 1067251.3343999994,
                     "radius": {
                         "value": 7.204e07,
                         "uncertainty": 9.400e05
@@ -574,6 +581,7 @@
                         "value": 168.0,
                         "uncertainty": 28.0
                     },
+                    "period": 1621975.6224000002,
                     "radius": {
                         "value": 4.817e07,
                         "uncertainty": 9.100e05

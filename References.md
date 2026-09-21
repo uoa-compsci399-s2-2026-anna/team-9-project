@@ -49,6 +49,9 @@ Units were converted to SI units via:
 - The planets' mass was multiplied by the mass of Jupiter × 1.898125e27 kg (Nasa\*)
 - The planets' radius was multiplied by the radius of Jupiter × 6.9911e7 m (Nasa\*)
 
+TRAPPIST-1's orbital periods were calculated via Rebound via data from the cited
+paper above.
+
 ## Spreadsheet
 
 https://docs.google.com/spreadsheets/d/1KE7ZVozelEonUsZPyBT29NdcSsfFrvfnJ53fg395jJ0/edit?usp=sharing
