@@ -99,8 +99,6 @@
       {% call container(style="h-full") %}
         <!-- Simulation speed adjuster -->
         <div class="flex items-center gap-2 p-2">
-          <label class="text-secondary">speed</label>
-
           <!-- Decrease speed button -->
           {{
             button_with_tooltip(
@@ -144,7 +142,7 @@
             {% endfor %}
           </select>
 
-          <p class="text-secondary pr-3">/ s</p>
+          <p class="text-secondary pr-3">per second</p>
         </div>
       {% endcall %}
     </div>
