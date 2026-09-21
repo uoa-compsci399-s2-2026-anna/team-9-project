@@ -52,21 +52,28 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
 
         if (allowRepeat) {
             // Handle button repeat
-            let intervalId;
+            let intervalId = null;
 
-            button.addEventListener("mousedown", () => {
+            button.addEventListener("pointerdown", () => {
+                if (intervalId !== null) {
+                    return;
+                }
+
                 bus.publish(event, getEventDetail());
 
                 intervalId = setInterval(() => {
                     bus.publish(event, getEventDetail());
-                }, buttonType.dataset.repeatPeriodMs);
+                }, Number(buttonType.dataset.repeatPeriodMs));
             });
 
-            button.addEventListener("mouseup", resetInterval);
-            button.addEventListener("mouseleave", resetInterval);
+            document.addEventListener("pointerup", resetInterval);
+            document.addEventListener("pointercancel", resetInterval);
 
             function resetInterval() {
-                clearInterval(intervalId);
+                if (intervalId !== null) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                }
             }
         } else {
             // Handle non-repeating button
