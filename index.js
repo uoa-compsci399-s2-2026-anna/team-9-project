@@ -164,7 +164,7 @@ function getPathToLoader() {
     const filePath = '/src/ui/loader.html';
     var appDirectory = app.getAppPath();
 
-    // If the application is packaged traverse back from the app.asar
+    // If the application is packaged traverse back from the app.asar given by app.getAppPath()
     // i.e. .../team-9-project/resources/app.asar -> .../team-9-project/resources/
     if (app.isPackaged) {
         appDirectory = path.dirname(appDirectory);
