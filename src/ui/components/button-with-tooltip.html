@@ -10,7 +10,8 @@
     svg_size=7,
     on_click_events=[],
     allow_repeat=false,
-    repeat_period_ms=50
+    repeat_period_ms=50,
+    repeat_delay_ms=300
   )
 %}
   <div
@@ -19,6 +20,7 @@
     data-allow-repeat="{{ allow_repeat }}"
     data-repeat-period-ms="{{ repeat_period_ms }}"
     data-on-click-events="{{ on_click_events | tojson | forceescape }}"
+    data-repeat-delay-ms="{{ repeat_delay_ms }}"
   >
     <button
       id="{{ button_id }}"

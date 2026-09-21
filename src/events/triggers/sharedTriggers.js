@@ -60,7 +60,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
              * The duration to wait for while the button is pressed down before
              * repeating begins.
              */
-            const REPEAT_BUTTON_TIMEOUT_MS = 300;
+            const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
 
             button.addEventListener("pointerdown", () => {
                 if (intervalId !== null || timeoutId !== null) {
@@ -74,7 +74,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
                     intervalId = setInterval(() => {
                         bus.publish(event, getEventDetail());
                     }, Number(buttonType.dataset.repeatPeriodMs));
-                }, REPEAT_BUTTON_TIMEOUT_MS);
+                }, repeatDelayMs);
             });
 
             document.addEventListener("pointerup", resetInterval);

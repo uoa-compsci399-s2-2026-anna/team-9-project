@@ -5,7 +5,8 @@
     on_click_events=[],
     button_styling=None,
     allow_repeat=false,
-    repeat_period_ms=50
+    repeat_period_ms=50,
+    repeat_delay_ms=300
   )
 %}
   <div
@@ -13,6 +14,7 @@
     data-on-click-events="{{ on_click_events | tojson | forceescape }}"
     data-allow-repeat="{{ allow_repeat }}"
     data-repeat-period-ms="{{ repeat_period_ms }}"
+    data-repeat-delay-ms="{{ repeat_delay_ms }}"
     class="z-10"
   >
     <button
