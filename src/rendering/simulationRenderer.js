@@ -68,7 +68,7 @@ const hitboxPaddingMultiplier = 0.0005;
 
 const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 1;
-const cameraFarMultiplier = 3;
+const cameraFarMultiplier = 100;
 
 const controlsMinMultiplier = 10;
 const controlsMaxMultiplier = 1.5;
