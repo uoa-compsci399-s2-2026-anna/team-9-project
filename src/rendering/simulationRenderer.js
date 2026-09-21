@@ -218,6 +218,12 @@ function getLabelNameAt(clientX, clientY) {
     const labelWorldPosition = new THREE.Vector3();
 
     for (const [name, label] of objectLabels) {
+        // Skip any labels whose objects are not visible
+        const mesh = objectMeshes.get(name);
+        if (!mesh.visible || !mesh.parent.visible) {
+            continue;
+        }
+
         const rect = label.element.getBoundingClientRect();
         // Check whether the given point is inside the label's bounding rectangle
         const isOverLabel =
@@ -262,8 +268,9 @@ function getObjectNameAt(clientX, clientY, canvas) {
     // Create a ray from the camera through the mouse's position on the screen
     raycaster.setFromCamera(mouseNdc, camera);
 
-    // Get all the meshes for all of the objects in the scene
-    const meshes = Array.from(objectMeshes.values());
+    // Get all the meshes for all of the visible objects in the scene
+    const meshes = Array.from(objectMeshes.values())
+        .filter((mesh) => mesh.visible && mesh.parent.visible);
 
     // Check whether the ray intersects any object meshes (excludes hitboxes)
     let meshHits = raycaster.intersectObjects(meshes, false);
@@ -402,7 +409,7 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
  * @returns A new colour faded towards the background colour by (1 - opacity)
  */
-function getFadedColour(colour, opacity, isDarkMode = settings.isDarkMode) {
+function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
     const theme = getTheme(isDarkMode);
     const backgroundColour = theme.background;
 
