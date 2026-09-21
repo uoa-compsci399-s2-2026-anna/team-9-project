@@ -218,6 +218,12 @@ function getLabelNameAt(clientX, clientY) {
     const labelWorldPosition = new THREE.Vector3();
 
     for (const [name, label] of objectLabels) {
+        // Skip any labels whose objects are not visible
+        const mesh = objectMeshes.get(name);
+        if (!mesh.visible || !mesh.parent.visible) {
+            continue;
+        }
+
         const rect = label.element.getBoundingClientRect();
         // Check whether the given point is inside the label's bounding rectangle
         const isOverLabel =
