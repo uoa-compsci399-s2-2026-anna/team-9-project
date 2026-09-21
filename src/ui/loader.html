@@ -1,46 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Loading OPIS...</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      display: grid;
-      place-items: center;
-      min-height: 100vh;
-      margin: 0;
-      /* Removes default browser spacing */
-    }
-
-    #loader {
-      display: grid;
-      place-items: center;
-    }
-
-    #loader>svg {
-      width: 10vh;
-      height: 10vh;
-    }
-  </style>
+  <!-- Relative path due to this being loaded before the webserver starts -->
+  <link href="../../dist/output.css" rel="stylesheet" />
 </head>
 
-<body>
+<body class="overflow-hidden select-none">
   <!-- Spinner SVG taken from https://magecdn.com/tools/svg-loaders/180-ring/ under MIT license -->
-  <div id="loader">
-    <svg fill="hsl(0, 0%, 100%)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z">
-        <animateTransform attributeName="transform" type="rotate" dur="0.75s" values="0 12 12;360 12 12"
-          repeatCount="indefinite" />
-      </path>
-    </svg>
-    <h2>
-      Preparing OPIS...
-    </h2>
+  <div class="text-primary fill-primary w-screen h-screen p-5 dark:bg-black flex items-center justify-center">
+    <div class="grid place-items-center gap-y-10">
+      <svg class="size-20" fill="hsl(0, 0%, 100%)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z">
+          <animateTransform attributeName="transform" type="rotate" dur="0.75s" values="0 12 12;360 12 12"
+            repeatCount="indefinite" />
+        </path>
+      </svg>
+      <h1 class="text-3xl">
+        Preparing OPIS...
+      </h1>
+    </div>
   </div>
 </body>
 
