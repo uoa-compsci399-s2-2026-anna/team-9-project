@@ -155,6 +155,29 @@ function spawnPythonProcess(resolve, reject) {
 }
 
 /**
+ * Gets the path to the loader.html file to show while the application is
+ * launching.
+ *
+ * @returns The path to the loader.html file.
+ */
+function getPathToLoader() {
+    var filePath;
+
+    if (app.isPackaged) {
+        // Path to resources folder
+        filePath = path.join(process.resourcesPath, '/loader.html');
+    } else {
+        // Path to development file
+        filePath = '/src/ui/loader.html';
+    }
+
+    // Join the app path and the path to the file
+    filePath = path.join(app.getAppPath(), filePath);
+
+    return filePath;
+}
+
+/**
  * Builds the initial URL for the application. Adds the stored settings state to the
  * base URL as search parameters. This state is then handled by the initial route.
  * 
