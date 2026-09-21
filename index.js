@@ -161,20 +161,17 @@ function spawnPythonProcess(resolve, reject) {
  * @returns The path to the loader.html file.
  */
 function getPathToLoader() {
-    var filePath;
+    const filePath = '/src/ui/loader.html';
+    var appDirectory = app.getAppPath();
 
+    // If the application is packaged traverse back from the app.asar
+    // i.e. .../team-9-project/resources/app.asar -> .../team-9-project/resources/
     if (app.isPackaged) {
-        // Path to resources folder
-        filePath = path.join(process.resourcesPath, '/loader.html');
-    } else {
-        // Path to development file
-        filePath = '/src/ui/loader.html';
+        appDirectory = path.dirname(appDirectory);
     }
 
-    // Join the app path and the path to the file
-    filePath = path.join(app.getAppPath(), filePath);
-
-    return filePath;
+    // Join the app directory and the path to the file
+    return path.join(appDirectory, filePath);
 }
 
 /**
