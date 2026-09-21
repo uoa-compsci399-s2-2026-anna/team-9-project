@@ -493,7 +493,10 @@
                         "value": 2566.0,
                         "uncertainty": 26.0
                     },
-                    "period": null,
+                    "period": {
+                        "heliocentric": null,
+                        "barycentric": 0.14267855924596337
+                    },
                     "radius": {
                         "value": 8.293e07,
                         "uncertainty": 9.044e05
@@ -512,7 +515,10 @@
                         "value": 400.1,
                         "uncertainty": 7.7
                     },
-                    "period": 130535.36640000013,
+                    "period": {
+                        "heliocentric": 130535.36640000013,
+                        "barycentric": 130399.89013005368
+                    },
                     "radius": {
                         "absoulute": 7.119e07,
                         "uncertainty": 8.700e05
@@ -531,7 +537,10 @@
                         "value": 341.9,
                         "uncertainty": 6.6
                     },
-                    "period": 209255.3568000002,
+                    "period": {
+                        "heliocentric": 209255.3568000002,
+                        "barycentric": 209251.60844275696
+                    },
                     "radius": {
                         "value": 6.995e07,
                         "uncertainty": 8.600e05
@@ -550,7 +559,10 @@
                         "value": 288.0,
                         "uncertainty": 5.6
                     },
-                    "period": 349852.52160000004,
+                    "period": {
+                        "heliocentric": 349852.52160000004,
+                        "barycentric": 349580.919963952
+                    },
                     "radius": {
                         "value": 5.026e07,
                         "uncertainty": 7.100e05
@@ -569,7 +581,10 @@
                         "value": 251.3,
                         "uncertainty": 4.9
                     },
-                    "period": 527127.5231999999,
+                    "period": {
+                        "heliocentric": 527127.5231999999,
+                        "barycentric": 526886.7042457007
+                    },
                     "radius": {
                         "value": 5.868e07,
                         "uncertainty": 8.200e05
@@ -588,7 +603,10 @@
                         "value": 219.0,
                         "uncertainty": 4.2
                     },
-                    "period": 795531.4560000001,
+                    "period": {
+                        "heliocentric": 795531.4560000001,
+                        "barycentric": 795051.8083171392
+                    },
                     "radius": {
                         "value": 6.664e07,
                         "uncertainty": 8.500e05
@@ -607,7 +625,10 @@
                         "value": 198.6,
                         "uncertainty": 3.8
                     },
-                    "period": 1067251.3343999994,
+                    "period": {
+                        "heliocentric": 1067251.3343999994,
+                        "barycentric": 1066918.2308441116
+                    },
                     "radius": {
                         "value": 7.204e07,
                         "uncertainty": 9.400e05
@@ -626,7 +647,10 @@
                         "value": 168.0,
                         "uncertainty": 28.0
                     },
-                    "period": 1621975.6224000002,
+                    "period": {
+                        "heliocentric": 1621975.6224000002,
+                        "barycentric": 1621833.8717318522
+                    },
                     "radius": {
                         "value": 4.817e07,
                         "uncertainty": 9.100e05
