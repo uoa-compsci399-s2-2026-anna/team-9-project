@@ -47,7 +47,10 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             continue;
         }
 
-        if (buttonType.dataset.allowRepeat) {
+        const allowRepeat =
+            buttonType.dataset.allowRepeat.toLowerCase() === "true";
+
+        if (allowRepeat) {
             // Handle button repeat
             let intervalId;
 
