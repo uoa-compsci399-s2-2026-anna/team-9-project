@@ -2,15 +2,23 @@
 
 {%
   macro data_field(
-    label_text,
-    field_name,
-    unit_text
+    label_text=None,
+    field_name=None,
+    unit_text=None
   )
 %}
   <div class="block">
-    <span class="inline">{{ label_text }}</span>
-    <span class="inline" data-{{ field_name }}></span>
-    <span class="inline">{{ unit_text }}</span>
+    {% if label_text %}
+      <span class="inline">{{ label_text }}</span>
+    {% endif %}
+
+    {% if field_name %}
+      <span class="inline" data-{{ field_name }}></span>
+    {% endif %}
+
+    {% if unit_text %}
+      <span class="inline">{{ unit_text }}</span>
+    {% endif %}
   </div>
 {% endmacro %}
 
