@@ -5,18 +5,13 @@
     label_text,
     data_attributes={},
     toggle_event=None,
-    show_colour_indicator=false,
-    initial_colour="transparent",
-    dark_mode_colour="transparent",
-    light_mode_colour="transparent"
+    show_colour_indicator=false
   )
 %}
   <label
     class="flex items-center gap-2"
     data-side-panel-checkbox
     data-toggle-event="{{ toggle_event }}"
-    data-dark-mode-colour="{{ dark_mode_colour }}"
-    data-light-mode-colour="{{ light_mode_colour }}"
   >
     <input
       type="checkbox"
@@ -28,12 +23,6 @@
     />
     <span>{{ label_text }}</span>
 
-    {% if show_colour_indicator %}
-      <div
-        class="ml-auto h-2 w-2 rounded-sm"
-        style="background-color: {{ initial_colour }};"
-        data-colour-indicator
-      ></div>
-    {% endif %}
+    {{ caller() }}
   </label>
 {% endmacro %}
