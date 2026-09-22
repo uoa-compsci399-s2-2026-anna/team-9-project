@@ -3,6 +3,7 @@
 {% call container() %}
   <div
     id="object-information-panel"
+    class="hidden"
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
     <h2 data-object-name>Temp</h2>
@@ -24,5 +25,9 @@
       <span class="inline" data-object-average-temperature>-</span>
       <span class="inline">K</span>
     </div>
+  </div>
+
+  <div id="object-information-panel-no-object-selected-view">
+    <em class="text-secondary">Click an object to view its details here </em>
   </div>
 {% endcall %}
