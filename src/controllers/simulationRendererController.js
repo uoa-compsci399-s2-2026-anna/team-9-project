@@ -12,6 +12,7 @@ import {
     setHabitableZoneVisibility,
     setLabelsVisibility,
     setOrbitsVisibility,
+    setReferenceGridVisibility,
     setObjectVisibility,
     setFontSize,
     setFontFamily,
@@ -72,6 +73,10 @@ bus.subscribe(EVENTS.SIM.LABELS_TOGGLE, (event) => {
 
 bus.subscribe(EVENTS.SIM.ORBITS_TOGGLE, (event) => {
     setOrbitsVisibility(event.detail.value);
+});
+
+bus.subscribe(EVENTS.SIM.REFERENCE_GRID_TOGGLE, (event) => {
+    setReferenceGridVisibility(event.detail.value);
 });
 
 // Objects
