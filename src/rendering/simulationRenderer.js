@@ -166,6 +166,7 @@ const referenceGridSize = 1000;
 
 const referenceGridDivisions = 1000;
 const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
+const referenceGridColour = 0x888888;
 
 const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
 let referenceGrid;
@@ -545,8 +546,8 @@ function createReferenceGrid() {
     referenceGrid = new THREE.GridHelper(
         referenceGridSize,
         referenceGridDivisions,
-        0x888888,
-        0x888888
+        referenceGridColour,
+        referenceGridColour
     );
     referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
     referenceGrid.visible = simulationState.referenceGridShown;
