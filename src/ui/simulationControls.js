@@ -169,10 +169,8 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (e) => {
 });
 
 bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
-    console.log("HERE");
     const objectName = e.detail.objectName;
+    const panel = document.getElementById("object-information-panel");
 
-    document
-        .getElementById("object-information-panel")
-        .querySelector("[data-object-name]").textContent = objectName;
+    panel.querySelector("[data-object-name]").textContent = objectName;
 });
