@@ -254,8 +254,9 @@ async function createWindow(python_url) {
     } catch(exception) {
         console.error(`ERROR: The promise was rejected: ${exception}`);
 
-        // Exit application as it is not recoverable
-        app.exit();
+        // Show spinner while app is launching
+        const failedToStartFilename = 'failedToStart.html';
+        mainWindow.loadFile(getPathToUiFile(failedToStartFilename));
 
         return;
     }
