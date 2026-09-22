@@ -32,7 +32,7 @@
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
     <div class="grid grid-cols-[max-content_1fr] gap-x-2">
-      <span class="col-span-2 inline" data-object-name></span>
+      <strong class="col-span-2 mb-2 inline" data-object-name></strong>
 
       {{ data_field("Mass", "object-mass", "kg") }}
       {{ data_field("Radius", "object-radius", "m") }}
