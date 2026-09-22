@@ -254,7 +254,7 @@ async function createWindow(python_url) {
     } catch(exception) {
         console.error(`ERROR: The promise was rejected: ${exception}`);
 
-        // Show spinner while app is launching
+        // Show failed to start screen if the promise rejects
         const failedToStartFilename = 'failedToStart.html';
         mainWindow.loadFile(getPathToUiFile(failedToStartFilename));
 
