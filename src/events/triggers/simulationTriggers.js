@@ -2,6 +2,7 @@ import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { convertToEpoch } from "../../utils/utils.js";
 import { settings } from "../../shared/settingsState.js";
+import { getObjectVisibilityChanges } from "../../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -106,3 +107,17 @@ for (const calendar of calendars) {
         });
     });
 }
+
+// Triggers for resetting objects to defaults
+const resetObjects = document.getElementById("reset-objects");
+
+resetObjects.addEventListener("click", () => {
+    for (const { objectName, isShown } of getObjectVisibilityChanges(currentSystem)) {
+        console.log("PUBLISHED: " + objectName);
+        bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { 
+            system: currentSystem, 
+            name: objectName, 
+            value: isShown, 
+        });
+    }
+});
