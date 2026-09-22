@@ -90,6 +90,8 @@ const objectMeshes = new Map();
 const orbitalLines = new Map();
 const objectLabels = new Map();
 
+let viewRadius;
+
 // Default size and colour of all the objects
 let objectSize;
 let objectScale = 1;
@@ -776,7 +778,7 @@ export async function init(name) {
     const orbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
+    viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
@@ -848,7 +850,7 @@ export async function resetView() {
         maxApoapsis = Math.max(maxApoapsis, calculateMaxApoapsis(solarSystemValues));
     }
 
-    const viewRadius = maxApoapsis * viewRadiusMultiplier;
+    viewRadius = maxApoapsis * viewRadiusMultiplier;
 
     // Update the camera and controls for the new view radius
     initOrUpdateCamera(canvas, viewRadius);
@@ -874,7 +876,7 @@ export async function compareToSolarSystem() {
 
     const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
     const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
-    const viewRadius = Math.max(currentViewRadius, solarViewRadius);
+    viewRadius = Math.max(currentViewRadius, solarViewRadius);
 
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
@@ -907,7 +909,7 @@ export async function hideSolarSystem() {
     const orbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const viewRadius = maxApoapsis * viewRadiusMultiplier;
+    viewRadius = maxApoapsis * viewRadiusMultiplier;
 
     solarSystemGroup.visible = false;
 
