@@ -149,9 +149,7 @@ function increaseSpeedAdjusterValue(value) {
     const currentValue = parseInt(speedAdjuster.value);
     const newValue = currentValue + value;
 
-    if (newValue >= 0) {
-        speedAdjuster.value = newValue;
-    }
+    speedAdjuster.value = newValue;
 
     // Dispatch event (received in simulationTriggers.js, to sanitise input)
     // to speedAdjuster.addEventListener("input", (event) => { ... })
@@ -160,4 +158,7 @@ function increaseSpeedAdjusterValue(value) {
         cancelable: true,
     });
     speedAdjuster.dispatchEvent(event);
+
+    // Sanitizing input, preventing negative numbers, etc. is handled in 
+    // the "input" event listener of the speed adjuster input element.
 }
