@@ -153,13 +153,8 @@ export function toggleObject(system, object, showObject) {
  * @returns {{ objectName: string, isShown: boolean }[]} The objects whose visibility differs from the default
  */
 export function getObjectVisibilityChanges(system) {
-    // TODO: What if this DNE?
-    const previouslyHidden = simulationState.hiddenObjects[system];
-    // TODO: need default state
-    console.log(defaultSimulationState);
-    const defaultHidden = defaultSimulationState.hiddenObjects[system];
-    console.log(previouslyHidden);
-    console.log(defaultHidden);
+    const previouslyHidden = simulationState.hiddenObjects[system] ?? [];
+    const defaultHidden = defaultSimulationState.hiddenObjects[system] ?? [];
 
     const changes = [];
     for (const name of previouslyHidden) {
