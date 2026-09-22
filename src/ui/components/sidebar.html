@@ -22,11 +22,14 @@
       {% set hidden = sim_state.get("hiddenObjects", {}).get(current_system.name, []) %}
 
       {% for obj in objects %}
+        {% set colours = current_system.get("objects").get(obj).get("colour") %}
+
         {{
           side_panel_checkbox(
           is_checked_initially=(obj not in hidden),
           label_text=obj,
-          data_attributes={ "object": obj }
+          data_attributes={ "object": obj },
+          initial_colour=(colours.get("dark") if settings.darkMode else colours.get("light"))
           )
         }}
       {% endfor %}

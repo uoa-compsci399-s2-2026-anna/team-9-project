@@ -4,7 +4,8 @@
     is_checked_initially,
     label_text,
     data_attributes={},
-    toggle_event=None
+    toggle_event=None,
+    initial_colour="transparent"
   )
 %}
   <label
@@ -21,5 +22,9 @@
       {{ "checked" if is_checked_initially }}
     />
     <span>{{ label_text }}</span>
+    <div
+      class="ml-auto h-3 w-3 rounded-sm"
+      style="background-color: {{ initial_colour }};"
+    ></div>
   </label>
 {% endmacro %}
