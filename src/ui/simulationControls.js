@@ -167,3 +167,12 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (e) => {
             }
         });
 });
+
+bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
+    console.log("HERE");
+    const objectName = e.detail.objectName;
+
+    document
+        .getElementById("object-information-panel")
+        .querySelector("[data-object-name]").textContent = objectName;
+});
