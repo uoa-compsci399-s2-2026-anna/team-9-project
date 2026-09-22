@@ -24,3 +24,30 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     panel.querySelector("[data-object-average-temperature]").textContent =
         object.temp.value;
 });
+
+/**
+ * @param {*} mass_kg Mass in kilograms
+ * @returns Mass in Jupiter masses
+ */
+function kgToMJupiter(mass_kg) {
+    JUPITER_MASS_KG = 1.89813e27;
+    return mass_kg / JUPITER_MASS_KG;
+}
+
+/**
+ * @param {*} radius_m Radius in meters
+ * @returns Radius in Jupiter radii
+ */
+function mToRJupiter(radius_m) {
+    JUPITER_RADIUS_M = 71492e3;
+    return radius_m / JUPITER_RADIUS_M;
+}
+
+/**
+ * @param {*} kelvin Temperature in Kelvin
+ * @returns Temperature in Celsius
+ */
+function kelvinToCelsius(kelvin) {
+    ZERO_KELVIN_TO_CELSIUS = -273.15;
+    return kelvin + ZERO_KELVIN_TO_CELSIUS;
+}
