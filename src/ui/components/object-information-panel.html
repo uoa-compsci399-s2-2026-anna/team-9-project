@@ -7,11 +7,13 @@
     unit_text=None
   )
 %}
-  <div class="block">
+  <div>
     {% if label_text %}
       <span class="inline">{{ label_text }}</span>
     {% endif %}
+  </div>
 
+  <div>
     {% if field_name %}
       <span class="inline" data-{{ field_name }}></span>
     {% endif %}
@@ -29,10 +31,12 @@
     class="hidden"
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
-    {{ data_field(None, "object-name", None) }}
-    {{ data_field("Mass", "object-mass", "kg") }}
-    {{ data_field("Radius", "object-radius", "m") }}
-    {{ data_field("Avg. temp.", "object-average-temperature", "K") }}
+    <div class="grid grid-cols-2">
+      {{ data_field(None, "object-name", None) }}
+      {{ data_field("Mass", "object-mass", "kg") }}
+      {{ data_field("Radius", "object-radius", "m") }}
+      {{ data_field("Avg. temp.", "object-average-temperature", "K") }}
+    </div>
   </div>
 
   <!-- Placeholder when no object is selected -->
