@@ -31,8 +31,9 @@
     class="hidden"
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
-    <div class="grid grid-cols-[max-content_1fr]">
-      {{ data_field(None, "object-name", None) }}
+    <div class="grid grid-cols-[max-content_1fr] gap-x-2">
+      <span class="col-span-2 inline" data-object-name></span>
+
       {{ data_field("Mass", "object-mass", "kg") }}
       {{ data_field("Radius", "object-radius", "m") }}
       {{ data_field("Avg. temp.", "object-average-temperature", "K") }}
