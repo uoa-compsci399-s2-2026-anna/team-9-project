@@ -552,7 +552,7 @@ function createReferenceGrid() {
     referenceGrid = new THREE.GridHelper(
         referenceGridSize,
         referenceGridDivisions,
-        referenceGridColour,
+        referenceGridColour, // Same colour for the center line and the grid lines
         referenceGridColour
     );
     referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
