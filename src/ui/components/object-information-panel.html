@@ -1,6 +1,7 @@
 {% from "components/container.html" import container %}
 
 {% call container(width="w-48") %}
+  <!-- Object information -->
   <div
     id="object-information-panel"
     class="hidden"
@@ -27,6 +28,7 @@
     </div>
   </div>
 
+  <!-- Placeholder when no object is selected -->
   <div id="object-information-panel-no-object-selected-view">
     <em class="text-secondary">Click an object to view its details here </em>
   </div>
