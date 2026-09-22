@@ -162,3 +162,25 @@ function increaseSpeedAdjusterValue(value) {
     // Sanitizing input, preventing negative numbers, etc. is handled in 
     // the "input" event listener of the speed adjuster input element.
 }
+
+// COLOUR INDICATORS BY OBJECT CHECKBOXES
+bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (e) => {
+    const enterDarkMode = e.detail.enterDarkMode;
+
+    document
+        .querySelectorAll("[data-side-panel-checkbox]")
+        .forEach((checkbox) => {
+            const colourIndicator = checkbox.querySelector(
+                "[data-colour-indicator]",
+            );
+
+            const darkModeColour = checkbox.dataset.darkModeColour;
+            const lightModeColour = checkbox.dataset.lightModeColour;
+
+            if (enterDarkMode) {
+                colourIndicator.style.backgroundColor = darkModeColour;
+            } else {
+                colourIndicator.style.backgroundColor = lightModeColour;
+            }
+        });
+});
