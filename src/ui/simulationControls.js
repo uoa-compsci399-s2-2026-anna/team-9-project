@@ -131,3 +131,34 @@ bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
         }
     }
 });
+
+// SIMULATION SPEED INCREASE/DECREASE BUTTONS
+
+bus.subscribe(EVENTS.SIM.INCREASE_SPEED, () => increaseSpeedAdjusterValue(1));
+bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () => increaseSpeedAdjusterValue(-1));
+
+/**
+ * Increases the numeric value of the simulation speed adjuster by the given
+ * amount.
+ * @param {int} value The value to increase the value of the simulation speed
+ * adjuster by.
+ */
+function increaseSpeedAdjusterValue(value) {
+    const speedAdjuster = document.getElementById("speed-adjuster");
+
+    const currentValue = parseInt(speedAdjuster.value);
+    const newValue = currentValue + value;
+
+    speedAdjuster.value = newValue;
+
+    // Dispatch event (received in simulationTriggers.js, to sanitise input)
+    // to speedAdjuster.addEventListener("input", (event) => { ... })
+    const event = new Event("input", {
+        bubbles: true,
+        cancelable: true,
+    });
+    speedAdjuster.dispatchEvent(event);
+
+    // Sanitizing input, preventing negative numbers, etc. is handled in 
+    // the "input" event listener of the speed adjuster input element.
+}
