@@ -628,7 +628,12 @@ function createControlsChangeHandler(viewRadius) {
     return () => {
         isDragging = true;
         const cameraOffset = camera.position.clone().sub(controls.target);
-        controls.target.clampLength(0, viewRadius);
+
+        // Clamp the target position to be within the view radius
+        const minLength = 0;
+        const maxLength = viewRadius;
+        controls.target.clampLength(minLength, maxLength);
+
         camera.position.copy(controls.target.clone().add(cameraOffset));
     };
 }
