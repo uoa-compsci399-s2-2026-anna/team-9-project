@@ -27,13 +27,6 @@
       { "value": "Larger", "label": "Larger" }
     ]
   },
-  "orbitLines": {
-    "default": "Colour",
-    "options": [
-      { "value": "Colour", "label": "Differentiate by colour" },
-      { "value": "Stroke", "label": "Differentiate by stroke" }
-    ]
-  },
   "darkMode": {
     "default": null
   }

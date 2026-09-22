@@ -22,11 +22,6 @@ bus.subscribe(EVENTS.SETTINGS.OBJECT_MARKER_SIZE_SELECT, (event) => {
     setSetting("objectMarkerSize", event.detail.value);
 });
 
-// Orbit lines
-bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
-    setSetting("orbitLines", event.detail.value);
-});
-
 // Dark mode
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     setSetting("darkMode", event.detail.enterDarkMode);
