@@ -22,6 +22,11 @@ speedAdjuster.addEventListener("input", (event) => {
         return;
     }
 
+    // Prevent negative values
+    if (parseInt(input.value) < 0) {
+        input.value = 0;
+    }
+
     // Prevent the user from typing anything but a number between 0 and 9
     const cleanedInput = input.value.replace(/[^0-9.]/g, "");
     if (cleanedInput !== input.value) {
