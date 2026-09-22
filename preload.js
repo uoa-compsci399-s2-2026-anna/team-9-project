@@ -4,13 +4,19 @@
 
 const { contextBridge, ipcRenderer } = require('electron');
 
+contextBridge.exposeInMainWorld('applicationAPI', {
+    refresh: () => ipcRenderer.send('app:refresh'),
+});
+
 contextBridge.exposeInMainWorld('settingsAPI', {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (settings) => ipcRenderer.invoke('settings:set', settings),
+    getDefaults: () => ipcRenderer.invoke('settings:getDefaults'),
 });
 
 contextBridge.exposeInMainWorld('simulationStateAPI', {
     set: (state) => ipcRenderer.send('simulationState:set', state),
+    getDefaults: () => ipcRenderer.invoke('simulationState:getDefaults'),
 });
 
 contextBridge.exposeInMainWorld('fullscreenAPI', {
