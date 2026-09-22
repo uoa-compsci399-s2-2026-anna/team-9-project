@@ -52,6 +52,8 @@ let controls;
 let renderer;
 let labelRenderer;
 
+let controlsChangeHandler; // Store the controls change handler to remove when updating controls
+
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
 
@@ -623,10 +625,30 @@ function initOrUpdateControls(canvas, viewRadius) {
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
 
-    // Detect when the user is moving the camera
-    controls.addEventListener("change", () => {
+    if (controlsChangeHandler) {
+        controls.removeEventListener("change", controlsChangeHandler);
+    }
+    controlsChangeHandler = createControlsChangeHandler(viewRadius);
+    controls.addEventListener("change", controlsChangeHandler);
+}
+
+/**
+ * Creates a handler for the controls change event.
+ * @param {number} viewRadius The radius of view to fit within the camera
+ * @returns {Function} The controls change handler
+ */
+function createControlsChangeHandler(viewRadius) {
+    return () => {
         isDragging = true;
-    });
+        const cameraOffset = camera.position.clone().sub(controls.target);
+
+        // Clamp the target position to be within the view radius
+        const minLength = 0;
+        const maxLength = viewRadius;
+        controls.target.clampLength(minLength, maxLength);
+
+        camera.position.copy(controls.target.clone().add(cameraOffset));
+    };
 }
 
 /**
