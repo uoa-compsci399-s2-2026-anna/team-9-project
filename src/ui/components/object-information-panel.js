@@ -1,6 +1,7 @@
 import { bus } from "/src/events/eventBus.js";
 import { EVENTS } from "/src/events/events.js";
 
+// Update object information panel when an object is clicked.
 bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     const objectName = e.detail.objectName;
     const panel = document.getElementById("object-information-panel");
