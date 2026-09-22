@@ -16,7 +16,14 @@ function loadState() {
     return simulationStateElement ? JSON.parse(simulationStateElement.textContent) : {};
 }
 
+async function getDefaultState() {
+    return await window.simulationStateAPI.getDefaults();
+}
+
+// Note: Initial state is also the default state since this state is not persisted between application runs
 const initialState = loadState();
+
+export const defaultSimulationState = await getDefaultState();
 
 export const simulationState = { ...initialState };
 
@@ -163,6 +170,40 @@ export function toggleObject(system, object, showObject) {
     }
 
     persist();
+}
+
+/**
+ * Get the object visibility changes necessary to reset the objects in the given system to their default
+ * hidden states.
+ *
+ * @param {string} system Name of the system to get the objects from
+ * @returns {{ objectName: string, isShown: boolean }[]} The objects whose visibility differs from the default
+ */
+export function getObjectVisibilityChanges(system) {
+    const previouslyHidden = simulationState.hiddenObjects[system] ?? [];
+    const defaultHidden = defaultSimulationState.hiddenObjects[system] ?? [];
+
+    const changes = [];
+    for (const name of previouslyHidden) {
+        // Object was hidden, but it should now be shown
+        if (!defaultHidden.includes(name)) {
+            changes.push({ 
+                objectName: name, 
+                isShown: true, 
+            });
+        }
+    }
+    for (const name of defaultHidden) {
+        // Object was shown, but it should be now hidden
+        if (!previouslyHidden.includes(name)) {
+            changes.push({ 
+                objectName: name, 
+                isShown: false,
+            });
+        }
+    }
+
+    return changes;
 }
 
 /**

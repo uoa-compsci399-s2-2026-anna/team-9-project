@@ -2,6 +2,11 @@ import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { convertToEpoch } from "../../utils/utils.js";
 import { settings } from "../../shared/settingsState.js";
+import { 
+    getObjectVisibilityChanges,
+    defaultSimulationState, 
+    simulationState,
+} from "../../shared/simulationState.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -117,3 +122,37 @@ for (const calendar of calendars) {
         });
     });
 }
+
+// Handle resetting object visibilities to defaults
+const resetObjects = document.getElementById("reset-objects");
+
+resetObjects.addEventListener("click", () => {
+    // Get and publish the necessary object visibility changes to reset to the default state
+    for (const { objectName, isShown } of getObjectVisibilityChanges(currentSystem)) {
+        bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { 
+            system: currentSystem, 
+            name: objectName, 
+            value: isShown, 
+        });
+    }
+});
+
+// Handle resetting view settings to defaults
+const VIEW_SETTING_RESET_MAP = {
+    habitableZoneShown: EVENTS.SIM.HABITABLE_ZONE_TOGGLE,
+    orbitsShown: EVENTS.SIM.ORBITS_TOGGLE,
+    referenceGridShown: EVENTS.SIM.REFERENCE_GRID_TOGGLE,
+    labelsShown: EVENTS.SIM.LABELS_TOGGLE,
+};
+
+const resetViewSettings = document.getElementById("reset-view-settings");
+
+resetViewSettings.addEventListener("click", () => {
+    for (const [stateKey, event] of Object.entries(VIEW_SETTING_RESET_MAP)) {
+        const defaultValue = defaultSimulationState[stateKey];
+
+        if (simulationState[stateKey] !== defaultValue) {
+            bus.publish(event, { value: defaultValue });
+        }
+    }
+});
