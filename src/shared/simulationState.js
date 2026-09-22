@@ -23,7 +23,7 @@ async function getDefaultState() {
 // Note: Initial state is also the default state since this state is not persisted between application runs
 const initialState = loadState();
 
-const defaultState = await getDefaultState();
+export const defaultSimulationState = await getDefaultState();
 
 export const simulationState = { ...initialState };
 
@@ -156,8 +156,8 @@ export function getObjectVisibilityChanges(system) {
     // TODO: What if this DNE?
     const previouslyHidden = simulationState.hiddenObjects[system];
     // TODO: need default state
-    console.log(defaultState);
-    const defaultHidden = defaultState.hiddenObjects[system];
+    console.log(defaultSimulationState);
+    const defaultHidden = defaultSimulationState.hiddenObjects[system];
     console.log(previouslyHidden);
     console.log(defaultHidden);
 
