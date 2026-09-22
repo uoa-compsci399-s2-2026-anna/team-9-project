@@ -159,10 +159,11 @@ function spawnPythonProcess(resolve, reject) {
  * Gets the path to the loader.html file to show while the application is
  * launching.
  *
+ * @param filename The file we are looking for
  * @returns The path to the loader.html file.
  */
-function getPathToLoader() {
-    const filePath = '/src/ui/loader.html';
+function getPathToUiFile(filename) {
+    const filePath = path.join('/src/ui/', filename);
     var appDirectory = app.getAppPath();
 
     // If the application is packaged traverse back from the app.asar given by app.getAppPath()
@@ -241,7 +242,8 @@ async function createWindow(python_url) {
     var url;
 
     // Show spinner while app is launching
-    mainWindow.loadFile(getPathToLoader());
+    const loaderFilename = 'loader.html';
+    mainWindow.loadFile(getPathToUiFile(loaderFilename));
 
     // Maximise the window and then show it
     mainWindow.maximize();
