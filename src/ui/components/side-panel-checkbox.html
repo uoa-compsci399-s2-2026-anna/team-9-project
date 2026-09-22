@@ -5,6 +5,7 @@
     label_text,
     data_attributes={},
     toggle_event=None,
+    show_colour_indicator=false,
     initial_colour="transparent",
     dark_mode_colour="transparent",
     light_mode_colour="transparent"
@@ -26,10 +27,13 @@
       {{ "checked" if is_checked_initially }}
     />
     <span>{{ label_text }}</span>
-    <div
-      class="ml-auto h-2 w-2 rounded-sm"
-      style="background-color: {{ initial_colour }};"
-      data-colour-indicator
-    ></div>
+
+    {% if show_colour_indicator %}
+      <div
+        class="ml-auto h-2 w-2 rounded-sm"
+        style="background-color: {{ initial_colour }};"
+        data-colour-indicator
+      ></div>
+    {% endif %}
   </label>
 {% endmacro %}

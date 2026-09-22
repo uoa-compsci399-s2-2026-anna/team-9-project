@@ -29,6 +29,8 @@
           is_checked_initially=(obj not in hidden),
           label_text=obj,
           data_attributes={ "object": obj },
+
+          show_colour_indicator=true,
           initial_colour=(colours.get("dark") if settings.darkMode else colours.get("light")),
           dark_mode_colour=colours.get("dark"),
           light_mode_colour=colours.get("light")
