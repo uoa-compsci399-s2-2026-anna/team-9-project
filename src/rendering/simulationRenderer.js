@@ -158,8 +158,14 @@ const habitableZoneOpacity = 0.2;
 let habitableZone;
 let habitableZoneMesh;
 
+// Size of the reference grid in AU when scale = 1.
+// This will be scaled when the camera zoom changes.
+const referenceGridSize = 1000;
+
+const referenceGridDivisions = 1000;
+const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
+
 const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
-const referenceGridDivisionSize = 1; // This will be scaled based on the camera's position
 let referenceGrid;
 
 function getTheme(isDarkMode = settings.darkMode) {
@@ -535,8 +541,8 @@ function createHabitableZoneMesh() {
 
 function createReferenceGrid() {
     referenceGrid = new THREE.GridHelper(
-        1000, // Size of the grid
-        1000,  // Number of divisions
+        referenceGridSize,
+        referenceGridDivisions,
         0x888888,
         0x888888
     );
