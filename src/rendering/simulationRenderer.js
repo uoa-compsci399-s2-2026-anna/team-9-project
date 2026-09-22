@@ -30,6 +30,7 @@ import {
     calculateDefaultCameraPosition,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
+    calculateReferenceGridDivisionSizeUnrounded,
 } from "./simulationCalculations.js";
 import { 
     updateCalendar, 
@@ -487,6 +488,9 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
             line.visible = shouldShowOrbit(name, currentSystem);
         }
 
+        material.defines = material.defines || {};
+        delete material.defines.FOG;
+
         group.add(line);
         orbitalLines.set(name, line);
     }
@@ -571,6 +575,18 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
 
     const scaleFactor = desiredReferenceGridDivisionSize / referenceGridDivisionSize;
     referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+    try {
+        const foo = calculateReferenceGridDivisionSizeUnrounded(
+            fov,
+            cameraDistanceToTargetProjection,
+            divisionsInView
+        );
+        const bar = foo / referenceGridDivisionSize;
+        scene.fog.far = bar * 125;
+        scene.fog.close = bar * 10;
+        console.log(`${scene.fog.far}; ${scene.fog.close}`);
+    } catch { }
 }
 
 /**
@@ -644,6 +660,7 @@ function initOrUpdateCamera(canvas, viewRadius) {
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
         camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
+        console.log(cameraNear, cameraFar);
         camera.up.copy(cameraDefaults.up);
         camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
 
@@ -725,6 +742,7 @@ function initRaycastingEvents(canvas) {
 function initScene() {
     scene = new THREE.Scene();
     scene.background = getTheme().background;
+    scene.fog = new THREE.Fog(getTheme().background, 1, 1000);
     scene.add(new THREE.AmbientLight(0xffffff, 1));
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);

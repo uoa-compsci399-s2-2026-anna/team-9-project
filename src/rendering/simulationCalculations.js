@@ -211,3 +211,14 @@ export function calculateReferenceGridDivisionSize(
     const divisionSize = 2*viewRadius / divisionsInView;
     return roundToNiceNumber(divisionSize);
 }
+
+export function calculateReferenceGridDivisionSizeUnrounded(
+    fov,
+    cameraDistanceToTargetProjection,
+    divisionsInView
+) {
+    const fovRad = fov * (Math.PI / 180);
+    const viewRadius = cameraDistanceToTargetProjection * Math.tan(fovRad / 2);
+    const divisionSize = 2*viewRadius / divisionsInView;
+    return divisionSize;
+}
