@@ -1,6 +1,6 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { setSetting } from "../shared/settingsState.js";
+import { setSetting, resetSettingsState } from "../shared/settingsState.js";
 
 // Time zone
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
@@ -26,3 +26,8 @@ bus.subscribe(EVENTS.SETTINGS.OBJECT_MARKER_SIZE_SELECT, (event) => {
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     setSetting("darkMode", event.detail.enterDarkMode);
 });
+
+// Reset settings
+bus.subscribe(EVENTS.SETTINGS.RESET_ALL_SETTINGS, () => {
+    resetSettingsState();
+})
