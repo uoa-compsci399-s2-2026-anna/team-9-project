@@ -566,6 +566,9 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
         divisionsInView
     );
 
+    const coveredRange = desiredReferenceGridDivisionSize * referenceGridDivisions;
+    if (coveredRange < viewRadius * 2) return; // Don't scale if it doesn't cover the view radius
+
     const scaleFactor = desiredReferenceGridDivisionSize / referenceGridDivisionSize;
     referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
 }
