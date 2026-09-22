@@ -9,7 +9,7 @@
 %}
   <div>
     {% if label_text %}
-      <span class="text-secondary inline text-sm">{{ label_text }}</span>
+      <span class="text-secondary inline text-xs">{{ label_text }}</span>
     {% endif %}
   </div>
 
@@ -31,9 +31,9 @@
     class="hidden"
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
-    <div class="grid grid-cols-[max-content_1fr] gap-x-2">
-      <strong class="col-span-2 mb-2 inline" data-object-name></strong>
+    <strong class="mb-2 block" data-object-name></strong>
 
+    <div class="grid grid-cols-[max-content_1fr] gap-x-2 text-sm">
       {{ data_field("Mass", "object-mass", "kg") }}
       {{ data_field("Radius", "object-radius", "m") }}
       {{ data_field("Avg. temp.", "object-average-temperature", "K") }}
