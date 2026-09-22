@@ -25,12 +25,18 @@ const DEFAULT_SIMULATION_STATE = Object.fromEntries(
 
 const store = new Store();
 
+function getDefaultSettings() {
+    return {
+        ...DEFAULT_SETTINGS,
+        // By default, whether dark mode is used depends on the theme of the user's device
+        darkMode: nativeTheme.shouldUseDarkColors,
+    };
+}
+
 // Initialise the settings store in case of any missing values
 const existingSettings = store.get('settings') || {};
 store.set('settings', {
-    ...DEFAULT_SETTINGS,
-    // By default, whether dark mode is used depends on the theme of the user's device
-    darkMode: nativeTheme.shouldUseDarkColors,
+    ...getDefaultSettings(),
     ...existingSettings,
 });
 
@@ -42,6 +48,10 @@ ipcMain.handle('settings:get', () => {
     return store.get('settings');
 });
 
+ipcMain.handle('settings:getDefaults', () => {
+    return getDefaultSettings();
+});
+
 ipcMain.handle('settings:set', (_event, newSettings) => {
     store.set('settings', {
         ...store.get('settings'),
@@ -49,12 +59,24 @@ ipcMain.handle('settings:set', (_event, newSettings) => {
     });
 });
 
+let mainWindow;
+
+// Refresh the current web page
+ipcMain.on('app:refresh', () => {
+    if (!mainWindow) {
+        return;
+    }
+
+    const currentUrl = new URL(mainWindow.webContents.getURL());
+    // Include the current settings in the search parameters
+    currentUrl.searchParams.set('settings', JSON.stringify(store.get('settings') || {}));
+    mainWindow.loadURL(currentUrl.toString());
+});
+
 // Update the simulation state based on the new state
 ipcMain.on('simulationState:set', (_event, newState) => {
     simulationState = { ...simulationState, ...newState };
 });
-
-let mainWindow;
 
 ipcMain.on('fullscreen:toggle', () => {
     if (!mainWindow) { 
