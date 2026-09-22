@@ -16,8 +16,14 @@ function loadState() {
     return simulationStateElement ? JSON.parse(simulationStateElement.textContent) : {};
 }
 
+async function getDefaultState() {
+    return await window.simulationStateAPI.getDefaults();
+}
+
 // Note: Initial state is also the default state since this state is not persisted between application runs
 const initialState = loadState();
+
+const defaultState = await getDefaultState();
 
 export const simulationState = { ...initialState };
 
@@ -150,7 +156,8 @@ export function getObjectVisibilityChanges(system) {
     // TODO: What if this DNE?
     const previouslyHidden = simulationState.hiddenObjects[system];
     // TODO: need default state
-    const defaultHidden = initialState.hiddenObjects[system];
+    console.log(defaultState);
+    const defaultHidden = defaultState.hiddenObjects[system];
     console.log(previouslyHidden);
     console.log(defaultHidden);
 

@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('settingsAPI', {
 
 contextBridge.exposeInMainWorld('simulationStateAPI', {
     set: (state) => ipcRenderer.send('simulationState:set', state),
+    getDefaults: () => ipcRenderer.invoke('simulationState:getDefaults'),
 });
 
 contextBridge.exposeInMainWorld('fullscreenAPI', {

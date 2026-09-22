@@ -78,6 +78,10 @@ ipcMain.on('simulationState:set', (_event, newState) => {
     simulationState = { ...simulationState, ...newState };
 });
 
+ipcMain.handle('simulationState:getDefaults', () => {
+    return DEFAULT_SIMULATION_STATE;
+});
+
 ipcMain.on('fullscreen:toggle', () => {
     if (!mainWindow) { 
         return;
