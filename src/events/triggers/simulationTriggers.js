@@ -108,12 +108,11 @@ for (const calendar of calendars) {
     });
 }
 
-// Triggers for resetting objects to defaults
+// Triggers for resetting object visibilities to defaults
 const resetObjects = document.getElementById("reset-objects");
 
 resetObjects.addEventListener("click", () => {
     for (const { objectName, isShown } of getObjectVisibilityChanges(currentSystem)) {
-        console.log("PUBLISHED: " + objectName);
         bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { 
             system: currentSystem, 
             name: objectName, 
