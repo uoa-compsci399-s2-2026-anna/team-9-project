@@ -151,7 +151,8 @@ function spawnPythonProcess(resolve, reject) {
     });
 
     // Reject the promise after 30 seconds
-    setTimeout(() => reject(new Error("Python server failed to launch")), 30000);
+    const maxWaitTimeMs = 30_000;
+    setTimeout(() => reject(new Error("Python server failed to launch")), maxWaitTimeMs);
 }
 
 /**
