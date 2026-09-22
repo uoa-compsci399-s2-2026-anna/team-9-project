@@ -1,6 +1,10 @@
 {
   "simulationSpeed": {
-    "default": 10
+    "default": {
+      "Solar System": 10,
+      "Kepler-16": 10,
+      "TRAPPIST-1": 12
+    }
   },
   "simulationTimes": {
     "default": {}
@@ -13,7 +17,11 @@
     "fallbackText": "Today"
   },
   "simulationSpeedUnit": {
-    "default": "day",
+    "default": {
+      "Solar System": "day",
+      "Kepler-16": "day",
+      "TRAPPIST-1": "hour"
+    },
     "options": [
       { "value": "hour", "label": "hour" },
       { "value": "day", "label": "day" },
