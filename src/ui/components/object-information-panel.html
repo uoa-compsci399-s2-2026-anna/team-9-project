@@ -1,7 +1,28 @@
 {% from "components/container.html" import container %}
 
 {% call container() %}
-  <div id="object-information-panel">
+  <div
+    id="object-information-panel"
+    data-current-system="{{ current_system | tojson | forceescape }}"
+  >
     <h2 data-object-name>Temp</h2>
+
+    <div class="block">
+      <span class="inline">Mass</span>
+      <span class="inline" data-object-mass>-</span>
+      <span class="inline">kg</span>
+    </div>
+
+    <div class="block">
+      <span class="inline">Radius</span>
+      <span class="inline" data-object-radius>-</span>
+      <span class="inline">m</span>
+    </div>
+
+    <div class="block">
+      <span class="inline">Average temperature</span>
+      <span class="inline" data-object-average-temperature>-</span>
+      <span class="inline">K</span>
+    </div>
   </div>
 {% endcall %}
