@@ -9,7 +9,12 @@
   )
 %}
   {% set panel_content = caller %}
-  {% call container(width="w-full") %}
+  {%
+    call container(
+      width="w-full",
+      overflow="overflow-hidden"
+    )
+  %}
     <div
       class="relative flex h-auto min-h-0 w-full flex-col p-3"
       data-panel

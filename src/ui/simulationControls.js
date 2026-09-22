@@ -159,6 +159,6 @@ function increaseSpeedAdjusterValue(value) {
     });
     speedAdjuster.dispatchEvent(event);
 
-    // Sanitizing input, preventing negative numbers, etc. is handled in 
+    // Sanitizing input, preventing negative numbers, etc. is handled in
     // the "input" event listener of the speed adjuster input element.
 }
