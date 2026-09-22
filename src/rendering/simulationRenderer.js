@@ -527,6 +527,9 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
+/**
+ * Create a mesh representing the habitable zone as a ring in the XY plane.
+ */
 function createHabitableZoneMesh() {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
@@ -542,6 +545,9 @@ function createHabitableZoneMesh() {
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
 }
 
+/**
+ * Create a reference grid in the XY plane.
+ */
 function createReferenceGrid() {
     referenceGrid = new THREE.GridHelper(
         referenceGridSize,
@@ -555,6 +561,15 @@ function createReferenceGrid() {
     updateReferenceGridScale(cameraDefaults.position, cameraDefaults.target);
 }
 
+/**
+ * Update the scale of the reference grid based on the camera's distance to the target.
+ * 
+ * The grid is scaled so that a fixed number of divisions are visible to the camera when looking at it
+ * perpendicularly.
+ * 
+ * @param {THREE.Vector3} cameraPosition The position of the camera
+ * @param {THREE.Vector3} targetPosition The position of the camera's target
+ */
 function updateReferenceGridScale(cameraPosition, targetPosition) {
     const cameraDistanceToTargetProjection = calculateCameraDistanceToTargetProjection(
         cameraPosition,
