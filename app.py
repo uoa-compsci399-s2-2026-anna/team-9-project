@@ -127,6 +127,10 @@ async def simulation(
     # Get the current system's string object list by lookup
     objects = sims.get_objects(system_name)
 
+    # Get the current system's simulation speed
+    sim_speed = sim_state["simulationSpeed"][system_name]
+    sim_speed_unit = sim_state["simulationSpeedUnit"][system_name]
+
     # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
     if sim_state and system_name in sim_state["formattedSimulationDates"]:
         simulation_date = sim_state["formattedSimulationDates"][system_name]
@@ -158,6 +162,8 @@ async def simulation(
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
             "fullscreen": fullscreen,
+            "sim_speed": sim_speed,
+            "sim_speed_unit": sim_speed_unit,
             "sim_date": simulation_date,
             "elapsed_days_text": elapsed_days_text,
             "systems": all_systems,

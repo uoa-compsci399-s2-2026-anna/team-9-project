@@ -44,12 +44,39 @@ export function setSimulationState(key, value) {
 }
 
 /**
- * Gets the simulation speed per second converted to milliseconds.
+ * Gets the simulation speed per second for the given system converted to milliseconds.
  * 
  * @returns {number} The simulation speed per second in milliseconds
  */
-export function getSimulationSpeedMilliseconds() {
-    return timeToMilliseconds(simulationState.simulationSpeed, simulationState.simulationSpeedUnit);
+export function getSimulationSpeedMilliseconds(system) {
+    return timeToMilliseconds(
+        simulationState.simulationSpeed[system], 
+        simulationState.simulationSpeedUnit[system]
+    );
+}
+
+/**
+ * Persists the simulation speed for the given system.
+ *
+ * @param {string} system Name of the system
+ * @param {number} speed The simulation speed value to persist
+ */
+export function setSimulationSpeed(system, speed) {
+    simulationState.simulationSpeed ??= {};
+    simulationState.simulationSpeed[system] = speed;
+    persist();
+}
+
+/**
+ * Persists the simulation speed unit for the given system.
+ *
+ * @param {string} system Name of the system
+ * @param {string} unit The simulation speed unit to persist (hour, day, week, month, year)
+ */
+export function setSimulationSpeedUnit(system, unit) {
+    simulationState.simulationSpeedUnit ??= {};
+    simulationState.simulationSpeedUnit[system] = unit;
+    persist();
 }
 
 /**

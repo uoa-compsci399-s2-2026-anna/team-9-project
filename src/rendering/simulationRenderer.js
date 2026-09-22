@@ -771,12 +771,12 @@ export async function init(name) {
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds();
+    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
     updateSimulation();
 }
 
 export function stepBack() {
-    currentSimulationTime -= getSimulationSpeedMilliseconds();
+    currentSimulationTime -= getSimulationSpeedMilliseconds(currentSystem);
     updateSimulation();
 }
 
@@ -990,7 +990,7 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += getSimulationSpeedMilliseconds() * deltaTime;
+        currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         updateSimulation();
     }

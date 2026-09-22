@@ -117,7 +117,7 @@
               type="text"
               inputmode="numeric"
               class="w-[4ch] tabular-nums"
-              value="{{ sim_state.simulationSpeed }}"
+              value="{{ sim_speed }}"
             />
 
             <!-- Increase speed button -->
@@ -135,7 +135,7 @@
             {% for option in sim_state_schema.simulationSpeedUnit.options %}
               <option
                 value="{{ option.value }}"
-                {{ "selected" if option.value == sim_state.simulationSpeedUnit }}
+                {{ "selected" if option.value == sim_speed_unit }}
               >
                 {{ option.label }}
               </option>

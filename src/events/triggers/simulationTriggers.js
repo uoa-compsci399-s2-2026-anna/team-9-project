@@ -34,11 +34,17 @@ speedAdjuster.addEventListener("input", (event) => {
     }
 
     lastValidSpeed = cleanedInput;
-    bus.publish(EVENTS.SIM.ADJUST_SPEED, { speed: cleanedInput });
+    bus.publish(EVENTS.SIM.ADJUST_SPEED, { 
+        system: currentSystem,
+        speed: cleanedInput 
+    });
 });
 
 speedUnitSelector.addEventListener("change", (event) => {
-    bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { unit: event.target.value });
+    bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { 
+        system: currentSystem,
+        unit: event.target.value 
+    });
 });
 
 /**
