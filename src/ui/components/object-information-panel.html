@@ -1,5 +1,19 @@
 {% from "components/container.html" import container %}
 
+{%
+  macro data_field(
+    label_text,
+    field_name,
+    unit_text
+  )
+%}
+  <div class="block">
+    <span class="inline">{{ label_text }}</span>
+    <span class="inline" data-{{ field_name }}></span>
+    <span class="inline">{{ unit_text }}</span>
+  </div>
+{% endmacro %}
+
 {% call container(width="w-48") %}
   <!-- Object information -->
   <div
@@ -7,25 +21,10 @@
     class="hidden"
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
-    <h2 data-object-name>Temp</h2>
-
-    <div class="block">
-      <span class="inline">Mass</span>
-      <span class="inline" data-object-mass>-</span>
-      <span class="inline">kg</span>
-    </div>
-
-    <div class="block">
-      <span class="inline">Radius</span>
-      <span class="inline" data-object-radius>-</span>
-      <span class="inline">m</span>
-    </div>
-
-    <div class="block">
-      <span class="inline">Avg. temp.</span>
-      <span class="inline" data-object-average-temperature>-</span>
-      <span class="inline">K</span>
-    </div>
+    {{ data_field(None, "object-name", None) }}
+    {{ data_field("Mass", "object-mass", "kg") }}
+    {{ data_field("Radius", "object-radius", "m") }}
+    {{ data_field("Avg. temp.", "object-average-temperature", "K") }}
   </div>
 
   <!-- Placeholder when no object is selected -->
