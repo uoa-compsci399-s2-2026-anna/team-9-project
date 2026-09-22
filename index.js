@@ -156,7 +156,7 @@ function spawnPythonProcess(resolve, reject) {
 }
 
 /**
- * Gets the path to the loader.html file to show while the application is
+ * Gets the path to the given UI file to show while the application is
  * launching.
  *
  * @param filename The file we are looking for
