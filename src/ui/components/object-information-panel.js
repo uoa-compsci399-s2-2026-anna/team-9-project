@@ -30,7 +30,7 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
  * @returns Mass in Jupiter masses
  */
 function kgToMJupiter(mass_kg) {
-    JUPITER_MASS_KG = 1.89813e27;
+    const JUPITER_MASS_KG = 1.89813e27;
     return mass_kg / JUPITER_MASS_KG;
 }
 
@@ -39,7 +39,7 @@ function kgToMJupiter(mass_kg) {
  * @returns Radius in Jupiter radii
  */
 function mToRJupiter(radius_m) {
-    JUPITER_RADIUS_M = 71492e3;
+    const JUPITER_RADIUS_M = 71492e3;
     return radius_m / JUPITER_RADIUS_M;
 }
 
@@ -48,6 +48,6 @@ function mToRJupiter(radius_m) {
  * @returns Temperature in Celsius
  */
 function kelvinToCelsius(kelvin) {
-    ZERO_KELVIN_TO_CELSIUS = -273.15;
+    const ZERO_KELVIN_TO_CELSIUS = -273.15;
     return kelvin + ZERO_KELVIN_TO_CELSIUS;
 }
