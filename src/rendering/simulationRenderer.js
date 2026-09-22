@@ -907,6 +907,8 @@ export function setObjectVisibility(name, value) {
             { objectVisible: value }
         );
     }
+
+    resetView();
 }
 
 export function setFontSize(size) {
