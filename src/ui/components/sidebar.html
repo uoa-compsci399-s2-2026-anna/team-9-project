@@ -125,8 +125,10 @@
   <!-- Spacer -->
   <div class="flex-1"></div>
 
-  <div class="flex flex-col items-end gap-2">
-    {% include "components/object-information-panel.html" %}
+  <div class="relative flex h-full flex-col items-end justify-end gap-2">
+    <div class="absolute top-1/2 -translate-y-1/2">
+      {% include "components/object-information-panel.html" %}
+    </div>
 
     {% call container(style="flex gap-2 p-2") %}
       <!-- Compare to solar system button -->
