@@ -46,11 +46,12 @@ let timer;
 
 // The current simulation time in milliseconds since Unix epoch
 let currentSimulationTime;
-
 let currentSystem;
-
 let currentSystemColours;
 let objectTypes;
+
+let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
+let lastSystemData = null;
 
 let scene;
 let camera;
@@ -976,12 +977,25 @@ async function updateSimulation(forceCalendarUpdate = true) {
     if (isComparingToSolarSystem) {
         systems.push("Solar System");
     }
-    const allSystemData = await getMultipleSystemsData(
-        systems,
-        currentSimulationTime,
-    );
+
+    let allSystemData;
+
+    if (gettingSystemData && lastSystemData) {
+        // Use the last fetched data if a request is already in progress
+        allSystemData = lastSystemData;
+
+    } else {
+        gettingSystemData = true;
+        allSystemData = await getMultipleSystemsData(
+            systems,
+            currentSimulationTime
+        );
+        updateCalendar(currentSimulationTime, forceCalendarUpdate);
+        gettingSystemData = false;
+        lastSystemData = allSystemData;
+    }
+
     const currentSystemData = allSystemData[currentSystem];
-    updateCalendar(currentSimulationTime, forceCalendarUpdate);
 
     for (const [name, position] of Object.entries(
         currentSystemData.positions,
