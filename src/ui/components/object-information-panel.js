@@ -1,15 +1,15 @@
 import { bus } from "/src/events/eventBus.js";
 import { EVENTS } from "/src/events/events.js";
 
+const panel = document.getElementById("object-information-panel");
+const placeholder = document.getElementById(
+    "object-information-panel-no-object-selected-view",
+);
+
 // Update object information panel when an object is clicked.
 bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     const objectName = e.detail.objectName;
-    const panel = document.getElementById("object-information-panel");
-    const placeholder = document.getElementById(
-        "object-information-panel-no-object-selected-view",
-    );
 
-    // TODO: Keep track of selected object state
     panel.classList.remove("hidden");
     placeholder.classList.add("hidden");
 
@@ -26,6 +26,11 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     );
     panel.querySelector("[data-object-average-temperature]").innerHTML =
         toScientificHTML(object.temp.value);
+});
+
+bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => {
+    panel.classList.add("hidden");
+    placeholder.classList.remove("hidden");
 });
 
 /**
