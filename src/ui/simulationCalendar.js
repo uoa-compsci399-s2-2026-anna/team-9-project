@@ -1,5 +1,6 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { settings } from "../shared/settingsState.js";
 import {
     formatDate,
     timeToMilliseconds,
@@ -53,6 +54,38 @@ setFlatpickrTheme(document.documentElement.dataset.theme === "dark");
 
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     setFlatpickrTheme(event.detail.enterDarkMode);
+});
+
+// Set Flatpickr font family and size
+const calendarFontSizes = {
+    Default: "12px",
+    Larger: "18px",
+};
+
+const calendarFontFamilies = {
+    Default: "inherit",
+    OpenDyslexic: "OpenDyslexic",
+};
+
+function setFlatpickrFont(chosenFont, chosenSize) {
+    const fontFamily =
+        calendarFontFamilies[chosenFont] ?? calendarFontFamilies.Default;
+    const fontSize = calendarFontSizes[chosenSize] ?? calendarFontSizes.Default;
+
+    document.querySelectorAll(".flatpickr-calendar").forEach((calendar) => {
+        calendar.style.fontFamily = fontFamily;
+        calendar.style.fontSize = fontSize;
+    });
+}
+
+setFlatpickrFont(settings.font, settings.textSize);
+
+bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
+    setFlatpickrFont(event.detail.value, settings.textSize);
+});
+
+bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
+    setFlatpickrFont(settings.font, event.detail.value);
 });
 
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
