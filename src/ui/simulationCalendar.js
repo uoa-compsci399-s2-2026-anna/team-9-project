@@ -33,7 +33,10 @@ const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
         onReady: (_selectedDates, _dateStr, instance) => {
             instance.altInput.classList.remove("invisible");
         },
-        onChange: (_selectedDates, dateStr) => {
+        onChange: (_selectedDates, dateStr, instance) => {
+            requestAnimationFrame(() => {
+                instance.hourElement?.blur();
+            });
             const timeZone = input.dataset.timezone;
             const epochMs = convertToEpoch(dateStr, timeZone);
             bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
