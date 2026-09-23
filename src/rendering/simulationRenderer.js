@@ -147,10 +147,12 @@ const themes = {
     light: {
         background: new THREE.Color("white"),
         labelBackground: "rgba(255, 255, 255, 0.5)",
+        referenceGrid: 0xcccccc,
     },
     dark: {
         background: new THREE.Color("black"),
         labelBackground: "rgba(0, 0, 0, 0.5)",
+        referenceGrid: 0x333333,
     },
 };
 
@@ -166,8 +168,6 @@ const referenceGridSize = 1000;
 
 const referenceGridDivisions = 1000;
 const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
-const referenceGridColour = 0x888888;
-
 const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
 let referenceGrid;
 
@@ -549,13 +549,14 @@ function createHabitableZoneMesh() {
  * Create a reference grid in the XY plane.
  */
 function createReferenceGrid() {
+    const referenceGridColor = getTheme().referenceGrid;
     referenceGrid = new THREE.GridHelper(
         referenceGridSize,
         referenceGridDivisions,
-        referenceGridColour, // Same colour for the center line and the grid lines
-        referenceGridColour
     );
     referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
+    referenceGrid.material.color.set(referenceGridColor);
+    referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
     referenceGrid.visible = simulationState.referenceGridShown;
 
     updateReferenceGridScale(cameraDefaults.position, cameraDefaults.target);
@@ -1001,6 +1002,7 @@ export function toggleSimulationDarkMode(isDarkMode) {
     const theme = getTheme(isDarkMode);
 
     scene.background = theme.background;
+    referenceGrid.material.color.set(theme.referenceGrid);
 
     const labelBackground = theme.labelBackground;
     const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
