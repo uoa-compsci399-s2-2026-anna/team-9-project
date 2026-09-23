@@ -15,33 +15,54 @@ const currentSystem = canvas.dataset.currentSystem;
 const speedAdjuster = document.getElementById("speed-adjuster");
 const speedUnitSelector = document.getElementById("speed-unit-selector");
 
-// Store the last valid speed input
-let lastValidSpeed = speedAdjuster.value;
-
-speedAdjuster.addEventListener("input", (event) => {
+// TODO: decide where this should live (changes empty -> 0 and changes 1. -> 1)
+speedAdjuster.addEventListener("change", (event) => {
     const input = event.target;
 
-    // Catch input that cannot be passed as a number
-    if (input.validity.badInput) {
-        input.value = lastValidSpeed;
+    if (input.value === "") {
+        input.value = 0;
         return;
     }
 
-    // Prevent negative values
-    if (parseInt(input.value) < 0) {
-        input.value = 0;
+    // Truncate any trialling decimal
+    input.value = parseFloat(input.value);
+});
+
+// TODO: decide where this should live (prevents the user from typing invalid or negative nums)
+speedAdjuster.addEventListener("beforeinput", (event) => {
+    // Allow deletions
+    if (event.data == null) {
+        return;
     }
 
-    // Prevent the user from typing anything but a number between 0 and 9
-    const cleanedInput = input.value.replace(/[^0-9.]/g, "");
-    if (cleanedInput !== input.value) {
-        input.value = cleanedInput;
+    const input = event.target;
+    // Get the number the user is trying to type
+    const newValue = Number(
+        input.value.slice(0, input.selectionStart) +
+        event.data +
+        input.value.slice(input.selectionEnd)
+    );
+
+    // TODO: magic value
+    if (Number.isNaN(newValue) || newValue < 0) {
+        event.preventDefault();
+    }
+});
+
+speedAdjuster.addEventListener("input", (event) => {
+    const input = event.target;
+    let value;
+
+    // If the input is empty, treat the simulation as not playing (speed of 0)
+    if (input.value === "") {
+        value = 0;
+    } else {
+        value = parseFloat(input.value);
     }
 
-    lastValidSpeed = cleanedInput;
     bus.publish(EVENTS.SIM.ADJUST_SPEED, { 
         system: currentSystem,
-        speed: cleanedInput 
+        speed: value 
     });
 });
 
