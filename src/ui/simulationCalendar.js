@@ -55,8 +55,6 @@ function setFlatpickrTheme(isDarkMode) {
     flatpickrDarkTheme.disabled = !isDarkMode;
 }
 
-setFlatpickrTheme(document.documentElement.dataset.theme === "dark");
-
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     setFlatpickrTheme(event.detail.enterDarkMode);
 });
