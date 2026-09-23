@@ -122,6 +122,10 @@
     color: inherit !important;
   }
 
+  .flatpickr-hour {
+    font-weight: inherit !important;
+  }
+
   .flatpickr-day.selected {
     @apply bg-accent! border-accent!;
     color: inherit !important;
