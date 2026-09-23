@@ -152,7 +152,7 @@ const themes = {
     dark: {
         background: new THREE.Color("black"),
         labelBackground: "rgba(0, 0, 0, 0.5)",
-        referenceGrid: 0x333333,
+        referenceGrid: 0x555555,
     },
 };
 
