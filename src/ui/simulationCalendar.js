@@ -23,8 +23,10 @@ const calendarInputs = document.querySelectorAll(".calendar");
 const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
     flatpickr(input, {
         enableTime: true,
+        // Internal format: "YYYY-MM-ddTHH:mm"
         dateFormat: "Y-m-d\\TH:i",
         altInput: true,
+        // User-facing format: "dd-MM-YYYY hh:mm AM/PM"
         altFormat: "d-m-Y G:i K",
         altInputClass: "calendar tabular-nums w-45 pl-0.5",
         allowInput: false,
