@@ -27,6 +27,9 @@ const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
         altFormat: "d-m-Y G:i K",
         altInputClass: "calendar tabular-nums w-45 pl-0.5",
         allowInput: false,
+        onReady: (_selectedDates, _dateStr, instance) => {
+            instance.altInput.classList.remove("invisible");
+        },
         onChange: (_selectedDates, dateStr) => {
             const timeZone = input.dataset.timezone;
             const epochMs = convertToEpoch(dateStr, timeZone);
