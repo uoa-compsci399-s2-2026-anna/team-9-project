@@ -25,20 +25,37 @@ const EMPTY_SPEED_VALUE = 0;
 const INCREASE_SPEED_STEP = 1;
 const DECREASE_SPEED_STEP = -1;
 
-// TODO: decide where this should live (changes empty -> 0 and changes 1. -> 1)
+/**
+ * Parses a raw simulation speed value into a number.
+ * 
+ * An empty string is treated as EMPTY_SPEED_VALUE, since an empty value
+ * represents that no speed has been set.
+ * 
+ * @param {string} value The raw simulation speed value as a string
+ * @returns {number} The parsed simulation speed
+ */
+function parseSpeedValue(value) {
+    if (value === "") {
+        return EMPTY_SPEED_VALUE;
+    } else {
+        return parseFloat(value);
+    }
+}
+
+/**
+ * Clean up the displayed simulation speed value once the user commits their edit
+ * (e.g., from pressing enter or from clicking off).
+ */
 speedAdjuster.addEventListener("change", (event) => {
     const input = event.target;
 
-    if (input.value === "") {
-        input.value = EMPTY_SPEED_VALUE;
-        return;
-    }
-
-    // Truncate any trialling decimal
-    input.value = parseFloat(input.value);
+    input.value = parseSpeedValue(input.value);
 });
 
-// TODO: decide where this should live (prevents the user from typing invalid or negative nums)
+/**
+ * Block any input that would result in the speed adjuster input box holding
+ * an invalid or negative value.
+ */
 speedAdjuster.addEventListener("beforeinput", (event) => {
     // Allow deletions
     if (event.data == null) {
@@ -47,7 +64,7 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
 
     const input = event.target;
 
-    // Get the number the user is trying to type
+    // Reconstruct what the field's value would be after this input
     const newValue = Number(
         input.value.slice(0, input.selectionStart) +
         event.data +
@@ -60,22 +77,10 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
 });
 
 /**
- * Parse the given simulation speed value.
+ * Publishes the given speed as the new simulation speed for the current system.
  * 
- * If the value is an empty string, then the empty speed value is returned.
- * If the value is non-empty, then the value is returned as a float.
- * 
- * @param {string} value The simulation speed value as a string
- * @returns The parsed simulation speed
+ * @param {number} speed The simulation speed to publish
  */
-function parseSpeedValue(value) {
-    if (value === "") {
-        return EMPTY_SPEED_VALUE;
-    } else {
-        return parseFloat(value);
-    }
-}
-
 function publishSimulationSpeed(speed) {
     bus.publish(EVENTS.SIM.ADJUST_SPEED, { 
         system: currentSystem,
@@ -98,7 +103,6 @@ function adjustSpeedBy(delta) {
     publishSimulationSpeed(updatedSpeed);
 }
 
-// TODO: comment
 attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(INCREASE_SPEED_STEP));
 attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
 

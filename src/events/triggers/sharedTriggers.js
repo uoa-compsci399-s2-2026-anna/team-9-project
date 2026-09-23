@@ -21,10 +21,15 @@ const EVENT_DETAIL = {
 };
 
 /**
- * TODO
- * @param {*} button
- * @param {*} callback 
- * @returns 
+ * Attaches a click handler to the given button that invokes the given callback.
+ * 
+ * If the button has `data-allow-repeat="true"`, holding it down also repeatedly 
+ * invokes the given callback. Repeating starts after `data-repeat-delay-ms`,
+ * then continues every `data-repeat-period-ms` until the pointer is released.
+ * 
+ * @param {HTMLElement} button The button to attach the handlers to
+ * @param {() => void} callback The callback to invoke on click and, if
+ * enabled, on each repeat while the button is held down
  */
 export function attachHoldRepeat(button, callback) {
     button.addEventListener("click", callback);
@@ -46,18 +51,14 @@ export function attachHoldRepeat(button, callback) {
     const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
 
     /**
-     * TODO: bad comment
-     * The delay between each repeat
+     * The interval at which the callback repeats once repeating has begun.
      */
     const repeatPeriodMs = parseInt(buttonType.dataset.repeatPeriodMs);
 
     // Add event when pointer (mouse, touch, stylus, etc.) pressed down
     button.addEventListener("pointerdown", () => {
         // Prevent registering duplicate timers
-        if (
-            repeatIntervalId !== null ||
-            repeatDelayTimeoutId !== null
-        ) {
+        if (repeatIntervalId !== null || repeatDelayTimeoutId !== null) {
             return;
         }
 
