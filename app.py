@@ -1,17 +1,19 @@
-from datetime import datetime
-from fastapi import FastAPI, HTTPException, Response, status, Request, Query
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from systems import Simulations, unix_to_sim_time, init_system
-from utility import get_position_dict, get_osculating_orbit
-from typing import Annotated
-from zoneinfo import ZoneInfo
 import json
 import os
-import rebound
 import signal
 import sys
 import time
+from datetime import datetime
+from typing import Annotated
+from zoneinfo import ZoneInfo
+
+import rebound
+from fastapi import FastAPI, HTTPException, Query, Request, Response, status
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+from systems import Simulations
+from utility import get_osculating_orbit, get_position_dict
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -125,6 +127,10 @@ async def simulation(
     # Get the current system's string object list by lookup
     objects = sims.get_objects(system_name)
 
+    # Get the current system's simulation speed
+    sim_speed = sim_state["simulationSpeed"][system_name]
+    sim_speed_unit = sim_state["simulationSpeedUnit"][system_name]
+
     # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
     if sim_state and system_name in sim_state["formattedSimulationDates"]:
         simulation_date = sim_state["formattedSimulationDates"][system_name]
@@ -156,6 +162,8 @@ async def simulation(
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
             "fullscreen": fullscreen,
+            "sim_speed": sim_speed,
+            "sim_speed_unit": sim_speed_unit,
             "sim_date": simulation_date,
             "elapsed_days_text": elapsed_days_text,
             "systems": all_systems,
@@ -203,8 +211,7 @@ async def get_system_info(system_name: str = "") -> dict:
 
 def get_system_data_at_time(system_name: str, t: float) -> dict:
     """
-    Gets a system at a specific sim time.
-    Sim time is relative to reference time (t=0 -> reference time)
+    Gets a system at a specific unix time.
     Returns simulation data.
     """
 
@@ -220,15 +227,11 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
     sim = sims.get_sim(system_name)
     objects = sims.get_objects(system_name)
 
-    # Init system if it is none
-    if sim is None:
-        sims.reinitialise_sim(system_data, system_name)
-
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
     # Integrate to given time
-    sim.integrate(t)
+    sim = sims.quick_integrate(t, system_data)
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -256,7 +259,6 @@ async def get_system_data(
     systems = {}
 
     for system_name in system_names:
-        sim_time = unix_to_sim_time(system_name.lower(), t)
-        systems[system_name] = get_system_data_at_time(system_name, sim_time)
+        systems[system_name] = get_system_data_at_time(system_name, t)
 
     return systems

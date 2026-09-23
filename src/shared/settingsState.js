@@ -13,6 +13,18 @@ async function loadState() {
 }
 
 /**
+ * Load the default settings state for the application. This is managed by the main process.
+ * 
+ * @returns The default settings state 
+ */
+async function loadDefaults() {
+    if (!window.settingsAPI) {
+        return {};
+    }
+    return await window.settingsAPI.getDefaults();
+}
+
+/**
  * Persists the updated settings state in electron-store (managed by the main process).
  */
 function persist() {
@@ -21,9 +33,9 @@ function persist() {
     });
 }
 
-const initial = await loadState();
+const [initialSettings, defaultSettings] = await Promise.all([loadState(), loadDefaults()]);;
 
-export const settings = { ...initial };
+export const settings = { ...initialSettings };
 
 /**
  * Updates a setting in the settings state and persists the change.
@@ -39,4 +51,15 @@ export function setSetting(key, value) {
 
     settings[key] = value;
     persist();
+}
+
+/**
+ * Reset the settings state to the default settings.
+ * Refresh the current application page to reflect this change.
+ */
+export function resetSettingsState() {
+    Object.assign(settings, defaultSettings);
+    persist();
+    // Refresh the current page
+    window.applicationAPI.refresh();
 }

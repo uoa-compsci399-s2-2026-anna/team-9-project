@@ -28,6 +28,8 @@ import {
     calculateCameraDistance,
     calculateAverageNormal,
     calculateDefaultCameraPosition,
+    calculateCameraDistanceToTargetProjection,
+    calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import { 
     updateCalendar, 
@@ -52,19 +54,21 @@ let controls;
 let renderer;
 let labelRenderer;
 
+let controlsChangeHandler; // Store the controls change handler to remove when updating controls
+
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
 
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 // Constants for camera and controls
-const viewRadiusMultiplier = 1.2;
+const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
 
 const fov = 45; // Field of view in degrees
 const cameraNearMultiplier = 1;
-const cameraFarMultiplier = 3;
+const cameraFarMultiplier = 100;
 
 const controlsMinMultiplier = 10;
 const controlsMaxMultiplier = 1.5;
@@ -85,6 +89,8 @@ solarSystemGroup.visible = false; // Initially hidden until the user requests a 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
 const objectLabels = new Map();
+
+let viewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
@@ -154,6 +160,17 @@ const habitableZoneOpacity = 0.2;
 let habitableZone;
 let habitableZoneMesh;
 
+// Size of the reference grid in AU when scale = 1.
+// This will be scaled when the camera zoom changes.
+const referenceGridSize = 1000;
+
+const referenceGridDivisions = 1000;
+const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
+const referenceGridColour = 0x888888;
+
+const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
+let referenceGrid;
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -218,6 +235,12 @@ function getLabelNameAt(clientX, clientY) {
     const labelWorldPosition = new THREE.Vector3();
 
     for (const [name, label] of objectLabels) {
+        // Skip any labels whose objects are not visible
+        const mesh = objectMeshes.get(name);
+        if (!mesh.visible || !mesh.parent.visible) {
+            continue;
+        }
+
         const rect = label.element.getBoundingClientRect();
         // Check whether the given point is inside the label's bounding rectangle
         const isOverLabel =
@@ -262,8 +285,9 @@ function getObjectNameAt(clientX, clientY, canvas) {
     // Create a ray from the camera through the mouse's position on the screen
     raycaster.setFromCamera(mouseNdc, camera);
 
-    // Get all the meshes for all of the objects in the scene
-    const meshes = Array.from(objectMeshes.values());
+    // Get all the meshes for all of the visible objects in the scene
+    const meshes = Array.from(objectMeshes.values())
+        .filter((mesh) => mesh.visible && mesh.parent.visible);
 
     // Check whether the ray intersects any object meshes (excludes hitboxes)
     let meshHits = raycaster.intersectObjects(meshes, false);
@@ -286,6 +310,19 @@ function getObjectNameAt(clientX, clientY, canvas) {
     }
 
     return null;
+}
+
+/**
+ * Get the orbital data values for all objects in the given system that are not hidden.
+ * 
+ * @param {string} system The name of the system
+ * @param {Object} orbitalData Map of object name to orbital data
+ * @returns {Object[]} Orbital data values for visible objects only
+ */
+function getVisibleOrbitalDataValues(system, orbitalData) {
+    return Object.keys(orbitalData)
+        .filter((name) => !isObjectHidden(system, name))
+        .map((name) => orbitalData[name]);
 }
 
 /**
@@ -402,7 +439,7 @@ function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, ob
  * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
  * @returns A new colour faded towards the background colour by (1 - opacity)
  */
-function getFadedColour(colour, opacity, isDarkMode = settings.isDarkMode) {
+function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
     const theme = getTheme(isDarkMode);
     const backgroundColour = theme.background;
 
@@ -490,6 +527,9 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
+/**
+ * Create a mesh representing the habitable zone as a ring in the XY plane.
+ */
 function createHabitableZoneMesh() {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
@@ -503,6 +543,50 @@ function createHabitableZoneMesh() {
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
+}
+
+/**
+ * Create a reference grid in the XY plane.
+ */
+function createReferenceGrid() {
+    referenceGrid = new THREE.GridHelper(
+        referenceGridSize,
+        referenceGridDivisions,
+        referenceGridColour, // Same colour for the center line and the grid lines
+        referenceGridColour
+    );
+    referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
+    referenceGrid.visible = simulationState.referenceGridShown;
+
+    updateReferenceGridScale(cameraDefaults.position, cameraDefaults.target);
+}
+
+/**
+ * Update the scale of the reference grid based on the camera's distance to the target.
+ * 
+ * The grid is scaled so that a fixed number of divisions are visible to the camera when looking at it
+ * perpendicularly.
+ * 
+ * @param {THREE.Vector3} cameraPosition The position of the camera
+ * @param {THREE.Vector3} targetPosition The position of the camera's target
+ */
+function updateReferenceGridScale(cameraPosition, targetPosition) {
+    const cameraDistanceToTargetProjection = calculateCameraDistanceToTargetProjection(
+        cameraPosition,
+        targetPosition
+    );
+
+    const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
+        fov,
+        cameraDistanceToTargetProjection,
+        divisionsInView
+    );
+
+    const coveredRange = desiredReferenceGridDivisionSize * referenceGridDivisions;
+    if (coveredRange < viewRadius * 2) return; // Don't scale if it doesn't cover the view radius
+
+    const scaleFactor = desiredReferenceGridDivisionSize / referenceGridDivisionSize;
+    referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
 }
 
 /**
@@ -603,10 +687,31 @@ function initOrUpdateControls(canvas, viewRadius) {
     controls.zoomSpeed = controlsZoomSpeed;
     controls.update();
 
-    // Detect when the user is moving the camera
-    controls.addEventListener("change", () => {
+    if (controlsChangeHandler) {
+        controls.removeEventListener("change", controlsChangeHandler);
+    }
+    controlsChangeHandler = createControlsChangeHandler(viewRadius);
+    controls.addEventListener("change", controlsChangeHandler);
+}
+
+/**
+ * Creates a handler for the controls change event.
+ * @param {number} viewRadius The radius of view to fit within the camera
+ * @returns {Function} The controls change handler
+ */
+function createControlsChangeHandler(viewRadius) {
+    return () => {
         isDragging = true;
-    });
+        const cameraOffset = camera.position.clone().sub(controls.target);
+
+        // Clamp the target position to be within the view radius
+        const minLength = 0;
+        const maxLength = viewRadius;
+        controls.target.clampLength(minLength, maxLength);
+
+        camera.position.copy(controls.target.clone().add(cameraOffset));
+        updateReferenceGridScale(camera.position, controls.target);
+    };
 }
 
 /**
@@ -640,6 +745,7 @@ function initScene() {
     scene.add(currentSystemGroup);
     scene.add(solarSystemGroup);
     scene.add(habitableZoneMesh);
+    scene.add(referenceGrid);
 }
 
 /**
@@ -688,10 +794,10 @@ export async function init(name) {
     );
 
     const referenceDataForCurrentSystem = systemInfo["reference"];
-    const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
+    const orbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
+    viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
@@ -700,14 +806,16 @@ export async function init(name) {
     const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
     alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
 
-    createHabitableZoneMesh();
-
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     initRaycastingEvents(canvas);
-    initScene();
     initLabelRenderer(canvas);
     initTimer();
+
+    createHabitableZoneMesh();
+    createReferenceGrid();
+
+    initScene();
 
     /**
      * Persist the current simulation time, formatted simulation date, and days elapsed text 
@@ -729,12 +837,12 @@ export async function init(name) {
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds();
+    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
     updateSimulation();
 }
 
 export function stepBack() {
-    currentSimulationTime -= getSimulationSpeedMilliseconds();
+    currentSimulationTime -= getSimulationSpeedMilliseconds(currentSystem);
     updateSimulation();
 }
 
@@ -748,7 +856,26 @@ export function setSimulationTimeToTime(time) {
     updateSimulation();
 }
 
-export function resetView() {
+export async function resetView() {
+    const canvas = renderer.domElement;
+
+    const currentSystemData = await getReferenceSystemData(currentSystem);
+    const currentSystemValues = getVisibleOrbitalDataValues(currentSystem, currentSystemData.orbital_data);
+    let maxApoapsis = calculateMaxApoapsis(currentSystemValues);
+
+    if (comparingToSolarSystem) {
+        const solarSystemData = await getReferenceSystemData("Solar System");
+        const solarSystemValues = getVisibleOrbitalDataValues("Solar System", solarSystemData.orbital_data);
+        maxApoapsis = Math.max(maxApoapsis, calculateMaxApoapsis(solarSystemValues));
+    }
+
+    viewRadius = maxApoapsis * viewRadiusMultiplier;
+
+    // Update the camera and controls for the new view radius
+    initOrUpdateCamera(canvas, viewRadius);
+    initOrUpdateControls(canvas, viewRadius);
+
+    // Move camera to the default position and target
     camera.position.copy(cameraDefaults.position);
     controls.target.copy(cameraDefaults.target); // Look at the barycenter
     controls.update();
@@ -760,15 +887,15 @@ export async function compareToSolarSystem() {
     const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
     const referenceDataForSolarSystem = await getReferenceSystemData("Solar System");
 
-    const currentOrbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
-    const solarOrbitalDataValues = Object.values(referenceDataForSolarSystem.orbital_data);
+    const currentOrbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
+    const solarOrbitalDataValues = getVisibleOrbitalDataValues("Solar System", referenceDataForSolarSystem.orbital_data);
 
     const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
     const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
 
     const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
     const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
-    const viewRadius = Math.max(currentViewRadius, solarViewRadius);
+    viewRadius = Math.max(currentViewRadius, solarViewRadius);
 
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
@@ -798,10 +925,10 @@ export async function hideSolarSystem() {
     const canvas = renderer.domElement;
 
     const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
-    const orbitalDataValues = Object.values(referenceDataForCurrentSystem.orbital_data);
+    const orbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const viewRadius = maxApoapsis * viewRadiusMultiplier;
+    viewRadius = maxApoapsis * viewRadiusMultiplier;
 
     solarSystemGroup.visible = false;
 
@@ -832,6 +959,12 @@ export function setOrbitsVisibility(value) {
     }
 }
 
+export function setReferenceGridVisibility(value) {
+    if (referenceGrid) {
+        referenceGrid.visible = value;
+    }
+}
+
 export function setObjectVisibility(name, value) {
     const mesh = objectMeshes.get(name);
     if (mesh) {
@@ -846,6 +979,8 @@ export function setObjectVisibility(name, value) {
             { objectVisible: value }
         );
     }
+
+    resetView();
 }
 
 export function setFontSize(size) {
@@ -929,7 +1064,7 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += getSimulationSpeedMilliseconds() * deltaTime;
+        currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         updateSimulation();
     }

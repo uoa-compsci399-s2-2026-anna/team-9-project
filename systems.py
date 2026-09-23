@@ -1,6 +1,9 @@
+from typing import cast
+
 import rebound
 from astropy.time import Time
-from utility import get_position_dict, get_osculating_orbit
+
+from utility import get_osculating_orbit, get_position_dict
 
 UNITS = ("AU", "day", "Msun")
 
@@ -36,9 +39,12 @@ class Simulations:
     __sims: dict[str, SimulationData] = {}
 
     def __init__(self, all_systems: list[dict]):
+        # Get the current JD TDB time so that we can pre-integrate the systems to now
+        now_jd_tdb: float = get_current_jd_tdb()
+
         for system_data in all_systems:
             system_name = system_data["name"].lower()
-            self.__sims[system_name] = init_system(system_data, system_name)
+            self.__sims[system_name] = init_system(system_data, system_name, now_jd_tdb)
 
     def stop_all(self):
         for sim in self.__sims.values():
@@ -65,8 +71,61 @@ class Simulations:
         else:
             return None
 
-    def reinitialise_sim(self, system_data: dict, system_name: str):
-        self.__sims[system_name] = init_system(system_data, system_name)
+    def reinitialise_sim(
+        self,
+        system_data: dict,
+        system_name: str,
+        time_to_integrate_to: float | None = None,
+    ):
+        """
+        Reinitialises a simulation with the (optionally) given JD TDB time to integrate to.
+        If no time is given, it integrates to now.
+        """
+
+        # If not given, the time_to_integrate_to defaults to now
+        if time_to_integrate_to is None:
+            time_to_integrate_to = get_current_jd_tdb()
+
+        self.__sims[system_name] = init_system(
+            system_data, system_name, time_to_integrate_to
+        )
+
+    def quick_integrate(self, t: float, system_data: dict) -> rebound.Simulation:
+        """
+        Integrates a simulation to the given unix time.
+        If it is a shorter time distance it will reinitialised the simulation and
+        integrate from there.
+        """
+
+        system_name: str = system_data["name"].lower()
+        sim: rebound.Simulation | None = self.get_sim(system_name)
+
+        # Get the timestamp in sim time
+        sim_time: float = unix_to_sim_time(system_name.lower(), t)
+
+        # Init system if it is none
+        if sim is None:
+            self.reinitialise_sim(system_data, system_name, sim_time)
+            # get_sim cannot return None so we cast
+            return cast(rebound.Simulation, self.get_sim(system_name))
+
+        # Calculate the time from the given time to where the sim is
+        current_temporal_distance: float = abs(sim_time - sim.t)
+
+        # Calculate the time from the given time to the initial timestamp of the system
+        jd_tdb_time: float = unix_to_jd_tdb(t)
+        initial_timestamp: float = system_data["timestamp"]
+        initial_temporal_distance: float = abs(jd_tdb_time - initial_timestamp)
+
+        if initial_temporal_distance < current_temporal_distance:
+            # If the difference is smaller to reinitialise do so
+            self.reinitialise_sim(system_data, system_name, jd_tdb_time)
+            # get_sim cannot return None so we cast
+            return cast(rebound.Simulation, self.get_sim(system_name))
+        else:
+            # If the difference is greater, integrate normally
+            sim.integrate(sim_time)
+            return sim
 
 
 def unix_to_jd_tdb(t: float) -> float:
@@ -91,10 +150,12 @@ def get_current_jd_tdb() -> float:
     return Time.now().tdb.jd
 
 
-def init_system(system_data: dict, name: str) -> SimulationData:
+def init_system(
+    system_data: dict, name: str, time_to_integrate_to: float
+) -> SimulationData:
     """
-    Initialises the given system
-    Returns simulation and objects
+    Initialises the given system and integrates it to the given JD TDB time
+    Returns SimulationData containing simulation, objects and reference data
     """
     # Initialise the simulation
     sim = rebound.Simulation()
@@ -147,8 +208,8 @@ def init_system(system_data: dict, name: str) -> SimulationData:
 
     reference = {"positions": positions, "orbital_data": orbital_data}
 
-    # Pre-emptively integrate sim to now
-    now_in_sim_time = get_current_jd_tdb() - system_data["timestamp"]
-    sim.integrate(now_in_sim_time)
+    # Pre-emptively integrate sim to the given time
+    sim_time = time_to_integrate_to - system_data["timestamp"]
+    sim.integrate(sim_time)
 
     return SimulationData(sim, objects, reference)

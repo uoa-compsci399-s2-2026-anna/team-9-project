@@ -26,6 +26,9 @@ export const EVENTS = {
          * When the 'Now' button is clicked.
          */
         SET_TIME_TO_NOW: "sim:set_time_to_now",
+
+        INCREASE_SPEED: "sim:increase_speed",
+        DECREASE_SPEED: "sim:decrease_speed",
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
@@ -39,7 +42,6 @@ export const EVENTS = {
         FONT_SELECT: "settings:font_select",
         TEXT_SIZE_SELECT: "settings:text_size_select",
         OBJECT_MARKER_SIZE_SELECT: "settings:object_marker_size_select",
-        ORBIT_LINES_SELECT: "settings:orbit_lines_select",
         RESET_ALL_SETTINGS: "settings:reset_all_settings",
 
         /**

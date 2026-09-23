@@ -16,7 +16,14 @@ function loadState() {
     return simulationStateElement ? JSON.parse(simulationStateElement.textContent) : {};
 }
 
+async function getDefaultState() {
+    return await window.simulationStateAPI.getDefaults();
+}
+
+// Note: Initial state is also the default state since this state is not persisted between application runs
 const initialState = loadState();
+
+export const defaultSimulationState = await getDefaultState();
 
 export const simulationState = { ...initialState };
 
@@ -44,12 +51,39 @@ export function setSimulationState(key, value) {
 }
 
 /**
- * Gets the simulation speed per second converted to milliseconds.
+ * Gets the simulation speed per second for the given system converted to milliseconds.
  * 
  * @returns {number} The simulation speed per second in milliseconds
  */
-export function getSimulationSpeedMilliseconds() {
-    return timeToMilliseconds(simulationState.simulationSpeed, simulationState.simulationSpeedUnit);
+export function getSimulationSpeedMilliseconds(system) {
+    return timeToMilliseconds(
+        simulationState.simulationSpeed[system], 
+        simulationState.simulationSpeedUnit[system]
+    );
+}
+
+/**
+ * Persists the simulation speed for the given system.
+ *
+ * @param {string} system Name of the system
+ * @param {number} speed The simulation speed value to persist
+ */
+export function setSimulationSpeed(system, speed) {
+    simulationState.simulationSpeed ??= {};
+    simulationState.simulationSpeed[system] = speed;
+    persist();
+}
+
+/**
+ * Persists the simulation speed unit for the given system.
+ *
+ * @param {string} system Name of the system
+ * @param {string} unit The simulation speed unit to persist (hour, day, week, month, year)
+ */
+export function setSimulationSpeedUnit(system, unit) {
+    simulationState.simulationSpeedUnit ??= {};
+    simulationState.simulationSpeedUnit[system] = unit;
+    persist();
 }
 
 /**
@@ -136,6 +170,40 @@ export function toggleObject(system, object, showObject) {
     }
 
     persist();
+}
+
+/**
+ * Get the object visibility changes necessary to reset the objects in the given system to their default
+ * hidden states.
+ *
+ * @param {string} system Name of the system to get the objects from
+ * @returns {{ objectName: string, isShown: boolean }[]} The objects whose visibility differs from the default
+ */
+export function getObjectVisibilityChanges(system) {
+    const previouslyHidden = simulationState.hiddenObjects[system] ?? [];
+    const defaultHidden = defaultSimulationState.hiddenObjects[system] ?? [];
+
+    const changes = [];
+    for (const name of previouslyHidden) {
+        // Object was hidden, but it should now be shown
+        if (!defaultHidden.includes(name)) {
+            changes.push({ 
+                objectName: name, 
+                isShown: true, 
+            });
+        }
+    }
+    for (const name of defaultHidden) {
+        // Object was shown, but it should be now hidden
+        if (!previouslyHidden.includes(name)) {
+            changes.push({ 
+                objectName: name, 
+                isShown: false,
+            });
+        }
+    }
+
+    return changes;
 }
 
 /**

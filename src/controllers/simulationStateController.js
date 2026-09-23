@@ -2,6 +2,8 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { 
     setSimulationState,
+    setSimulationSpeed,
+    setSimulationSpeedUnit,
     toggleObject,
     setRunning, 
     setFrozen,
@@ -11,11 +13,13 @@ import {
 // Speed adjuster
 
 bus.subscribe(EVENTS.SIM.ADJUST_SPEED, (event) => {
-    setSimulationState("simulationSpeed", event.detail.speed);
+    const { system, speed } = event.detail;
+    setSimulationSpeed(system, speed);
 });
 
 bus.subscribe(EVENTS.SIM.ADJUST_SPEED_UNIT, (event) => {
-    setSimulationState("simulationSpeedUnit", event.detail.unit);
+    const { system, unit } = event.detail;
+    setSimulationSpeedUnit(system, unit);
 });
 
 // View settings
