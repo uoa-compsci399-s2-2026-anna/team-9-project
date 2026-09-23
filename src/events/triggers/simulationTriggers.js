@@ -21,6 +21,10 @@ const decreaseSpeedButton = document.getElementById("decrease-speed-button");
 // The simulation speed when the input is empty
 const EMPTY_SPEED_VALUE = 0;
 
+// Step sizes on clicking increase and decrease speed buttons
+const INCREASE_SPEED_STEP = 1;
+const DECREASE_SPEED_STEP = -1;
+
 // TODO: decide where this should live (changes empty -> 0 and changes 1. -> 1)
 speedAdjuster.addEventListener("change", (event) => {
     const input = event.target;
@@ -50,7 +54,6 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
         input.value.slice(input.selectionEnd)
     );
 
-    // TODO: magic value
     if (Number.isNaN(newValue) || newValue < 0) {
         event.preventDefault();
     }
@@ -96,9 +99,8 @@ function adjustSpeedBy(delta) {
 }
 
 // TODO: comment
-// TODO: magic values
-attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(1));
-attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(-1));
+attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(INCREASE_SPEED_STEP));
+attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
 
 speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { 
