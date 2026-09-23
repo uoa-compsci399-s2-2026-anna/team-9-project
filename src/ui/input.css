@@ -118,6 +118,10 @@
     border-color: transparent !important;
   }
 
+  .flatpickr-day.today:hover {
+    color: inherit !important;
+  }
+
   .flatpickr-day.selected {
     @apply bg-accent! border-accent!;
   }
