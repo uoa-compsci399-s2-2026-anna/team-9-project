@@ -124,6 +124,8 @@
 
   .flatpickr-day.selected {
     @apply bg-accent! border-accent!;
+    color: inherit !important;
+    font-weight: inherit !important;
   }
 
   .flatpickr-prev-month:hover svg,
