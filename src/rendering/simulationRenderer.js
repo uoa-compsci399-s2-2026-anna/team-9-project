@@ -421,12 +421,20 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
  * @param {string} [system=currentSystem] The system associated with the object
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
- * @param {boolean} [options.objectVisible] Whether the object should be visible
+ * @param {boolean} [options.objectVisible] Whether the object is visible
+ * @param {boolean} [options.useDefault=false] Whether to check the object's default visibility 
+ * instead of its current visibility
  * @returns {boolean} Whether the orbit should be visible
  */
-function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, objectVisible } = {}) {
+function shouldShowOrbit(
+    objectName, 
+    system = currentSystem, 
+    { orbitsVisible, objectVisible, useDefault = false } = {}
+) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown = objectVisible ?? !isObjectHidden(system, objectName);
+    const isObjectShown = objectVisible ?? (useDefault
+        ? !isObjectHiddenByDefault(system, objectName)
+        : !isObjectHidden(system, objectName));
 
     return areOrbitsShown && isObjectShown;
 }
@@ -483,8 +491,8 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
         line = new Line2(geometry, material);
 
-        if (group === solarSystemGroup) {
-            line.visible = shouldShowOrbit(name, "Solar System");
+        if (comparingToSolarSystem && group === solarSystemGroup) {
+            line.visible = shouldShowOrbit(name, "Solar System", { useDefault: true });
         } else {
             line.visible = shouldShowOrbit(name, currentSystem);
         }
