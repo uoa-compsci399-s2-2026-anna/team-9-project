@@ -221,8 +221,8 @@ export function isObjectHidden(system, object) {
  * For the given system, check whether or not the given object is hidden by default
  * (based on the default simulation state).
  * 
- * @param {*} system The system to check
- * @param {*} objectName The name of the object to check
+ * @param {string} system The system to check
+ * @param {string} objectName The name of the object to check
  * @returns Whether or not the object is hidden by default
  */
 export function isObjectHiddenByDefault(system, objectName) {
