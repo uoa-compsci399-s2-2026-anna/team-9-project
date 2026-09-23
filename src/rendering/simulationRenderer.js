@@ -10,6 +10,7 @@ import {
     frozen,
     comparingToSolarSystem,
     isObjectHidden,
+    isObjectHiddenByDefault,
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
@@ -361,8 +362,8 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
         mesh = new THREE.Mesh(geometry, material);
 
-        if (group === solarSystemGroup) {
-            mesh.visible = !isObjectHidden("Solar System", name);
+        if (comparingToSolarSystem && group === solarSystemGroup) {
+            mesh.visible = !isObjectHiddenByDefault("Solar System", name);
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
