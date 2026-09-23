@@ -7,6 +7,7 @@ import {
     defaultSimulationState, 
     simulationState,
 } from "../../shared/simulationState.js";
+import { attachHoldRepeat } from "./sharedTriggers.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -14,13 +15,18 @@ const currentSystem = canvas.dataset.currentSystem;
 // Triggers for the speed adjuster
 const speedAdjuster = document.getElementById("speed-adjuster");
 const speedUnitSelector = document.getElementById("speed-unit-selector");
+const increaseSpeedButton = document.getElementById("increase-speed-button");
+const decreaseSpeedButton = document.getElementById("decrease-speed-button");
+
+// The simulation speed when the input is empty
+const EMPTY_SPEED_VALUE = 0;
 
 // TODO: decide where this should live (changes empty -> 0 and changes 1. -> 1)
 speedAdjuster.addEventListener("change", (event) => {
     const input = event.target;
 
     if (input.value === "") {
-        input.value = 0;
+        input.value = EMPTY_SPEED_VALUE;
         return;
     }
 
@@ -36,6 +42,7 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
     }
 
     const input = event.target;
+
     // Get the number the user is trying to type
     const newValue = Number(
         input.value.slice(0, input.selectionStart) +
@@ -49,22 +56,49 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
     }
 });
 
-speedAdjuster.addEventListener("input", (event) => {
-    const input = event.target;
-    let value;
-
-    // If the input is empty, treat the simulation as not playing (speed of 0)
-    if (input.value === "") {
-        value = 0;
+/**
+ * Parse the given simulation speed value.
+ * 
+ * If the value is an empty string, then the empty speed value is returned.
+ * If the value is non-empty, then the value is returned as a float.
+ * 
+ * @param {string} value The simulation speed value as a string
+ * @returns The parsed simulation speed
+ */
+function parseSpeedValue(value) {
+    if (value === "") {
+        return EMPTY_SPEED_VALUE;
     } else {
-        value = parseFloat(input.value);
+        return parseFloat(value);
     }
+}
 
+function publishSimulationSpeed(speed) {
     bus.publish(EVENTS.SIM.ADJUST_SPEED, { 
         system: currentSystem,
-        speed: value 
+        speed: speed
     });
+}
+
+speedAdjuster.addEventListener("input", (event) => {
+    let inputValue = parseSpeedValue(event.target.value);
+
+    publishSimulationSpeed(inputValue);
 });
+
+function adjustSpeedBy(delta) {
+    const currentSpeed = parseSpeedValue(speedAdjuster.value);
+    // Prevent the updated speed from being negative
+    const updatedSpeed = Math.max(0, currentSpeed + delta);
+
+    speedAdjuster.value = updatedSpeed;
+    publishSimulationSpeed(updatedSpeed);
+}
+
+// TODO: comment
+// TODO: magic values
+attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(1));
+attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(-1));
 
 speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { 

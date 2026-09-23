@@ -21,6 +21,79 @@ const EVENT_DETAIL = {
 };
 
 /**
+ * TODO
+ * @param {*} button
+ * @param {*} callback 
+ * @returns 
+ */
+export function attachHoldRepeat(button, callback) {
+    button.addEventListener("click", callback);
+
+    const buttonType = button.closest("[data-button-type]");
+    const allowRepeat = buttonType.dataset.allowRepeat.toLowerCase() === "true";
+
+    if (!allowRepeat) {
+        return;
+    }
+
+    let repeatIntervalId = null;
+    let repeatDelayTimeoutId = null;
+
+    /**
+     * The duration to wait for while the button is pressed down before
+     * repeating begins.
+     */
+    const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
+
+    /**
+     * TODO: bad comment
+     * The delay between each repeat
+     */
+    const repeatPeriodMs = parseInt(buttonType.dataset.repeatPeriodMs);
+
+    // Add event when pointer (mouse, touch, stylus, etc.) pressed down
+    button.addEventListener("pointerdown", () => {
+        // Prevent registering duplicate timers
+        if (
+            repeatIntervalId !== null ||
+            repeatDelayTimeoutId !== null
+        ) {
+            return;
+        }
+
+        // Wait repeatDelayMs milliseconds...
+        repeatDelayTimeoutId = setTimeout(() => {
+            // Then reset timeout timer
+            repeatDelayTimeoutId = null;
+
+            // Start interval (repeating) timer repeating every repeatPeriodMs milliseconds
+            repeatIntervalId = setInterval(callback, repeatPeriodMs);
+        }, repeatDelayMs);
+    });
+
+    // Clear all timers (stop firing events) when pointerup (mouse etc.
+    // released) or pointercancel ('unlikely to be any more pointer
+    // events')
+    document.addEventListener("pointerup", resetAllTimers);
+    document.addEventListener("pointercancel", resetAllTimers);
+
+    /**
+     * Resets all existing active timers.
+     */
+    function resetAllTimers() {
+        if (repeatDelayTimeoutId !== null) {
+            clearTimeout(repeatDelayTimeoutId);
+            repeatDelayTimeoutId = null;
+        }
+
+        if (repeatIntervalId !== null) {
+            clearInterval(repeatIntervalId);
+            repeatIntervalId = null;
+        }
+    }
+}
+
+/**
  * Register event listeners, event bus publishes, and any additional event
  * detail (where provided) to all `button_with_tooltip` and `text_button` macro
  * calls.
@@ -47,70 +120,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             continue;
         }
 
-        const allowRepeat =
-            buttonType.dataset.allowRepeat.toLowerCase() === "true";
-
-        if (allowRepeat) {
-            // Handle repeating buttons
-
-            let repeatIntervalId = null;
-            let repeatDelayTimeoutId = null;
-
-            /**
-             * The duration to wait for while the button is pressed down before
-             * repeating begins.
-             */
-            const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
-
-            // Add event when pointer (mouse, touch, stylus, etc.) pressed down
-            button.addEventListener("pointerdown", () => {
-                // Prevent registering duplicate timers
-                if (
-                    repeatIntervalId !== null ||
-                    repeatDelayTimeoutId !== null
-                ) {
-                    return;
-                }
-
-                // Wait repeatDelayMs milliseconds...
-                repeatDelayTimeoutId = setTimeout(() => {
-                    // Then reset timeout timer
-                    repeatDelayTimeoutId = null;
-
-                    // Start interval (repeating) timer repeating every
-                    // repeatPeriodMs milliseconds
-                    repeatIntervalId = setInterval(() => {
-                        // Publish event on each callback
-                        bus.publish(event, getEventDetail());
-                    }, Number(buttonType.dataset.repeatPeriodMs));
-                }, repeatDelayMs);
-            });
-
-            // Clear all timers (stop firing events) when pointerup (mouse etc.
-            // released) or pointercancel ('unlikely to be any more pointer
-            // events')
-            document.addEventListener("pointerup", resetAllTimers);
-            document.addEventListener("pointercancel", resetAllTimers);
-
-            /**
-             * Resets all existing active timers.
-             */
-            function resetAllTimers() {
-                if (repeatDelayTimeoutId !== null) {
-                    clearTimeout(repeatDelayTimeoutId);
-                    repeatDelayTimeoutId = null;
-                }
-
-                if (repeatIntervalId !== null) {
-                    clearInterval(repeatIntervalId);
-                    repeatIntervalId = null;
-                }
-            }
-        }
-
-        button.addEventListener("click", () => {
-            bus.publish(event, getEventDetail());
-        });
+        attachHoldRepeat(button, () => bus.publish(event, getEventDetail(event)));
 
         function getEventDetail() {
             return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : {};
