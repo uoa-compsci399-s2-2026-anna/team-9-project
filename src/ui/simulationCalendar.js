@@ -79,6 +79,10 @@ function setFlatpickrFont(chosenFont, chosenSize) {
         calendar.style.fontFamily = fontFamily;
         calendar.style.fontSize = fontSize;
     });
+
+    document.querySelectorAll(".flatpickr-time input").forEach((input) => {
+        input.style.fontSize = fontSize;
+    });
 }
 
 setFlatpickrFont(settings.font, settings.textSize);
