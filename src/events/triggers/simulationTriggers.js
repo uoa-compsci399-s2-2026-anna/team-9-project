@@ -1,7 +1,5 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import { convertToEpoch } from "../../utils/utils.js";
-import { settings } from "../../shared/settingsState.js";
 import { 
     getObjectVisibilityChanges,
     defaultSimulationState, 
