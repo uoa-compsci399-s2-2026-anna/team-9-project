@@ -169,6 +169,7 @@ const referenceGridSize = 1000;
 const referenceGridDivisions = 1000;
 const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
 const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
+const referenceGridOpacity = 0.5;
 let referenceGrid;
 
 function getTheme(isDarkMode = settings.darkMode) {
@@ -556,6 +557,8 @@ function createReferenceGrid() {
     );
     referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
     referenceGrid.material.color.set(referenceGridColor);
+    referenceGrid.material.transparent = true;
+    referenceGrid.material.opacity = referenceGridOpacity;
     referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
     referenceGrid.visible = simulationState.referenceGridShown;
 
