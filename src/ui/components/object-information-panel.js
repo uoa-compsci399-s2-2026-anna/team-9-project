@@ -39,7 +39,7 @@ bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => {
  * @param {*} ignoreAbsoluteExponentsBelow Do not convert to scientific notation
  * for numbers * with an absolute value of their exponent less than this amount
  * (i.e. display small numbers normally)
- * @returns
+ * @returns HTML of formatted scientific notation of number
  */
 function toScientificHTML(
     number,
