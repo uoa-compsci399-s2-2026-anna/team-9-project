@@ -23,9 +23,9 @@ const EVENT_DETAIL = {
 /**
  * Attaches a click handler to the given button that invokes the given callback.
  * 
- * If the button has `data-allow-repeat="true"`, holding it down also repeatedly 
- * invokes the given callback. Repeating starts after `data-repeat-delay-ms`,
- * then continues every `data-repeat-period-ms` until the pointer is released.
+ * Holding down the buttton repeatedly invokes the given callback. 
+ * Repeating starts after `data-repeat-delay-ms`, then continues every 
+ * `data-repeat-period-ms` until the pointer is released.
  * 
  * @param {HTMLElement} button The button to attach the handlers to
  * @param {() => void} callback The callback to invoke on click and, if
@@ -34,15 +34,10 @@ const EVENT_DETAIL = {
 export function attachHoldRepeat(button, callback) {
     button.addEventListener("click", callback);
 
-    const buttonType = button.closest("[data-button-type]");
-    const allowRepeat = buttonType.dataset.allowRepeat.toLowerCase() === "true";
-
-    if (!allowRepeat) {
-        return;
-    }
-
     let repeatIntervalId = null;
     let repeatDelayTimeoutId = null;
+
+    const buttonType = button.closest("[data-button-type]");
 
     /**
      * The duration to wait for while the button is pressed down before
@@ -107,6 +102,8 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         return;
     }
 
+    const allowRepeat = buttonType.dataset.allowRepeat.toLowerCase() === "true";
+
     const existingEvents = Object.values(EVENTS).flatMap((category) =>
         Object.values(category),
     );
@@ -120,8 +117,13 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             );
             continue;
         }
+        const publish = () => bus.publish(event, getEventDetail(event));
 
-        attachHoldRepeat(button, () => bus.publish(event, getEventDetail(event)));
+        if (allowRepeat) {
+            attachHoldRepeat(button, publish);
+        } else {
+            button.addEventListener("click", publish);
+        }
 
         function getEventDetail() {
             return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : {};
