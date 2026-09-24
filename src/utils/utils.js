@@ -74,8 +74,8 @@ export function formatDate(date, timeZone) {
  * @param {Date} date A `Date` object
  * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
  */
-export function dateOnly(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function dateOnly(date, timeZone) {
+    var timeZone = TIMEZONE_MAP[timeZone];
 
     return new Intl.DateTimeFormat("sv", {
         timeZone: timeZone,
