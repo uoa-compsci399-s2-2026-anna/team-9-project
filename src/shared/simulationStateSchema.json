@@ -9,9 +9,6 @@
   "simulationTimes": {
     "default": {}
   },
-  "formattedSimulationDates": {
-    "default": {}
-  },
   "elapsedDaysTexts": {
     "default": {},
     "fallbackText": "Today"
