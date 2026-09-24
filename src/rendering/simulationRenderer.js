@@ -10,6 +10,7 @@ import {
     frozen,
     comparingToSolarSystem,
     isObjectHidden,
+    isObjectHiddenByDefault,
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
@@ -318,11 +319,14 @@ function getObjectNameAt(clientX, clientY, canvas) {
  * 
  * @param {string} system The name of the system
  * @param {Object} orbitalData Map of object name to orbital data
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
  * @returns {Object[]} Orbital data values for visible objects only
  */
-function getVisibleOrbitalDataValues(system, orbitalData) {
+function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
+    const isHidden = useDefault ? isObjectHiddenByDefault : isObjectHidden;
+
     return Object.keys(orbitalData)
-        .filter((name) => !isObjectHidden(system, name))
+        .filter((name) => !isHidden(system, name))
         .map((name) => orbitalData[name]);
 }
 
@@ -362,8 +366,8 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
         mesh = new THREE.Mesh(geometry, material);
 
-        if (group === solarSystemGroup) {
-            mesh.visible = !isObjectHidden("Solar System", name);
+        if (comparingToSolarSystem && group === solarSystemGroup) {
+            mesh.visible = !isObjectHiddenByDefault("Solar System", name);
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
@@ -421,12 +425,20 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
  * @param {string} [system=currentSystem] The system associated with the object
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
- * @param {boolean} [options.objectVisible] Whether the object should be visible
+ * @param {boolean} [options.objectVisible] Whether the object is visible
+ * @param {boolean} [options.useDefault=false] Whether to check the object's default visibility 
+ * instead of its current visibility
  * @returns {boolean} Whether the orbit should be visible
  */
-function shouldShowOrbit(objectName, system = currentSystem, { orbitsVisible, objectVisible } = {}) {
+function shouldShowOrbit(
+    objectName, 
+    system = currentSystem, 
+    { orbitsVisible, objectVisible, useDefault = false } = {}
+) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown = objectVisible ?? !isObjectHidden(system, objectName);
+    const isObjectShown = objectVisible ?? (useDefault
+        ? !isObjectHiddenByDefault(system, objectName)
+        : !isObjectHidden(system, objectName));
 
     return areOrbitsShown && isObjectShown;
 }
@@ -483,8 +495,8 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
         line = new Line2(geometry, material);
 
-        if (group === solarSystemGroup) {
-            line.visible = shouldShowOrbit(name, "Solar System");
+        if (comparingToSolarSystem && group === solarSystemGroup) {
+            line.visible = shouldShowOrbit(name, "Solar System", { useDefault: true });
         } else {
             line.visible = shouldShowOrbit(name, currentSystem);
         }
@@ -596,8 +608,10 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
 /**
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
+ * 
+ * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
  */
-async function updateSimulation() {
+async function updateSimulation(forceCalendarUpdate = true) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
@@ -608,7 +622,7 @@ async function updateSimulation() {
     }
     const allSystemData = await getMultipleSystemsData(systems, currentSimulationTime);
     const currentSystemData = allSystemData[currentSystem];
-    updateCalendar(currentSimulationTime);
+    updateCalendar(currentSimulationTime, forceCalendarUpdate);
 
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
@@ -632,6 +646,17 @@ async function updateSimulation() {
             createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup, overlayColour);
         }
     }
+}
+
+/**
+ * Sync the calendar to the current simulation time (bypasses the throttle).
+ */
+export function syncCalendar() {
+    if (currentSimulationTime === null) {
+        return;
+    }
+
+    updateCalendar(currentSimulationTime, true);
 }
 
 /**
@@ -869,7 +894,7 @@ export async function resetView() {
 
     if (comparingToSolarSystem) {
         const solarSystemData = await getReferenceSystemData("Solar System");
-        const solarSystemValues = getVisibleOrbitalDataValues("Solar System", solarSystemData.orbital_data);
+        const solarSystemValues = getVisibleOrbitalDataValues("Solar System", solarSystemData.orbital_data, true);
         maxApoapsis = Math.max(maxApoapsis, calculateMaxApoapsis(solarSystemValues));
     }
 
@@ -892,7 +917,7 @@ export async function compareToSolarSystem() {
     const referenceDataForSolarSystem = await getReferenceSystemData("Solar System");
 
     const currentOrbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
-    const solarOrbitalDataValues = getVisibleOrbitalDataValues("Solar System", referenceDataForSolarSystem.orbital_data);
+    const solarOrbitalDataValues = getVisibleOrbitalDataValues("Solar System", referenceDataForSolarSystem.orbital_data, true);
 
     const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
     const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
@@ -1074,7 +1099,8 @@ async function renderFrame(timestamp) {
 
         currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
-        updateSimulation();
+        // Update the simulation but do not bypass the calendar update throttle
+        updateSimulation(false);
     }
 
     renderer.render(scene, camera);

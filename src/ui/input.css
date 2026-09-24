@@ -82,4 +82,58 @@
   .shadowed {
     @apply p-1 shadow-2xl/50 shadow-black/50 dark:shadow-purple-300/30;
   }
+
+  :where([data-theme="dark"]) {
+    .flatpickr-calendar {
+      background-color: var(--color-zinc-900) !important;
+    }
+
+    .flatpickr-weekdays,
+    span.flatpickr-weekday,
+    .flatpickr-next-month,
+    .flatpickr-prev-month,
+    .flatpickr-month,
+    .flatpickr-current-month,
+    .flatpickr-monthDropdown-months,
+    .flatpickr-monthDropdown-month,
+    .flatpickr-current-month input.cur-year {
+      background-color: var(--color-zinc-900) !important;
+    }
+
+    .flatpickr-am-pm:hover,
+    .flatpickr-am-pm:focus,
+    .flatpickr-am-pm:active,
+    .flatpickr-time input:hover,
+    .flatpickr-time input:focus {
+      background-color: var(--color-zinc-800) !important;
+    }
+
+    .flatpickr-day:hover {
+      background-color: var(--color-zinc-800) !important;
+      border-color: var(--color-zinc-800) !important;
+    }
+  }
+
+  .flatpickr-day.today {
+    border-color: transparent !important;
+  }
+
+  .flatpickr-day.today:hover {
+    color: inherit !important;
+  }
+
+  .flatpickr-hour {
+    font-weight: inherit !important;
+  }
+
+  .flatpickr-day.selected {
+    @apply bg-accent! border-accent!;
+    color: inherit !important;
+    font-weight: inherit !important;
+  }
+
+  .flatpickr-prev-month:hover svg,
+  .flatpickr-next-month:hover svg {
+    fill: var(--color-accent) !important;
+  }
 }

@@ -1,3 +1,4 @@
+import { updateCalendar } from "../ui/simulationCalendar.js";
 import { timeToMilliseconds } from "../utils/utils.js";
 import simulationStateSchema from "./simulationStateSchema.json" with { type: "json" };
 
@@ -224,6 +225,29 @@ export function getObjectVisibilityChanges(system) {
  */
 export function isObjectHidden(system, object) {
     return getHiddenObjects(system).includes(object);
+}
+
+/**
+ * For the given system, check whether or not the given object is hidden by default
+ * (based on the default simulation state).
+ * 
+ * @param {string} system The system to check
+ * @param {string} objectName The name of the object to check
+ * @returns Whether or not the object is hidden by default
+ */
+export function isObjectHiddenByDefault(system, objectName) {
+    if (!defaultSimulationState.hiddenObjects) {
+        return false;
+    }
+
+    // The hidden objects for the given system
+    const hiddenObjects = defaultSimulationState.hiddenObjects[system];
+
+    if (!hiddenObjects) {
+        return false;
+    }
+
+    return hiddenObjects.includes(objectName);
 }
 
 /**
