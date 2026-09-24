@@ -27,7 +27,7 @@ const calendarInputs = document.querySelectorAll(".calendar");
 const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
     flatpickr(input, {
         enableTime: true,
-        dateFormat: "d-m-Y G:i K", // Internal format: "dd-MM-yyy hh:mm a"
+        dateFormat: "d-m-Y G:i K", // Internal format: "dd-MM-yyyy hh:mm a"
         allowInput: false,
         onChange: (_selectedDates, dateStr, instance) => {
             requestAnimationFrame(() => {

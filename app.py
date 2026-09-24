@@ -68,7 +68,7 @@ TIMEZONE_MAP = {
 
 
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
-    """Formats a simulation time as a "dd-MM-yyy hh:mm a" string, in the given time zone."""
+    """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone."""
     if timezone_key is None:
         raise ValueError("Invalid timezone")
     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
