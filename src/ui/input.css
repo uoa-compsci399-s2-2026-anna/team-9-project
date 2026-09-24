@@ -52,6 +52,10 @@
   [role="button"]:not([disabled]) {
     cursor: pointer;
   }
+
+  html[data-text-size="Larger"] {
+    font-size: 110%;
+  }
 }
 
 @layer components {
