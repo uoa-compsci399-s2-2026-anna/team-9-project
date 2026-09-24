@@ -167,7 +167,7 @@ function updateElapsedDaysText(simulationTime) {
 
 /**
  * Updates all calendars to show the given simulation time in the given time zone,
- * and sets the minimum and maximum of the calendar to +/- 3 years.
+ * and sets the minimum and maximum of the calendar to +/- CALENDAR_RANGE_YEARS.
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  */
 export function updateCalendar(simulationTime) {
