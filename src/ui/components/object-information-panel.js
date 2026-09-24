@@ -57,7 +57,7 @@ function updateDataField(selector, value) {
  * @param {Number} number The number to convert to scientific notation
  * @param {Number} fractionDigits The number of digits in the fractional component of
  * the number in scientific notation (i.e. the number of digits after the
- * decimal point.
+ * decimal point).
  * @param {Number} ignoreAbsoluteExponentsBelow Do not convert to scientific notation
  * for numbers * with an absolute value of their exponent less than this amount
  * (i.e. display small numbers normally)
