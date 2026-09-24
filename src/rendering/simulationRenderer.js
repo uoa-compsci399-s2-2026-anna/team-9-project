@@ -938,6 +938,9 @@ export async function hideSolarSystem() {
 
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
+
+    resetView();
+
     updateSimulation();
 }
 
