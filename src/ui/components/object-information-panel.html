@@ -25,11 +25,11 @@
   </div>
 {% endmacro %}
 
-{% call container(width="w-48", style="p-4") %}
+{% call container(style="p-4") %}
   <!-- Object information -->
   <div
     id="object-information-panel"
-    class="hidden w-full tabular-nums"
+    class="hidden w-48 tabular-nums"
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
     <div class="mb-3 flex w-full items-center">

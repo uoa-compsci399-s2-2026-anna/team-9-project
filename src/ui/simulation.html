@@ -26,9 +26,13 @@
 
   <!-- Controls at top -->
   <div class="flex">
-    {% include "components/system-picker.html" %}
+    <div>{% include "components/system-picker.html" %}</div>
 
     <div class="ml-auto">{% include "components/toolbar.html" %}</div>
+  </div>
+
+  <div class="col-span-2 flex h-full flex-col items-end justify-center">
+    {% include "components/object-information-panel.html" %}
   </div>
 
   <!-- Side panels -->
@@ -76,5 +80,9 @@
   <script type="module" src="/src/ui/sidebar.js" defer></script>
   <script type="module" src="/src/ui/toolbar.js" defer></script>
   <script type="module" src="/src/ui/simulationCalendar.js" defer></script>
-  <script type="module" src="/src/ui/components/object-information-panel.js" defer></script>
+  <script
+    type="module"
+    src="/src/ui/components/object-information-panel.js"
+    defer
+  ></script>
 {% endblock %}
