@@ -641,15 +641,21 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             sizeAttenuation: false,
         });
 
+        const ORBIT_LINE_WIDTH_SCALE_FACTOR = 5;
+
         if (group === solarSystemGroup) {
             const comparisonColour = getFadedColour(
                 colour,
                 comparisonOrbitOpacity,
             );
-            material.lineWidth = comparisonOrbitLineWidth * 10;
+
+            // Lowkey have no idea what units these are in, so I applied a 
+            // scale factor to make it look OK.
+            material.lineWidth =
+                comparisonOrbitLineWidth * ORBIT_LINE_WIDTH_SCALE_FACTOR;
             material.color.set(comparisonColour);
         } else {
-            material.lineWidth = orbitLineWidth * 10;
+            material.lineWidth = orbitLineWidth * ORBIT_LINE_WIDTH_SCALE_FACTOR;
             material.color.set(colour);
         }
 
