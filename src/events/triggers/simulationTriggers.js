@@ -1,7 +1,5 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import { convertToEpoch } from "../../utils/utils.js";
-import { settings } from "../../shared/settingsState.js";
 import { 
     getObjectVisibilityChanges,
     defaultSimulationState, 
@@ -167,22 +165,6 @@ systemButton.addEventListener("click", () => {
         showDropdown: systemDropdownOpen,
     });
 });
-
-// Triggers for the calendar
-
-// There are multiple calendars (the one displayed in the standard view, and the
-// one dispalayed in the narrow-screen view).
-const calendars = document.getElementsByClassName("calendar");
-
-for (const calendar of calendars) {
-    calendar.addEventListener("input", (event) => {
-        // Get the time since epoch in milliseconds for the given date string and the current time zone
-        const epochMs = convertToEpoch(event.target.value, settings.timeZone);
-        bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
-            time: epochMs,
-        });
-    });
-}
 
 // Handle resetting object visibilities to defaults
 const resetObjects = document.getElementById("reset-objects");

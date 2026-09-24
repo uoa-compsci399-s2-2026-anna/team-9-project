@@ -6,12 +6,17 @@
   <!-- Simulation timestamp (narrow screens) -->
   <span class="self-center text-sm sm:hidden">
     <input
-      type="datetime-local"
-      class="calendar tabular-nums"
+      type="text"
+      class="calendar invisible tabular-nums"
       name="calendar"
       value="{{ sim_date }}"
-      onkeydown="return false;"
+      data-timezone="{{ settings.timeZone }}"
     />
+    <span
+      class="calendar-timezone-label text-xs text-zinc-500 dark:text-zinc-400"
+    >
+      {{ settings.timeZone }}
+    </span>
   </span>
 
   <div class="grid w-full grid-cols-3 items-stretch">
@@ -31,16 +36,21 @@
           <div class="text-left max-sm:hidden">
             <p class="text-lg">
               <input
-                type="datetime-local"
-                class="calendar tabular-nums"
+                type="text"
+                class="calendar invisible tabular-nums"
                 name="calendar"
                 value="{{ sim_date }}"
-                onkeydown="return false;"
+                data-timezone="{{ settings.timeZone }}"
               />
+              <span
+                class="calendar-timezone-label text-sm text-zinc-500 dark:text-zinc-400"
+              >
+                {{ settings.timeZone }}
+              </span>
             </p>
             <p
               id="elapsed-days"
-              class="text-sm tabular-nums dark:text-zinc-400"
+              class="pl-0.5 text-sm tabular-nums dark:text-zinc-400"
             >
               {{ elapsed_days_text }}
             </p>
