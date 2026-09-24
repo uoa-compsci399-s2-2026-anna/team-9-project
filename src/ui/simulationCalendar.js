@@ -111,7 +111,7 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     });
 
     // Refresh the calendar with the last simulation time to reflect the new time zone
-    updateCalendar(lastSimulationTime);
+    updateCalendar(lastSimulationTime, true, newTimeZone);
 });
 
 /**
@@ -178,7 +178,7 @@ function updateElapsedDaysText(simulationTime) {
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {boolean} forceUpdate Whether or not to bypass the throttle
  */
-export function updateCalendar(simulationTime, forceUpdate = false) {
+export function updateCalendar(simulationTime, forceUpdate = false, timeZone = settings.timeZone) {
     lastSimulationTime = simulationTime;
 
     const now = performance.now();
@@ -190,7 +190,7 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
     lastCalendarUpdate = now;
 
     const date = new Date(simulationTime);
-    const formattedDate = formatDate(date);
+    const formattedDate = formatDate(date, timeZone);
 
     const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
 

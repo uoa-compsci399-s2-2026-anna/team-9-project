@@ -51,8 +51,8 @@ export function convertToEpoch(dateString, timeZone) {
  * `<input type="datetime-local">` (yyyy-MM-dd'T'HH:mm), respecting the time
  * zone setting.
  */
-export function formatDate(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function formatDate(date, timeZone) {
+    var timeZone = TIMEZONE_MAP[timeZone];
 
     // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
     return new Intl.DateTimeFormat("sv", {
