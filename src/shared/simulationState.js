@@ -218,6 +218,29 @@ export function isObjectHidden(system, object) {
 }
 
 /**
+ * For the given system, check whether or not the given object is hidden by default
+ * (based on the default simulation state).
+ * 
+ * @param {string} system The system to check
+ * @param {string} objectName The name of the object to check
+ * @returns Whether or not the object is hidden by default
+ */
+export function isObjectHiddenByDefault(system, objectName) {
+    if (!defaultSimulationState.hiddenObjects) {
+        return false;
+    }
+
+    // The hidden objects for the given system
+    const hiddenObjects = defaultSimulationState.hiddenObjects[system];
+
+    if (!hiddenObjects) {
+        return false;
+    }
+
+    return hiddenObjects.includes(objectName);
+}
+
+/**
  * The running, frozen, and comparingToSolarSystem states only exist for the current simulation session, and are reset when the
  * simulation is loaded again.
  */
