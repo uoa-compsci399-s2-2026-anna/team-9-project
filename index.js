@@ -177,7 +177,29 @@ function spawnPythonProcess(resolve, reject) {
     });
 
     // Reject the promise after 30 seconds
-    setTimeout(() => reject(new Error("Python server failed to launch")), 30000);
+    const maxWaitTimeMs = 30_000;
+    setTimeout(() => reject(new Error("Python server failed to launch")), maxWaitTimeMs);
+}
+
+/**
+ * Gets the path to the given UI file to show while the application is
+ * launching.
+ *
+ * @param filename The file we are looking for
+ * @returns The path to the loader.html file.
+ */
+function getPathToUiFile(filename) {
+    const filePath = path.join('/src/ui/', filename);
+    var appDirectory = app.getAppPath();
+
+    // If the application is packaged traverse back from the app.asar given by app.getAppPath()
+    // i.e. .../team-9-project/resources/app.asar -> .../team-9-project/resources/
+    if (app.isPackaged) {
+        appDirectory = path.dirname(appDirectory);
+    }
+
+    // Join the app directory and the path to the file
+    return path.join(appDirectory, filePath);
 }
 
 /**
@@ -245,13 +267,22 @@ async function createWindow(python_url) {
 
     var url;
 
+    // Show spinner while app is launching
+    const loaderFilename = 'loader.html';
+    mainWindow.loadFile(getPathToUiFile(loaderFilename));
+
+    // Maximise the window and then show it
+    mainWindow.maximize();
+    mainWindow.show();
+
     try {
         url = await python_url;
     } catch(exception) {
         console.error(`ERROR: The promise was rejected: ${exception}`);
 
-        // Exit application as it is not recoverable
-        app.exit();
+        // Show failed to start screen if the promise rejects
+        const failedToStartFilename = 'failedToStart.html';
+        mainWindow.loadFile(getPathToUiFile(failedToStartFilename));
 
         return;
     }
@@ -263,10 +294,6 @@ async function createWindow(python_url) {
 
     // Change the window to the given url
     mainWindow.loadURL(url);
-
-    // Maximise the window and then show it
-    mainWindow.maximize();
-    mainWindow.show();
 }
 
 // Handle the application quitting
