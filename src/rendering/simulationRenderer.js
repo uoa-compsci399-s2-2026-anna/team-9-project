@@ -627,6 +627,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         const geometry = new MeshLineGeometry();
 
         const material = new MeshLineMaterial({
+            // Remain constant size (do not grow in size as user zooms in)
             sizeAttenuation: false,
         });
 
