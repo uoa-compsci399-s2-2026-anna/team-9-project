@@ -596,8 +596,10 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
 /**
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
+ * 
+ * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
  */
-async function updateSimulation() {
+async function updateSimulation(forceCalendarUpdate = true) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
@@ -608,7 +610,7 @@ async function updateSimulation() {
     }
     const allSystemData = await getMultipleSystemsData(systems, currentSimulationTime);
     const currentSystemData = allSystemData[currentSystem];
-    updateCalendar(currentSimulationTime);
+    updateCalendar(currentSimulationTime, forceCalendarUpdate);
 
 
     for (const [name, position] of Object.entries(currentSystemData.positions)) {
@@ -1085,7 +1087,8 @@ async function renderFrame(timestamp) {
 
         currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
-        updateSimulation();
+        // Update the simulation but do not bypass the calendar update throttle
+        updateSimulation(false);
     }
 
     renderer.render(scene, camera);
