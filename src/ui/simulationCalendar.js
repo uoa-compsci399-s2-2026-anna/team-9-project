@@ -179,9 +179,9 @@ export function updateCalendar(simulationTime) {
     const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
 
     FlatpickrInstances.forEach((instance) => {
-        instance.setDate(formattedDate, false, "Y-m-d\\TH:i");
         instance.set("minDate", new Date(date.getTime() - CALENDAR_RANGE_MS));
         instance.set("maxDate", new Date(date.getTime() + CALENDAR_RANGE_MS));
+        instance.setDate(formattedDate, false, "Y-m-d\\TH:i");
     });
 
     updateElapsedDaysText(simulationTime);
