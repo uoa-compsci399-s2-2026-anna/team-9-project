@@ -1,4 +1,5 @@
 import { timeToMilliseconds } from "../utils/utils.js";
+import simulationStateSchema from "./simulationStateSchema.json" with { type: "json" };
 
 /** 
  * Loads the current simulation state from the simulation-state script element
@@ -20,12 +21,19 @@ async function getDefaultState() {
     return await window.simulationStateAPI.getDefaults();
 }
 
-// Note: Initial state is also the default state since this state is not persisted between application runs
 const initialState = loadState();
 
 export const defaultSimulationState = await getDefaultState();
 
 export const simulationState = { ...initialState };
+
+const minSpeed = simulationStateSchema.simulationSpeed.minimum;
+const maxSpeed = simulationStateSchema.simulationSpeed.maximum;
+
+export const SIMULATION_SPEED_LIMITS_MS = {
+    min: timeToMilliseconds(minSpeed.value, minSpeed.unit),
+    max: timeToMilliseconds(maxSpeed.value, maxSpeed.unit),
+};
 
 /**
  * Persist the current simulation state in the main process.

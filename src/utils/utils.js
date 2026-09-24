@@ -25,6 +25,29 @@ export function timeToMilliseconds(time, unit) {
 }
 
 /**
+ * TODO
+ * 
+ * @param {*} ms 
+ * @param {*} unit 
+ * @returns 
+ */
+export function millisecondsToTime(ms, unit) {
+    const units = {
+        hour: 3600000,
+        day: 86400000,
+        week: 604800000,
+        month: 2629800000,
+        year: 31557600000,
+    };
+
+    if (!(unit in units)) {
+        throw new Error(`Invalid time unit: ${unit}`);
+    }
+
+    return ms / units[unit];
+}
+
+/**
  * Maps time zone abbreviations to IANA timezone identifiers
  */
 export const TIMEZONE_MAP = {
