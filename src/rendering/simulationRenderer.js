@@ -356,7 +356,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
     if (!mesh) {
         const geometry = new THREE.SphereGeometry(objectSize);
-        const material = new THREE.MeshStandardMaterial({ color: colour });
+        const material = new THREE.MeshBasicMaterial({ color: colour });
 
         mesh = new THREE.Mesh(geometry, material);
 
