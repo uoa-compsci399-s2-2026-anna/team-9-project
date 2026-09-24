@@ -21,6 +21,75 @@ const EVENT_DETAIL = {
 };
 
 /**
+ * Attaches a click handler to the given button that invokes the given callback.
+ * 
+ * Holding down the buttton repeatedly invokes the given callback. 
+ * Repeating starts after `data-repeat-delay-ms`, then continues every 
+ * `data-repeat-period-ms` until the pointer is released.
+ * 
+ * @param {HTMLElement} button The button to attach the handlers to
+ * @param {() => void} callback The callback to invoke on click and, if
+ * enabled, on each repeat while the button is held down
+ */
+export function attachHoldRepeat(button, callback) {
+    button.addEventListener("click", callback);
+
+    let repeatIntervalId = null;
+    let repeatDelayTimeoutId = null;
+
+    const buttonType = button.closest("[data-button-type]");
+
+    /**
+     * The duration to wait for while the button is pressed down before
+     * repeating begins.
+     */
+    const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
+
+    /**
+     * The interval at which the callback repeats once repeating has begun.
+     */
+    const repeatPeriodMs = parseInt(buttonType.dataset.repeatPeriodMs);
+
+    // Add event when pointer (mouse, touch, stylus, etc.) pressed down
+    button.addEventListener("pointerdown", () => {
+        // Prevent registering duplicate timers
+        if (repeatIntervalId !== null || repeatDelayTimeoutId !== null) {
+            return;
+        }
+
+        // Wait repeatDelayMs milliseconds...
+        repeatDelayTimeoutId = setTimeout(() => {
+            // Then reset timeout timer
+            repeatDelayTimeoutId = null;
+
+            // Start interval (repeating) timer repeating every repeatPeriodMs milliseconds
+            repeatIntervalId = setInterval(callback, repeatPeriodMs);
+        }, repeatDelayMs);
+    });
+
+    // Clear all timers (stop firing events) when pointerup (mouse etc.
+    // released) or pointercancel ('unlikely to be any more pointer
+    // events')
+    document.addEventListener("pointerup", resetAllTimers);
+    document.addEventListener("pointercancel", resetAllTimers);
+
+    /**
+     * Resets all existing active timers.
+     */
+    function resetAllTimers() {
+        if (repeatDelayTimeoutId !== null) {
+            clearTimeout(repeatDelayTimeoutId);
+            repeatDelayTimeoutId = null;
+        }
+
+        if (repeatIntervalId !== null) {
+            clearInterval(repeatIntervalId);
+            repeatIntervalId = null;
+        }
+    }
+}
+
+/**
  * Register event listeners, event bus publishes, and any additional event
  * detail (where provided) to all `button_with_tooltip` and `text_button` macro
  * calls.
@@ -32,6 +101,8 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     if (!button) {
         return;
     }
+
+    const allowRepeat = buttonType.dataset.allowRepeat.toLowerCase() === "true";
 
     const existingEvents = Object.values(EVENTS).flatMap((category) =>
         Object.values(category),
@@ -46,71 +117,13 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
             );
             continue;
         }
-
-        const allowRepeat =
-            buttonType.dataset.allowRepeat.toLowerCase() === "true";
+        const publish = () => bus.publish(event, getEventDetail(event));
 
         if (allowRepeat) {
-            // Handle repeating buttons
-
-            let repeatIntervalId = null;
-            let repeatDelayTimeoutId = null;
-
-            /**
-             * The duration to wait for while the button is pressed down before
-             * repeating begins.
-             */
-            const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
-
-            // Add event when pointer (mouse, touch, stylus, etc.) pressed down
-            button.addEventListener("pointerdown", () => {
-                // Prevent registering duplicate timers
-                if (
-                    repeatIntervalId !== null ||
-                    repeatDelayTimeoutId !== null
-                ) {
-                    return;
-                }
-
-                // Wait repeatDelayMs milliseconds...
-                repeatDelayTimeoutId = setTimeout(() => {
-                    // Then reset timeout timer
-                    repeatDelayTimeoutId = null;
-
-                    // Start interval (repeating) timer repeating every
-                    // repeatPeriodMs milliseconds
-                    repeatIntervalId = setInterval(() => {
-                        // Publish event on each callback
-                        bus.publish(event, getEventDetail());
-                    }, Number(buttonType.dataset.repeatPeriodMs));
-                }, repeatDelayMs);
-            });
-
-            // Clear all timers (stop firing events) when pointerup (mouse etc.
-            // released) or pointercancel ('unlikely to be any more pointer
-            // events')
-            document.addEventListener("pointerup", resetAllTimers);
-            document.addEventListener("pointercancel", resetAllTimers);
-
-            /**
-             * Resets all existing active timers.
-             */
-            function resetAllTimers() {
-                if (repeatDelayTimeoutId !== null) {
-                    clearTimeout(repeatDelayTimeoutId);
-                    repeatDelayTimeoutId = null;
-                }
-
-                if (repeatIntervalId !== null) {
-                    clearInterval(repeatIntervalId);
-                    repeatIntervalId = null;
-                }
-            }
+            attachHoldRepeat(button, publish);
+        } else {
+            button.addEventListener("click", publish);
         }
-
-        button.addEventListener("click", () => {
-            bus.publish(event, getEventDetail());
-        });
 
         function getEventDetail() {
             return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : {};
