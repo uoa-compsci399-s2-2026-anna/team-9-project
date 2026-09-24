@@ -2,7 +2,7 @@ import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { 
     getObjectVisibilityChanges,
-    defaultSimulationState,
+    defaultSimulationState, 
     simulationState,
     SIMULATION_SPEED_LIMITS_MS,
 } from "../../shared/simulationState.js";
@@ -60,10 +60,10 @@ function clampSpeedToLimits(value, unit) {
 
 /**
  * Parses a raw simulation speed value into a number.
- *
+ * 
  * An empty string is treated as EMPTY_SPEED_VALUE, since an empty value
  * represents that no speed has been set.
- *
+ * 
  * @param {string} value The raw simulation speed value as a string
  * @returns {number} The parsed simulation speed
  */
@@ -100,8 +100,8 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
     // Reconstruct what the field's value would be after this input
     const newValue = Number(
         input.value.slice(0, input.selectionStart) +
-            event.data +
-            input.value.slice(input.selectionEnd),
+        event.data +
+        input.value.slice(input.selectionEnd)
     );
 
     // Prevent the user from typing in non-numerical values
@@ -117,13 +117,13 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
 
 /**
  * Publishes the given speed as the new simulation speed for the current system.
- *
+ * 
  * @param {number} speed The simulation speed to publish
  */
 function publishSimulationSpeed(speed) {
-    bus.publish(EVENTS.SIM.ADJUST_SPEED, {
+    bus.publish(EVENTS.SIM.ADJUST_SPEED, { 
         system: currentSystem,
-        speed: speed,
+        speed: speed
     });
 }
 
@@ -218,13 +218,11 @@ const resetObjects = document.getElementById("reset-objects");
 
 resetObjects.addEventListener("click", () => {
     // Get and publish the necessary object visibility changes to reset to the default state
-    for (const { objectName, isShown } of getObjectVisibilityChanges(
-        currentSystem,
-    )) {
-        bus.publish(EVENTS.SIM.OBJECT_TOGGLE, {
-            system: currentSystem,
-            name: objectName,
-            value: isShown,
+    for (const { objectName, isShown } of getObjectVisibilityChanges(currentSystem)) {
+        bus.publish(EVENTS.SIM.OBJECT_TOGGLE, { 
+            system: currentSystem, 
+            name: objectName, 
+            value: isShown, 
         });
     }
 });
