@@ -30,6 +30,7 @@ export const simulationState = { ...initialState };
 const minSpeed = simulationStateSchema.simulationSpeed.minimum;
 const maxSpeed = simulationStateSchema.simulationSpeed.maximum;
 
+// The global minimum and maximum simulation speeds for the simulation (in milliseconds)
 export const SIMULATION_SPEED_LIMITS_MS = {
     min: timeToMilliseconds(minSpeed.value, minSpeed.unit),
     max: timeToMilliseconds(maxSpeed.value, maxSpeed.unit),

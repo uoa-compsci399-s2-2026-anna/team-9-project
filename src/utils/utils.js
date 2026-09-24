@@ -1,6 +1,15 @@
 import { DateTime } from "luxon";
 import { settings } from "../shared/settingsState.js";
 
+// Unit conversions into milliseconds
+const unit_to_ms = {
+    hour: 3600000, // 60 * 60 * 1000
+    day: 86400000, // 24 * 60 * 60 * 1000
+    week: 604800000, // 7 * 24 * 60 * 60 * 1000
+    month: 2629800000, // (365.25 / 12) * 24 * 60 * 60 * 1000 (Julian month)
+    year: 31557600000, // 365.25 * 24 * 60 * 60 * 1000 (Julian year)
+}
+
 /**
  * Converts a given amount of time (time + unit) into milliseconds.
  *
@@ -9,42 +18,26 @@ import { settings } from "../shared/settingsState.js";
  * @returns {number} The equivalent amount of time in milliseconds
  */
 export function timeToMilliseconds(time, unit) {
-    const units = {
-        hour: 3600000, // 60 * 60 * 1000
-        day: 86400000, // 24 * 60 * 60 * 1000
-        week: 604800000, // 7 * 24 * 60 * 60 * 1000
-        month: 2629800000, // (365.25 / 12) * 24 * 60 * 60 * 1000 (Julian month)
-        year: 31557600000, // 365.25 * 24 * 60 * 60 * 1000 (Julian year)
-    }
-
-    if (!(unit in units)) {
+    if (!(unit in unit_to_ms)) {
         throw new Error(`Invalid time unit: ${unit}`);
     }
 
-    return time * units[unit];
+    return time * unit_to_ms[unit];
 }
 
 /**
- * TODO
- * 
- * @param {*} ms 
- * @param {*} unit 
- * @returns 
+ * Converts a given amount of time in milliseconds into the given time unit.
+ *
+ * @param {number} ms The amount of time to convert, in milliseconds
+ * @param {string} unit The time unit to convert into: "hour", "day", "week", "month", or "year"
+ * @returns {number} The equivalent amount of time in the given unit
  */
 export function millisecondsToTime(ms, unit) {
-    const units = {
-        hour: 3600000,
-        day: 86400000,
-        week: 604800000,
-        month: 2629800000,
-        year: 31557600000,
-    };
-
-    if (!(unit in units)) {
+    if (!(unit in unit_to_ms)) {
         throw new Error(`Invalid time unit: ${unit}`);
     }
 
-    return ms / units[unit];
+    return ms / unit_to_ms[unit];
 }
 
 /**
