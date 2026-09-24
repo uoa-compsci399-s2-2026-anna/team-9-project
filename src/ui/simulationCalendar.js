@@ -15,7 +15,7 @@ const MS_PER_DAY = timeToMilliseconds(1, "day");
 const CALENDAR_RANGE_YEARS = 10;
 
 // The minimum interval (in milliseconds) for updating the calendar
-const CALENDAR_UPDATE_INTERVAL = 50;
+const CALENDAR_UPDATE_INTERVAL = 100;
 let lastCalendarUpdate = 0;
 
 // The last simulation time (in ms since the Unix epoch) displayed by the calendar
