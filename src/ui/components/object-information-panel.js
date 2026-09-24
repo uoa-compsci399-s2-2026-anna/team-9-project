@@ -13,9 +13,18 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     panel.classList.remove("hidden");
     placeholder.classList.add("hidden");
 
-    const systems = JSON.parse(panel.dataset.currentSystem);
+    const currentSystem = JSON.parse(panel.dataset.currentSystem);
+    const allSystems = JSON.parse(panel.dataset.systems);
 
-    const object = systems.objects[objectName];
+    const solarSystem = allSystems.find(
+        (system) => system.name === "Solar System",
+    );
+
+    // Check if this object is in the Solar System (i.e. the user is comparing
+    // to Solar System and clicks on a Solar System object
+    const object = Object.keys(solarSystem.objects).includes(objectName)
+        ? solarSystem.objects[objectName]
+        : currentSystem.objects[objectName];
 
     panel.querySelector("[data-object-name]").textContent = objectName;
     panel.querySelector("[data-object-mass]").innerHTML = toScientificHTML(

@@ -30,6 +30,7 @@
   <div
     id="object-information-panel"
     class="hidden w-48 tabular-nums"
+    data-systems="{{ systems | tojson | forceescape }}"
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
     <div class="mb-3 flex w-full items-center">
