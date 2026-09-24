@@ -17,6 +17,7 @@ import {
     setFontSize,
     setFontFamily,
     toggleSimulationDarkMode,
+    syncCalendar,
 } from "../rendering/simulationRenderer.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -102,4 +103,11 @@ bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
 
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     toggleSimulationDarkMode(event.detail.enterDarkMode);
+});
+
+// Sync the calendar on simulation pause
+bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
+    if (!event.detail.startSimulation) {
+        syncCalendar();
+    }
 });

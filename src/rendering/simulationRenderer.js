@@ -635,6 +635,17 @@ async function updateSimulation() {
 }
 
 /**
+ * Sync the calendar to the current simulation time (bypasses the throttle).
+ */
+export function syncCalendar() {
+    if (currentSimulationTime === null) {
+        return;
+    }
+
+    updateCalendar(currentSimulationTime, true);
+}
+
+/**
  * Align the system's average normal with the up vector.
  * 
  * @param {THREE.Group} group The group to align
