@@ -81,6 +81,8 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
+const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
+const cameraAnimationThreshold = 0.01; // Distance threshold to finish the animation
 let animateCameraAndControls = false;
 
 // Animation targets for camera and controls
@@ -1114,7 +1116,7 @@ async function renderFrame(timestamp) {
         const targetDistance = controls.target.distanceTo(animateControlsTargetTo);
 
         // Stop animating if the camera and controls are close enough
-        if (positionDistance < 0.01 && targetDistance < 0.01) {
+        if (positionDistance < cameraAnimationThreshold && targetDistance < cameraAnimationThreshold) {
             animateCameraAndControls = false;
             camera.position.copy(animateCameraPositionTo);
             controls.target.copy(animateControlsTargetTo);
@@ -1122,9 +1124,8 @@ async function renderFrame(timestamp) {
 
         } else {
             // Interpolate towards the desired position and target
-            const t = 0.1;
-            camera.position.lerp(animateCameraPositionTo, t);
-            controls.target.lerp(animateControlsTargetTo, t);
+            camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
+            controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
             controls.update();
         }
     }
