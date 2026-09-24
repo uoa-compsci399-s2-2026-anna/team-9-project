@@ -1,3 +1,4 @@
+import { updateCalendar } from "../ui/simulationCalendar.js";
 import { timeToMilliseconds } from "../utils/utils.js";
 
 /** 
