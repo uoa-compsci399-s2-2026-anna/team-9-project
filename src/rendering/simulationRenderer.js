@@ -717,6 +717,10 @@ function initOrUpdateControls(canvas, viewRadius) {
 
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
+        controls.addEventListener("start", () => {
+            animateCameraAndControls = false; // Stop animating on user interaction
+        });
+
         controls.target.copy(cameraDefaults.target);
         controls.update();
     }
@@ -762,7 +766,6 @@ function initRaycastingEvents(canvas) {
     // Detect when the user holds their mouse down on the canvas
     canvas.addEventListener("pointerdown", () => {
         isDragging = false;
-        animateCameraAndControls = false; // Stop any camera animation if the user starts dragging
     });
 
     canvas.addEventListener("click", (event) => {
