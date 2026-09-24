@@ -715,12 +715,12 @@ function initOrUpdateControls(canvas, viewRadius) {
 
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
+        controls.target.copy(cameraDefaults.target);
+        controls.update();
     }
-    controls.target.copy(cameraDefaults.target);
     controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
-    controls.update();
 
     if (controlsChangeHandler) {
         controls.removeEventListener("change", controlsChangeHandler);
