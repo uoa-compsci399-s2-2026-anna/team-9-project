@@ -1109,6 +1109,26 @@ async function renderFrame(timestamp) {
         updateSimulation(false);
     }
 
+    if (animateCameraAndControls) {
+        const positionDistance = camera.position.distanceTo(animateCameraPositionTo);
+        const targetDistance = controls.target.distanceTo(animateControlsTargetTo);
+
+        // Stop animating if the camera and controls are close enough
+        if (positionDistance < 0.01 && targetDistance < 0.01) {
+            animateCameraAndControls = false;
+            camera.position.copy(animateCameraPositionTo);
+            controls.target.copy(animateControlsTargetTo);
+            controls.update();
+
+        } else {
+            // Interpolate towards the desired position and target
+            const t = 0.1;
+            camera.position.lerp(animateCameraPositionTo, t);
+            controls.target.lerp(animateControlsTargetTo, t);
+            controls.update();
+        }
+    }
+
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
 
