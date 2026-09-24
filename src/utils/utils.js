@@ -45,17 +45,15 @@ export function convertToEpoch(dateString, timeZone) {
 }
 
 /**
- * Formats an epoch timestamp as a "dd-MM-yyyy hh:mm a" string in the given time zone
- * The inverse of `convertToEpoch`.
+ * Formats an epoch timestamp as a string in the given time zone;
+ * the inverse of `convertToEpoch`.
  * @param {number} epochMs Epoch time in milliseconds
  * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
- * @returns {string} The formatted date string
+ * @returns {string} The formatted date string as "dd-MM-yyyy hh:mm a"
  */
-
 export function formatInTimeZone(epochMs, timeZone) {
     const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
-    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat("dd-MM-yyyy hh:mm a",
-    );
+    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat("dd-MM-yyyy hh:mm a",);
 }
 
 

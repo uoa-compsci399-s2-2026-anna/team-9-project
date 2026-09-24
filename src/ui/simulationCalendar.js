@@ -28,9 +28,10 @@ const calendarInputs = document.querySelectorAll(".calendar");
 const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
     flatpickr(input, {
         enableTime: true,
-        dateFormat: "d-m-Y G:i K", // Internal format: "dd-MM-yyyy hh:mm a"
+        dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
         allowInput: false,
         onChange: (_selectedDates, dateStr, instance) => {
+            // Stop auto-selection of hour after picking a date
             requestAnimationFrame(() => {
                 instance.hourElement?.blur();
             });
@@ -107,7 +108,6 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     updateCalendar(lastSimulationTime);
 });
 
-
 /**
  * Gets the elapsed days text which describes how far the simulation time is from today,
  * in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
@@ -154,9 +154,9 @@ function updateElapsedDaysText(simulationTime) {
 /**
  * Updates all calendars to show the given simulation time in the given time zone,
  * and sets the minimum and maximum of the calendar to +/- `CALENDAR_RANGE_YEARS`.
- * 
+ *
  * Updates are throttled to at most one per `CALENDAR_MIN_INTERVAL_MS`.
- * 
+ *
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {boolean} forceUpdate Whether or not to bypass the throttle
  */
@@ -173,9 +173,14 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
 
     FlatpickrInstances.forEach((instance) => {
         const timeZone = instance.input.dataset.timezone;
-
-        instance.set("minDate", formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone));
-        instance.set("maxDate", formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),);
+        instance.set(
+            "minDate",
+            formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone),
+        );
+        instance.set(
+            "maxDate",
+            formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),
+        );
         instance.setDate(formatInTimeZone(simulationTime, timeZone), false);
     });
     updateElapsedDaysText(simulationTime);
