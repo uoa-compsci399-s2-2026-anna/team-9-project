@@ -762,6 +762,7 @@ function initRaycastingEvents(canvas) {
     // Detect when the user holds their mouse down on the canvas
     canvas.addEventListener("pointerdown", () => {
         isDragging = false;
+        animateCameraAndControls = false; // Stop any camera animation if the user starts dragging
     });
 
     canvas.addEventListener("click", (event) => {
