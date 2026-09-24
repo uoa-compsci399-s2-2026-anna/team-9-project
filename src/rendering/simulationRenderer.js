@@ -910,10 +910,10 @@ export async function resetView() {
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
-    // Move camera to the default position and target
-    camera.position.copy(cameraDefaults.position);
-    controls.target.copy(cameraDefaults.target); // Look at the barycenter
-    controls.update();
+    // Animate to the default camera position and controls target
+    animateCameraPositionTo.copy(cameraDefaults.position);
+    animateControlsTargetTo.copy(cameraDefaults.target);
+    animateCameraAndControls = true;
 }
 
 export async function compareToSolarSystem() {
