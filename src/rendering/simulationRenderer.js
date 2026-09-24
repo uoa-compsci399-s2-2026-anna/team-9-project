@@ -319,11 +319,14 @@ function getObjectNameAt(clientX, clientY, canvas) {
  * 
  * @param {string} system The name of the system
  * @param {Object} orbitalData Map of object name to orbital data
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
  * @returns {Object[]} Orbital data values for visible objects only
  */
-function getVisibleOrbitalDataValues(system, orbitalData) {
+function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
+    const isHidden = useDefault ? isObjectHiddenByDefault : isObjectHidden;
+
     return Object.keys(orbitalData)
-        .filter((name) => !isObjectHidden(system, name))
+        .filter((name) => !isHidden(system, name))
         .map((name) => orbitalData[name]);
 }
 
@@ -878,7 +881,7 @@ export async function resetView() {
 
     if (comparingToSolarSystem) {
         const solarSystemData = await getReferenceSystemData("Solar System");
-        const solarSystemValues = getVisibleOrbitalDataValues("Solar System", solarSystemData.orbital_data);
+        const solarSystemValues = getVisibleOrbitalDataValues("Solar System", solarSystemData.orbital_data, true);
         maxApoapsis = Math.max(maxApoapsis, calculateMaxApoapsis(solarSystemValues));
     }
 
@@ -901,7 +904,7 @@ export async function compareToSolarSystem() {
     const referenceDataForSolarSystem = await getReferenceSystemData("Solar System");
 
     const currentOrbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
-    const solarOrbitalDataValues = getVisibleOrbitalDataValues("Solar System", referenceDataForSolarSystem.orbital_data);
+    const solarOrbitalDataValues = getVisibleOrbitalDataValues("Solar System", referenceDataForSolarSystem.orbital_data, true);
 
     const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
     const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
