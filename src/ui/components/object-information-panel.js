@@ -38,9 +38,9 @@ bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => {
 });
 
 /**
- * @param {*} selector The selector for the querySelector for the data field
- * @param {*} value The value to set the field's text to. If null, the field is
- * not shown at all.
+ * @param {string} selector The selector for the querySelector for the data field
+ * @param {Number} value The numeric value to set the field's text to. If null, 
+ * the field is not shown at all.
  */
 function updateDataField(selector, value) {
     const field = panel.querySelector(selector);
@@ -54,11 +54,11 @@ function updateDataField(selector, value) {
 }
 
 /**
- * @param {*} number The number to convert to scientific notation
- * @param {*} fractionDigits The number of digits in the fractional component of
+ * @param {Number} number The number to convert to scientific notation
+ * @param {Number} fractionDigits The number of digits in the fractional component of
  * the number in scientific notation (i.e. the number of digits after the
  * decimal point.
- * @param {*} ignoreAbsoluteExponentsBelow Do not convert to scientific notation
+ * @param {Number} ignoreAbsoluteExponentsBelow Do not convert to scientific notation
  * for numbers * with an absolute value of their exponent less than this amount
  * (i.e. display small numbers normally)
  * @returns HTML of formatted scientific notation of number
