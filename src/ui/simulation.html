@@ -24,15 +24,16 @@
     class="pointer-events-auto fixed inset-0 z-0 h-screen w-screen"
   ></canvas>
 
+  <!-- Object information panel (absolute position) -->
+  <div class="absolute top-1/2 right-0 -translate-y-1/2">
+    {% include "components/object-information-panel.html" %}
+  </div>
+
   <!-- Controls at top -->
   <div class="flex">
     <div>{% include "components/system-picker.html" %}</div>
 
     <div class="ml-auto">{% include "components/toolbar.html" %}</div>
-  </div>
-
-  <div class="col-span-2 flex h-full flex-col items-end justify-center">
-    {% include "components/object-information-panel.html" %}
   </div>
 
   <!-- Side panels -->
