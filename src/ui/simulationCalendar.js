@@ -2,10 +2,10 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { settings } from "../shared/settingsState.js";
 import {
-    formatDate,
     timeToMilliseconds,
     dateOnly,
     convertToEpoch,
+    formatInTimeZone,
 } from "../utils/utils.js";
 
 // The number of milliseconds in a day
@@ -13,6 +13,7 @@ const MS_PER_DAY = timeToMilliseconds(1, "day");
 
 // Date range for calender
 const CALENDAR_RANGE_YEARS = 10;
+const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
 
 // The minimum interval (in milliseconds) for updating the calendar
 const CALENDAR_UPDATE_INTERVAL = 100;
@@ -106,17 +107,6 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     updateCalendar(lastSimulationTime);
 });
 
-/**
- * Given the current simulation time in milliseconds since the Unix epoch, return
- * the formatted simulation date. This is used for persisting the simulation date
- * displayed by the calendar.
- *
- * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
- * @returns Formatted simulation date for the given `simulationTime`
- */
-export function formatSimulationDate(simulationTime) {
-    return formatDate(new Date(simulationTime));
-}
 
 /**
  * Gets the elapsed days text which describes how far the simulation time is from today,
@@ -181,16 +171,12 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
 
     lastCalendarUpdate = now;
 
-    const date = new Date(simulationTime);
-    const formattedDate = formatDate(date);
-
-    const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
-
     FlatpickrInstances.forEach((instance) => {
-        instance.set("minDate", new Date(date.getTime() - CALENDAR_RANGE_MS));
-        instance.set("maxDate", new Date(date.getTime() + CALENDAR_RANGE_MS));
-        instance.setDate(formattedDate, false, "Y-m-d\\TH:i");
-    });
+        const timeZone = instance.input.dataset.timezone;
 
+        instance.set("minDate", formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone));
+        instance.set("maxDate", formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),);
+        instance.setDate(formatInTimeZone(simulationTime, timeZone), false);
+    });
     updateElapsedDaysText(simulationTime);
 }
