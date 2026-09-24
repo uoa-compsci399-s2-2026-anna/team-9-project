@@ -82,7 +82,7 @@ const cameraDefaults = {
 };
 
 const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
-const cameraAnimationThreshold = 0.01; // Distance threshold to finish the animation
+const cameraAnimationThresholdMultiplier = 0.001; // Determines the distance threshold to finish the animation
 let animateCameraAndControls = false;
 
 // Animation targets for camera and controls
@@ -1114,9 +1114,10 @@ async function renderFrame(timestamp) {
     if (animateCameraAndControls) {
         const positionDistance = camera.position.distanceTo(animateCameraPositionTo);
         const targetDistance = controls.target.distanceTo(animateControlsTargetTo);
+        const threshold = viewRadius * cameraAnimationThresholdMultiplier;
 
         // Stop animating if the camera and controls are close enough
-        if (positionDistance < cameraAnimationThreshold && targetDistance < cameraAnimationThreshold) {
+        if (positionDistance < threshold && targetDistance < threshold) {
             animateCameraAndControls = false;
             camera.position.copy(animateCameraPositionTo);
             controls.target.copy(animateControlsTargetTo);
