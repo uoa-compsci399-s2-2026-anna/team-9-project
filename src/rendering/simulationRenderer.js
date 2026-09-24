@@ -14,7 +14,6 @@ import {
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
-    setFormattedSimulationDate,
     setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
@@ -34,7 +33,6 @@ import {
 } from "./simulationCalculations.js";
 import { 
     updateCalendar, 
-    formatSimulationDate, 
     getElapsedDaysText, 
 } from "../ui/simulationCalendar.js";
 import { bus } from "../events/eventBus.js";
@@ -847,14 +845,11 @@ export async function init(name) {
     initScene();
 
     /**
-     * Persist the current simulation time, formatted simulation date, and days elapsed text 
+     * Persist the current simulation time and days elapsed text 
      * before the simulation is exited
      */
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, currentSimulationTime);
-        
-        const formattedSimulationDate = formatSimulationDate(currentSimulationTime);
-        setFormattedSimulationDate(currentSystem, formattedSimulationDate);
 
         const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
         setElapsedText(currentSystem, elapsedDaysText);
