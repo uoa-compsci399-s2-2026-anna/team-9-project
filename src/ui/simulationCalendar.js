@@ -14,6 +14,10 @@ const MS_PER_DAY = timeToMilliseconds(1, "day");
 // Date range for calender
 const CALENDAR_RANGE_YEARS = 10;
 
+// The minimum interval (in milliseconds) for updating the calendar
+const CALENDAR_UPDATE_INTERVAL = 50;
+let lastCalendarUpdate = 0;
+
 // The last simulation time (in ms since the Unix epoch) displayed by the calendar
 let lastSimulationTime = null;
 
@@ -125,7 +129,7 @@ export function formatSimulationDate(simulationTime) {
 /**
  * Gets the elapsed days text which describes how far the simulation time is from today,
  * in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
- * @param {*} simulationTime Simulation time as milliseconds since the Unix epoch
+ * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @returns The elapsed days text
  */
 export function getElapsedDaysText(simulationTime) {
@@ -168,10 +172,22 @@ function updateElapsedDaysText(simulationTime) {
 /**
  * Updates all calendars to show the given simulation time in the given time zone,
  * and sets the minimum and maximum of the calendar to +/- CALENDAR_RANGE_YEARS.
+ * 
+ * Updates are throttled to at most one per `CALENDAR_MIN_INTERVAL_MS`.
+ * 
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
+ * @param {boolean} forceUpdate Whether or not to bypass the throttle
  */
-export function updateCalendar(simulationTime) {
+export function updateCalendar(simulationTime, forceUpdate = false) {
     lastSimulationTime = simulationTime;
+
+    const now = performance.now();
+    const timeSinceUpdate = now - lastCalendarUpdate;
+    if (!forceUpdate && timeSinceUpdate < CALENDAR_UPDATE_INTERVAL) {
+        return;
+    }
+
+    lastCalendarUpdate = now;
 
     const date = new Date(simulationTime);
     const formattedDate = formatDate(date);
