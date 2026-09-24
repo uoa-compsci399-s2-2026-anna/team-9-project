@@ -450,8 +450,8 @@
             },
             "timestamp": 2455212.12316,
             "habitable zone": {
-                "start": 0.4,
-                "end": 0.7
+                "start": 0.400,
+                "end": 0.757
             },
             "orbits": {
                 "Kepler-16A": {

@@ -38,6 +38,8 @@ Units were converted to SI units via:
 Kepler-16's orbital periods were calculated via Rebound via data from the cited
 paper above.
 
+Kepler-16's habitable zones were source from: https://arxiv.org/pdf/1306.2890#page=26
+
 ## TRAPPIST-1
 
 Data is calculated from data given in Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets", The Astrophysical Journal, 922:107
@@ -51,6 +53,10 @@ Units were converted to SI units via:
 
 TRAPPIST-1's orbital periods were calculated via Rebound via data from the cited
 paper above.
+
+TRAPPIST-1's habitable zone was given by Dr. Larissa Markwardt (Research Fellow
+in the Department of Physics University of Auckland) and verified with figure 1
+of: https://arxiv.org/pdf/1702.06936#page=2
 
 ## Spreadsheet
 
