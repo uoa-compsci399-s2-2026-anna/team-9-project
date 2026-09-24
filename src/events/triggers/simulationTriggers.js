@@ -7,6 +7,7 @@ import {
     defaultSimulationState, 
     simulationState,
 } from "../../shared/simulationState.js";
+import { attachHoldRepeat } from "./sharedTriggers.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -14,36 +15,96 @@ const currentSystem = canvas.dataset.currentSystem;
 // Triggers for the speed adjuster
 const speedAdjuster = document.getElementById("speed-adjuster");
 const speedUnitSelector = document.getElementById("speed-unit-selector");
+const increaseSpeedButton = document.getElementById("increase-speed-button");
+const decreaseSpeedButton = document.getElementById("decrease-speed-button");
 
-// Store the last valid speed input
-let lastValidSpeed = speedAdjuster.value;
+// The simulation speed when the input is empty
+const EMPTY_SPEED_VALUE = 0;
 
-speedAdjuster.addEventListener("input", (event) => {
+// Step sizes on clicking increase and decrease speed buttons
+const INCREASE_SPEED_STEP = 1;
+const DECREASE_SPEED_STEP = -1;
+
+/**
+ * Parses a raw simulation speed value into a number.
+ * 
+ * An empty string is treated as EMPTY_SPEED_VALUE, since an empty value
+ * represents that no speed has been set.
+ * 
+ * @param {string} value The raw simulation speed value as a string
+ * @returns {number} The parsed simulation speed
+ */
+function parseSpeedValue(value) {
+    if (value === "") {
+        return EMPTY_SPEED_VALUE;
+    } else {
+        return parseFloat(value);
+    }
+}
+
+/**
+ * Clean up the displayed simulation speed value once the user commits their edit
+ * (e.g., from pressing enter or from clicking off).
+ */
+speedAdjuster.addEventListener("change", (event) => {
     const input = event.target;
 
-    // Catch input that cannot be passed as a number
-    if (input.validity.badInput) {
-        input.value = lastValidSpeed;
+    input.value = parseSpeedValue(input.value);
+});
+
+/**
+ * Block any input that would result in the speed adjuster input box holding
+ * an invalid or negative value.
+ */
+speedAdjuster.addEventListener("beforeinput", (event) => {
+    // Allow deletions
+    if (event.data == null) {
         return;
     }
 
-    // Prevent negative values
-    if (parseInt(input.value) < 0) {
-        input.value = 0;
-    }
+    const input = event.target;
 
-    // Prevent the user from typing anything but a number between 0 and 9
-    const cleanedInput = input.value.replace(/[^0-9.]/g, "");
-    if (cleanedInput !== input.value) {
-        input.value = cleanedInput;
-    }
+    // Reconstruct what the field's value would be after this input
+    const newValue = Number(
+        input.value.slice(0, input.selectionStart) +
+        event.data +
+        input.value.slice(input.selectionEnd)
+    );
 
-    lastValidSpeed = cleanedInput;
+    if (Number.isNaN(newValue) || newValue < 0) {
+        event.preventDefault();
+    }
+});
+
+/**
+ * Publishes the given speed as the new simulation speed for the current system.
+ * 
+ * @param {number} speed The simulation speed to publish
+ */
+function publishSimulationSpeed(speed) {
     bus.publish(EVENTS.SIM.ADJUST_SPEED, { 
         system: currentSystem,
-        speed: cleanedInput 
+        speed: speed
     });
+}
+
+speedAdjuster.addEventListener("input", (event) => {
+    let inputValue = parseSpeedValue(event.target.value);
+
+    publishSimulationSpeed(inputValue);
 });
+
+function adjustSpeedBy(delta) {
+    const currentSpeed = parseSpeedValue(speedAdjuster.value);
+    // Prevent the updated speed from being negative
+    const updatedSpeed = Math.max(0, currentSpeed + delta);
+
+    speedAdjuster.value = updatedSpeed;
+    publishSimulationSpeed(updatedSpeed);
+}
+
+attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(INCREASE_SPEED_STEP));
+attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
 
 speedUnitSelector.addEventListener("change", (event) => {
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { 
