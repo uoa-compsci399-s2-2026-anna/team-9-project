@@ -111,6 +111,17 @@ export function setSimulationTime(system, time) {
     persist();
 }
 
+/**
+ * Persists the formatted simulation date for the given system
+ * 
+ * @param {string} system Name of the system
+ * @param {string} formattedDate The formatted simulation date string to persist
+ */
+export function setFormattedSimulationDate(system, formattedDate) {
+    simulationState.formattedSimulationDates ??= {}; 
+    simulationState.formattedSimulationDates[system] = formattedDate;
+    persist();
+}
 
 /**
  * Persists the elapsed days text for the given system
