@@ -17,6 +17,9 @@ Atlas' mass was take from: https://iopscience.iop.org/article/10.3847/2515-5172/
 
 Solar system's habitable zone was sourced from https://arxiv.org/pdf/1205.2429#page=6.
 
+Solar system's orbital periods were calculated via Rebound via data from the
+NASA horizons API
+
 All other data was taken from https://ssd.jpl.nasa.gov/horizons/
 
 ## Kepler-16
@@ -32,6 +35,9 @@ Units were converted to SI units via:
 - Kepler-16b's mass was multiplied by the mass of Jupiter × 1.898125e27 kg (Nasa\*)
 - Kelper-16b's radius was multiplied by the radius of Jupiter × 6.9911e7 m (Nasa\*)
 
+Kepler-16's orbital periods were calculated via Rebound via data from the cited
+paper above.
+
 ## TRAPPIST-1
 
 Data is calculated from data given in Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets", The Astrophysical Journal, 922:107
@@ -42,6 +48,9 @@ Units were converted to SI units via:
 - The star's radius were multiplied by the radius of the sun × 6.96e8 m (Nasa\*)
 - The planets' mass was multiplied by the mass of Jupiter × 1.898125e27 kg (Nasa\*)
 - The planets' radius was multiplied by the radius of Jupiter × 6.9911e7 m (Nasa\*)
+
+TRAPPIST-1's orbital periods were calculated via Rebound via data from the cited
+paper above.
 
 ## Spreadsheet
 
