@@ -8,20 +8,22 @@
     unit_text=None
   )
 %}
-  <div>
-    {% if label_text %}
-      <span class="text-secondary inline text-xs">{{ label_text }}</span>
-    {% endif %}
-  </div>
+  <div data-field class="contents">
+    <div>
+      {% if label_text %}
+        <span class="text-secondary inline text-xs">{{ label_text }}</span>
+      {% endif %}
+    </div>
 
-  <div>
-    {% if field_name %}
-      <span class="inline" data-{{ field_name }}></span>
-    {% endif %}
+    <div>
+      {% if field_name %}
+        <span class="inline" data-{{ field_name }}></span>
+      {% endif %}
 
-    {% if unit_text %}
-      <span class="inline">{{ unit_text }}</span>
-    {% endif %}
+      {% if unit_text %}
+        <span class="inline">{{ unit_text }}</span>
+      {% endif %}
+    </div>
   </div>
 {% endmacro %}
 

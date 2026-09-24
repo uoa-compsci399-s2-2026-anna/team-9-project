@@ -27,20 +27,31 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
         : currentSystem.objects[objectName];
 
     panel.querySelector("[data-object-name]").textContent = objectName;
-    panel.querySelector("[data-object-mass]").innerHTML = toScientificHTML(
-        object.mass.value,
-    );
-    panel.querySelector("[data-object-radius]").innerHTML = toScientificHTML(
-        object.radius.value,
-    );
-    panel.querySelector("[data-object-average-temperature]").innerHTML =
-        toScientificHTML(object.temp.value);
+    updateDataField("[data-object-mass]", object.mass.value);
+    updateDataField("[data-object-radius]", object.radius.value);
+    updateDataField("[data-object-average-temperature]", object.temp.value);
 });
 
 bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => {
     panel.classList.add("hidden");
     placeholder.classList.remove("hidden");
 });
+
+/**
+ * @param {*} selector The selector for the querySelector for the data field
+ * @param {*} value The value to set the field's text to. If null, the field is
+ * not shown at all.
+ */
+function updateDataField(selector, value) {
+    const field = panel.querySelector(selector);
+    const fieldContainer = field.closest("[data-field]");
+
+    fieldContainer.classList.toggle("hidden", value === null);
+
+    if (value !== null) {
+        field.innerHTML = toScientificHTML(value);
+    }
+}
 
 /**
  * @param {*} number The number to convert to scientific notation
