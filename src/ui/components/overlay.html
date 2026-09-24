@@ -6,7 +6,8 @@
     title,
     toggle_event_name=None,
     open_overlay_event=None,
-    close_overlay_event=None
+    close_overlay_event=None,
+    width_class="max-w-prose"
   )
 %}
   <div
@@ -19,7 +20,7 @@
   >
     <!-- Settings menu itself -->
     <div
-      class="shadowed bordered-light w-full max-w-prose rounded-2xl bg-white p-10 dark:bg-zinc-950"
+      class="shadowed bordered-light w-full {{ width_class }} rounded-2xl bg-white p-10 dark:bg-zinc-950"
     >
       <!-- 'Settings' heading and close button -->
       <div class="mb-8 flex items-start">
