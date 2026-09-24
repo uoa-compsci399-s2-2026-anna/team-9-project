@@ -649,7 +649,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
                 comparisonOrbitOpacity,
             );
 
-            // Lowkey have no idea what units these are in, so I applied a 
+            // Lowkey have no idea what units these are in, so I applied a
             // scale factor to make it look OK.
             material.lineWidth =
                 comparisonOrbitLineWidth * ORBIT_LINE_WIDTH_SCALE_FACTOR;
