@@ -96,7 +96,6 @@ let viewRadius;
 // Default size and colour of all the objects
 let objectSize;
 let objectScale = 1;
-const objectColour = "white";
 let hitboxPadding;
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -362,7 +361,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
     if (!mesh) {
         const geometry = new THREE.SphereGeometry(objectSize);
-        const material = new THREE.MeshStandardMaterial({ color: objectColour });
+        const material = new THREE.MeshBasicMaterial({ color: colour });
 
         mesh = new THREE.Mesh(geometry, material);
 
@@ -1037,6 +1036,14 @@ export function toggleSimulationDarkMode(isDarkMode) {
 
     const labelBackground = theme.labelBackground;
     const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+
+    for (const [name, objectMesh] of objectMeshes) {
+        const isComparisonOverlay = objectMesh.parent === solarSystemGroup;
+
+        objectMesh.material.color.set(
+            isComparisonOverlay ? overlayColour : getCurrentSystemColour(name, isDarkMode)
+        );
+    }
 
     for (const [name, label] of objectLabels) {
         const mesh = objectMeshes.get(name);
