@@ -28,7 +28,7 @@ const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
         altInput: true,
         // User-facing format: "dd-MM-YYYY hh:mm AM/PM"
         altFormat: "d-m-Y G:i K",
-        altInputClass: "calendar tabular-nums w-46 pl-0.5",
+        altInputClass: "calendar tabular-nums w-48 pl-0.5",
         allowInput: false,
         onReady: (_selectedDates, _dateStr, instance) => {
             instance.altInput.classList.remove("invisible");
@@ -61,8 +61,8 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 
 // Set Flatpickr font family and size
 const calendarFontSizes = {
-    Default: "12px",
-    Larger: "18px",
+    Default: "14px",
+    Larger: "16px",
 };
 
 const calendarFontFamilies = {
