@@ -81,6 +81,12 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
+let animateCameraAndControls = false;
+
+// Animation targets for camera and controls
+let animateCameraPositionTo = new THREE.Vector3();
+let animateControlsTargetTo = new THREE.Vector3();
+
 const raycaster = new THREE.Raycaster();
 
 const currentSystemGroup = new THREE.Group();
