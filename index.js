@@ -4,6 +4,7 @@ const path = require('path');
 const Store = require('electron-store'); // Refer to https://github.com/sindresorhus/electron-store
 const settingsSchema = require('./src/shared/settingsSchema.json');
 const simulationStateSchema = require('./src/shared/simulationStateSchema.json');
+const log = require('electron-log/main');
 
 // Squirrel launches the appplication multiple extra times during install/update/uninstall
 // so it can create/remove the start menu shortcut. This detects those launches,
@@ -106,6 +107,7 @@ const isDev = process.argv[2] == "dev";
  * @param {*} reject Promise reject handle, will reject after 5 seconds (failed to launch)
  */
 function spawnPythonProcess(resolve, reject) {
+    log.info('ELECTRON: Finding python process path')
     const platform = process.platform;
 
     // Pass the command, script path, and arguments as an array
@@ -141,12 +143,16 @@ function spawnPythonProcess(resolve, reject) {
             }
         }
     }
+
+    log.debug(`ELECTRON: Python process at ${processPath}`);
+    log.info('ELECTRON: Spawning Python process');
+
     pythonProcess = spawn(processPath, args, {
         cwd: app.isPackaged ? process.resourcesPath : __dirname
     });
 
     pythonProcess.on('error', (err) => {
-        console.error(`Failed to start Python process: ${err.message}`);
+        log.error(`Failed to start Python process: ${err.message}`);
     });
 
     // Set python output channels to utf8 encoding
@@ -155,25 +161,26 @@ function spawnPythonProcess(resolve, reject) {
 
     // Capture standard output from python process
     pythonProcess.stdout.on('data', (data) => {
-        console.log(`Python: ${data}`);
+        log.info(`${data}`);
 
         // If the data captured is the url to the application
         if (data.toString().startsWith("http://")) {
             // Resolve the promise with the url (with no excess whitespace)
             let url = data.toString().split("\n")[0].trim();
+            log.debug(`ELECTRON: URL to Python process is ${url}`);
             resolve(url);
         }
     });
 
     // Capture standard error from pthon process
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`Python Error: ${data}`);
+        log.error(`${data}`);
     });
 
     // Handle python process closing
     pythonProcess.on('close', (code) => {
         // Print exit code as it can be useful
-        console.log(`Python script exited with code ${code}`);
+        log.info(`ELECTRON: Python script exited with code ${code}`);
     });
 
     // Reject the promise after 30 seconds
@@ -284,8 +291,10 @@ async function createWindow(python_url) {
 
     // Show spinner while app is launching
     const loaderFilename = 'loader.html';
+    const loaderFilePath = getPathToUiFile(loaderFilename);
+    log.info(`ELECTRON: Loading loading screen at ${loaderFilePath}`);
     mainWindow.loadFile(
-        getPathToUiFile(loaderFilename),
+        loaderFilePath,
         darkModeQueryParameter()
     );
 
@@ -295,13 +304,15 @@ async function createWindow(python_url) {
 
     try {
         url = await python_url;
-    } catch (exception) {
-        console.error(`ERROR: The promise was rejected: ${exception}`);
+    } catch(exception) {
+        log.error(`ELECTRON: The promise was rejected: ${exception}`);
 
         // Show failed to start screen if the promise rejects
         const failedToStartFilename = 'failedToStart.html';
+        const failedToStartFilePath = getPathToUiFile(failedToStartFilename);
+        log.info(`ELECTRON: Loading failed to load screen at ${failedToStartFilePath}`);
         mainWindow.loadFile(
-            getPathToUiFile(failedToStartFilename),
+            failedToStartFilePath,
             darkModeQueryParameter()
         );
 
@@ -311,7 +322,7 @@ async function createWindow(python_url) {
     // Include the persisted state in the initial URL
     url = buildInitialUrl(url);
 
-    console.log(`Connecting to '${url}'...`);
+    log.info(`ELECTRON: Connecting to Python process at '${url}'...`);
 
     // Change the window to the given url
     mainWindow.loadURL(url);
@@ -320,10 +331,26 @@ async function createWindow(python_url) {
 // Handle the application quitting
 app.on('will-quit', () => {
     // Print that it is quitting
-    console.log('App is quitting...');
+    log.info('ELECTRON: App is quitting...');
     // Kill the python process to ensure the port is freed
     pythonProcess.kill();
 });
+
+// Initialise logger
+log.initialize();
+
+// Get date at program execution start
+// Date is in format YYYY-MM-DDTHH:MM:SS.MMMZ
+//                  0^               19^
+const date = new Date().toISOString();
+// Take upto minutes and replace : with - for paths and T with _
+const formattedDate = date.slice(0, 19).replaceAll(':', '-').replaceAll('T', '_');
+
+// Replace log file name
+log.transports.file.resolvePathFn = (variables) => {
+    const fileName = `${formattedDate}_${variables.fileName}`;
+    return path.join(variables.electronDefaultDir, fileName);
+}
 
 const url = new Promise(spawnPythonProcess);
 // Wait for electron to be ready, then create the window
