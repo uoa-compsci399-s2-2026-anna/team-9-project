@@ -276,7 +276,9 @@ async function createWindow(python_url) {
 
     // Show spinner while app is launching
     const loaderFilename = 'loader.html';
-    mainWindow.loadFile(getPathToUiFile(loaderFilename));
+    const loaderFilePath = getPathToUiFile(loaderFilename);
+    log.info(`ELECTRON: Loading loading screen at ${loaderFilePath}`);
+    mainWindow.loadFile(loaderFilePath);
 
     // Maximise the window and then show it
     mainWindow.maximize();
@@ -289,7 +291,9 @@ async function createWindow(python_url) {
 
         // Show failed to start screen if the promise rejects
         const failedToStartFilename = 'failedToStart.html';
-        mainWindow.loadFile(getPathToUiFile(failedToStartFilename));
+        const failedToStartFilePath = getPathToUiFile(failedToStartFilename);
+        log.info(`ELECTRON: Loading failed to load screen at ${failedToStartFilePath}`);
+        mainWindow.loadFile(failedToStartFilePath);
 
         return;
     }
@@ -297,7 +301,7 @@ async function createWindow(python_url) {
     // Include the persisted state in the initial URL
     url = buildInitialUrl(url);
 
-    log.info(`ELECTRON: Connecting to '${url}'...`);
+    log.info(`ELECTRON: Connecting to Python process at '${url}'...`);
 
     // Change the window to the given url
     mainWindow.loadURL(url);
