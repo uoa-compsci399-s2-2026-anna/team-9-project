@@ -59,8 +59,8 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 
 // Set Flatpickr font family and size
 const calendarFontSizes = {
-    Default: "12px",
-    Larger: "18px",
+    Default: "14px",
+    Larger: "15px",
 };
 
 const calendarFontFamilies = {

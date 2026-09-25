@@ -73,6 +73,13 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
     }
 });
 
+
+// Font size select
+
+bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
+    html.dataset.textSize = event.detail.value;
+});
+
 // Fullscreen button
 
 const fullscreenSvgPath = document.querySelector("#fullscreen-svg-path");
