@@ -84,7 +84,7 @@ ipcMain.handle('simulationState:getDefaults', () => {
 });
 
 ipcMain.on('fullscreen:toggle', () => {
-    if (!mainWindow) { 
+    if (!mainWindow) {
         return;
     }
     mainWindow.setFullScreen(!mainWindow.isFullScreen());
@@ -224,6 +224,21 @@ function buildInitialUrl(baseUrl) {
 }
 
 /**
+ * Gets the dark mode setting and returns as an object to be passed into the
+ * loader and error page.
+ *
+ * @returns Javascript Object of { query: { darkmode: true/false } }
+ */
+function darkModeQueryParameter() {
+    const settings = store.get('settings');
+    return {
+        query: {
+            darkmode: settings.darkMode,
+        }
+    };
+}
+
+/**
  * Creates the electron window and binds itself to the given url
  * 
  * @param {Promise} url - A promise to the entry url to bind the application to
@@ -233,7 +248,7 @@ async function createWindow(python_url) {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        show: false,    
+        show: false,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -278,7 +293,10 @@ async function createWindow(python_url) {
     const loaderFilename = 'loader.html';
     const loaderFilePath = getPathToUiFile(loaderFilename);
     log.info(`ELECTRON: Loading loading screen at ${loaderFilePath}`);
-    mainWindow.loadFile(loaderFilePath);
+    mainWindow.loadFile();
+        loaderFilePath,
+        darkModeQueryParameter()
+    );
 
     // Maximise the window and then show it
     mainWindow.maximize();
@@ -293,7 +311,10 @@ async function createWindow(python_url) {
         const failedToStartFilename = 'failedToStart.html';
         const failedToStartFilePath = getPathToUiFile(failedToStartFilename);
         log.info(`ELECTRON: Loading failed to load screen at ${failedToStartFilePath}`);
-        mainWindow.loadFile(failedToStartFilePath);
+        mainWindow.loadFile(
+            failedToStartFilePath,
+            darkModeQueryParameter()
+        );
 
         return;
     }
