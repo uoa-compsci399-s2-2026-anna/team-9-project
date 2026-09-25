@@ -184,6 +184,24 @@ const divisionsInView = 10; // Number of divisions visible when viewing the grid
 const referenceGridOpacity = 0.5;
 let referenceGrid;
 
+// Star glow texture constants
+
+const TEXTURE_SIZE = 64;
+const CENTRE = TEXTURE_SIZE / 2;
+const OUTER_RADIUS = CENTRE;
+const INNER_RADIUS = 0;
+
+// Gradient stop positions, each a fraction (0 to 1) of the distance from the centre to the outer edge
+const CORE_STOP = 0;
+const COLOUR_STOP = 0.2;
+const EDGE_STOP = 1;
+
+// Colour of the core of the star
+const CORE_COLOUR = 'rgba(255, 255, 255, 1)';
+
+const GLOW_SIZE_MULTIPLIER = 3.5;
+const SPRITE_Z_SCALE = 1.0;
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -367,19 +385,6 @@ function onCanvasClick(event, canvas) {
  * @returns {THREE.CanvasTexture} Texture for a sprite/point material map
  */
 function createGlowTexture(colour) {
-    const TEXTURE_SIZE = 64;
-    const CENTRE = TEXTURE_SIZE / 2;
-    const OUTER_RADIUS = CENTRE;
-    const INNER_RADIUS = 0;
-
-    // Gradient stop positions, each a fraction (0 to 1) of the distance from the centre to the outer edge
-    const CORE_STOP = 0;
-    const COLOUR_STOP = 0.2;
-    const EDGE_STOP = 1;
-
-    // Colour of the core of the star
-    const CORE_COLOUR = 'rgba(255, 255, 255, 1)';
-
     const canvas = document.createElement('canvas');
     canvas.width = TEXTURE_SIZE;
     canvas.height = TEXTURE_SIZE;
@@ -433,9 +438,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
             });
 
             const glowSprite = new THREE.Sprite(spriteMaterial);
-
-            const GLOW_SIZE_MULTIPLIER = 3.5;
-            const SPRITE_Z_SCALE = 1.0;
 
             const glowSize = objectSize * GLOW_SIZE_MULTIPLIER;
             glowSprite.scale.set(glowSize, glowSize, SPRITE_Z_SCALE);
