@@ -107,6 +107,7 @@ const isDev = process.argv[2] == "dev";
  * @param {*} reject Promise reject handle, will reject after 5 seconds (failed to launch)
  */
 function spawnPythonProcess(resolve, reject) {
+    log.info('ELECTRON: Finding python process path')
     const platform = process.platform;
 
     // Pass the command, script path, and arguments as an array
@@ -142,6 +143,10 @@ function spawnPythonProcess(resolve, reject) {
             }
         }
     }
+
+    log.debug(`ELECTRON: Python process at ${processPath}`);
+    log.info('ELECTRON: Spawning Python process');
+
     pythonProcess = spawn(processPath, args, {
         cwd: app.isPackaged ? process.resourcesPath : __dirname
     });
@@ -162,6 +167,7 @@ function spawnPythonProcess(resolve, reject) {
         if (data.toString().startsWith("http://")) {
             // Resolve the promise with the url (with no excess whitespace)
             let url = data.toString().split("\n")[0].trim();
+            log.debug(`ELECTRON: URL to Python process is ${url}`);
             resolve(url);
         }
     });
