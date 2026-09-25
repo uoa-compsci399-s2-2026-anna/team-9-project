@@ -79,6 +79,7 @@ export function formatInTimeZone(epochMs, timeZone) {
  * zone setting.
  */
 export function formatDate(date, timeZone) {
+    var timeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
 
     // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
     return new Intl.DateTimeFormat("sv", {
@@ -101,6 +102,7 @@ export function formatDate(date, timeZone) {
  * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
  */
 export function dateOnly(date, timeZone) {
+    var timeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
 
     return new Intl.DateTimeFormat("sv", {
         timeZone: timeZone,
