@@ -56,7 +56,9 @@ export const TIMEZONE_MAP = {
  */
 export function convertToEpoch(dateString, timeZone) {
     const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
-    return DateTime.fromFormat(dateString, "dd-MM-yyyy hh:mm a", { zone: formattedTimeZone }).toMillis();
+    return DateTime.fromFormat(dateString, "dd-MM-yyyy hh:mm a", {
+        zone: formattedTimeZone,
+    }).toMillis();
 }
 
 /**
@@ -68,7 +70,9 @@ export function convertToEpoch(dateString, timeZone) {
  */
 export function formatInTimeZone(epochMs, timeZone) {
     const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
-    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat("dd-MM-yyyy hh:mm a",);
+    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat(
+        "dd-MM-yyyy hh:mm a",
+    );
 }
 
 
@@ -95,11 +99,10 @@ export function formatDate(date, timeZone) {
         .replace(" ", "T"); // Replace the ' ' with a 'T' to conform to format
 }
 
-
-
 /**
  * @param {Date} date A `Date` object
- * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
+ * @returns The date portion (yyyy-MM-dd) of `date`, in the given time zone
  */
 export function dateOnly(date, timeZone) {
     var timeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
