@@ -7,14 +7,14 @@
   )
 %}
   <div
-    class="control bordered relative flex h-auto min-h-0 flex-col p-2"
+    class="shadowed bordered-light relative container flex h-auto min-h-0 w-48 flex-col"
     data-panel
     data-toggle-event="{{ toggle_event }}"
   >
     <!-- Panel button -->
     <button
       id="{{ panel_button_id }}"
-      class="flex w-full items-center font-bold"
+      class="flex w-full items-center p-3 font-bold"
       data-panel-button
     >
       <span class="flex-1 text-left">{{ panel_title_text }}</span>
@@ -44,7 +44,7 @@
       <div class="flex min-h-0 flex-col overflow-hidden">
         <!-- Content -->
         <div
-          class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto"
+          class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto px-3"
           data-scroll-container
         >
           {{ caller() }}
@@ -53,7 +53,7 @@
         <!-- Restore defaults button -->
         <button
           id="{{ reset_button_id }}"
-          class="mt-2 self-end overflow-hidden"
+          class="mt-2 self-end overflow-hidden px-3 pb-3"
         >
           <span class="text-sm">Reset to defaults</span>
         </button>
