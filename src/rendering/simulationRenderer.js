@@ -369,6 +369,29 @@ async function getViewRadiusForSystem(system, useDefault = false) {
     return maxApoapsis * viewRadiusMultiplier;
 }
 
+async function getViewRadius(comparingToSolarSystem, habitableZoneShown) {
+    const viewRadiusForCurrentSystem = await getViewRadiusForSystem(
+        currentSystem
+    );
+
+    let viewRadius = viewRadiusForCurrentSystem;
+
+    if (comparingToSolarSystem) {
+        const viewRadiusForSolarSystem = await getViewRadiusForSystem(
+            "Solar System",
+            true
+        );
+        viewRadius = Math.max(viewRadius, viewRadiusForSolarSystem);
+    }
+
+    if (habitableZoneShown && habitableZone) {
+        const viewRadiusForHabitableZone = habitableZone.end * viewRadiusMultiplier;
+        viewRadius = Math.max(viewRadius, viewRadiusForHabitableZone);
+    }
+
+    return viewRadius;
+}
+
 /**
  * Handles when the canvas is clicked on while the user is not moving the camera.
  * Detects if an object was clicked and, if so, fires an event to notify other components
