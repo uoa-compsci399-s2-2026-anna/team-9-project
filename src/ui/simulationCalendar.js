@@ -113,13 +113,14 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     });
 
     // Refresh the calendar with the last simulation time to reflect the new time zone
-    updateCalendar(lastSimulationTime);
+    updateCalendar(lastSimulationTime, true);
 });
 
 /**
  * Gets the elapsed days text which describes how far the simulation time is from today,
- * in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
+ * in the given time zone (e.g., "Today", "3 days from today", "5 days ago").
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns The elapsed days text
  */
 export function getElapsedDaysText(simulationTime, timeZone) {
@@ -145,8 +146,9 @@ export function getElapsedDaysText(simulationTime, timeZone) {
 
 /**
  * Updates the elapsed days text to show how far the simulation time is from today,
- * in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
+ * in the given time zone (e.g., "Today", "3 days from today", "5 days ago").
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  */
 function updateElapsedDaysText(simulationTime, timeZone) {
     const elapsedDays = document.querySelector("#elapsed-days");
@@ -160,10 +162,10 @@ function updateElapsedDaysText(simulationTime, timeZone) {
 }
 
 /**
- * Updates all calendars to show the given simulation time in the given time zone,
+ * Updates all calendars to show the given simulation time in each calendar's time zone,
  * and sets the minimum and maximum of the calendar to +/- `CALENDAR_RANGE_YEARS`.
  *
- * Updates are throttled to at most one per `CALENDAR_MIN_INTERVAL_MS`.
+ * Updates are throttled to at most one per `CALENDAR_UPDATE_INTERVAL`.
  *
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {boolean} forceUpdate Whether or not to bypass the throttle
