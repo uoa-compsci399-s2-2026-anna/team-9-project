@@ -6,6 +6,7 @@
   font-weight: 400;
   font-display: swap;
   src: url(/src/fonts/OpenDyslexic-Regular.woff2) format("woff2");
+  size-adjust: 80%;
 }
 
 @theme {
@@ -51,6 +52,10 @@
   button:not([disabled]),
   [role="button"]:not([disabled]) {
     cursor: pointer;
+  }
+
+  html[data-text-size="Larger"] {
+    font-size: 110%;
   }
 }
 
