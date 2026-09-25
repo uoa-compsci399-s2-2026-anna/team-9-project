@@ -57,6 +57,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
             "outline-zinc-900",
             "dark:bg-black",
             "dark:outline-zinc-500",
+            "rounded-b-none",
         );
 
         systemDropdownWrapper.classList.remove(
@@ -73,6 +74,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
             "outline-zinc-900",
             "dark:bg-black",
             "dark:outline-zinc-500",
+            "rounded-b-none",
         );
 
         systemDropdownWrapper.classList.add(
