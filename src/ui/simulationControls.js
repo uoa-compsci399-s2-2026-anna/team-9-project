@@ -50,6 +50,9 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
         path.classList.toggle("hidden");
     });
 
+    systemInformationButton.classList.toggle("transition-none", showDropdown);
+    systemInformationButton.classList.toggle("transition-all", !showDropdown);
+
     if (showDropdown) {
         systemDropdown.classList.remove("grid-rows-[0fr]");
         systemDropdown.classList.add("grid-rows-[1fr]", "bordered");
