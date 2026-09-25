@@ -237,6 +237,10 @@ async def get_system_data_at_time(system_name: str, t: float) -> dict:
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
+    # If we are already integrating, stop and do this instead
+    for pid, process in list(process_pool._processes.items()):
+        process.terminate()
+
     # Integrate to given time using a process pool to keep interactivity
     loop = asyncio.get_running_loop()
     sim = await loop.run_in_executor(process_pool, Simulations.quick_integrate, sims, t, system_data)
