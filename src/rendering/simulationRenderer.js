@@ -827,9 +827,22 @@ export function syncCalendar() {
  * Align the system's average normal with the up vector.
  *
  * @param {THREE.Group} group The group to align
- * @param {THREE.Vector3} averageNormal The average normal vector of the system's orbital planes
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
  */
-function alignSystemToCameraUp(group, averageNormal) {
+async function alignSystemToCameraUp(group, useDefault = false) {
+    let system = currentSystem;
+    if (group === solarSystemGroup) {
+        system = "Solar System";
+    }
+
+    const referenceSystemData = await getReferenceSystemData(system);
+    const orbitalDataValues = getVisibleOrbitalDataValues(
+        system,
+        referenceSystemData.orbital_data,
+        useDefault
+    );
+    const averageNormal = calculateAverageNormal(orbitalDataValues);
+
     const quaternion = new THREE.Quaternion().setFromUnitVectors(
         averageNormal,
         cameraDefaults.up,
@@ -1004,12 +1017,6 @@ export async function init(name) {
         systemInfo["reference"],
     );
 
-    const referenceDataForCurrentSystem = systemInfo["reference"];
-    const orbitalDataValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        referenceDataForCurrentSystem.orbital_data,
-    );
-
     await updateViewRadius(
         false, // Not comparing to the Solar System
         simulationState.habitableZoneShown
@@ -1019,9 +1026,7 @@ export async function init(name) {
     hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
     // Align the system's average normal with the up vector (Z-axis)
-    const currentSystemAverageNormal =
-        calculateAverageNormal(orbitalDataValues);
-    alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
+    alignSystemToCameraUp(currentSystemGroup);
 
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
@@ -1114,10 +1119,7 @@ export async function compareToSolarSystem() {
     objectScale = comparisonObjectSize / objectSize;
 
     // Align the solar system's average normal with the up vector (Z-axis)
-    const solarSystemAverageNormal = calculateAverageNormal(
-        solarOrbitalDataValues,
-    );
-    alignSystemToCameraUp(solarSystemGroup, solarSystemAverageNormal);
+    alignSystemToCameraUp(solarSystemGroup, true);
 
     solarSystemGroup.visible = true;
 
