@@ -418,7 +418,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
             const spriteMaterial = new THREE.SpriteMaterial({
                 map: glowTexture,
-                blending: THREE.NormalBlending,
                 transparent: true,
                 depthWrite: false
             });
