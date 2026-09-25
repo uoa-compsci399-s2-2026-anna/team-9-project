@@ -85,6 +85,14 @@ function setFlatpickrFont(chosenFont, chosenSize) {
 
 setFlatpickrFont(settings.font, settings.textSize);
 
+/**
+ * Gets the time zone currently used by the calendars.
+ * @returns {string} The calendar's time zone setting (e.g., "UTC", "NZT")
+ */
+export function getCalendarTimeZone() {
+    return calendarInputs[0]?.dataset.timezone;
+}
+
 bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
     setFlatpickrFont(event.detail.value, settings.textSize);
 });
