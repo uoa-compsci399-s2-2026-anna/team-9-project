@@ -386,7 +386,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         const material = new THREE.MeshBasicMaterial({ color: colour });
 
         mesh = new THREE.Mesh(geometry, material);
-        
+
         const objectType = objectTypes[name];
         if (objectType === "star") {
             const glowTexture = createGlowTexture(colour);
