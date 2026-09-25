@@ -2,9 +2,6 @@ import { bus } from "/src/events/eventBus.js";
 import { EVENTS } from "/src/events/events.js";
 
 const panel = document.getElementById("object-information-panel");
-const placeholder = document.getElementById(
-    "object-information-panel-no-object-selected-view",
-);
 
 /**
  * The container containing the object information panel.
