@@ -39,6 +39,7 @@ Kepler-16's orbital periods were calculated via Rebound via data from the cited
 paper above.
 
 Kepler-16's habitable zones were source from: https://arxiv.org/pdf/1306.2890#page=26
+Kepler-16's star temperatures were taken from https://arxiv.org/html/1802.06856v2#S3
 
 ## TRAPPIST-1
 
