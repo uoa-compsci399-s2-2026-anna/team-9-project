@@ -147,7 +147,7 @@ function spawnPythonProcess(resolve, reject) {
     });
 
     pythonProcess.on('error', (err) => {
-        console.error(`Failed to start Python process: ${err.message}`);
+        log.error(`Failed to start Python process: ${err.message}`);
     });
 
     // Set python output channels to utf8 encoding
@@ -156,7 +156,7 @@ function spawnPythonProcess(resolve, reject) {
 
     // Capture standard output from python process
     pythonProcess.stdout.on('data', (data) => {
-        console.log(`Python: ${data}`);
+        log.info(`${data}`);
 
         // If the data captured is the url to the application
         if (data.toString().startsWith("http://")) {
@@ -168,13 +168,13 @@ function spawnPythonProcess(resolve, reject) {
 
     // Capture standard error from pthon process
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`Python Error: ${data}`);
+        log.error(`${data}`);
     });
 
     // Handle python process closing
     pythonProcess.on('close', (code) => {
         // Print exit code as it can be useful
-        console.log(`Python script exited with code ${code}`);
+        log.info(`ELECTRON: Python script exited with code ${code}`);
     });
 
     // Reject the promise after 30 seconds
@@ -279,7 +279,7 @@ async function createWindow(python_url) {
     try {
         url = await python_url;
     } catch(exception) {
-        console.error(`ERROR: The promise was rejected: ${exception}`);
+        log.error(`ELECTRON: The promise was rejected: ${exception}`);
 
         // Show failed to start screen if the promise rejects
         const failedToStartFilename = 'failedToStart.html';
@@ -291,7 +291,7 @@ async function createWindow(python_url) {
     // Include the persisted state in the initial URL
     url = buildInitialUrl(url);
 
-    console.log(`Connecting to '${url}'...`);
+    log.info(`ELECTRON: Connecting to '${url}'...`);
 
     // Change the window to the given url
     mainWindow.loadURL(url);
@@ -300,7 +300,7 @@ async function createWindow(python_url) {
 // Handle the application quitting
 app.on('will-quit', () => {
     // Print that it is quitting
-    console.log('App is quitting...');
+    log.info('ELECTRON: App is quitting...');
     // Kill the python process to ensure the port is freed
     pythonProcess.kill();
 });
