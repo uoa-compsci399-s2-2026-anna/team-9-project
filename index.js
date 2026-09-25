@@ -318,6 +318,18 @@ app.on('will-quit', () => {
 // Initialise logger
 log.initialize();
 
+// Replace log file name
+log.transports.file.resolvePathFn = (variables) => {
+    // Date is in format YYYY-MM-DDTHH:MM:SS.MMMZ
+    //                  0^            16^
+    const date = new Date().toISOString();
+    // Take upto minutes and replace : with - for paths and T with _
+    const formattedDate = date.slice(0, 16).replace(':', '-').replace('T', '_');
+
+    const fileName = `${formattedDate}_${variables.fileName}`;
+    return path.join(variables.electronDefaultDir, fileName);
+}
+
 const url = new Promise(spawnPythonProcess);
 // Wait for electron to be ready, then create the window
 app.whenReady().then(() => createWindow(url));
