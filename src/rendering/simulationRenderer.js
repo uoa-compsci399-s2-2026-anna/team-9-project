@@ -1009,9 +1009,10 @@ export async function init(name) {
         currentSystem,
         referenceDataForCurrentSystem.orbital_data,
     );
-
-    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
+    viewRadius = await getViewRadius(
+        false, // Not comparing to the Solar System
+        simulationState.habitableZoneShown
+    );
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
@@ -1076,27 +1077,10 @@ export function setSimulationTimeToTime(time) {
 export async function resetView() {
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getReferenceSystemData(currentSystem);
-    const currentSystemValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        currentSystemData.orbital_data,
+    viewRadius = await getViewRadius(
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible
     );
-    let maxApoapsis = calculateMaxApoapsis(currentSystemValues);
-
-    if (comparingToSolarSystem) {
-        const solarSystemData = await getReferenceSystemData("Solar System");
-        const solarSystemValues = getVisibleOrbitalDataValues(
-            "Solar System",
-            solarSystemData.orbital_data,
-            true,
-        );
-        maxApoapsis = Math.max(
-            maxApoapsis,
-            calculateMaxApoapsis(solarSystemValues),
-        );
-    }
-
-    viewRadius = maxApoapsis * viewRadiusMultiplier;
 
     // Update the camera and controls for the new view radius
     initOrUpdateCamera(canvas, viewRadius);
@@ -1111,27 +1095,13 @@ export async function resetView() {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    const referenceDataForCurrentSystem =
-        await getReferenceSystemData(currentSystem);
-    const referenceDataForSolarSystem =
-        await getReferenceSystemData("Solar System");
-
-    const currentOrbitalDataValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        referenceDataForCurrentSystem.orbital_data,
-    );
-    const solarOrbitalDataValues = getVisibleOrbitalDataValues(
-        "Solar System",
-        referenceDataForSolarSystem.orbital_data,
+    viewRadius = getViewRadius(
         true,
+        habitableZoneMesh?.visible
     );
 
-    const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
-    const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
-
-    const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
-    const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
-    viewRadius = Math.max(currentViewRadius, solarViewRadius);
+    const currentViewRadius = await getViewRadiusForSystem(currentSystem);
+    const solarViewRadius = await getViewRadiusForSystem("Solar System", true);
 
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
@@ -1164,17 +1134,10 @@ export async function hideSolarSystem() {
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
-
-    const referenceDataForCurrentSystem =
-        await getReferenceSystemData(currentSystem);
-    const orbitalDataValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        referenceDataForCurrentSystem.orbital_data,
+    viewRadius = await getViewRadius(
+        false,
+        habitableZoneMesh?.visible
     );
-
-    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    viewRadius = maxApoapsis * viewRadiusMultiplier;
-
     solarSystemGroup.visible = false;
 
     initOrUpdateCamera(canvas, viewRadius);
