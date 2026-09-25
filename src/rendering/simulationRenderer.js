@@ -369,27 +369,27 @@ async function getViewRadiusForSystem(system, useDefault = false) {
     return maxApoapsis * viewRadiusMultiplier;
 }
 
-async function getViewRadius(comparingToSolarSystem, habitableZoneShown) {
+async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
     const viewRadiusForCurrentSystem = await getViewRadiusForSystem(
         currentSystem
     );
 
-    let viewRadius = viewRadiusForCurrentSystem;
+    let newViewRadius = viewRadiusForCurrentSystem;
 
     if (comparingToSolarSystem) {
         const viewRadiusForSolarSystem = await getViewRadiusForSystem(
             "Solar System",
             true
         );
-        viewRadius = Math.max(viewRadius, viewRadiusForSolarSystem);
+        newViewRadius = Math.max(newViewRadius, viewRadiusForSolarSystem);
     }
 
     if (habitableZoneShown && habitableZone) {
         const viewRadiusForHabitableZone = habitableZone.end * viewRadiusMultiplier;
-        viewRadius = Math.max(viewRadius, viewRadiusForHabitableZone);
+        newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
     }
 
-    return viewRadius;
+    viewRadius = newViewRadius;
 }
 
 /**
@@ -1009,7 +1009,8 @@ export async function init(name) {
         currentSystem,
         referenceDataForCurrentSystem.orbital_data,
     );
-    viewRadius = await getViewRadius(
+
+    await updateViewRadius(
         false, // Not comparing to the Solar System
         simulationState.habitableZoneShown
     );
@@ -1077,7 +1078,7 @@ export function setSimulationTimeToTime(time) {
 export async function resetView() {
     const canvas = renderer.domElement;
 
-    viewRadius = await getViewRadius(
+    await updateViewRadius(
         comparingToSolarSystem,
         habitableZoneMesh?.visible
     );
@@ -1095,7 +1096,7 @@ export async function resetView() {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    viewRadius = getViewRadius(
+    await updateViewRadius(
         true,
         habitableZoneMesh?.visible
     );
@@ -1134,7 +1135,7 @@ export async function hideSolarSystem() {
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
-    viewRadius = await getViewRadius(
+    await updateViewRadius(
         false,
         habitableZoneMesh?.visible
     );
