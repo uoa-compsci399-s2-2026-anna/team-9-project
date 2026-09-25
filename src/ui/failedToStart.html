@@ -1,11 +1,22 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unable to launch...</title>
     <!-- Relative path due to this being loaded before the webserver starts -->
     <link href="../../dist/output.css" rel="stylesheet" />
+    <script>
+      const query = window.location.search;
+      const urlParams = new URLSearchParams(query);
+      const darkModeQuery = urlParams.get('darkmode');
+
+      if (darkModeQuery === 'true') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else if (darkModeQuery === 'false') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    </script>
   </head>
 
   <body class="overflow-hidden select-none">
