@@ -1,6 +1,6 @@
-{% macro container(style=None, width="w-fit") %}
+{% macro container(style=None, width="w-fit", display="inline-flex") %}
   <div
-    class="{{ style }} shadowed bordered-light {{ width }} container inline-flex"
+    class="{{ style }} shadowed bordered-light {{ width }} {{ display }} container"
     data-container
   >
     {{ caller() }}
