@@ -643,6 +643,11 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         const material = new MeshLineMaterial({
             // Remain constant size (do not grow in size as user zooms in)
             sizeAttenuation: false,
+            transparent: true,
+            resolution: new THREE.Vector2(
+                window.innerWidth,
+                window.innerHeight,
+            ),
         });
 
         const ORBIT_LINE_WIDTH_SCALE_FACTOR = 5;
@@ -1171,6 +1176,8 @@ export async function init(name) {
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
     referenceSystemData.set(
         // Add this system's reference data to cache
