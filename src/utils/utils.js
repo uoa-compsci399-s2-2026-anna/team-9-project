@@ -48,7 +48,7 @@ export const TIMEZONE_MAP = {
 };
 
 /**
- * Converts a datetime-local string into an epoch timestamp, using the given
+ * Converts a datetime string into an epoch timestamp, using the given
  * time zone to interpret it.
  * @param {string} dateString A date/time string in "dd-MM-yyyy hh:mm a" format
  * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
@@ -75,9 +75,9 @@ export function formatInTimeZone(epochMs, timeZone) {
     );
 }
 
-
 /**
  * @param {Date} date A `Date` object
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns Formatted date/time string in the format taken by
  * `<input type="datetime-local">` (yyyy-MM-dd'T'HH:mm), respecting the time
  * zone setting.
