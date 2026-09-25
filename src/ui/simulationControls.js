@@ -39,6 +39,9 @@ const systemDropdown = document.getElementById("system-dropdown");
 const systemDropdownWrapper = document.getElementById(
     "system-dropdown-wrapper",
 );
+const systemInformationButton = document.getElementById(
+    "system-information-button",
+);
 
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
@@ -51,31 +54,21 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
         systemDropdown.classList.remove("grid-rows-[0fr]");
         systemDropdown.classList.add("grid-rows-[1fr]", "bordered");
 
-        systemDropdownWrapper.classList.add(
-            "bg-white",
-            "outline-1",
-            "outline-zinc-900",
-            "dark:bg-black",
-            "dark:outline-zinc-500",
-            "rounded-b-none",
-        );
+        systemInformationButton.classList.add("rounded-b-none");
+
+        systemDropdownWrapper.classList.add("bg-white", "dark:bg-black");
 
         systemDropdownWrapper.classList.remove(
             "hover:bg-zinc-100",
             "dark:hover:bg-zinc-900",
         );
     } else {
+        systemInformationButton.classList.remove("rounded-b-none");
+
         systemDropdown.classList.remove("grid-rows-[1fr]", "bordered");
         systemDropdown.classList.add("grid-rows-[0fr]");
 
-        systemDropdownWrapper.classList.remove(
-            "bg-white",
-            "outline-1",
-            "outline-zinc-900",
-            "dark:bg-black",
-            "dark:outline-zinc-500",
-            "rounded-b-none",
-        );
+        systemDropdownWrapper.classList.remove("bg-white", "dark:bg-black");
 
         systemDropdownWrapper.classList.add(
             "hover:bg-zinc-100",
