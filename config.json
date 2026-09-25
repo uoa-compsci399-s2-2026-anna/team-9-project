@@ -28,8 +28,8 @@
                 },
                 "Mercury": {
                     "colour": { 
-                        "dark": "#b89176",
-                        "light": "#7d5a40"
+                        "dark": "#777777",
+                        "light": "#555555"
                     },
                     "type": "planet",
                     "mass": {
