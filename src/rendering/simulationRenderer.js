@@ -48,6 +48,7 @@ let currentSimulationTime;
 let currentSystem;
 
 let currentSystemColours;
+let objectTypes;
 
 let scene;
 let camera;
@@ -347,6 +348,27 @@ function onCanvasClick(event, canvas) {
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
 }
 
+function createGlowTexture(colour) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+
+    // Create a gradient (inner radius 0, outer radius 32)
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    // Make the center white
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    // The outside is the colour of the star
+    gradient.addColorStop(0.2, colour);
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 64, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    return texture;
+}
+
 /**
  * If the target object does not exist, then its mesh is created at the given position.
  * If the target object does exist, then its position is updated.
@@ -364,6 +386,25 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         const material = new THREE.MeshBasicMaterial({ color: colour });
 
         mesh = new THREE.Mesh(geometry, material);
+        
+        const objectType = objectTypes[name];
+        if (objectType === "star") {
+            const glowTexture = createGlowTexture(colour);
+
+            const spriteMaterial = new THREE.SpriteMaterial({
+                map: glowTexture,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                depthWrite: false
+            });
+
+            const glowSprite = new THREE.Sprite(spriteMaterial);
+
+            const glowSize = objectSize * 4.0;
+            glowSprite.scale.set(glowSize, glowSize, 1.0);
+
+            mesh.add(glowSprite);
+        }
 
         if (comparingToSolarSystem && group === solarSystemGroup) {
             mesh.visible = !isObjectHiddenByDefault("Solar System", name);
@@ -811,6 +852,10 @@ export async function init(name) {
     habitableZone = systemInfo["habitable zone"];
     currentSystemColours = Object.fromEntries(
         Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.colour])
+    );
+
+    objectTypes = Object.fromEntries(
+        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.objectType])
     );
 
     const canvas = document.getElementById("simulation-canvas");
