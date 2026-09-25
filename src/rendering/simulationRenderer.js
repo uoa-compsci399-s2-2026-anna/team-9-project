@@ -950,7 +950,7 @@ export async function init(name) {
     );
 
     objectTypes = Object.fromEntries(
-        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.objectType])
+        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.type])
     );
 
     const canvas = document.getElementById("simulation-canvas");
