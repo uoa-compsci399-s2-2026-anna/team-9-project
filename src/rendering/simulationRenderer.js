@@ -418,14 +418,14 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
             const spriteMaterial = new THREE.SpriteMaterial({
                 map: glowTexture,
-                blending: THREE.AdditiveBlending,
+                blending: THREE.NormalBlending,
                 transparent: true,
                 depthWrite: false
             });
 
             const glowSprite = new THREE.Sprite(spriteMaterial);
 
-            const GLOW_SIZE_MULTIPLIER = 4.0;
+            const GLOW_SIZE_MULTIPLIER = 3.5;
             const SPRITE_Z_SCALE = 1.0;
 
             const glowSize = objectSize * GLOW_SIZE_MULTIPLIER;
