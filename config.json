@@ -427,8 +427,8 @@
                         "uncertainty": 1.3128e27
                     },
                     "temp": {
-                        "value": null,
-                        "uncertainty": null
+                        "value": 3308,
+                        "uncertainty": 110
                     },
                     "period": {
                         "heliocentric": 3549292.9307794133,
@@ -450,7 +450,7 @@
                         "uncertainty": 3.04e25
                     },
                     "temp": {
-                        "value": null,
+                        "value": 188,
                         "uncertainty": null
                     },
                     "period": {
