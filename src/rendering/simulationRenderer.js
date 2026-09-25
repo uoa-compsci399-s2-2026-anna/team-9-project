@@ -3,7 +3,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { Line2 } from "three/addons/lines/Line2.js";
 import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 import { LineMaterial } from "three/addons/lines/LineMaterial.js";
-import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+import {
+    CSS2DRenderer,
+    CSS2DObject,
+} from "three/addons/renderers/CSS2DRenderer.js";
 import {
     simulationState,
     running,
@@ -20,7 +23,7 @@ import {
 import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
-    getMultipleSystemsData
+    getMultipleSystemsData,
 } from "../services/simulationServices.js";
 import {
     calculateOrbitalPosition,
@@ -32,10 +35,10 @@ import {
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
-import { 
-    updateCalendar, 
-    formatSimulationDate, 
-    getElapsedDaysText, 
+import {
+    updateCalendar,
+    formatSimulationDate,
+    getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
@@ -81,6 +84,14 @@ const cameraDefaults = {
     target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
+
+const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
+const cameraAnimationThresholdMultiplier = 0.001; // Determines the distance threshold to finish the animation
+let animateCameraAndControls = false;
+
+// Animation targets for camera and controls
+let animateCameraPositionTo = new THREE.Vector3();
+let animateControlsTargetTo = new THREE.Vector3();
 
 const raycaster = new THREE.Raycaster();
 
@@ -188,17 +199,14 @@ function getFontFamily(chosenFont) {
 /**
  * Get the reference system data for a given system.
  * If the data is not in the cache, it will be fetched and stored.
- * 
+ *
  * @param {string} system The name of the system
  * @returns {Promise<Object>} The reference system data
  */
 async function getReferenceSystemData(system) {
     if (!referenceSystemData.has(system)) {
         const systemInfo = await getSystemInfo(system);
-        referenceSystemData.set(
-            system,
-            systemInfo["reference"]
-        );
+        referenceSystemData.set(system, systemInfo["reference"]);
     }
     return referenceSystemData.get(system);
 }
@@ -217,18 +225,18 @@ function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
 
     return new THREE.Vector2(
         ((clientX - rect.left) / rect.width) * 2 - 1,
-        -((clientY - rect.top) / rect.height) * 2 + 1
+        -((clientY - rect.top) / rect.height) * 2 + 1,
     );
 }
 
 /**
- * Finds the label at the given screen coordinates and returns the name of the object that 
- * the label belongs to. If several labels overlap, then the object name corresponding to 
+ * Finds the label at the given screen coordinates and returns the name of the object that
+ * the label belongs to. If several labels overlap, then the object name corresponding to
  * the closest label to the camera is returned.
- * 
+ *
  * @param {number} clientX The x position in viewport coordinates
  * @param {number} clientY The y position in viewport coordinates
- * @returns {string|null} The name of the object owning the closest label at the given 
+ * @returns {string|null} The name of the object owning the closest label at the given
  * coordinates, or null if no labels were found at this coordinates.
  */
 function getLabelNameAt(clientX, clientY) {
@@ -256,7 +264,8 @@ function getLabelNameAt(clientX, clientY) {
         }
 
         label.getWorldPosition(labelWorldPosition);
-        const labelDistanceSquared = camera.position.distanceToSquared(labelWorldPosition);
+        const labelDistanceSquared =
+            camera.position.distanceToSquared(labelWorldPosition);
 
         if (labelDistanceSquared < closestDistanceSquared) {
             closestDistanceSquared = labelDistanceSquared;
@@ -268,12 +277,12 @@ function getLabelNameAt(clientX, clientY) {
 }
 
 /**
- * Determines which object in the scene is at the given coordinates (if any). Checks are made 
+ * Determines which object in the scene is at the given coordinates (if any). Checks are made
  * in the following order and the first match is returned:
  * 1. The object's own mesh (hitboxes excluded)
  * 2. The object's HTML label
  * 3. The object's hitbox (a child of the object's mesh)
- * 
+ *
  * @param {number} clientX The x position in viewport coordinates
  * @param {number} clientY The y position in viewport coordinates
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
@@ -288,8 +297,9 @@ function getObjectNameAt(clientX, clientY, canvas) {
     raycaster.setFromCamera(mouseNdc, camera);
 
     // Get all the meshes for all of the visible objects in the scene
-    const meshes = Array.from(objectMeshes.values())
-        .filter((mesh) => mesh.visible && mesh.parent.visible);
+    const meshes = Array.from(objectMeshes.values()).filter(
+        (mesh) => mesh.visible && mesh.parent.visible,
+    );
 
     // Check whether the ray intersects any object meshes (excludes hitboxes)
     let meshHits = raycaster.intersectObjects(meshes, false);
@@ -306,7 +316,7 @@ function getObjectNameAt(clientX, clientY, canvas) {
 
     // Check whether the ray intersects any hitboxes (by checking children of objects)
     const hitboxHits = raycaster.intersectObjects(meshes, true);
-    
+
     if (hitboxHits.length > 0) {
         return hitboxHits[0].object.parent.userData.name;
     }
@@ -316,7 +326,7 @@ function getObjectNameAt(clientX, clientY, canvas) {
 
 /**
  * Get the orbital data values for all objects in the given system that are not hidden.
- * 
+ *
  * @param {string} system The name of the system
  * @param {Object} orbitalData Map of object name to orbital data
  * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
@@ -334,9 +344,9 @@ function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
  * Handles when the canvas is clicked on while the user is not moving the camera.
  * Detects if an object was clicked and, if so, fires an event to notify other components
  * that an object was clicked.
- * 
- * @param {MouseEvent} event The click event 
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on 
+ *
+ * @param {MouseEvent} event The click event
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function onCanvasClick(event, canvas) {
     const name = getObjectNameAt(event.clientX, event.clientY, canvas);
@@ -397,7 +407,7 @@ function createGlowTexture(colour) {
 /**
  * If the target object does not exist, then its mesh is created at the given position.
  * If the target object does exist, then its position is updated.
- * 
+ *
  * @param {string} name Name of the object
  * @param {Object} position Position of the object
  * @param {THREE.Group} group The group to add the object to
@@ -484,28 +494,30 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 /**
  * Determines whether an object's orbit should be visible. An orbit should be visible if the
  * orbit lines are visible and the object is visible.
- * 
+ *
  * Given visibility values take precedence over saved simulation state (since this state
  * may not have been synced yet).
- * 
+ *
  * @param {string} objectName Name of the object associated with the orbit
  * @param {string} [system=currentSystem] The system associated with the object
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object is visible
- * @param {boolean} [options.useDefault=false] Whether to check the object's default visibility 
+ * @param {boolean} [options.useDefault=false] Whether to check the object's default visibility
  * instead of its current visibility
  * @returns {boolean} Whether the orbit should be visible
  */
 function shouldShowOrbit(
-    objectName, 
-    system = currentSystem, 
-    { orbitsVisible, objectVisible, useDefault = false } = {}
+    objectName,
+    system = currentSystem,
+    { orbitsVisible, objectVisible, useDefault = false } = {},
 ) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown = objectVisible ?? (useDefault
-        ? !isObjectHiddenByDefault(system, objectName)
-        : !isObjectHidden(system, objectName));
+    const isObjectShown =
+        objectVisible ??
+        (useDefault
+            ? !isObjectHiddenByDefault(system, objectName)
+            : !isObjectHidden(system, objectName));
 
     return areOrbitsShown && isObjectShown;
 }
@@ -513,10 +525,10 @@ function shouldShowOrbit(
 /**
  * Approximate a given opacity by blending the given colour towards the current background.
  * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
- * 
- * @param {string} colour The base colour to fade 
+ *
+ * @param {string} colour The base colour to fade
  * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
- * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background 
+ * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background
  * @returns A new colour faded towards the background colour by (1 - opacity)
  */
 function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
@@ -529,9 +541,9 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
 /**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
- * 
+ *
  * The orbital line is coloured to match its object.
- * 
+ *
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
@@ -550,7 +562,10 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         const material = new LineMaterial();
 
         if (group === solarSystemGroup) {
-            const comparisonColour = getFadedColour(colour, comparisonOrbitOpacity);
+            const comparisonColour = getFadedColour(
+                colour,
+                comparisonOrbitOpacity,
+            );
             material.linewidth = comparisonOrbitLineWidth;
             material.color.set(comparisonColour);
         } else {
@@ -563,7 +578,9 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         line = new Line2(geometry, material);
 
         if (comparingToSolarSystem && group === solarSystemGroup) {
-            line.visible = shouldShowOrbit(name, "Solar System", { useDefault: true });
+            line.visible = shouldShowOrbit(name, "Solar System", {
+                useDefault: true,
+            });
         } else {
             line.visible = shouldShowOrbit(name, currentSystem);
         }
@@ -614,7 +631,11 @@ function createHabitableZoneMesh() {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
 
-    const geometry = new THREE.RingGeometry(startRadius, endRadius, habitableZoneSegments);
+    const geometry = new THREE.RingGeometry(
+        startRadius,
+        endRadius,
+        habitableZoneSegments,
+    );
     const material = new THREE.MeshBasicMaterial({
         color: habitableZoneColor,
         opacity: habitableZoneOpacity,
@@ -646,36 +667,39 @@ function createReferenceGrid() {
 
 /**
  * Update the scale of the reference grid based on the camera's distance to the target.
- * 
+ *
  * The grid is scaled so that a fixed number of divisions are visible to the camera when looking at it
  * perpendicularly.
- * 
+ *
  * @param {THREE.Vector3} cameraPosition The position of the camera
  * @param {THREE.Vector3} targetPosition The position of the camera's target
  */
 function updateReferenceGridScale(cameraPosition, targetPosition) {
-    const cameraDistanceToTargetProjection = calculateCameraDistanceToTargetProjection(
-        cameraPosition,
-        targetPosition
-    );
+    const cameraDistanceToTargetProjection =
+        calculateCameraDistanceToTargetProjection(
+            cameraPosition,
+            targetPosition,
+        );
 
     const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
         fov,
         cameraDistanceToTargetProjection,
-        divisionsInView
+        divisionsInView,
     );
 
-    const coveredRange = desiredReferenceGridDivisionSize * referenceGridDivisions;
+    const coveredRange =
+        desiredReferenceGridDivisionSize * referenceGridDivisions;
     if (coveredRange < viewRadius * 2) return; // Don't scale if it doesn't cover the view radius
 
-    const scaleFactor = desiredReferenceGridDivisionSize / referenceGridDivisionSize;
+    const scaleFactor =
+        desiredReferenceGridDivisionSize / referenceGridDivisionSize;
     referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
 }
 
 /**
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
- * 
+ *
  * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
  */
 async function updateSimulation(forceCalendarUpdate = true) {
@@ -687,30 +711,61 @@ async function updateSimulation(forceCalendarUpdate = true) {
     if (isComparingToSolarSystem) {
         systems.push("Solar System");
     }
-    const allSystemData = await getMultipleSystemsData(systems, currentSimulationTime);
+    const allSystemData = await getMultipleSystemsData(
+        systems,
+        currentSimulationTime,
+    );
     const currentSystemData = allSystemData[currentSystem];
     updateCalendar(currentSimulationTime, forceCalendarUpdate);
 
-
-    for (const [name, position] of Object.entries(currentSystemData.positions)) {
-        createOrUpdateObjectMesh(name, position, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
+    for (const [name, position] of Object.entries(
+        currentSystemData.positions,
+    )) {
+        createOrUpdateObjectMesh(
+            name,
+            position,
+            currentSystemGroup,
+            getCurrentSystemColour(name, isDarkMode),
+        );
     }
-    for (const [name, orbitalData] of Object.entries(currentSystemData.orbital_data)) {
-        createOrUpdateOrbitalLine(name, orbitalData, currentSystemGroup, getCurrentSystemColour(name, isDarkMode));
+    for (const [name, orbitalData] of Object.entries(
+        currentSystemData.orbital_data,
+    )) {
+        createOrUpdateOrbitalLine(
+            name,
+            orbitalData,
+            currentSystemGroup,
+            getCurrentSystemColour(name, isDarkMode),
+        );
     }
 
     if (isComparingToSolarSystem) {
         const solarSystemData = allSystemData["Solar System"];
-        const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+        const overlayColour =
+            comparisonOverlayColour[isDarkMode ? "dark" : "light"];
 
         // The comparison overlay uses a single colour for every object label and orbit
-        for (const [name, position] of Object.entries(solarSystemData.positions)) {
+        for (const [name, position] of Object.entries(
+            solarSystemData.positions,
+        )) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateObjectMesh(name, position, solarSystemGroup, overlayColour);
+            createOrUpdateObjectMesh(
+                name,
+                position,
+                solarSystemGroup,
+                overlayColour,
+            );
         }
-        for (const [name, orbitalData] of Object.entries(solarSystemData.orbital_data)) {
+        for (const [name, orbitalData] of Object.entries(
+            solarSystemData.orbital_data,
+        )) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateOrbitalLine(name, orbitalData, solarSystemGroup, overlayColour);
+            createOrUpdateOrbitalLine(
+                name,
+                orbitalData,
+                solarSystemGroup,
+                overlayColour,
+            );
         }
     }
 }
@@ -728,13 +783,15 @@ export function syncCalendar() {
 
 /**
  * Align the system's average normal with the up vector.
- * 
+ *
  * @param {THREE.Group} group The group to align
  * @param {THREE.Vector3} averageNormal The average normal vector of the system's orbital planes
  */
 function alignSystemToCameraUp(group, averageNormal) {
-    const quaternion = new THREE.Quaternion()
-        .setFromUnitVectors(averageNormal, cameraDefaults.up);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(
+        averageNormal,
+        cameraDefaults.up,
+    );
     group.quaternion.copy(quaternion);
 }
 
@@ -747,7 +804,7 @@ function initOrUpdateCamera(canvas, viewRadius) {
     const cameraDistance = calculateCameraDistance(fov, viewRadius);
     cameraDefaults.position = calculateDefaultCameraPosition(
         cameraDefaults.up,
-        cameraDistance
+        cameraDistance,
     );
 
     const cameraNear = objectSize * cameraNearMultiplier;
@@ -755,10 +812,14 @@ function initOrUpdateCamera(canvas, viewRadius) {
 
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
-        camera = new THREE.PerspectiveCamera(fov, aspect, cameraNear, cameraFar);
+        camera = new THREE.PerspectiveCamera(
+            fov,
+            aspect,
+            cameraNear,
+            cameraFar,
+        );
         camera.up.copy(cameraDefaults.up);
         camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
-
     } else {
         camera.near = cameraNear;
         camera.far = cameraFar;
@@ -776,12 +837,16 @@ function initOrUpdateControls(canvas, viewRadius) {
 
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
+        controls.addEventListener("start", () => {
+            animateCameraAndControls = false; // Stop animating on user interaction
+        });
+
+        controls.target.copy(cameraDefaults.target);
+        controls.update();
     }
-    controls.target.copy(cameraDefaults.target);
     controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
-    controls.update();
 
     if (controlsChangeHandler) {
         controls.removeEventListener("change", controlsChangeHandler);
@@ -814,7 +879,7 @@ function createControlsChangeHandler(viewRadius) {
  * Register pointer listeners on the canvas for raycasting. A click is ignored if it was part
  * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
  * objects on the scene.
- * 
+ *
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function initRaycastingEvents(canvas) {
@@ -868,7 +933,7 @@ function initTimer() {
 
 /**
  * Initialises the requested system to render
- * 
+ *
  * @param {string} name System name
  */
 export async function init(name) {
@@ -878,7 +943,10 @@ export async function init(name) {
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone = systemInfo["habitable zone"];
     currentSystemColours = Object.fromEntries(
-        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.colour])
+        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
+            name,
+            data.colour,
+        ]),
     );
 
     objectTypes = Object.fromEntries(
@@ -888,13 +956,17 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-    referenceSystemData.set( // Add this system's reference data to cache
+    referenceSystemData.set(
+        // Add this system's reference data to cache
         currentSystem,
-        systemInfo["reference"]
+        systemInfo["reference"],
     );
 
     const referenceDataForCurrentSystem = systemInfo["reference"];
-    const orbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
+    const orbitalDataValues = getVisibleOrbitalDataValues(
+        currentSystem,
+        referenceDataForCurrentSystem.orbital_data,
+    );
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
@@ -903,7 +975,8 @@ export async function init(name) {
     hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
     // Align the system's average normal with the up vector (Z-axis)
-    const currentSystemAverageNormal = calculateAverageNormal(orbitalDataValues);
+    const currentSystemAverageNormal =
+        calculateAverageNormal(orbitalDataValues);
     alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
 
     initOrUpdateCamera(canvas, viewRadius);
@@ -918,13 +991,15 @@ export async function init(name) {
     initScene();
 
     /**
-     * Persist the current simulation time, formatted simulation date, and days elapsed text 
+     * Persist the current simulation time, formatted simulation date, and days elapsed text
      * before the simulation is exited
      */
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, currentSimulationTime);
-        
-        const formattedSimulationDate = formatSimulationDate(currentSimulationTime);
+
+        const formattedSimulationDate = formatSimulationDate(
+            currentSimulationTime,
+        );
         setFormattedSimulationDate(currentSystem, formattedSimulationDate);
 
         const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
@@ -960,13 +1035,23 @@ export async function resetView() {
     const canvas = renderer.domElement;
 
     const currentSystemData = await getReferenceSystemData(currentSystem);
-    const currentSystemValues = getVisibleOrbitalDataValues(currentSystem, currentSystemData.orbital_data);
+    const currentSystemValues = getVisibleOrbitalDataValues(
+        currentSystem,
+        currentSystemData.orbital_data,
+    );
     let maxApoapsis = calculateMaxApoapsis(currentSystemValues);
 
     if (comparingToSolarSystem) {
         const solarSystemData = await getReferenceSystemData("Solar System");
-        const solarSystemValues = getVisibleOrbitalDataValues("Solar System", solarSystemData.orbital_data, true);
-        maxApoapsis = Math.max(maxApoapsis, calculateMaxApoapsis(solarSystemValues));
+        const solarSystemValues = getVisibleOrbitalDataValues(
+            "Solar System",
+            solarSystemData.orbital_data,
+            true,
+        );
+        maxApoapsis = Math.max(
+            maxApoapsis,
+            calculateMaxApoapsis(solarSystemValues),
+        );
     }
 
     viewRadius = maxApoapsis * viewRadiusMultiplier;
@@ -975,20 +1060,29 @@ export async function resetView() {
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
-    // Move camera to the default position and target
-    camera.position.copy(cameraDefaults.position);
-    controls.target.copy(cameraDefaults.target); // Look at the barycenter
-    controls.update();
+    // Animate to the default camera position and controls target
+    animateCameraPositionTo.copy(cameraDefaults.position);
+    animateControlsTargetTo.copy(cameraDefaults.target);
+    animateCameraAndControls = true;
 }
 
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
-    const referenceDataForSolarSystem = await getReferenceSystemData("Solar System");
+    const referenceDataForCurrentSystem =
+        await getReferenceSystemData(currentSystem);
+    const referenceDataForSolarSystem =
+        await getReferenceSystemData("Solar System");
 
-    const currentOrbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
-    const solarOrbitalDataValues = getVisibleOrbitalDataValues("Solar System", referenceDataForSolarSystem.orbital_data, true);
+    const currentOrbitalDataValues = getVisibleOrbitalDataValues(
+        currentSystem,
+        referenceDataForCurrentSystem.orbital_data,
+    );
+    const solarOrbitalDataValues = getVisibleOrbitalDataValues(
+        "Solar System",
+        referenceDataForSolarSystem.orbital_data,
+        true,
+    );
 
     const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
     const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
@@ -1000,11 +1094,16 @@ export async function compareToSolarSystem() {
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
     const solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
-    const comparisonObjectSize = Math.min(currentSystemObjectSize, solarSystemObjectSize);
+    const comparisonObjectSize = Math.min(
+        currentSystemObjectSize,
+        solarSystemObjectSize,
+    );
     objectScale = comparisonObjectSize / objectSize;
 
     // Align the solar system's average normal with the up vector (Z-axis)
-    const solarSystemAverageNormal = calculateAverageNormal(solarOrbitalDataValues);
+    const solarSystemAverageNormal = calculateAverageNormal(
+        solarOrbitalDataValues,
+    );
     alignSystemToCameraUp(solarSystemGroup, solarSystemAverageNormal);
 
     solarSystemGroup.visible = true;
@@ -1024,8 +1123,12 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
 
-    const referenceDataForCurrentSystem = await getReferenceSystemData(currentSystem);
-    const orbitalDataValues = getVisibleOrbitalDataValues(currentSystem, referenceDataForCurrentSystem.orbital_data);
+    const referenceDataForCurrentSystem =
+        await getReferenceSystemData(currentSystem);
+    const orbitalDataValues = getVisibleOrbitalDataValues(
+        currentSystem,
+        referenceDataForCurrentSystem.orbital_data,
+    );
 
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     viewRadius = maxApoapsis * viewRadiusMultiplier;
@@ -1054,11 +1157,9 @@ export function setLabelsVisibility(value) {
 
 export function setOrbitsVisibility(value) {
     for (const [name, orbit] of orbitalLines) {
-        orbit.visible = shouldShowOrbit(
-            name,
-            currentSystem,
-            { orbitsVisible: value }
-        );
+        orbit.visible = shouldShowOrbit(name, currentSystem, {
+            orbitsVisible: value,
+        });
     }
 }
 
@@ -1076,11 +1177,9 @@ export function setObjectVisibility(name, value) {
 
     const orbit = orbitalLines.get(name);
     if (orbit) {
-        orbit.visible = shouldShowOrbit(
-            name,
-            currentSystem,
-            { objectVisible: value }
-        );
+        orbit.visible = shouldShowOrbit(name, currentSystem, {
+            objectVisible: value,
+        });
     }
 
     resetView();
@@ -1097,7 +1196,7 @@ export function setFontFamily(chosenFont) {
     let fontFamily = getFontFamily(chosenFont);
     for (const label of objectLabels.values()) {
         label.element.style.fontFamily = fontFamily;
-    }   
+    }
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
@@ -1107,13 +1206,16 @@ export function toggleSimulationDarkMode(isDarkMode) {
     referenceGrid.material.color.set(theme.referenceGrid);
 
     const labelBackground = theme.labelBackground;
-    const overlayColour = comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+    const overlayColour =
+        comparisonOverlayColour[isDarkMode ? "dark" : "light"];
 
     for (const [name, objectMesh] of objectMeshes) {
         const isComparisonOverlay = objectMesh.parent === solarSystemGroup;
 
         objectMesh.material.color.set(
-            isComparisonOverlay ? overlayColour : getCurrentSystemColour(name, isDarkMode)
+            isComparisonOverlay
+                ? overlayColour
+                : getCurrentSystemColour(name, isDarkMode),
         );
     }
 
@@ -1127,13 +1229,19 @@ export function toggleSimulationDarkMode(isDarkMode) {
             : getCurrentSystemColour(name, isDarkMode);
     }
 
-    const fadedOverlayColour = getFadedColour(overlayColour, comparisonOrbitOpacity, isDarkMode);
+    const fadedOverlayColour = getFadedColour(
+        overlayColour,
+        comparisonOrbitOpacity,
+        isDarkMode,
+    );
 
     for (const [name, orbit] of orbitalLines) {
         const isComparisonOverlay = orbit.parent === solarSystemGroup;
 
         orbit.material.color.set(
-            isComparisonOverlay ? fadedOverlayColour : getCurrentSystemColour(name, isDarkMode)
+            isComparisonOverlay
+                ? fadedOverlayColour
+                : getCurrentSystemColour(name, isDarkMode),
         );
     }
 }
@@ -1164,7 +1272,7 @@ function resizeRendererToDisplaySize() {
 
 /**
  * Render the meshes and objects on every animation frame.
- * 
+ *
  * TODO: Rendering the system on every animation frame leads to high CPU usage.
  */
 async function renderFrame(timestamp) {
@@ -1176,10 +1284,31 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
+        currentSimulationTime +=
+            getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         // Update the simulation but do not bypass the calendar update throttle
         updateSimulation(false);
+    }
+
+    if (animateCameraAndControls) {
+        const positionDistance = camera.position.distanceTo(animateCameraPositionTo);
+        const targetDistance = controls.target.distanceTo(animateControlsTargetTo);
+        const threshold = viewRadius * cameraAnimationThresholdMultiplier;
+
+        // Stop animating if the camera and controls are close enough
+        if (positionDistance < threshold && targetDistance < threshold) {
+            animateCameraAndControls = false;
+            camera.position.copy(animateCameraPositionTo);
+            controls.target.copy(animateControlsTargetTo);
+            controls.update();
+
+        } else {
+            // Interpolate towards the desired position and target
+            camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
+            controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
+            controls.update();
+        }
     }
 
     renderer.render(scene, camera);
