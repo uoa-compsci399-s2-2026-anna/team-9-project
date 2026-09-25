@@ -15,8 +15,7 @@ const container = panel.closest("[data-container]");
 bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     const objectName = e.detail.objectName;
 
-    container.classList.remove("hidden");
-    container.classList.add("inline-flex");
+    toggleContainer(true);
 
     const currentSystem = JSON.parse(panel.dataset.currentSystem);
     const allSystems = JSON.parse(panel.dataset.systems);
@@ -37,10 +36,16 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     updateDataField("[data-object-average-temperature]", object.temp.value);
 });
 
-bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => {
-    container.classList.add("hidden");
-    container.classList.remove("inline-flex");
-});
+bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => toggleContainer(false));
+
+/**
+ * Toggles the container's visibility.
+ * @param {boolean} doShow Should the container be shown.
+ */
+function toggleContainer(doShow) {
+    container.classList.toggle("hidden", !doShow);
+    container.classList.toggle("inline-flex", doShow);
+}
 
 /**
  * @param {string} selector The selector for the querySelector for the data field
