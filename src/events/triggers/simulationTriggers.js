@@ -4,8 +4,10 @@ import {
     getObjectVisibilityChanges,
     defaultSimulationState, 
     simulationState,
+    SIMULATION_SPEED_LIMITS_MS,
 } from "../../shared/simulationState.js";
 import { attachHoldRepeat } from "./sharedTriggers.js";
+import { timeToMilliseconds, millisecondsToTime } from "../../utils/utils.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -22,6 +24,39 @@ const EMPTY_SPEED_VALUE = 0;
 // Step sizes on clicking increase and decrease speed buttons
 const INCREASE_SPEED_STEP = 1;
 const DECREASE_SPEED_STEP = -1;
+
+/**
+ * Return whether or not the given speed (value + unit) is within the minimum
+ * and maximum simulation speed.
+ * 
+ * @param {number} value The simulation speed (e.g., 10)
+ * @param {string} unit The unit for the simulation speed (e.g., days)
+ * @returns Whether or not the given speed is within the simulation speed limits
+ */
+function isSpeedWithinLimits(value, unit) {
+    const { min, max } = SIMULATION_SPEED_LIMITS_MS;
+    const ms = timeToMilliseconds(value, unit);
+
+    return ms >= min && ms <= max;
+}
+
+/**
+ * Clamps the given simulation speed (value + unit) to the limits. For example,
+ * if the maximum is 100 years, and the value given is 200 years, then 100 years will
+ * be returned. Similarly, if the minimum is 0 years, and the value given is -10 years,
+ * then 0 years will be returned.
+ * 
+ * @param {number} value The simulation speed (e.g., 10)
+ * @param {string} unit The unit for the simulation speed (e.g., days)
+ * @returns The clamped simulation speed in the given unit
+ */
+function clampSpeedToLimits(value, unit) {
+    const { min, max } = SIMULATION_SPEED_LIMITS_MS;
+    const valueMs = timeToMilliseconds(value, unit);
+    const clampedMs = Math.min(Math.max(valueMs, min), max);
+
+    return millisecondsToTime(clampedMs, unit);
+}
 
 /**
  * Parses a raw simulation speed value into a number.
@@ -69,7 +104,13 @@ speedAdjuster.addEventListener("beforeinput", (event) => {
         input.value.slice(input.selectionEnd)
     );
 
-    if (Number.isNaN(newValue) || newValue < 0) {
+    // Prevent the user from typing in non-numerical values
+    if (Number.isNaN(newValue)) {
+        event.preventDefault();
+    }
+
+    // Prevent the user from typing a value above or below the simulation speed limits
+    if (!isSpeedWithinLimits(newValue, speedUnitSelector.value)) {
         event.preventDefault();
     }
 });
@@ -94,8 +135,7 @@ speedAdjuster.addEventListener("input", (event) => {
 
 function adjustSpeedBy(delta) {
     const currentSpeed = parseSpeedValue(speedAdjuster.value);
-    // Prevent the updated speed from being negative
-    const updatedSpeed = Math.max(0, currentSpeed + delta);
+    const updatedSpeed = clampSpeedToLimits(currentSpeed + delta, speedUnitSelector.value);
 
     speedAdjuster.value = updatedSpeed;
     publishSimulationSpeed(updatedSpeed);
@@ -105,10 +145,17 @@ attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(INCREASE_SPEED_STEP));
 attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
 
 speedUnitSelector.addEventListener("change", (event) => {
+    const unit = event.target.value;
+    const clampedSpeed = clampSpeedToLimits(parseSpeedValue(speedAdjuster.value), unit);
+
+    speedAdjuster.value = clampedSpeed;
+
     bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { 
         system: currentSystem,
-        unit: event.target.value 
+        unit: unit 
     });
+
+    publishSimulationSpeed(clampedSpeed);
 });
 
 /**
