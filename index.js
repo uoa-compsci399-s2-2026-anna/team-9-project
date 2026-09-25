@@ -217,6 +217,21 @@ function buildInitialUrl(baseUrl) {
 }
 
 /**
+ * Gets the dark mode setting and returns as an object to be passed into the
+ * loader and error page.
+ *
+ * @returns Javascript Object of { query: { darkmode: true/false } }
+ */
+function darkModeQueryParameter() {
+    const settings = store.get('settings');
+    return {
+        query: {
+            darkmode: settings.darkMode,
+        }
+    };
+}
+
+/**
  * Creates the electron window and binds itself to the given url
  * 
  * @param {Promise} url - A promise to the entry url to bind the application to
@@ -269,7 +284,10 @@ async function createWindow(python_url) {
 
     // Show spinner while app is launching
     const loaderFilename = 'loader.html';
-    mainWindow.loadFile(getPathToUiFile(loaderFilename));
+    mainWindow.loadFile(
+        getPathToUiFile(loaderFilename),
+        darkModeQueryParameter()
+    );
 
     // Maximise the window and then show it
     mainWindow.maximize();
