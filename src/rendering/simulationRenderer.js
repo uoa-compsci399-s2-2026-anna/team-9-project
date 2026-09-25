@@ -348,22 +348,47 @@ function onCanvasClick(event, canvas) {
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
 }
 
+/**
+ * Creates a radial glow texture for use as a sprite map (e.g., for rendering stars).
+ * The texture has a white core that fades into the given colour, then fades to
+ * transparent at the edge.
+ *
+ * @param {string} colour CSS colour string which the glow fades into
+ * @returns {THREE.CanvasTexture} Texture for a sprite/point material map
+ */
 function createGlowTexture(colour) {
+    const TEXTURE_SIZE = 64;
+    const CENTER = TEXTURE_SIZE / 2;
+    const OUTER_RADIUS = CENTER;
+    const INNER_RADIUS = 0;
+
+    // Gradient stop positions, each a fraction (0 to 1) of the distance from the center to the outer edge
+    const CORE_STOP = 0;
+    const COLOUR_STOP = 0.2;
+    const EDGE_STOP = 1;
+
+    // Colour of the core of the star
+    const CORE_COLOUR = 'rgba(255, 255, 255, 1)';
+
     const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 64;
+    canvas.width = TEXTURE_SIZE;
+    canvas.height = TEXTURE_SIZE;
     const ctx = canvas.getContext('2d');
 
-    // Create a gradient (inner radius 0, outer radius 32)
-    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    // Make the center white
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    // The outside is the colour of the star
-    gradient.addColorStop(0.2, colour);
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    const gradient = ctx.createRadialGradient(
+        CENTER, CENTER, INNER_RADIUS,
+        CENTER, CENTER, OUTER_RADIUS
+    );
+
+    // White core in the inner 20% of the radius, and the star's colour for the remaining 80%
+    gradient.addColorStop(CORE_STOP, CORE_COLOUR);
+    gradient.addColorStop(COLOUR_STOP, colour);
+
+    // Fade from the star's colour to transparent over the remaining 80%
+    gradient.addColorStop(EDGE_STOP, 'rgba(0, 0, 0, 0)');
 
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 64, 64);
+    ctx.fillRect(0, 0, TEXTURE_SIZE, TEXTURE_SIZE);
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
@@ -400,8 +425,11 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
             const glowSprite = new THREE.Sprite(spriteMaterial);
 
-            const glowSize = objectSize * 4.0;
-            glowSprite.scale.set(glowSize, glowSize, 1.0);
+            const GLOW_SIZE_MULTIPLIER = 4.0;
+            const SPRITE_Z_SCALE = 1.0;
+
+            const glowSize = objectSize * GLOW_SIZE_MULTIPLIER;
+            glowSprite.scale.set(glowSize, glowSize, SPRITE_Z_SCALE);
 
             mesh.add(glowSprite);
         }
