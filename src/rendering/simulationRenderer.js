@@ -1095,7 +1095,7 @@ export function setSimulationTimeToTime(time) {
     updateSimulation();
 }
 
-export async function resetView() {
+export async function resetView(topDown = true) {
     const canvas = renderer.domElement;
 
     await updateViewRadius(
@@ -1107,9 +1107,21 @@ export async function resetView() {
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
-    // Animate to the default camera position and controls target
-    animateCameraPositionTo.copy(cameraDefaults.position);
+    // Animate to the default controls target
     animateControlsTargetTo.copy(cameraDefaults.target);
+
+    if (topDown) {
+        // Animate to the default camera position
+        animateCameraPositionTo.copy(cameraDefaults.position);
+    } else {
+        // Animate to the current camera direction at the new distance
+        const cameraDistance = cameraDefaults.position.length();
+        const currentCameraDirection = camera.position.clone().normalize();
+        animateCameraPositionTo.copy(
+            currentCameraDirection.multiplyScalar(cameraDistance),
+        );
+    }
+
     animateCameraAndControls = true;
 }
 
@@ -1171,7 +1183,7 @@ export function setHabitableZoneVisibility(value) {
         habitableZoneMesh.visible = value;
     }
 
-    resetView();
+    resetView(false);
 }
 
 export function setLabelsVisibility(value) {
@@ -1207,7 +1219,7 @@ export function setObjectVisibility(name, value) {
         });
     }
 
-    resetView();
+    resetView(false);
 }
 
 export function setFontSize(size) {
