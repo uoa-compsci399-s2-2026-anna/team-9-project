@@ -904,6 +904,13 @@ function initRaycastingEvents(canvas) {
     });
 }
 
+function initHoverCursor(canvas) {
+    canvas.addEventListener("pointermove", (event) => {
+        const name = getObjectNameAt(event.clientX, event.clientY, canvas);
+        canvas.style.cursor = name ? "pointer" : "default";
+    });
+}
+
 /**
  * Initialise the scene for the simulation renderer.
  */
@@ -990,6 +997,7 @@ export async function init(name) {
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
     initRaycastingEvents(canvas);
+    initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
 
