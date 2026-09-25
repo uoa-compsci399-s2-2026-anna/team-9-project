@@ -63,7 +63,16 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
             "dark:hover:bg-zinc-900",
         );
     } else {
-        systemInformationButton.classList.remove("rounded-b-none");
+        systemDropdown.addEventListener(
+            "transitionend",
+            () => {
+                systemInformationButton.classList.remove(
+                    "rounded-b-none",
+                    "transition-all",
+                );
+            },
+            { once: true },
+        );
 
         systemDropdown.classList.remove("grid-rows-[1fr]", "bordered");
         systemDropdown.classList.add("grid-rows-[0fr]");
