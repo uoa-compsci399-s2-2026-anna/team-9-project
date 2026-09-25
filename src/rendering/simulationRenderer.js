@@ -661,6 +661,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
         line = new THREE.Mesh(geometry, material);
+        line.renderOrder = 1;
 
         if (comparingToSolarSystem && group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System", {
@@ -782,8 +783,12 @@ function createHabitableZoneMesh() {
         opacity: habitableZoneOpacity,
         transparent: true,
         side: THREE.DoubleSide,
+
+        // Do not update depth buffer (to prevent z-fighting with other meshes)
+        depthWrite: false,
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
+    habitableZoneMesh.renderOrder = 0;
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
 }
 
