@@ -358,6 +358,13 @@ function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
         .map((name) => orbitalData[name]);
 }
 
+/**
+ * Get the view radius for a given system based on the maximum apoapsis of all visible objects.
+ * 
+ * @param {string} system The name of the system
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
+ * @returns {Promise<number>} The view radius for the system
+ */
 async function getViewRadiusForSystem(system, useDefault = false) {
     const referenceSystemData = await getReferenceSystemData(system);
     const orbitalDataValues = getVisibleOrbitalDataValues(
@@ -369,6 +376,14 @@ async function getViewRadiusForSystem(system, useDefault = false) {
     return maxApoapsis * viewRadiusMultiplier;
 }
 
+/**
+ * Update the view radius based on the current system, whether the habitable zone is shown, and whether
+ * the Solar System is being compared. The view radius is set to the maximum of the current system's view radius,
+ * the Solar System's view radius (if comparing), and the habitable zone's end radius (if shown).
+ * 
+ * @param {boolean} comparingToSolarSystem Whether the Solar System is being compared
+ * @param {boolean} habitableZoneShown Whether the habitable zone is shown
+ */
 async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
     const viewRadiusForCurrentSystem = await getViewRadiusForSystem(
         currentSystem
