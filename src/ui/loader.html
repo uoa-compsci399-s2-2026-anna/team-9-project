@@ -1,11 +1,22 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Loading OPIS...</title>
     <!-- Relative path due to this being loaded before the webserver starts -->
     <link href="../../dist/output.css" rel="stylesheet" />
+    <script>
+      const query = window.location.search;
+      const urlParams = new URLSearchParams(query);
+      const darkModeQuery = urlParams.get('darkmode');
+
+      if (darkModeQuery === 'true') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else if (darkModeQuery === 'false') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    </script>
   </head>
 
   <body class="overflow-hidden select-none">
@@ -15,8 +26,7 @@
       <div class="grid place-items-center gap-y-10">
         <!-- Spinner SVG taken from https://magecdn.com/tools/svg-loaders/180-ring/ under MIT license -->
         <svg
-          class="size-20"
-          fill="hsl(0, 0%, 100%)"
+          class="size-20 fill-black dark:fill-white"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
         >

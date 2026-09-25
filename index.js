@@ -83,7 +83,7 @@ ipcMain.handle('simulationState:getDefaults', () => {
 });
 
 ipcMain.on('fullscreen:toggle', () => {
-    if (!mainWindow) { 
+    if (!mainWindow) {
         return;
     }
     mainWindow.setFullScreen(!mainWindow.isFullScreen());
@@ -217,6 +217,21 @@ function buildInitialUrl(baseUrl) {
 }
 
 /**
+ * Gets the dark mode setting and returns as an object to be passed into the
+ * loader and error page.
+ *
+ * @returns Javascript Object of { query: { darkmode: true/false } }
+ */
+function darkModeQueryParameter() {
+    const settings = store.get('settings');
+    return {
+        query: {
+            darkmode: settings.darkMode,
+        }
+    };
+}
+
+/**
  * Creates the electron window and binds itself to the given url
  * 
  * @param {Promise} url - A promise to the entry url to bind the application to
@@ -226,7 +241,7 @@ async function createWindow(python_url) {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        show: false,    
+        show: false,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -269,7 +284,10 @@ async function createWindow(python_url) {
 
     // Show spinner while app is launching
     const loaderFilename = 'loader.html';
-    mainWindow.loadFile(getPathToUiFile(loaderFilename));
+    mainWindow.loadFile(
+        getPathToUiFile(loaderFilename),
+        darkModeQueryParameter()
+    );
 
     // Maximise the window and then show it
     mainWindow.maximize();
@@ -277,12 +295,15 @@ async function createWindow(python_url) {
 
     try {
         url = await python_url;
-    } catch(exception) {
+    } catch (exception) {
         console.error(`ERROR: The promise was rejected: ${exception}`);
 
         // Show failed to start screen if the promise rejects
         const failedToStartFilename = 'failedToStart.html';
-        mainWindow.loadFile(getPathToUiFile(failedToStartFilename));
+        mainWindow.loadFile(
+            getPathToUiFile(failedToStartFilename),
+            darkModeQueryParameter()
+        );
 
         return;
     }
