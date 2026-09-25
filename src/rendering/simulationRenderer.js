@@ -1155,6 +1155,8 @@ export function setHabitableZoneVisibility(value) {
     if (habitableZoneMesh) {
         habitableZoneMesh.visible = value;
     }
+
+    resetView();
 }
 
 export function setLabelsVisibility(value) {
