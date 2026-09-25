@@ -46,6 +46,7 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
     sim_state_schema = json.load(f)
 
 
+# Define a process pool executor
 process_pool = ProcessPoolExecutor()
 
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
@@ -236,7 +237,7 @@ async def get_system_data_at_time(system_name: str, t: float) -> dict:
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Integrate to given time
+    # Integrate to given time using a process pool to keep interactivity
     loop = asyncio.get_running_loop()
     sim = await loop.run_in_executor(process_pool, Simulations.quick_integrate, sims, t, system_data)
 
