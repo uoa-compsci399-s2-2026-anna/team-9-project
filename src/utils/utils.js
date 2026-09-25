@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { settings } from "../shared/settingsState.js";
 
 // Unit conversions into milliseconds
 const unit_to_ms = {
@@ -8,7 +7,7 @@ const unit_to_ms = {
     week: 604800000, // 7 * 24 * 60 * 60 * 1000
     month: 2629800000, // (365.25 / 12) * 24 * 60 * 60 * 1000 (Julian month)
     year: 31557600000, // 365.25 * 24 * 60 * 60 * 1000 (Julian year)
-}
+};
 
 /**
  * Converts a given amount of time (time + unit) into milliseconds.
@@ -79,8 +78,7 @@ export function formatInTimeZone(epochMs, timeZone) {
  * `<input type="datetime-local">` (yyyy-MM-dd'T'HH:mm), respecting the time
  * zone setting.
  */
-export function formatDate(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function formatDate(date, timeZone) {
 
     // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
     return new Intl.DateTimeFormat("sv", {
@@ -102,8 +100,7 @@ export function formatDate(date) {
  * @param {Date} date A `Date` object
  * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
  */
-export function dateOnly(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function dateOnly(date, timeZone) {
 
     return new Intl.DateTimeFormat("sv", {
         timeZone: timeZone,
