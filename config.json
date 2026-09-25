@@ -97,7 +97,7 @@
                 },
                 "Mars": {
                     "colour": { 
-                        "dark": "#e67b6f",
+                        "dark": "#d16e5a",
                         "light": "#b52f20"
                     },
                     "type": "planet",
