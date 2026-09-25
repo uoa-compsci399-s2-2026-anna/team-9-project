@@ -48,7 +48,7 @@ function isSpeedWithinLimits(value, unit) {
  * 
  * @param {number} value The simulation speed (e.g., 10)
  * @param {string} unit The unit for the simulation speed (e.g., days)
- * @returns The clamped simulation speed in milliseconds
+ * @returns The clamped simulation speed in the given unit
  */
 function clampSpeedToLimits(value, unit) {
     const { min, max } = SIMULATION_SPEED_LIMITS_MS;
