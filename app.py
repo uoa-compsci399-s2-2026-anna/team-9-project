@@ -219,6 +219,7 @@ async def get_system_data_at_time(system_name: str, t: float) -> dict:
     Gets a system at a specific unix time.
     Returns simulation data.
     """
+    print(f"Getting {system_name} at t={t}")
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
