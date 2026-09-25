@@ -368,11 +368,11 @@ function onCanvasClick(event, canvas) {
  */
 function createGlowTexture(colour) {
     const TEXTURE_SIZE = 64;
-    const CENTER = TEXTURE_SIZE / 2;
-    const OUTER_RADIUS = CENTER;
+    const CENTRE = TEXTURE_SIZE / 2;
+    const OUTER_RADIUS = CENTRE;
     const INNER_RADIUS = 0;
 
-    // Gradient stop positions, each a fraction (0 to 1) of the distance from the center to the outer edge
+    // Gradient stop positions, each a fraction (0 to 1) of the distance from the centre to the outer edge
     const CORE_STOP = 0;
     const COLOUR_STOP = 0.2;
     const EDGE_STOP = 1;
@@ -386,8 +386,8 @@ function createGlowTexture(colour) {
     const ctx = canvas.getContext('2d');
 
     const gradient = ctx.createRadialGradient(
-        CENTER, CENTER, INNER_RADIUS,
-        CENTER, CENTER, OUTER_RADIUS
+        CENTRE, CENTRE, INNER_RADIUS,
+        CENTRE, CENTRE, OUTER_RADIUS
     );
 
     // White core in the inner 20% of the radius, and the star's colour for the remaining 80%
