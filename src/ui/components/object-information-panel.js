@@ -6,12 +6,17 @@ const placeholder = document.getElementById(
     "object-information-panel-no-object-selected-view",
 );
 
+/**
+ * The container containing the object information panel.
+ */
+const container = panel.closest("[data-container]");
+
 // Update object information panel when an object is clicked.
 bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     const objectName = e.detail.objectName;
 
-    panel.classList.remove("hidden");
-    placeholder.classList.add("hidden");
+    container.classList.remove("hidden");
+    container.classList.add("inline-flex");
 
     const currentSystem = JSON.parse(panel.dataset.currentSystem);
     const allSystems = JSON.parse(panel.dataset.systems);
@@ -33,13 +38,13 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
 });
 
 bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => {
-    panel.classList.add("hidden");
-    placeholder.classList.remove("hidden");
+    container.classList.add("hidden");
+    container.classList.remove("inline-flex");
 });
 
 /**
  * @param {string} selector The selector for the querySelector for the data field
- * @param {Number} value The numeric value to set the field's text to. If null, 
+ * @param {Number} value The numeric value to set the field's text to. If null,
  * the field is not shown at all.
  */
 function updateDataField(selector, value) {
