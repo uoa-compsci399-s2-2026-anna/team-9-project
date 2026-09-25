@@ -81,6 +81,14 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
+const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
+const cameraAnimationThresholdMultiplier = 0.001; // Determines the distance threshold to finish the animation
+let animateCameraAndControls = false;
+
+// Animation targets for camera and controls
+let animateCameraPositionTo = new THREE.Vector3();
+let animateControlsTargetTo = new THREE.Vector3();
+
 const raycaster = new THREE.Raycaster();
 
 const currentSystemGroup = new THREE.Group();
@@ -708,12 +716,16 @@ function initOrUpdateControls(canvas, viewRadius) {
 
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
+        controls.addEventListener("start", () => {
+            animateCameraAndControls = false; // Stop animating on user interaction
+        });
+
+        controls.target.copy(cameraDefaults.target);
+        controls.update();
     }
-    controls.target.copy(cameraDefaults.target);
     controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
     controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
     controls.zoomSpeed = controlsZoomSpeed;
-    controls.update();
 
     if (controlsChangeHandler) {
         controls.removeEventListener("change", controlsChangeHandler);
@@ -903,10 +915,10 @@ export async function resetView() {
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
 
-    // Move camera to the default position and target
-    camera.position.copy(cameraDefaults.position);
-    controls.target.copy(cameraDefaults.target); // Look at the barycenter
-    controls.update();
+    // Animate to the default camera position and controls target
+    animateCameraPositionTo.copy(cameraDefaults.position);
+    animateControlsTargetTo.copy(cameraDefaults.target);
+    animateCameraAndControls = true;
 }
 
 export async function compareToSolarSystem() {
@@ -1108,6 +1120,26 @@ async function renderFrame(timestamp) {
 
         // Update the simulation but do not bypass the calendar update throttle
         updateSimulation(false);
+    }
+
+    if (animateCameraAndControls) {
+        const positionDistance = camera.position.distanceTo(animateCameraPositionTo);
+        const targetDistance = controls.target.distanceTo(animateControlsTargetTo);
+        const threshold = viewRadius * cameraAnimationThresholdMultiplier;
+
+        // Stop animating if the camera and controls are close enough
+        if (positionDistance < threshold && targetDistance < threshold) {
+            animateCameraAndControls = false;
+            camera.position.copy(animateCameraPositionTo);
+            controls.target.copy(animateControlsTargetTo);
+            controls.update();
+
+        } else {
+            // Interpolate towards the desired position and target
+            camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
+            controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
+            controls.update();
+        }
     }
 
     renderer.render(scene, camera);
