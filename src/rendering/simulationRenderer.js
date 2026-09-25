@@ -213,7 +213,7 @@ const COLOUR_STOP = 0.2;
 const EDGE_STOP = 1;
 
 // Colour of the core of the star
-const CORE_COLOUR = 'rgba(255, 255, 255, 1)';
+const CORE_COLOUR = "rgba(255, 255, 255, 1)";
 
 const GLOW_SIZE_MULTIPLIER = 3.5;
 const SPRITE_Z_SCALE = 1.0;
@@ -452,14 +452,18 @@ function onCanvasClick(event, canvas) {
  * @returns {THREE.CanvasTexture} Texture for a sprite/point material map
  */
 function createGlowTexture(colour) {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = TEXTURE_SIZE;
     canvas.height = TEXTURE_SIZE;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
 
     const gradient = ctx.createRadialGradient(
-        CENTRE, CENTRE, INNER_RADIUS,
-        CENTRE, CENTRE, OUTER_RADIUS
+        CENTRE,
+        CENTRE,
+        INNER_RADIUS,
+        CENTRE,
+        CENTRE,
+        OUTER_RADIUS,
     );
 
     // White core in the inner 20% of the radius, and the star's colour for the remaining 80%
@@ -507,7 +511,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
             const spriteMaterial = new THREE.SpriteMaterial({
                 map: glowTexture,
                 transparent: true,
-                depthWrite: false
+                depthWrite: false,
             });
 
             const glowSprite = new THREE.Sprite(spriteMaterial);
@@ -649,7 +653,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
                 comparisonOrbitOpacity,
             );
 
-            // Lowkey have no idea what units these are in, so I applied a 
+            // Lowkey have no idea what units these are in, so I applied a
             // scale factor to make it look OK.
             material.lineWidth =
                 comparisonOrbitLineWidth * ORBIT_LINE_WIDTH_SCALE_FACTOR;
@@ -1158,7 +1162,10 @@ export async function init(name) {
     );
 
     objectTypes = Object.fromEntries(
-        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [name, data.type])
+        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
+            name,
+            data.type,
+        ]),
     );
 
     const canvas = document.getElementById("simulation-canvas");
@@ -1403,11 +1410,15 @@ export function toggleSimulationDarkMode(isDarkMode) {
 
         const objectColour = getCurrentSystemColour(name, isDarkMode);
 
-        objectMesh.material.color.set(isComparisonOverlay ? overlayColour : objectColour);
+        objectMesh.material.color.set(
+            isComparisonOverlay ? overlayColour : objectColour,
+        );
 
         // Update the glow texture based on the object colour in the new theme
         if (objectTypes[name] === "star") {
-            const glowSprite = objectMesh.children.find(child => child instanceof THREE.Sprite);
+            const glowSprite = objectMesh.children.find(
+                (child) => child instanceof THREE.Sprite,
+            );
 
             if (glowSprite) {
                 glowSprite.material.map?.dispose();
