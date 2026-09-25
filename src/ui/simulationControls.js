@@ -49,7 +49,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
 
     if (showDropdown) {
         systemDropdown.classList.remove("grid-rows-[0fr]");
-        systemDropdown.classList.add("grid-rows-[1fr]");
+        systemDropdown.classList.add("grid-rows-[1fr]", "bordered");
 
         systemDropdownWrapper.classList.add(
             "bg-white",
@@ -64,7 +64,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
             "dark:hover:bg-zinc-900",
         );
     } else {
-        systemDropdown.classList.remove("grid-rows-[1fr]");
+        systemDropdown.classList.remove("grid-rows-[1fr]", "bordered");
         systemDropdown.classList.add("grid-rows-[0fr]");
 
         systemDropdownWrapper.classList.remove(
