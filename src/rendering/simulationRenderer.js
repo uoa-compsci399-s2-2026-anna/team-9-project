@@ -358,6 +358,17 @@ function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
         .map((name) => orbitalData[name]);
 }
 
+async function getViewRadiusForSystem(system, useDefault = false) {
+    const referenceSystemData = await getReferenceSystemData(system);
+    const orbitalDataValues = getVisibleOrbitalDataValues(
+        system,
+        referenceSystemData.orbital_data,
+        useDefault
+    );
+    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
+    return maxApoapsis * viewRadiusMultiplier;
+}
+
 /**
  * Handles when the canvas is clicked on while the user is not moving the camera.
  * Detects if an object was clicked and, if so, fires an event to notify other components
