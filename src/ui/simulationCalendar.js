@@ -122,9 +122,9 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @returns The elapsed days text
  */
-export function getElapsedDaysText(simulationTime) {
-    const simDateString = dateOnly(new Date(simulationTime));
-    const nowDateString = dateOnly(new Date());
+export function getElapsedDaysText(simulationTime, timeZone) {
+    const simDateString = dateOnly(new Date(simulationTime), timeZone);
+    const nowDateString = dateOnly(new Date(), timeZone);
 
     if (simDateString === nowDateString) {
         return "Today";
@@ -148,14 +148,14 @@ export function getElapsedDaysText(simulationTime) {
  * in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  */
-function updateElapsedDaysText(simulationTime) {
+function updateElapsedDaysText(simulationTime, timeZone) {
     const elapsedDays = document.querySelector("#elapsed-days");
 
     if (!elapsedDays) {
         return;
     }
 
-    const elapsedDaysText = getElapsedDaysText(simulationTime);
+    const elapsedDaysText = getElapsedDaysText(simulationTime, timeZone);
     elapsedDays.textContent = elapsedDaysText;
 }
 
@@ -178,9 +178,9 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
     }
 
     lastCalendarUpdate = now;
+    const timeZone = getCalendarTimeZone();
 
     FlatpickrInstances.forEach((instance) => {
-        const timeZone = instance.input.dataset.timezone;
         instance.set(
             "minDate",
             formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone),
@@ -191,5 +191,5 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
         );
         instance.setDate(formatInTimeZone(simulationTime, timeZone), false);
     });
-    updateElapsedDaysText(simulationTime);
+    updateElapsedDaysText(simulationTime, timeZone);
 }
