@@ -99,6 +99,7 @@ This runs `npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch`
 
 # Logging
 Log files are written to:
-- on Linux: `~/.config/{app name}/logs/main.log`
-- on macOS: `~/Library/Logs/{app name}/main.log`
-- on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\main.log`
+- on Linux: `~/.config/{app name}/logs/<date>_main.log`
+- on macOS: `~/Library/Logs/{app name}/<date>_main.log`
+- on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
+Where `<date>` is in `YYYY-MM-DD_HH-MM` format
