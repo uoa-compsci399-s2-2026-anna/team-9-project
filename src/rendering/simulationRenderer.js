@@ -400,7 +400,13 @@ function createGlowTexture(colour) {
     gradient.addColorStop(COLOUR_STOP, colour);
 
     // Fade from the star's colour to transparent over the remaining 80%
-    gradient.addColorStop(EDGE_STOP, 'rgba(0, 0, 0, 0)');
+    const rgb = new THREE.Color(colour);
+    const r = Math.round(rgb.r * 255);
+    const g = Math.round(rgb.g * 255);
+    const b = Math.round(rgb.b * 255);
+    const transparentColour = `rgba(${r}, ${g}, ${b}, 0)`;
+
+    gradient.addColorStop(EDGE_STOP, transparentColour);
 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, TEXTURE_SIZE, TEXTURE_SIZE);
@@ -1214,11 +1220,20 @@ export function toggleSimulationDarkMode(isDarkMode) {
     for (const [name, objectMesh] of objectMeshes) {
         const isComparisonOverlay = objectMesh.parent === solarSystemGroup;
 
-        objectMesh.material.color.set(
-            isComparisonOverlay
-                ? overlayColour
-                : getCurrentSystemColour(name, isDarkMode),
-        );
+        const objectColour = getCurrentSystemColour(name, isDarkMode);
+
+        objectMesh.material.color.set(isComparisonOverlay ? overlayColour : objectColour);
+
+        // Update the glow texture based on the object colour in the new theme
+        if (objectTypes[name] === "star") {
+            const glowSprite = objectMesh.children.find(child => child instanceof THREE.Sprite);
+
+            if (glowSprite) {
+                glowSprite.material.map?.dispose();
+                glowSprite.material.map = createGlowTexture(objectColour);
+                glowSprite.material.needsUpdate = true;
+            }
+        }
     }
 
     for (const [name, label] of objectLabels) {
