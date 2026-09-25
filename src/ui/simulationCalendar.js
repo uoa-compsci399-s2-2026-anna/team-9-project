@@ -85,14 +85,6 @@ function setFlatpickrFont(chosenFont, chosenSize) {
 
 setFlatpickrFont(settings.font, settings.textSize);
 
-/**
- * Gets the time zone currently used by the calendars.
- * @returns {string} The calendar's time zone setting (e.g., "UTC", "NZT")
- */
-export function getCalendarTimeZone() {
-    return calendarInputs[0]?.dataset.timezone;
-}
-
 bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
     setFlatpickrFont(event.detail.value, settings.textSize);
 });
@@ -123,7 +115,10 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
  * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns The elapsed days text
  */
-export function getElapsedDaysText(simulationTime, timeZone) {
+export function getElapsedDaysText(
+    simulationTime,
+    timeZone = calendarInputs[0]?.dataset.timezone,
+) {
     const simDateString = dateOnly(new Date(simulationTime), timeZone);
     const nowDateString = dateOnly(new Date(), timeZone);
 
@@ -150,7 +145,10 @@ export function getElapsedDaysText(simulationTime, timeZone) {
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  */
-function updateElapsedDaysText(simulationTime, timeZone) {
+function updateElapsedDaysText(
+    simulationTime,
+    timeZone = calendarInputs[0]?.dataset.timezone,
+) {
     const elapsedDays = document.querySelector("#elapsed-days");
 
     if (!elapsedDays) {
@@ -180,9 +178,9 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
     }
 
     lastCalendarUpdate = now;
-    const timeZone = getCalendarTimeZone();
 
     FlatpickrInstances.forEach((instance) => {
+        const timeZone = instance.input.dataset.timezone;
         instance.set(
             "minDate",
             formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone),
@@ -193,5 +191,5 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
         );
         instance.setDate(formatInTimeZone(simulationTime, timeZone), false);
     });
-    updateElapsedDaysText(simulationTime, timeZone);
+    updateElapsedDaysText(simulationTime);
 }

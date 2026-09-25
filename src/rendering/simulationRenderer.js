@@ -37,7 +37,6 @@ import {
 import {
     updateCalendar,
     getElapsedDaysText,
-    getCalendarTimeZone,
 } from "../ui/simulationCalendar.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
@@ -1011,10 +1010,7 @@ export async function init(name) {
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, currentSimulationTime);
 
-        const elapsedDaysText = getElapsedDaysText(
-            currentSimulationTime,
-            getCalendarTimeZone(),
-        );
+        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
         setElapsedText(currentSystem, elapsedDaysText);
     });
 
