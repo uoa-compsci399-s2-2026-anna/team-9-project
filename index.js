@@ -293,7 +293,7 @@ async function createWindow(python_url) {
     const loaderFilename = 'loader.html';
     const loaderFilePath = getPathToUiFile(loaderFilename);
     log.info(`ELECTRON: Loading loading screen at ${loaderFilePath}`);
-    mainWindow.loadFile();
+    mainWindow.loadFile(
         loaderFilePath,
         darkModeQueryParameter()
     );
