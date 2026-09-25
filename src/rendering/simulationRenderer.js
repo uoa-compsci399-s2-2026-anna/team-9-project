@@ -904,9 +904,16 @@ function initRaycastingEvents(canvas) {
     });
 }
 
+/**
+ * Register a pointer listener on the canvas that updates the cursor to
+ * a pointer to indicate when an object can be clicked.
+ *
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ */
 function initHoverCursor(canvas) {
     canvas.addEventListener("pointermove", (event) => {
         const name = getObjectNameAt(event.clientX, event.clientY, canvas);
+        // Set the cursor to a pointer if there is an object at the cursor
         canvas.style.cursor = name ? "pointer" : "default";
     });
 }
