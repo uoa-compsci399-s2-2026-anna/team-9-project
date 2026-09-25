@@ -305,6 +305,9 @@ app.on('will-quit', () => {
     pythonProcess.kill();
 });
 
+// Initialise logger
+log.initialize();
+
 const url = new Promise(spawnPythonProcess);
 // Wait for electron to be ready, then create the window
 app.whenReady().then(() => createWindow(url));
