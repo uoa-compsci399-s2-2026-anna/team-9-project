@@ -4,6 +4,7 @@ const path = require('path');
 const Store = require('electron-store'); // Refer to https://github.com/sindresorhus/electron-store
 const settingsSchema = require('./src/shared/settingsSchema.json');
 const simulationStateSchema = require('./src/shared/simulationStateSchema.json');
+const { log } = require('electron-log');
 
 // Squirrel launches the appplication multiple extra times during install/update/uninstall
 // so it can create/remove the start menu shortcut. This detects those launches,
