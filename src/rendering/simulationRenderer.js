@@ -759,8 +759,12 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             const distance = (planetProgress - progress + 1) % 1;
 
             const ORBIT_LINE_MIN_WIDTH = 0.1;
+            const CURVE_EXPONENT = 2;
 
-            return Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
+            return Math.max(
+                ORBIT_LINE_MIN_WIDTH,
+                Math.pow(1 - distance, CURVE_EXPONENT),
+            );
         });
     } else {
         // Display non-elliptical orbits as constant width
