@@ -300,7 +300,10 @@ async function createWindow(python_url) {
 
         // Show failed to start screen if the promise rejects
         const failedToStartFilename = 'failedToStart.html';
-        mainWindow.loadFile(getPathToUiFile(failedToStartFilename));
+        mainWindow.loadFile(
+            getPathToUiFile(failedToStartFilename),
+            darkModeQueryParameter()
+        );
 
         return;
     }
