@@ -102,4 +102,4 @@ Log files are written to:
 - on Linux: `~/.config/{app name}/logs/<date>_main.log`
 - on macOS: `~/Library/Logs/{app name}/<date>_main.log`
 - on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
-Where `<date>` is in `YYYY-MM-DD_HH-MM` format
+Where `<date>` is in `YYYY-MM-DD_HH-MM-SS` format

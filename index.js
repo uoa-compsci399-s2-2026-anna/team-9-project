@@ -342,10 +342,10 @@ log.initialize();
 // Replace log file name
 log.transports.file.resolvePathFn = (variables) => {
     // Date is in format YYYY-MM-DDTHH:MM:SS.MMMZ
-    //                  0^            16^
+    //                  0^               19^
     const date = new Date().toISOString();
     // Take upto minutes and replace : with - for paths and T with _
-    const formattedDate = date.slice(0, 16).replace(':', '-').replace('T', '_');
+    const formattedDate = date.slice(0, 19).replace(':', '-').replace('T', '_');
 
     const fileName = `${formattedDate}_${variables.fileName}`;
     return path.join(variables.electronDefaultDir, fileName);
