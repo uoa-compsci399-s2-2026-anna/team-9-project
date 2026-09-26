@@ -47,54 +47,68 @@ export function createOrUpdateOrbitalLine(
     // let line = orbitalLines.get(name);
 
     if (!line) {
-        const geometry = new MeshLineGeometry();
+        const lineColour = isCompareToSolarSystemOrbitLine
+            ? getFadedColour(colour, COMPARISON_ORBIT_OPACITY)
+            : colour;
 
-        const material = new MeshLineMaterial({
-            // Remain constant size (do not grow in size as user zooms in)
-            sizeAttenuation: false,
-            transparent: true,
-            resolution: new THREE.Vector2(
-                window.innerWidth,
-                window.innerHeight,
-            ),
-        });
+        const lineWidth = isCompareToSolarSystemOrbitLine
+            ? COMPARISON_ORBIT_LINE_WIDTH
+            : ORBIT_LINE_WIDTH;
 
-        if (isCompareToSolarSystemOrbitLine) {
-            const comparisonColour = getFadedColour(
-                colour,
-                COMPARISON_ORBIT_OPACITY,
-            );
-
-            material.lineWidth = COMPARISON_ORBIT_LINE_WIDTH;
-            material.color.set(comparisonColour);
-        } else {
-            material.lineWidth = ORBIT_LINE_WIDTH;
-            material.color.set(colour);
-        }
-
-        if (e < 1) {
-            material.alphaMap = createOrbitAlphaTexture();
-            material.useAlphaMap = 1;
-        }
-
-        line = new THREE.Mesh(geometry, material);
-
-        // Render above habitable zone to prevent z fighting
-        line.renderOrder = 1;
-
-        line.visible = doShowOrbit;
-
-        // if (isCompareToSolarSystemOrbitLine && group === solarSystemGroup) {
-        //     line.visible = shouldShowOrbit(name, "Solar System", {
-        //         useDefault: true,
-        //     });
-        // } else {
-        //     line.visible = shouldShowOrbit(name, currentSystem);
-        // }
+        const line = getOrbitLine(
+            a,
+            e,
+            inc,
+            Omega,
+            omega,
+            new THREE.Vector3(position.x, position.y, position.z),
+            doShowOrbit,
+            lineColour,
+            lineWidth,
+        );
 
         group.add(line);
         orbitalLines.set(name, line);
     }
+}
+
+function getOrbitLine(
+    a,
+    e,
+    inc,
+    Omega,
+    omega,
+
+    worldObjectPosition,
+
+    isVisible,
+    colour,
+    lineWidth,
+) {
+    // Parabolic orbits not supported
+    if (e === 1) return;
+
+    const geometry = new MeshLineGeometry();
+    const material = new MeshLineMaterial({
+        sizeAttenuation: false,
+        transparent: true,
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        lineWidth: lineWidth,
+        color: colour,
+    });
+
+    // Modulate opacity of elliptical orbits
+    if (e < 1) {
+        material.alphaMap = createOrbitAlphaTexture();
+        material.useAlphaMap = 1;
+    }
+
+    const line = new THREE.Mesh(geometry, material);
+
+    // Render above habitable zone/other meshes to prevent z-fighting
+    line.renderOrder = 1;
+
+    line.visible = isVisible;
 
     // Update the geometry of the line to match the orbital parameters
     const points = [];
@@ -111,15 +125,6 @@ export function createOrUpdateOrbitalLine(
     }
 
     const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
-
-    /**
-     * The position of the object in world (xyz) coordinate space.
-     */
-    const worldObjectPosition = new THREE.Vector3(
-        position.x,
-        position.y,
-        position.z,
-    );
 
     /**
      * Rotation matrix: local (coordinate system of orbit plane) -> world
