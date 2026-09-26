@@ -671,6 +671,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
         line = new THREE.Mesh(geometry, material);
+
+        // Render above habitable zone to prevent z fighting
         line.renderOrder = 1;
 
         if (comparingToSolarSystem && group === solarSystemGroup) {
