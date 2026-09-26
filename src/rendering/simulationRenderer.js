@@ -124,7 +124,6 @@ const comparisonOverlayColour = {
     dark: "#c3911c",
     light: "#7d5c12",
 };
-const comparisonOrbitOpacity = 0.5;
 const comparisonLabelOpacity = 0.8;
 
 /**
@@ -585,7 +584,7 @@ function shouldShowOrbit(
  * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background
  * @returns A new colour faded towards the background colour by (1 - opacity)
  */
-function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
+export function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
     const theme = getTheme(isDarkMode);
     const backgroundColour = theme.background;
 
@@ -745,12 +744,17 @@ async function updateSimulation(forceCalendarUpdate = true) {
             solarSystemData.orbital_data,
         )) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
-            createOrUpdateOrbitalLine(
+            orbitLines.createOrUpdateOrbitalLine(
+                name,
                 orbitalLines.get(name),
                 solarSystemData.positions[name],
                 orbitalData,
                 solarSystemGroup,
                 overlayColour,
+                orbitalLines,
+                true,
+                shouldShowOrbit(name, "Solar System", { useDefault: true }),
+
             );
         }
     }

@@ -4,7 +4,7 @@ import {
     calculateOrbitalPosition,
     calculateRotationMatrix,
 } from "./simulationCalculations.js";
-import { renderer } from "./simulationRenderer.js";
+import { renderer, getFadedColour } from "./simulationRenderer.js";
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
@@ -14,6 +14,8 @@ const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
  */
 const ORBIT_LINE_WIDTH = 20;
 const COMPARISON_ORBIT_LINE_WIDTH = 10;
+
+const COMPARISON_ORBIT_OPACITY = 0.5;
 
 /**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
@@ -61,7 +63,7 @@ export function createOrUpdateOrbitalLine(
         if (isCompareToSolarSystemOrbitLine) {
             const comparisonColour = getFadedColour(
                 colour,
-                comparisonOrbitOpacity,
+                COMPARISON_ORBIT_OPACITY,
             );
 
             material.lineWidth = COMPARISON_ORBIT_LINE_WIDTH;
@@ -202,6 +204,8 @@ export function createOrUpdateOrbitalLine(
 
     // Rotate the line to match the orbital parameters
     line.quaternion.setFromRotationMatrix(rotationMatrix);
+
+    return line;
 }
 
 /**
