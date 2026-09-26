@@ -13,9 +13,11 @@
 {% endblock %}
 
 {% block content %}
+  <!-- prettier-ignore-start -->
   <script id="simulation-state" type="application/json">{{ sim_state | tojson }}</script>
+  <!-- prettier-ignore-end -->
 
-  <!-- Simulation content-->
+  <!-- Simulation content (fixed position) -->
   <canvas
     id="simulation-canvas"
     data-current-system="{{ current_system.name }}"
@@ -70,20 +72,8 @@
     src="/src/controllers/simulationStateController.js"
     defer
   ></script>
-  <script 
-    type="module" 
-    src="/src/ui/simulationControls.js" 
-    defer
-  ></script>
-  <script 
-    type="module" 
-    src="/src/ui/sidebar.js" 
-    defer
-  ></script>
-  <script 
-    type="module" 
-    src="/src/ui/toolbar.js" 
-    defer
-  ></script>
+  <script type="module" src="/src/ui/simulationControls.js" defer></script>
+  <script type="module" src="/src/ui/sidebar.js" defer></script>
+  <script type="module" src="/src/ui/toolbar.js" defer></script>
   <script type="module" src="/src/ui/simulationCalendar.js" defer></script>
 {% endblock %}
