@@ -776,7 +776,6 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             const distance = (objectProgress - progress + 1) % 1;
 
             const ORBIT_LINE_MIN_WIDTH = 0.5;
-            const CURVE_EXPONENT = 2;
 
             return Math.max(
                 ORBIT_LINE_MIN_WIDTH,
