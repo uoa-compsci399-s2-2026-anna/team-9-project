@@ -122,8 +122,8 @@ const orbitPoints = 360; // Number of points to approximate the ellipse
  * The width (thickness) of the orbit lines for regular orbits and for orbits
  * belonging to the Solar System when it's shown only as a comparison overlay.
  */
-const orbitLineWidth = 4;
-const comparisonOrbitLineWidth = 2;
+const ORBIT_LINE_WIDTH = 4;
+const COMPARISON_ORBIT_LINE_WIDTH = 2;
 
 /**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
@@ -651,10 +651,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             // Lowkey have no idea what units these are in, so I applied a
             // scale factor to make it look OK.
             material.lineWidth =
-                comparisonOrbitLineWidth * ORBIT_LINE_WIDTH_SCALE_FACTOR;
+                COMPARISON_ORBIT_LINE_WIDTH * ORBIT_LINE_WIDTH_SCALE_FACTOR;
             material.color.set(comparisonColour);
         } else {
-            material.lineWidth = orbitLineWidth * ORBIT_LINE_WIDTH_SCALE_FACTOR;
+            material.lineWidth = ORBIT_LINE_WIDTH * ORBIT_LINE_WIDTH_SCALE_FACTOR;
             material.color.set(colour);
         }
 
