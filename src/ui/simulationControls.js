@@ -50,6 +50,8 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
         path.classList.toggle("hidden");
     });
 
+    // TODO: Make this nicer (probably can use existing Tailwind classes e.g. clickable, etc.?)
+
     // Do not animate transition on open but do animate on close (the borders
     // rounding is animated on the 'closing' edge)
     systemInformationButton.classList.toggle("transition-none", showDropdown);
