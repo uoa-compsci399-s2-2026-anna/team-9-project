@@ -90,6 +90,15 @@ export function attachHoldRepeat(button, callback) {
 }
 
 /**
+ * TODO
+ * @param {*} buttonType 
+ * @returns 
+ */
+function allowsRepeat(buttonType) {
+    return buttonType.dataset.allowRepeat.toLowerCase() === "true";
+}
+
+/**
  * Register event listeners, event bus publishes, and any additional event
  * detail (where provided) to all `button_with_tooltip` and `text_button` macro
  * calls.
@@ -102,7 +111,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         return;
     }
 
-    const allowRepeat = buttonType.dataset.allowRepeat.toLowerCase() === "true";
+    const allowRepeat = allowsRepeat(buttonType);
 
     const existingEvents = Object.values(EVENTS).flatMap((category) =>
         Object.values(category),
@@ -130,3 +139,37 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         }
     }
 });
+
+const shortcuts = JSON.parse(document.getElementById("shortcuts-data").textContent);
+
+const buttonsByEvent = new Map();
+document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
+    for (const event of JSON.parse(buttonType.dataset.onClickEvents)) {
+        // TODO: what about when multiple buttons fire the event?
+        buttonsByEvent.set(event, buttonType);
+    }
+});
+
+for (const [event, { key }] of Object.entries(shortcuts)) {
+    const buttonType = buttonsByEvent.get(event);
+    if (!buttonType) {
+        continue;
+    }
+
+    const publish = () => bus.publish(event, getEventDetail(event));
+
+    if (allowsRepeat(buttonType)) {
+        console.log("ONE")
+    } else {
+        console.log("TWO")
+        document.addEventListener("keydown", (event) => {
+            // TODO: There are more cases to consider (like repeating and typing)
+            if (event.key !== key) {
+                return;
+            }
+            // TODO: is this necessary?
+            event.preventDefault();
+            publish();
+        });
+    }
+}

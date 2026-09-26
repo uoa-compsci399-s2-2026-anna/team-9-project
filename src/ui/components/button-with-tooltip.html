@@ -46,7 +46,7 @@
       }
     %}
 
-    <!-- Append the shortcut to the tooltip text -->
+    <!-- Append the shortcut label (if any) to the tooltip text -->
     {% set shortcut_event = on_click_events | select("in", shortcuts) | first %}
     {% set shortcut = shortcuts[shortcut_event] if shortcut_event else none %}
     {% set display_text = tooltip_text ~ (" (" ~ shortcut.label ~ ")" if shortcut else "") %}
