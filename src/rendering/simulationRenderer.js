@@ -768,7 +768,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             const ORBIT_LINE_MIN_WIDTH = 0.5;
             const CURVE_EXPONENT = 2;
 
-            return Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
+            return Math.max(
+                ORBIT_LINE_MIN_WIDTH,
+                ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION(distance),
+            );
         });
     } else {
         // Display non-elliptical orbits as constant width
@@ -778,6 +781,15 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     // Rotate the line to match the orbital parameters
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
+
+/**
+ * A function defining the curve/profile of the opacity/width modulation of 
+ * the orbit line.
+ * @param {Number} distance Proportion of a full revolution this point is from
+ * the object. 
+ * @returns Scale factor betwee 0 and 1 of opacity/line width.
+ */
+const ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION = (distance) => 1 - distance;
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -805,7 +817,7 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
     for (let i = 0; i < width; i++) {
         const progress = i / (width - 1);
         const distance = (objectProgress - progress + 1) % 1;
-        const opacity = 1 - distance;
+        const opacity = ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION(distance);
 
         /**
          * Offset of red channel/byte
