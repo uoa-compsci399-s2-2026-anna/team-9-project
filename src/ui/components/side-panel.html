@@ -1,5 +1,3 @@
-{% from "components/container.html" import container %}
-
 {%
   macro side_panel(
     panel_title_text,
@@ -8,61 +6,58 @@
     panel_button_id=None
   )
 %}
-  {% set panel_content = caller %}
-  {% call container(width="w-full") %}
-    <div
-      class="relative flex h-auto min-h-0 w-full flex-col p-3"
-      data-panel
-      data-toggle-event="{{ toggle_event }}"
+  <div
+    class="shadowed bordered-light relative container flex h-auto min-h-0 w-48 flex-col"
+    data-panel
+    data-toggle-event="{{ toggle_event }}"
+  >
+    <!-- Panel button -->
+    <button
+      id="{{ panel_button_id }}"
+      class="flex w-full items-center p-3 font-bold"
+      data-panel-button
     >
-      <!-- Panel button -->
-      <button
-        id="{{ panel_button_id }}"
-        class="flex w-full items-center font-bold"
-        data-panel-button
-      >
-        <span class="flex-1 text-left">{{ panel_title_text }}</span>
+      <span class="flex-1 text-left">{{ panel_title_text }}</span>
 
-        <!-- Show/hide icon -->
-        <svg class="size-7" viewBox="0 0 24 24" data-panel-show-hide-icon>
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <!-- Down arrow -->
-          <path
-            d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
-          />
+      <!-- Show/hide icon -->
+      <svg class="size-7" viewBox="0 0 24 24" data-panel-show-hide-icon>
+        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+        <!-- Down arrow -->
+        <path
+          d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
+        />
 
-          <!-- Up arrow -->
-          <path
-            d="M8.71 12.29L11.3 9.7a.996.996 0 0 1 1.41 0l2.59 2.59c.63.63.18 1.71-.71 1.71H9.41c-.89 0-1.33-1.08-.7-1.71"
-            class="hidden"
-          />
-        </svg>
-      </button>
+        <!-- Up arrow -->
+        <path
+          d="M8.71 12.29L11.3 9.7a.996.996 0 0 1 1.41 0l2.59 2.59c.63.63.18 1.71-.71 1.71H9.41c-.89 0-1.33-1.08-.7-1.71"
+          class="hidden"
+        />
+      </svg>
+    </button>
 
-      <!-- Hidden content (shown when expanded) -->
-      <div
-        class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
-        data-panel-content
-      >
-        <!-- Checkboxes -->
-        <div class="flex min-h-0 flex-col overflow-hidden">
-          <!-- Content -->
-          <div
-            class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto"
-            data-scroll-container
-          >
-            {{ panel_content() }}
-          </div>
-
-          <!-- Restore defaults button -->
-          <button
-            id="{{ reset_button_id }}"
-            class="mt-2 self-end overflow-hidden"
-          >
-            <span class="text-sm">Reset to defaults</span>
-          </button>
+    <!-- Hidden content (shown when expanded) -->
+    <div
+      class="grid grid-cols-1 grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out"
+      data-panel-content
+    >
+      <!-- Checkboxes -->
+      <div class="flex min-h-0 flex-col overflow-hidden">
+        <!-- Content -->
+        <div
+          class="text-secondary mt-2 min-h-0 flex-1 overflow-y-auto px-3"
+          data-scroll-container
+        >
+          {{ caller() }}
         </div>
+
+        <!-- Restore defaults button -->
+        <button
+          id="{{ reset_button_id }}"
+          class="mt-2 self-end overflow-hidden px-3 pb-3"
+        >
+          <span class="text-sm">Reset to defaults</span>
+        </button>
       </div>
     </div>
-  {% endcall %}
+  </div>
 {% endmacro %}
