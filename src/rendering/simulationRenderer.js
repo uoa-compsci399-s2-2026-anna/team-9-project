@@ -653,6 +653,11 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             material.color.set(colour);
         }
 
+        if (e < 1) {
+            material.alphaMap = createOrbitAlphaTexture();
+            material.useAlphaMap = 1;
+        }
+
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
         line = new THREE.Mesh(geometry, material);
@@ -746,6 +751,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             1,
         );
 
+        updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
+
         // Create or update the position attribute and widen the line at the object
         line.geometry.setPoints(points, (progress) => {
             /**
@@ -758,13 +765,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
              */
             const distance = (objectProgress - progress + 1) % 1;
 
-            const ORBIT_LINE_MIN_WIDTH = 0.1;
+            const ORBIT_LINE_MIN_WIDTH = 0.5;
             const CURVE_EXPONENT = 2;
 
-            return Math.max(
-                ORBIT_LINE_MIN_WIDTH,
-                Math.pow(1 - distance, CURVE_EXPONENT),
-            );
+            return Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
         });
     } else {
         // Display non-elliptical orbits as constant width
@@ -773,6 +777,50 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     // Rotate the line to match the orbital parameters
     line.quaternion.setFromRotationMatrix(rotationMatrix);
+}
+
+const RGBA_CHANNEL_COUNT = 4;
+const RGBA_MAX_VALUE = 255;
+
+function createOrbitAlphaTexture() {
+    const size = orbitPoints + 1;
+    const data = new Uint8Array(size * RGBA_CHANNEL_COUNT);
+    data.fill(RGBA_MAX_VALUE);
+
+    const texture = new THREE.DataTexture(data, size, 1, THREE.RGBAFormat);
+
+    texture.needsUpdate = true;
+
+    return texture;
+}
+
+/**
+ *
+ * @param {THREE.DataTexture} texture
+ * @param {*} objectProgress
+ */
+function updateOrbitAlphaTexture(texture, objectProgress) {
+    const { data, width } = texture.image;
+
+    for (let i = 0; i < width; i++) {
+        const progress = i / (width - 1);
+        const distance = (objectProgress - progress + 1) % 1;
+        const opacity = 1 - distance;
+
+        /**
+         * Offset of red channel/byte
+         */
+        const offset = i * RGBA_CHANNEL_COUNT;
+
+        /**
+         * Offset of alpha channel/byte
+         */
+        const aplhaOffset = offset + 3;
+
+        data[aplhaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
+    }
+
+    texture.needsUpdate = true;
 }
 
 /**
