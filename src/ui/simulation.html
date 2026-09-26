@@ -24,16 +24,18 @@
     class="pointer-events-auto fixed inset-0 z-0 h-screen w-screen"
   ></canvas>
 
-  <div class="grid h-full w-full grid-cols-2 grid-rows-[1fr_1fr]">
-    <div>{% include "components/system-picker.html" %}</div>
+  <!-- Controls at top -->
+  <div class="flex">
+    {% include "components/system-picker.html" %}
 
-    <div class="justify-self-end">{% include "components/toolbar.html" %}</div>
-
-    <div class="col-span-2 flex flex-col gap-3 self-end">
-      {% include "components/sidebar.html" %}
-      {% include "components/simulation-playback-controls.html" %}
-    </div>
+    <div class="ml-auto">{% include "components/toolbar.html" %}</div>
   </div>
+
+  <!-- Side panels -->
+  {% include "components/sidebar.html" %}
+
+  <!-- Playback controls at bottom -->
+  {% include "components/simulation-playback-controls.html" %}
 {% endblock %}
 
 <!-- Scripts block -->
