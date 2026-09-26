@@ -72,6 +72,18 @@ export function createOrUpdateOrbitalLine(
     }
 }
 
+/**
+ * @param {Number} a
+ * @param {Number} e
+ * @param {Number} inc
+ * @param {Number} Omega
+ * @param {Number} omega
+ * @param {THREE.Vector3} worldObjectPosition
+ * @param {boolean} isVisible
+ * @param {THREE.Color} colour
+ * @param {Number} lineWidth
+ * @returns {THREE.Mesh} Mesh line of orbit from given parameters
+ */
 function getOrbitLine(
     a,
     e,
