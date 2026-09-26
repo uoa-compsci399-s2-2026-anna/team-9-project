@@ -116,7 +116,7 @@ let objectSize;
 let objectScale = 1;
 let hitboxPadding;
 
-const orbitPoints = 360; // Number of points to approximate the ellipse
+const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 /**
  * The width (thickness) of the orbit lines for regular orbits and for orbits
@@ -691,7 +691,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         thetaEnd = thetaLimit - epsilon;
     }
 
-    const thetaStep = (thetaEnd - thetaStart) / orbitPoints;
+    const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
 
     for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
         const { x, y } = calculateOrbitalPosition(a, e, theta);
@@ -799,7 +799,7 @@ const RGBA_MAX_VALUE = 255;
  * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
  */
 function createOrbitAlphaTexture() {
-    const size = orbitPoints;
+    const size = ORBIT_POINTS_COUNT;
     const data = new Uint8Array(size * RGBA_CHANNEL_COUNT);
     data.fill(RGBA_MAX_VALUE);
 
