@@ -53,18 +53,20 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     systemInformationButton.classList.toggle("transition-none", showDropdown);
     systemInformationButton.classList.toggle("transition-all", !showDropdown);
 
+    systemDropdown.classList.toggle("grid-rows-[1fr]", showDropdown);
+    systemDropdown.classList.toggle("bordered", showDropdown);
+    systemDropdown.classList.toggle("grid-rows-[0fr]", !showDropdown);
+
+    systemDropdownWrapper.classList.toggle("bg-white", showDropdown);
+    systemDropdownWrapper.classList.toggle("dark:bg-black", showDropdown);
+    systemDropdownWrapper.classList.toggle("hover:bg-zinc-100", !showDropdown);
+    systemDropdownWrapper.classList.toggle(
+        "dark:hover:bg-zinc-900",
+        !showDropdown,
+    );
+
     if (showDropdown) {
-        systemDropdown.classList.remove("grid-rows-[0fr]");
-        systemDropdown.classList.add("grid-rows-[1fr]", "bordered");
-
         systemInformationButton.classList.add("rounded-b-none");
-
-        systemDropdownWrapper.classList.add("bg-white", "dark:bg-black");
-
-        systemDropdownWrapper.classList.remove(
-            "hover:bg-zinc-100",
-            "dark:hover:bg-zinc-900",
-        );
     } else {
         systemDropdown.addEventListener(
             "transitionend",
@@ -75,16 +77,6 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
                 );
             },
             { once: true },
-        );
-
-        systemDropdown.classList.remove("grid-rows-[1fr]", "bordered");
-        systemDropdown.classList.add("grid-rows-[0fr]");
-
-        systemDropdownWrapper.classList.remove("bg-white", "dark:bg-black");
-
-        systemDropdownWrapper.classList.add(
-            "hover:bg-zinc-100",
-            "dark:hover:bg-zinc-900",
         );
     }
 });
