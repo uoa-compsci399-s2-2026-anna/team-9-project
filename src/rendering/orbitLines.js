@@ -44,8 +44,6 @@ export function createOrUpdateOrbitalLine(
 
     if (e === 1) return; // Parabolic orbits are not supported for now
 
-    // let line = orbitalLines.get(name);
-
     if (!line) {
         const lineColour = isCompareToSolarSystemOrbitLine
             ? getFadedColour(colour, COMPARISON_ORBIT_OPACITY)
@@ -55,51 +53,31 @@ export function createOrUpdateOrbitalLine(
             ? COMPARISON_ORBIT_LINE_WIDTH
             : ORBIT_LINE_WIDTH;
 
-        const line = getOrbitLine(
-            a,
-            e,
-            inc,
-            Omega,
-            omega,
-            new THREE.Vector3(position.x, position.y, position.z),
-            doShowOrbit,
-            lineColour,
-            lineWidth,
-        );
+        line = createOrbitLine(doShowOrbit, lineColour, lineWidth, e);
 
         group.add(line);
         orbitalLines.set(name, line);
     }
+
+    updateOrbitLine(
+        line,
+        a,
+        e,
+        inc,
+        Omega,
+        omega,
+        new THREE.Vector3(position.x, position.y, position.z),
+    );
 }
 
 /**
- * @param {Number} a
- * @param {Number} e
- * @param {Number} inc
- * @param {Number} Omega
- * @param {Number} omega
- * @param {THREE.Vector3} worldObjectPosition
  * @param {boolean} isVisible
  * @param {THREE.Color} colour
  * @param {Number} lineWidth
- * @returns {THREE.Mesh} Mesh line of orbit from given parameters
+ * @param {Number} e Eccentricity of orbit
+ * @returns {THREE.Mesh} Empty mesh line to render orbit
  */
-function getOrbitLine(
-    a,
-    e,
-    inc,
-    Omega,
-    omega,
-
-    worldObjectPosition,
-
-    isVisible,
-    colour,
-    lineWidth,
-) {
-    // Parabolic orbits not supported
-    if (e === 1) return;
-
+function createOrbitLine(isVisible, colour, lineWidth, e) {
     const geometry = new MeshLineGeometry();
     const material = new MeshLineMaterial({
         sizeAttenuation: false,
@@ -122,6 +100,20 @@ function getOrbitLine(
 
     line.visible = isVisible;
 
+    return line;
+}
+
+/**
+ * Update an orbit's geometry and moving opacity/width profile.
+ * @param {THREE.Mesh} line
+ * @param {Number} a
+ * @param {Number} e
+ * @param {Number} inc
+ * @param {Number} Omega
+ * @param {Number} omega
+ * @param {THREE.Vector3} worldObjectPosition Position of the object in xyz space
+ */
+function updateOrbitLine(line, a, e, inc, Omega, omega, worldObjectPosition) {
     // Update the geometry of the line to match the orbital parameters
     const points = [];
     let thetaStart = 0;
