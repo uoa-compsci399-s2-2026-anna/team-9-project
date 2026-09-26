@@ -867,6 +867,12 @@ async function alignSystemToCameraUp(group, useDefault = false) {
     group.quaternion.copy(quaternion);
 }
 
+/**
+ * Calculate the camera and controls settings based on the view radius.
+ *
+ * @param {number} viewRadius The radius of view to fit within the camera
+ * @returns {Object} The camera and controls settings
+ */
 function calculateCameraAndControlsSettings(viewRadius) {
     const controlsMinDistance = objectSize * controlsMinMultiplier;
 
