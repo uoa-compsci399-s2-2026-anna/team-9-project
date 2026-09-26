@@ -798,7 +798,6 @@ function createHabitableZoneMesh() {
         depthWrite: false,
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
-    habitableZoneMesh.renderOrder = 0;
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
 }
 
