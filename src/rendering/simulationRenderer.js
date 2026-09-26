@@ -1113,13 +1113,22 @@ export async function resetView(topDown = true) {
     if (topDown) {
         // Animate to the default camera position
         animateCameraPositionTo.copy(cameraDefaults.position);
+
     } else {
-        // Animate to the current camera direction at the new distance
-        const cameraDistance = cameraDefaults.position.length();
-        const currentCameraDirection = camera.position.clone().normalize();
-        animateCameraPositionTo.copy(
-            currentCameraDirection.multiplyScalar(cameraDistance),
-        );
+        // Animate camera position to the same direction as the current camera but at the default distance
+
+        const defaultCameraDistance = cameraDefaults.position.length();
+        const currentCameraDirection = camera.position
+            .clone()
+            .sub(controls.target)
+            .normalize();
+
+        const newCameraOffset = currentCameraDirection.multiplyScalar(defaultCameraDistance);
+        const newCameraPosition = animateControlsTargetTo
+            .clone()
+            .add(newCameraOffset);
+
+        animateCameraPositionTo.copy(newCameraPosition);
     }
 
     animateCameraAndControls = true;
