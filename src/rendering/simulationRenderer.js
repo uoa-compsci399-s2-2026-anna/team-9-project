@@ -793,10 +793,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 }
 
 /**
- * A function defining the curve/profile of the opacity/width modulation of 
+ * A function defining the curve/profile of the opacity/width modulation of
  * the orbit line.
  * @param {Number} distance Proportion of a full revolution this point is from
- * the object. 
+ * the object.
  * @returns Scale factor betwee 0 and 1 of opacity/line width.
  */
 const ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION = (distance) => 1 - distance;
@@ -804,8 +804,12 @@ const ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION = (distance) => 1 - distance;
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
 
+/**
+ * @returns `THREE.DataTexture` of a RGBA alpha map filled with values of 255
+ * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
+ */
 function createOrbitAlphaTexture() {
-    const size = orbitPoints + 1;
+    const size = orbitPoints;
     const data = new Uint8Array(size * RGBA_CHANNEL_COUNT);
     data.fill(RGBA_MAX_VALUE);
 
