@@ -113,6 +113,8 @@ let solarSystemDefaultViewRadius;
 // Default size and colour of all the objects
 let objectSize;
 let objectScale = 1;
+let starScaleMultiplier = 3;
+let nonStarScaleMultiplier = 0.5;
 let hitboxPadding;
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -482,6 +484,7 @@ function createGlowTexture(colour) {
  */
 function createOrUpdateObjectMesh(name, position, group, colour) {
     let mesh = objectMeshes.get(name);
+    const objectType = objectTypes[name];
 
     if (!mesh) {
         const geometry = new THREE.SphereGeometry(objectSize);
@@ -489,7 +492,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
         mesh = new THREE.Mesh(geometry, material);
 
-        const objectType = objectTypes[name];
         if (objectType === "star") {
             const glowTexture = createGlowTexture(colour);
 
@@ -551,7 +553,14 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         objectLabels.set(name, label);
     }
 
-    mesh.scale.set(objectScale, objectScale, objectScale);
+    let meshScale = objectScale;
+    if (objectType === "star") {
+        meshScale *= starScaleMultiplier;
+    } else {
+        meshScale *= nonStarScaleMultiplier;
+    }
+
+    mesh.scale.set(meshScale, meshScale, meshScale);
     mesh.position.set(position.x, position.y, position.z);
 }
 
