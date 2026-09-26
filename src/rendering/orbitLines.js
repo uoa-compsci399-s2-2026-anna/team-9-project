@@ -47,7 +47,6 @@ export function createOrUpdateOrbitalLine(
     // let line = orbitalLines.get(name);
 
     if (!line) {
-        const canvas = renderer.domElement;
         const geometry = new MeshLineGeometry();
 
         const material = new MeshLineMaterial({
@@ -77,8 +76,6 @@ export function createOrUpdateOrbitalLine(
             material.alphaMap = createOrbitAlphaTexture();
             material.useAlphaMap = 1;
         }
-
-        material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
         line = new THREE.Mesh(geometry, material);
 
