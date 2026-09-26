@@ -28,8 +28,8 @@
                 },
                 "Mercury": {
                     "colour": { 
-                        "dark": "#b89176",
-                        "light": "#7d5a40"
+                        "dark": "#777777",
+                        "light": "#555555"
                     },
                     "type": "planet",
                     "mass": {
@@ -51,8 +51,8 @@
                 },
                 "Venus": {
                     "colour": { 
-                        "dark": "#e1812e",
-                        "light": "#a15717"
+                        "dark": "#d5864e",
+                        "light": "#915122"
                     },
                     "type": "planet",
                     "mass": {
@@ -97,7 +97,7 @@
                 },
                 "Mars": {
                     "colour": { 
-                        "dark": "#e67b6f",
+                        "dark": "#d16e5a",
                         "light": "#b52f20"
                     },
                     "type": "planet",
@@ -120,8 +120,8 @@
                 },
                 "Jupiter": {
                     "colour": { 
-                        "dark": "#d5864e",
-                        "light": "#915122"
+                        "dark": "#e1812e",
+                        "light": "#a15717"
                     },
                     "type": "planet",
                     "mass": {
@@ -143,8 +143,8 @@
                 },
                 "Saturn": {
                     "colour": { 
-                        "dark": "#bb85d1",
-                        "light": "#8b40a9"
+                        "dark": "#b89176",
+                        "light": "#7d5a40"
                     },
                     "type": "planet",
                     "mass": {
