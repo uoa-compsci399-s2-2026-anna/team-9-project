@@ -20,6 +20,10 @@ const EVENT_DETAIL = {
     },
 };
 
+function getEventDetail(event) {
+    return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : {};
+}
+
 /**
  * Attaches a click handler to the given button that invokes the given callback.
  * 
@@ -133,10 +137,6 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         } else {
             button.addEventListener("click", publish);
         }
-
-        function getEventDetail() {
-            return EVENT_DETAIL[event] ? EVENT_DETAIL[event]() : {};
-        }
     }
 });
 
@@ -163,6 +163,7 @@ for (const [event, { key }] of Object.entries(shortcuts)) {
     } else {
         console.log("TWO")
         document.addEventListener("keydown", (event) => {
+            console.log(event.key)
             // TODO: There are more cases to consider (like repeating and typing)
             if (event.key !== key) {
                 return;

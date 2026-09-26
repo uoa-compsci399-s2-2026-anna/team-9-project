@@ -1,6 +1,6 @@
 {
     "sim:toggle": {
-        "key": "Space",
+        "key": " ",
         "label": "Space"
     },
     "sim:step_forward": {
