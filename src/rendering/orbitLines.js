@@ -35,8 +35,8 @@ export function createOrUpdateOrbitalLine(
     group,
     colour,
     orbitalLines,
-    isCompareToSolarSystemOrbitLine = false,
-    doShowOrbit = true,
+    isCompareToSolarSystemOrbitLine,
+    doShowOrbit,
 ) {
     const { a, e, inc, Omega, omega } = orbitalData;
 
