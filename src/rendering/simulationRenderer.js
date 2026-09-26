@@ -105,7 +105,10 @@ const orbitalLines = new Map();
 const objectLabels = new Map();
 
 let viewRadius;
-let currentSystemDefaultViewRadius; // The view radius for the current system when all objects are set to default visibility
+
+// The view radius when all objects are set to default visibility
+let currentSystemDefaultViewRadius;
+let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
@@ -394,16 +397,18 @@ async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
     let newViewRadius = viewRadiusForCurrentSystem;
 
     if (comparingToSolarSystem) {
-        const viewRadiusForSolarSystem = await getViewRadiusForSystem(
-            "Solar System",
-            true
+        newViewRadius = Math.max(
+            newViewRadius,
+            solarSystemDefaultViewRadius
         );
-        newViewRadius = Math.max(newViewRadius, viewRadiusForSolarSystem);
     }
 
     if (habitableZoneShown && habitableZone) {
         const viewRadiusForHabitableZone = habitableZone.end * viewRadiusMultiplier;
-        newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
+        newViewRadius = Math.max(
+            newViewRadius,
+            viewRadiusForHabitableZone
+        );
     }
 
     viewRadius = newViewRadius;
@@ -1074,6 +1079,8 @@ export async function init(name) {
     );
 
     currentSystemDefaultViewRadius = await getViewRadiusForSystem(currentSystem, true);
+    solarSystemDefaultViewRadius = await getViewRadiusForSystem("Solar System", true);
+
     objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
@@ -1181,8 +1188,6 @@ export async function compareToSolarSystem() {
         true,
         habitableZoneMesh?.visible
     );
-
-    const solarSystemDefaultViewRadius = await getViewRadiusForSystem("Solar System", true);
 
     // Scale objects for comparison as the smaller of the two sizes
     const comparisonObjectSize = Math.min(
