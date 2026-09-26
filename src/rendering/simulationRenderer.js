@@ -866,20 +866,36 @@ async function alignSystemToCameraUp(group, useDefault = false) {
     group.quaternion.copy(quaternion);
 }
 
+function calculateCameraAndControlsSettings(viewRadius) {
+    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+    const cameraNear = objectSize * cameraNearMultiplier;
+    const cameraFar = cameraDistance * cameraFarMultiplier;
+    const controlsMinDistance = objectSize * controlsMinMultiplier;
+    const controlsMaxDistance = cameraDistance * controlsMaxMultiplier;
+
+    return {
+        cameraDistance,
+        cameraNear,
+        cameraFar,
+        controlsMinDistance,
+        controlsMaxDistance,
+    };
+}
+
 /**
  * Initialise the camera for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} viewRadius The radius of view to fit within the camera
+ * @param {Object} cameraSettings The camera settings
+ * @param {number} cameraSettings.cameraDistance The distance of the camera
+ * @param {number} cameraSettings.cameraNear The near plane of the camera
+ * @param {number} cameraSettings.cameraFar The far plane of the camera
  */
-function initOrUpdateCamera(canvas, viewRadius) {
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+function initOrUpdateCamera(canvas, {cameraDistance, cameraNear, cameraFar}) {
     cameraDefaults.position = calculateDefaultCameraPosition(
         cameraDefaults.up,
         cameraDistance,
     );
 
-    const cameraNear = objectSize * cameraNearMultiplier;
-    const cameraFar = cameraDistance * cameraFarMultiplier;
 
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
@@ -901,11 +917,11 @@ function initOrUpdateCamera(canvas, viewRadius) {
 /**
  * Initialise the controls for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} viewRadius The radius of view to fit within the camera
+ * @param {Object} controlsSettings The controls settings
+ * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
+ * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
  */
-function initOrUpdateControls(canvas, viewRadius) {
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
-
+function initOrUpdateControls(canvas, {controlsMinDistance, controlsMaxDistance}) {
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
         controls.addEventListener("start", () => {
@@ -915,8 +931,8 @@ function initOrUpdateControls(canvas, viewRadius) {
         controls.target.copy(cameraDefaults.target);
         controls.update();
     }
-    controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
-    controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.minDistance = controlsMinDistance;
+    controls.maxDistance = controlsMaxDistance;
     controls.zoomSpeed = controlsZoomSpeed;
 
     if (controlsChangeHandler) {
@@ -1045,8 +1061,10 @@ export async function init(name) {
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
+
     initRaycastingEvents(canvas);
     initLabelRenderer(canvas);
     initTimer();
@@ -1106,8 +1124,9 @@ export async function resetView(topDown = true) {
     );
 
     // Update the camera and controls for the new view radius
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
 
     // Animate to the default controls target
     animateControlsTargetTo.copy(cameraDefaults.target);
@@ -1158,8 +1177,9 @@ export async function compareToSolarSystem() {
 
     solarSystemGroup.visible = true;
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
 
     resetView();
 
@@ -1178,8 +1198,9 @@ export async function hideSolarSystem() {
     );
     solarSystemGroup.visible = false;
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
 
     resetView();
 
