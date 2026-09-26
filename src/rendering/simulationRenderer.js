@@ -749,9 +749,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         // Create or update the position attribute and widen the line at the object
         line.geometry.setPoints(points, (progress) => {
             /**
-             * Proportion of a full revolution this point of `progress` is 
+             * Proportion of a full revolution this point of `progress` is
              * from the object.
-             * 
+             *
              * At the object:
              * progress == objectProgress
              * ==> (objectProgress - progress + 1) % 1 == 1 % 1 == 0 == distance
