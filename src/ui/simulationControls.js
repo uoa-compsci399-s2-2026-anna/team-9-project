@@ -50,6 +50,8 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
         path.classList.toggle("hidden");
     });
 
+    // Do not animate transition on open but do animate on close (the borders
+    // rounding is animated on the 'closing' edge)
     systemInformationButton.classList.toggle("transition-none", showDropdown);
     systemInformationButton.classList.toggle("transition-all", !showDropdown);
 
@@ -66,8 +68,10 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     );
 
     if (showDropdown) {
+        // Remove rounded corners from bottom so it looks consistent
         systemInformationButton.classList.add("rounded-b-none");
     } else {
+        // Add back rounded corners after transition has completed
         systemDropdown.addEventListener(
             "transitionend",
             () => {
