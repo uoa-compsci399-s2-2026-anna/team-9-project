@@ -78,6 +78,7 @@ const cameraFarMultiplier = 100;
 const controlsMinMultiplier = 10;
 const controlsMaxMultiplier = 1.5;
 const controlsZoomSpeed = 2.5;
+const controlsMinZoomFactor = 2; // The minimum factor that the controls should be able to zoom
 
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
@@ -867,11 +868,23 @@ async function alignSystemToCameraUp(group, useDefault = false) {
 }
 
 function calculateCameraAndControlsSettings(viewRadius) {
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
+    const controlsMinDistance = objectSize * controlsMinMultiplier;
+
+    // Camera distance must be at least the minimum distance for the controls
+    const cameraDistance = Math.max(
+        calculateCameraDistance(fov, viewRadius),
+        controlsMinDistance
+    );
+
+    // Controls max distance must be at least camera distance * max multiplier,
+    // and must be able to zoom by at least controlsMinZoomFactor
+    const controlsMaxDistance = Math.max(
+        cameraDistance * controlsMaxMultiplier,
+        controlsMinDistance * controlsMinZoomFactor
+    );
+
     const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;
-    const controlsMinDistance = objectSize * controlsMinMultiplier;
-    const controlsMaxDistance = cameraDistance * controlsMaxMultiplier;
 
     return {
         cameraDistance,
