@@ -4,7 +4,7 @@ import {
     calculateOrbitalPosition,
     calculateRotationMatrix,
 } from "./simulationCalculations.js";
-import { renderer, getFadedColour } from "./simulationRenderer.js";
+import { getFadedColour } from "./simulationRenderer.js";
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
