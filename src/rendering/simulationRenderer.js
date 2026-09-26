@@ -359,6 +359,55 @@ function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
 }
 
 /**
+ * Get the view radius for a given system based on the maximum apoapsis of all visible objects.
+ * 
+ * @param {string} system The name of the system
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
+ * @returns {Promise<number>} The view radius for the system
+ */
+async function getViewRadiusForSystem(system, useDefault = false) {
+    const referenceSystemData = await getReferenceSystemData(system);
+    const orbitalDataValues = getVisibleOrbitalDataValues(
+        system,
+        referenceSystemData.orbital_data,
+        useDefault
+    );
+    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
+    return maxApoapsis * viewRadiusMultiplier;
+}
+
+/**
+ * Update the view radius based on the current system, whether the habitable zone is shown, and whether
+ * the Solar System is being compared. The view radius is set to the maximum of the current system's view radius,
+ * the Solar System's view radius (if comparing), and the habitable zone's end radius (if shown).
+ * 
+ * @param {boolean} comparingToSolarSystem Whether the Solar System is being compared
+ * @param {boolean} habitableZoneShown Whether the habitable zone is shown
+ */
+async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
+    const viewRadiusForCurrentSystem = await getViewRadiusForSystem(
+        currentSystem
+    );
+
+    let newViewRadius = viewRadiusForCurrentSystem;
+
+    if (comparingToSolarSystem) {
+        const viewRadiusForSolarSystem = await getViewRadiusForSystem(
+            "Solar System",
+            true
+        );
+        newViewRadius = Math.max(newViewRadius, viewRadiusForSolarSystem);
+    }
+
+    if (habitableZoneShown && habitableZone) {
+        const viewRadiusForHabitableZone = habitableZone.end * viewRadiusMultiplier;
+        newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
+    }
+
+    viewRadius = newViewRadius;
+}
+
+/**
  * Handles when the canvas is clicked on while the user is not moving the camera.
  * Detects if an object was clicked and, if so, fires an event to notify other components
  * that an object was clicked.
@@ -793,9 +842,22 @@ export function syncCalendar() {
  * Align the system's average normal with the up vector.
  *
  * @param {THREE.Group} group The group to align
- * @param {THREE.Vector3} averageNormal The average normal vector of the system's orbital planes
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
  */
-function alignSystemToCameraUp(group, averageNormal) {
+async function alignSystemToCameraUp(group, useDefault = false) {
+    let system = currentSystem;
+    if (group === solarSystemGroup) {
+        system = "Solar System";
+    }
+
+    const referenceSystemData = await getReferenceSystemData(system);
+    const orbitalDataValues = getVisibleOrbitalDataValues(
+        system,
+        referenceSystemData.orbital_data,
+        useDefault
+    );
+    const averageNormal = calculateAverageNormal(orbitalDataValues);
+
     const quaternion = new THREE.Quaternion().setFromUnitVectors(
         averageNormal,
         cameraDefaults.up,
@@ -970,22 +1032,16 @@ export async function init(name) {
         systemInfo["reference"],
     );
 
-    const referenceDataForCurrentSystem = systemInfo["reference"];
-    const orbitalDataValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        referenceDataForCurrentSystem.orbital_data,
+    await updateViewRadius(
+        false, // Not comparing to the Solar System
+        simulationState.habitableZoneShown
     );
-
-    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    viewRadius = maxApoapsis * viewRadiusMultiplier; // Add some padding
 
     objectSize = viewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
     // Align the system's average normal with the up vector (Z-axis)
-    const currentSystemAverageNormal =
-        calculateAverageNormal(orbitalDataValues);
-    alignSystemToCameraUp(currentSystemGroup, currentSystemAverageNormal);
+    alignSystemToCameraUp(currentSystemGroup);
 
     initOrUpdateCamera(canvas, viewRadius);
     initOrUpdateControls(canvas, viewRadius);
@@ -1042,27 +1098,10 @@ export function setSimulationTimeToTime(time) {
 export async function resetView() {
     const canvas = renderer.domElement;
 
-    const currentSystemData = await getReferenceSystemData(currentSystem);
-    const currentSystemValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        currentSystemData.orbital_data,
+    await updateViewRadius(
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible
     );
-    let maxApoapsis = calculateMaxApoapsis(currentSystemValues);
-
-    if (comparingToSolarSystem) {
-        const solarSystemData = await getReferenceSystemData("Solar System");
-        const solarSystemValues = getVisibleOrbitalDataValues(
-            "Solar System",
-            solarSystemData.orbital_data,
-            true,
-        );
-        maxApoapsis = Math.max(
-            maxApoapsis,
-            calculateMaxApoapsis(solarSystemValues),
-        );
-    }
-
-    viewRadius = maxApoapsis * viewRadiusMultiplier;
 
     // Update the camera and controls for the new view radius
     initOrUpdateCamera(canvas, viewRadius);
@@ -1077,27 +1116,13 @@ export async function resetView() {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    const referenceDataForCurrentSystem =
-        await getReferenceSystemData(currentSystem);
-    const referenceDataForSolarSystem =
-        await getReferenceSystemData("Solar System");
-
-    const currentOrbitalDataValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        referenceDataForCurrentSystem.orbital_data,
-    );
-    const solarOrbitalDataValues = getVisibleOrbitalDataValues(
-        "Solar System",
-        referenceDataForSolarSystem.orbital_data,
+    await updateViewRadius(
         true,
+        habitableZoneMesh?.visible
     );
 
-    const currentMaxApoapsis = calculateMaxApoapsis(currentOrbitalDataValues);
-    const solarMaxApoapsis = calculateMaxApoapsis(solarOrbitalDataValues);
-
-    const currentViewRadius = currentMaxApoapsis * viewRadiusMultiplier;
-    const solarViewRadius = solarMaxApoapsis * viewRadiusMultiplier;
-    viewRadius = Math.max(currentViewRadius, solarViewRadius);
+    const currentViewRadius = await getViewRadiusForSystem(currentSystem);
+    const solarViewRadius = await getViewRadiusForSystem("Solar System", true);
 
     // Scale objects for comparison as the smaller of the two sizes
     const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
@@ -1109,10 +1134,7 @@ export async function compareToSolarSystem() {
     objectScale = comparisonObjectSize / objectSize;
 
     // Align the solar system's average normal with the up vector (Z-axis)
-    const solarSystemAverageNormal = calculateAverageNormal(
-        solarOrbitalDataValues,
-    );
-    alignSystemToCameraUp(solarSystemGroup, solarSystemAverageNormal);
+    alignSystemToCameraUp(solarSystemGroup, true);
 
     solarSystemGroup.visible = true;
 
@@ -1130,17 +1152,10 @@ export async function hideSolarSystem() {
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
-
-    const referenceDataForCurrentSystem =
-        await getReferenceSystemData(currentSystem);
-    const orbitalDataValues = getVisibleOrbitalDataValues(
-        currentSystem,
-        referenceDataForCurrentSystem.orbital_data,
+    await updateViewRadius(
+        false,
+        habitableZoneMesh?.visible
     );
-
-    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    viewRadius = maxApoapsis * viewRadiusMultiplier;
-
     solarSystemGroup.visible = false;
 
     initOrUpdateCamera(canvas, viewRadius);
@@ -1155,6 +1170,8 @@ export function setHabitableZoneVisibility(value) {
     if (habitableZoneMesh) {
         habitableZoneMesh.visible = value;
     }
+
+    resetView();
 }
 
 export function setLabelsVisibility(value) {

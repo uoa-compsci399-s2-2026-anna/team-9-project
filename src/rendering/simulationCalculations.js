@@ -51,7 +51,8 @@ export function calculateMaxApoapsis(orbitalDataValues) {
     return Math.max(
         ...orbitalDataValues.map(
             ({ a, e }) => calculateApoapsis(a, e)
-        )
+        ),
+        0 // Ensure the result is non-negative
     );
 }
 
