@@ -706,9 +706,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     if (e < 1) {
         /**
-         * The position of the planet in world (xyz) coordinate space.
+         * The position of the object in world (xyz) coordinate space.
          */
-        const worldPlanetPosition = new THREE.Vector3(
+        const worldObjectPosition = new THREE.Vector3(
             position.x,
             position.y,
             position.z,
@@ -720,9 +720,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         const inverseRotationMatrix = rotationMatrix.clone().invert();
 
         /**
-         * Position of planet in local (orbit plane) coordinates
+         * Position of object in local (orbit plane) coordinates
          */
-        const localPosition = worldPlanetPosition.applyMatrix4(
+        const localObjectPosition = worldObjectPosition.applyMatrix4(
             inverseRotationMatrix,
         );
 
@@ -730,21 +730,33 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
          * Angle between positive x-axis (in local coordinates) and the point
          * (localPosition.x, localPosition.y) from the 2-argument arctangent.
          */
-        let planetTheta = Math.atan2(localPosition.y, localPosition.x);
-        if (planetTheta < 0) planetTheta += 2 * Math.PI;
+        let objectTheta = Math.atan2(
+            localObjectPosition.y,
+            localObjectPosition.x,
+        );
+        if (objectTheta < 0) objectTheta += 2 * Math.PI;
 
-        // Normalise
-        const planetProgress = THREE.MathUtils.clamp(
-            (planetTheta - thetaStart) / (thetaEnd - thetaStart),
+        /**
+         * Proportion of a full revolution the object is from its starting
+         * point/angle.
+         */
+        const objectProgress = THREE.MathUtils.clamp(
+            (objectTheta - thetaStart) / (thetaEnd - thetaStart),
             0,
             1,
         );
 
-        // Create or update the position attribute and widen the line at the planet
+        // Create or update the position attribute and widen the line at the object
         line.geometry.setPoints(points, (progress) => {
-            // At the planet, planetProgress = progress ==> distance = 0
-            //                                          ==> return 1 (max width)
-            const distance = (planetProgress - progress + 1) % 1;
+            /**
+             * Proportion of a full revolution this point of `progress` is 
+             * from the object.
+             * 
+             * At the object:
+             * progress == objectProgress
+             * ==> (objectProgress - progress + 1) % 1 == 1 % 1 == 0 == distance
+             */
+            const distance = (objectProgress - progress + 1) % 1;
 
             const ORBIT_LINE_MIN_WIDTH = 0.1;
             const CURVE_EXPONENT = 2;
