@@ -104,6 +104,7 @@ const orbitalLines = new Map();
 const objectLabels = new Map();
 
 let viewRadius;
+let currentSystemDefaultViewRadius; // The view radius for the current system when all objects are set to default visibility
 
 // Default size and colour of all the objects
 let objectSize;
@@ -1037,8 +1038,9 @@ export async function init(name) {
         simulationState.habitableZoneShown
     );
 
-    objectSize = viewRadius * objectSizeMultiplier; // Set the object size
-    hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
+    currentSystemDefaultViewRadius = await getViewRadiusForSystem(currentSystem, true);
+    objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
+    hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
@@ -1142,16 +1144,13 @@ export async function compareToSolarSystem() {
         habitableZoneMesh?.visible
     );
 
-    const currentViewRadius = await getViewRadiusForSystem(currentSystem);
-    const solarViewRadius = await getViewRadiusForSystem("Solar System", true);
+    const solarSystemDefaultViewRadius = await getViewRadiusForSystem("Solar System", true);
 
     // Scale objects for comparison as the smaller of the two sizes
-    const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
-    const solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
     const comparisonObjectSize = Math.min(
-        currentSystemObjectSize,
-        solarSystemObjectSize,
-    );
+        currentSystemDefaultViewRadius,
+        solarSystemDefaultViewRadius,
+    ) * objectSizeMultiplier;
     objectScale = comparisonObjectSize / objectSize;
 
     // Align the solar system's average normal with the up vector (Z-axis)
