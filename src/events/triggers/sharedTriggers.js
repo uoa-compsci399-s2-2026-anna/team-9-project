@@ -142,6 +142,12 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
 
 const shortcuts = JSON.parse(document.getElementById("shortcuts-data").textContent);
 
+function isTypingTarget(el) {
+    return el instanceof HTMLInputElement
+        || el instanceof HTMLTextAreaElement
+        || el?.isContentEditable;
+}
+
 const buttonsByEvent = new Map();
 document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     for (const event of JSON.parse(buttonType.dataset.onClickEvents)) {
@@ -161,15 +167,15 @@ for (const [event, { key }] of Object.entries(shortcuts)) {
     if (allowsRepeat(buttonType)) {
         console.log("ONE")
     } else {
-        console.log("TWO")
         document.addEventListener("keydown", (event) => {
             console.log(event.key)
-            // TODO: There are more cases to consider (like repeating and typing)
-            if (event.key !== key) {
+            // Ignore repeated key presses and key presses while typing
+            if (event.key !== key || event.repeat || isTypingTarget(document.activeElement)) {
                 return;
             }
-            // TODO: is this necessary?
+
             event.preventDefault();
+
             publish();
         });
     }
