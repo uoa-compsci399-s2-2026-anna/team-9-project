@@ -139,13 +139,25 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (e) => {
     document
         .querySelectorAll("[data-colour-indicator]")
         .forEach((colourIndicator) => {
-            const darkModeColour = colourIndicator.dataset.darkModeColour;
-            const lightModeColour = colourIndicator.dataset.lightModeColour;
+            const darkModeColour = colourIndicator.closest(
+                "[data-dark-mode-colour]",
+            ).dataset.darkModeColour;
+            const lightModeColour = colourIndicator.closest(
+                "[data-light-mode-colour]",
+            ).dataset.lightModeColour;
 
             if (enterDarkMode) {
-                colourIndicator.style.backgroundColor = darkModeColour;
+                if (colourIndicator instanceof SVGElement) {
+                    colourIndicator.setAttribute("fill", darkModeColour);
+                } else {
+                    colourIndicator.style.backgroundColor = darkModeColour;
+                }
             } else {
-                colourIndicator.style.backgroundColor = lightModeColour;
+                if (colourIndicator instanceof SVGElement) {
+                    colourIndicator.setAttribute("fill", lightModeColour);
+                } else {
+                    colourIndicator.style.backgroundColor = lightModeColour;
+                }
             }
         });
 });
