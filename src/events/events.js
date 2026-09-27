@@ -26,6 +26,11 @@ export const EVENTS = {
          * When the 'Now' button is clicked.
          */
         SET_TIME_TO_NOW: "sim:set_time_to_now",
+
+        /**
+         * Show/hiding the loader when the sim takes too long to load a system.
+         */
+        SET_SIM_LOADER: "sim:set_sim_loader",
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
