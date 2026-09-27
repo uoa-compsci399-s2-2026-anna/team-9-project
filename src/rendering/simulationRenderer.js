@@ -1428,8 +1428,6 @@ function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize,
     const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
     const scale = desiredWorldDiameter / (2 * objectSize);
 
-    console.log(scale);
-
     return THREE.MathUtils.clamp(scale, minScale, maxScale);
 }
 
