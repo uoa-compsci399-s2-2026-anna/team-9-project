@@ -28,7 +28,7 @@ function getEventDetail(event) {
  * Creates a start/stop controlled repeater that invokes `callback` once
  * after an initial `delayMs` milliseconds, then repeatedly every `periodMs`
  * milliseconds until `stop()` is called.
- * 
+ *
  * @param {() => void} callback The function to invoke after the delay and then on each repeat
  * @param {number} delayMs Milliseconds to wait before the first repeat begins
  * @param {number} periodMs Milliseconds between each subsequent repeat once started
@@ -71,11 +71,11 @@ function createRepeater(callback, delayMs, periodMs) {
 
 /**
  * Attaches a click handler to the given button that invokes the given callback.
- * 
+ *
  * Holding down the buttton repeatedly invokes the given callback.
  * Repeating starts after `data-repeat-delay-ms`, then continues every
  * `data-repeat-period-ms` until the pointer is released.
- * 
+ *
  * @param {HTMLElement} button The button to attach the handlers to
  * @param {() => void} callback The callback to invoke on click and, if
  * enabled, on each repeat while the button is held down
@@ -88,7 +88,11 @@ export function attachHoldRepeat(button, callback) {
     const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
     const repeatPeriodMs = parseInt(buttonType.dataset.repeatPeriodMs);
 
-    const { start, stop } = createRepeater(callback, repeatDelayMs, repeatPeriodMs);
+    const { start, stop } = createRepeater(
+        callback,
+        repeatDelayMs,
+        repeatPeriodMs,
+    );
 
     // Add event when pointer (mouse, touch, stylus, etc.) pressed down
     button.addEventListener("pointerdown", start);
@@ -102,11 +106,11 @@ export function attachHoldRepeat(button, callback) {
 
 /**
  * Binds `key` so that pressing it invokes `callback` once immediately.
- * 
+ *
  * Holding down the key repeatedly invokes the given callback.
  * Repeating starts after `data-repeat-delay-ms`, then continues every
  * `data-repeat-period-ms` until the pointer is released.
- * 
+ *
  * @param {string} key The `KeyboardEvent.key` value that triggers the shortcut
  * @param {() => void} callback The callback to invoke on keydown and on each repeat
  * @param {{ delayMs: number, periodMs: number }} options Timing for the hold-repeat (see {@link createRepeater})
@@ -115,7 +119,11 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
     const { start, stop } = createRepeater(callback, delayMs, periodMs);
 
     document.addEventListener("keydown", (event) => {
-        if (event.key !== key || event.repeat || isTypingTarget(document.activeElement)) {
+        if (
+            event.key !== key ||
+            event.repeat ||
+            isTypingTarget(document.activeElement)
+        ) {
             return;
         }
 
@@ -134,14 +142,18 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
 
 /**
  * Binds `key` so that pressing it invokes `callback` once.
- * 
+ *
  * @param {string} key The `KeyboardEvent.key` value that triggers the callback
  * @param {() => void} callback The callback to invoke on keydown
  */
 function attachKeyPress(key, callback) {
     document.addEventListener("keydown", (event) => {
         // Ignore repeat events fired by the OS and ignore key presses when typing
-        if (event.key !== key || event.repeat || isTypingTarget(document.activeElement)) {
+        if (
+            event.key !== key ||
+            event.repeat ||
+            isTypingTarget(document.activeElement)
+        ) {
             return;
         }
 
@@ -153,7 +165,7 @@ function attachKeyPress(key, callback) {
 
 /**
  * Whether the given button type element allows holding to repeat.
- * 
+ *
  * @param {HTMLElement} buttonType The `[data-button-type]` element to check
  * @returns {boolean} Whether `buttonType` allows holding to repeat
  */
@@ -169,7 +181,10 @@ function allowsRepeat(buttonType) {
  * @returns {boolean} Whether the user is trying to type or not
  */
 function isTypingTarget(element) {
-    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+    if (
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement
+    ) {
         return !element.readOnly && !element.disabled;
     }
     return element?.isContentEditable ?? false;
@@ -213,12 +228,14 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     }
 });
 
-const shortcuts = JSON.parse(document.getElementById("shortcuts-data").textContent);
+const shortcuts = JSON.parse(
+    document.getElementById("shortcuts-data").textContent,
+);
 
 const buttonsByEvent = new Map();
 document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     for (const event of JSON.parse(buttonType.dataset.onClickEvents)) {
-        // Assume each event (relevant to shortcuts) only has one button firing it 
+        // Assume each event (relevant to shortcuts) only has one button firing it
         buttonsByEvent.set(event, buttonType);
     }
 });
@@ -233,12 +250,16 @@ for (const [shortcutEvent, { key }] of Object.entries(shortcuts)) {
         continue;
     }
 
-    const publish = () => bus.publish(shortcutEvent, getEventDetail(shortcutEvent));
+    const publish = () =>
+        bus.publish(shortcutEvent, getEventDetail(shortcutEvent));
 
     if (allowsRepeat(buttonType)) {
         const repeatDelayMs = parseInt(buttonType.dataset.repeatDelayMs);
         const repeatPeriodMs = parseInt(buttonType.dataset.repeatPeriodMs);
-        attachKeyHoldRepeat(key, publish, { delayMs: repeatDelayMs, periodMs: repeatPeriodMs });
+        attachKeyHoldRepeat(key, publish, {
+            delayMs: repeatDelayMs,
+            periodMs: repeatPeriodMs,
+        });
     } else {
         attachKeyPress(key, publish);
     }
