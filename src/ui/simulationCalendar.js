@@ -23,26 +23,24 @@ let lastCalendarUpdate = 0;
 let lastSimulationTime = null;
 
 // Initialise Flatpickr on every calendar input
-const calendarInputs = document.querySelectorAll(".calendar");
+const calendarInput = document.querySelector(".calendar");
 
-const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
-    flatpickr(input, {
-        enableTime: true,
-        dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
-        allowInput: false,
-        onChange: (_selectedDates, dateStr, instance) => {
-            // Stop auto-selection of hour after picking a date
-            requestAnimationFrame(() => {
-                instance.hourElement?.blur();
-            });
-            const timeZone = input.dataset.timezone;
-            const epochMs = convertToEpoch(dateStr, timeZone);
-            bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
-                time: epochMs,
-            });
-        },
-    }),
-);
+const FlatpickrInstance = flatpickr(calendarInput, {
+    enableTime: true,
+    dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
+    allowInput: false,
+    onChange: (_selectedDates, dateStr, instance) => {
+        // Stop auto-selection of hour after picking a date
+        requestAnimationFrame(() => {
+            instance.hourElement?.blur();
+        });
+        const timeZone = calendarInput.dataset.timezone;
+        const epochMs = convertToEpoch(dateStr, timeZone);
+        bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
+            time: epochMs,
+        });
+    },
+});
 
 // Set Flatpickr theme
 const flatpickrLightTheme = document.getElementById("flatpickr-light-theme");
@@ -96,13 +94,10 @@ bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     const newTimeZone = event.detail.value;
 
-    calendarInputs.forEach((input) => {
-        input.dataset.timezone = newTimeZone;
-    });
+    calendarInput.dataset.timezone = newTimeZone;
 
-    document.querySelectorAll(".calendar-timezone-label").forEach((label) => {
-        label.textContent = `${newTimeZone}`;
-    });
+    document.querySelector(".calendar-timezone-label").textContent =
+        `${newTimeZone}`;
 
     // Refresh the calendar with the last simulation time to reflect the new time zone
     updateCalendar(lastSimulationTime, true);
@@ -115,10 +110,7 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
  * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns The elapsed days text
  */
-export function getElapsedDaysText(
-    simulationTime,
-    timeZone = calendarInputs[0]?.dataset.timezone,
-) {
+export function getElapsedDaysText(simulationTime, timeZone) {
     const simDateString = dateOnly(new Date(simulationTime), timeZone);
     const nowDateString = dateOnly(new Date(), timeZone);
 
@@ -145,10 +137,7 @@ export function getElapsedDaysText(
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  */
-function updateElapsedDaysText(
-    simulationTime,
-    timeZone = calendarInputs[0]?.dataset.timezone,
-) {
+function updateElapsedDaysText(simulationTime, timeZone) {
     const elapsedDays = document.querySelector("#elapsed-days");
 
     if (!elapsedDays) {
@@ -179,17 +168,18 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
 
     lastCalendarUpdate = now;
 
-    FlatpickrInstances.forEach((instance) => {
-        const timeZone = instance.input.dataset.timezone;
-        instance.set(
-            "minDate",
-            formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone),
-        );
-        instance.set(
-            "maxDate",
-            formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),
-        );
-        instance.setDate(formatInTimeZone(simulationTime, timeZone), false);
-    });
-    updateElapsedDaysText(simulationTime);
+    const timeZone = calendarInput.dataset.timezone;
+    FlatpickrInstance.set(
+        "minDate",
+        formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone),
+    );
+    FlatpickrInstance.set(
+        "maxDate",
+        formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),
+    );
+    FlatpickrInstance.setDate(
+        formatInTimeZone(simulationTime, timeZone),
+        false,
+    );
+    updateElapsedDaysText(simulationTime, timeZone);
 }

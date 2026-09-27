@@ -1151,7 +1151,11 @@ export async function init(name) {
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, currentSimulationTime);
 
-        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
+        const timeZone = document.querySelector(".calendar").dataset.timezone;
+        const elapsedDaysText = getElapsedDaysText(
+            currentSimulationTime,
+            timeZone,
+        );
         setElapsedText(currentSystem, elapsedDaysText);
     });
 
