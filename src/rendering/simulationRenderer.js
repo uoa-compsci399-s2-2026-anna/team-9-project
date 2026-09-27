@@ -802,11 +802,16 @@ const RGBA_MAX_VALUE = 255;
  * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
  */
 function createOrbitAlphaTexture() {
-    const size = ORBIT_POINTS_COUNT;
-    const data = new Uint8Array(size * RGBA_CHANNEL_COUNT);
+    const data = new Uint8Array(ORBIT_POINTS_COUNT * RGBA_CHANNEL_COUNT);
     data.fill(RGBA_MAX_VALUE);
 
-    const texture = new THREE.DataTexture(data, size, 1, THREE.RGBAFormat);
+    // Create ORBIT_POINTS_COUNT x 1 texture (i.e. a 1D texture)
+    const texture = new THREE.DataTexture(
+        data,
+        ORBIT_POINTS_COUNT,
+        1,
+        THREE.RGBAFormat,
+    );
 
     texture.needsUpdate = true;
 
