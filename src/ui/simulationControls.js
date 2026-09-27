@@ -104,9 +104,7 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
         content.classList.toggle("grid-rows-[1fr]");
 
         // Update open/closed icon
-        showHideIcon.querySelectorAll("path").forEach((path) => {
-            path.classList.toggle("hidden");
-        });
+        showHideIcon.classList.toggle("-rotate-90");
 
         // Do not show scrollbar
         scrollContainer.classList.add("overflow-hidden");
