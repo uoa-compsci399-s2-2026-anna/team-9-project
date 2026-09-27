@@ -86,9 +86,9 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
-const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
-const cameraAnimationProgressThreshold = 0.9999; // When to consider the animation complete
-const totalCameraAnimationSteps = Math.floor(
+const cameraAnimationSpeed = 0.1; // Percentage of remaining distance covered per step
+const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this percentage of distance has been covered
+const totalCameraAnimationSteps = Math.ceil( // Calculate the number of steps needed to reach the progress threshold
     Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
 );
 
