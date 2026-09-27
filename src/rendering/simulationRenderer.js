@@ -821,7 +821,8 @@ function createOpaqueOrbitAlphaTexture() {
 /**
  *
  * @param {THREE.DataTexture} texture
- * @param {*} objectProgress
+ * @param {Number} objectProgress Proportion of a full revolution the object is
+ * from its starting point/angle (in interval [0, 1])
  */
 function updateOrbitAlphaTexture(texture, objectProgress) {
     const { data, width } = texture.image;
