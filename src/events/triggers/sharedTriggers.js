@@ -25,11 +25,14 @@ function getEventDetail(event) {
 }
 
 /**
- * TODO
- * @param {*} callback 
- * @param {*} delayMs 
- * @param {*} periodMs 
- * @returns 
+ * Creates a start/stop controlled repeater that invokes `callback` once
+ * after an initial `delayMs` milliseconds, then repeatedly every `periodMs`
+ * milliseconds until `stop()` is called.
+ * 
+ * @param {() => void} callback The function to invoke after the delay and then on each repeat
+ * @param {number} delayMs Milliseconds to wait before the first repeat begins
+ * @param {number} periodMs Milliseconds between each subsequent repeat once started
+ * @returns {{ start: () => void, stop: () => void }} Handlers to start or stop the repeat cycle
  */
 function createRepeater(callback, delayMs, periodMs) {
     let repeatIntervalId = null;
@@ -98,44 +101,51 @@ export function attachHoldRepeat(button, callback) {
 }
 
 /**
- * TODO
- * @param {*} key 
- * @param {*} callback 
- * @param {*} param2 
+ * Binds `key` so that pressing it invokes `callback` once immediately.
+ * 
+ * Holding down the key repeatedly invokes the given callback.
+ * Repeating starts after `data-repeat-delay-ms`, then continues every
+ * `data-repeat-period-ms` until the pointer is released.
+ * 
+ * @param {string} key The `KeyboardEvent.key` value that triggers the shortcut
+ * @param {() => void} callback The callback to invoke on keydown and on each repeat
+ * @param {{ delayMs: number, periodMs: number }} options Timing for the hold-repeat (see {@link createRepeater})
  */
 function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
     const { start, stop } = createRepeater(callback, delayMs, periodMs);
 
-    document.addEventListener("keydown", (e) => {
-        if (e.key !== key || e.repeat || isTypingTarget(document.activeElement)) {
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== key || event.repeat || isTypingTarget(document.activeElement)) {
             return;
         }
 
-        e.preventDefault();
+        event.preventDefault();
 
         callback();
         start();
     });
 
-    document.addEventListener("keyup", (e) => {
-        if (e.key === key) {
+    document.addEventListener("keyup", (event) => {
+        if (event.key === key) {
             stop();
         }
     });
 }
 
 /**
- * TODO
- * @param {*} key 
- * @param {*} callback 
+ * Binds `key` so that pressing it invokes `callback` once.
+ * 
+ * @param {string} key The `KeyboardEvent.key` value that triggers the callback
+ * @param {() => void} callback The callback to invoke on keydown
  */
 function attachKeyPress(key, callback) {
-    document.addEventListener("keydown", (e) => {
-        if (e.key !== key || e.repeat || isTypingTarget(document.activeElement)) {
+    document.addEventListener("keydown", (event) => {
+        // Ignore repeat events fired by the OS and ignore key presses when typing
+        if (event.key !== key || event.repeat || isTypingTarget(document.activeElement)) {
             return;
         }
 
-        e.preventDefault();
+        event.preventDefault();
 
         callback();
     });
@@ -144,26 +154,25 @@ function attachKeyPress(key, callback) {
 /**
  * Whether the given button type element allows holding to repeat.
  * 
- * @param {HTMLElement} buttonType TODO
- * @returns {boolean}
+ * @param {HTMLElement} buttonType The `[data-button-type]` element to check
+ * @returns {boolean} Whether `buttonType` allows holding to repeat
  */
 function allowsRepeat(buttonType) {
     return buttonType.dataset.allowRepeat.toLowerCase() === "true";
 }
 
 /**
- * Whether the given element is one where a keyboard input should be treated as typing rather than
- *  as a shortcut.
- * 
- * @param {Element | null} el
- * @returns {boolean}
+ * Whether `element` is an element where keyboard input should be treated as
+ * ordinary typing instead of as a keyboard shortcut.
+ *
+ * @param {Element | null} element The element to check
+ * @returns {boolean} Whether the user is trying to type or not
  */
-function isTypingTarget(el) {
-    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
-        // TODO: not sure about this b/c calendar
-        return !el.readOnly && !el.disabled;
+function isTypingTarget(element) {
+    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+        return !element.readOnly && !element.disabled;
     }
-    return el?.isContentEditable ?? false;
+    return element?.isContentEditable ?? false;
 }
 
 /**
@@ -209,12 +218,15 @@ const shortcuts = JSON.parse(document.getElementById("shortcuts-data").textConte
 const buttonsByEvent = new Map();
 document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
     for (const event of JSON.parse(buttonType.dataset.onClickEvents)) {
-        // TODO: what about when multiple buttons fire the event?
+        // Assume each event (relevant to shortcuts) only has one button firing it 
         buttonsByEvent.set(event, buttonType);
     }
 });
 
-// TODO: documentation!
+/**
+ * Wire up each configured keyboard shortcut to publish the same event as its corresponding
+ * button and replicate its button's click and hold-repeat behaviour.
+ */
 for (const [shortcutEvent, { key }] of Object.entries(shortcuts)) {
     const buttonType = buttonsByEvent.get(shortcutEvent);
     if (!buttonType) {
