@@ -1441,7 +1441,6 @@ function updateScreenSpaceScales() {
 
         const isComparisonOverlay = mesh.parent === solarSystemGroup;
         const isStar = objectTypes[mesh.userData.name] === "star";
-        console.log(isStar)
 
         let desiredPixelSize = DESIRED_OBJECT_PIXEL_SIZE;
         if (isStar) {
