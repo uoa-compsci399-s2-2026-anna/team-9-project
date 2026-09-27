@@ -35,7 +35,7 @@ export function createOrUpdateOrbitalLine(
     let line = orbitalLines.get(name);
 
     if (!line) {
-        line = createOrbitLine(doShowOrbit, colour, lineWidth, e);
+        line = createEmptyOrbitMeshLine(doShowOrbit, colour, lineWidth, e);
 
         group.add(line);
         orbitalLines.set(name, line);
@@ -59,7 +59,7 @@ export function createOrUpdateOrbitalLine(
  * @param {Number} e Eccentricity of orbit
  * @returns {THREE.Mesh} Empty mesh line to render orbit
  */
-function createOrbitLine(isVisible, colour, lineWidth, e) {
+function createEmptyOrbitMeshLine(isVisible, colour, lineWidth, e) {
     const geometry = new MeshLineGeometry();
     const material = new MeshLineMaterial({
         sizeAttenuation: false,
