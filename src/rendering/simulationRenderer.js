@@ -929,7 +929,6 @@ function initOrUpdateCamera(canvas, {cameraDistance, cameraNear, cameraFar}) {
         cameraDistance,
     );
 
-
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
         camera = new THREE.PerspectiveCamera(
