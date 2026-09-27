@@ -702,9 +702,47 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
 
+    /**
+     * The position of the object in world (xyz) coordinate space.
+     */
+    const worldObjectPosition = new THREE.Vector3(
+        position.x,
+        position.y,
+        position.z,
+    );
+
+    /**
+     * Rotation matrix: local (coordinate system of orbit plane) -> world
+     */
+    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
+
+    /**
+     * World -> local (coordinate system of orbit plane)
+     */
+    const inverseRotationMatrix = rotationMatrix.clone().invert();
+
+    /**
+     * Position of object in local (orbit plane) coordinates
+     */
+    const localObjectPosition = worldObjectPosition.applyMatrix4(
+        inverseRotationMatrix,
+    );
+    /**
+     * Angle between positive x-axis (in local coordinates) and the point
+     * (localPosition.x, localPosition.y) from the 2-argument arctangent.
+     */
+    let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
+    if (objectTheta < 0) objectTheta += 2 * Math.PI;
+
     for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
+
+        if (objectTheta > theta && objectTheta <= theta + thetaStep) {
+            // Add a point on the exact coordinates of the object to prevent 
+            // sampling issues where the object's position falls between points.
+            points.push(localObjectPosition.x, localObjectPosition.y, 0);
+        }
     }
 
     if (e > 1) {
@@ -713,43 +751,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         points.push(x, y, 0);
     }
 
-    /**
-     * Rotation matrix: local (coordinate system of orbit plane) -> world
-     */
-    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
-
     if (e < 1) {
-        /**
-         * The position of the object in world (xyz) coordinate space.
-         */
-        const worldObjectPosition = new THREE.Vector3(
-            position.x,
-            position.y,
-            position.z,
-        );
-
-        /**
-         * World -> local (coordinate system of orbit plane)
-         */
-        const inverseRotationMatrix = rotationMatrix.clone().invert();
-
-        /**
-         * Position of object in local (orbit plane) coordinates
-         */
-        const localObjectPosition = worldObjectPosition.applyMatrix4(
-            inverseRotationMatrix,
-        );
-
-        /**
-         * Angle between positive x-axis (in local coordinates) and the point
-         * (localPosition.x, localPosition.y) from the 2-argument arctangent.
-         */
-        let objectTheta = Math.atan2(
-            localObjectPosition.y,
-            localObjectPosition.x,
-        );
-        if (objectTheta < 0) objectTheta += 2 * Math.PI;
-
         /**
          * Proportion of a full revolution the object is from its starting
          * point/angle.
