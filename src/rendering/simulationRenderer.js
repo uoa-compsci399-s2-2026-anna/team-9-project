@@ -658,7 +658,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         }
 
         if (e < 1) {
-            material.alphaMap = createOrbitAlphaTexture();
+            material.alphaMap = createOpaqueOrbitAlphaTexture();
             material.useAlphaMap = 1;
         }
 
@@ -801,7 +801,7 @@ const RGBA_MAX_VALUE = 255;
  * @returns `THREE.DataTexture` of a RGBA alpha map filled with values of 255
  * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
  */
-function createOrbitAlphaTexture() {
+function createOpaqueOrbitAlphaTexture() {
     const data = new Uint8Array(ORBIT_POINTS_COUNT * RGBA_CHANNEL_COUNT);
     data.fill(RGBA_MAX_VALUE);
 
