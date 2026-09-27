@@ -127,7 +127,8 @@ const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 /**
  * The width (thickness) of the orbit lines for regular orbits and for orbits
- * belonging to the Solar System when it's shown only as a comparison overlay.
+ * belonging to the Solar System when it's shown only as a comparison overlay,
+ * in screen pixels.
  */
 const ORBIT_LINE_WIDTH = 20;
 const COMPARISON_ORBIT_LINE_WIDTH = 10;
