@@ -1,4 +1,5 @@
 {% from "components/button-with-tooltip.html" import button_with_tooltip %}
+{% from "components/input-with-tooltip.html" import input_with_tooltip %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
 
@@ -19,13 +20,15 @@
           <!-- Simulation timestamp / date picker -->
           <div class="text-left max-sm:hidden">
             <p class="text-lg">
-              <input
-                type="text"
-                class="calendar bordered w-46 rounded-md px-1 tabular-nums in-[.font-accessible_&]:w-52"
-                name="calendar"
-                value="{{ sim_date }}"
-                data-timezone="{{ settings.timeZone }}"
-              />
+              {% call input_with_tooltip(tooltip_text="Select a date and time") %}
+                <input
+                  type="text"
+                  class="calendar bordered w-42 rounded-md px-1 tabular-nums in-[.font-accessible_&]:w-46"
+                  name="calendar"
+                  value="{{ sim_date }}"
+                  data-timezone="{{ settings.timeZone }}"
+                />
+              {% endcall %}
               <span
                 class="calendar-timezone-label px-1 text-sm text-zinc-500 dark:text-zinc-400"
               >
