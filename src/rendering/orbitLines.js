@@ -22,7 +22,6 @@ const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
  */
 export function createOrUpdateOrbitalLine(
     name,
-    line,
     position,
     orbitalData,
     group,
@@ -34,6 +33,8 @@ export function createOrUpdateOrbitalLine(
     const { a, e, inc, Omega, omega } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
+
+    let line = orbitalLines.get(name);
 
     if (!line) {
         line = createOrbitLine(doShowOrbit, colour, lineWidth, e);

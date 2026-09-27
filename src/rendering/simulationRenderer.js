@@ -724,7 +724,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
     )) {
         orbitLines.createOrUpdateOrbitalLine(
             name,
-            orbitalLines.get(name),
             currentSystemData.positions[name],
             orbitalData,
             currentSystemGroup,
@@ -761,7 +760,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
             orbitLines.createOrUpdateOrbitalLine(
                 name,
-                orbitalLines.get(name),
                 solarSystemData.positions[name],
                 orbitalData,
                 solarSystemGroup,
