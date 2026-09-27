@@ -5,10 +5,10 @@
     },
     "sim:step_forward": {
         "key": "ArrowRight",
-        "label": "→"
+        "label": ">"
     },
     "sim:step_back": {
         "key": "ArrowLeft",
-        "label": "←"
+        "label": "<"
     }
 }
