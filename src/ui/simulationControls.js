@@ -46,9 +46,9 @@ const systemInformationButton = document.getElementById(
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
 
-    systemDropdownWrapper.querySelectorAll("path").forEach((path) => {
-        path.classList.toggle("hidden");
-    });
+    systemDropdownWrapper
+        .querySelector("[data-show-hide-icon]")
+        .classList.toggle("-rotate-90", !showDropdown);
 
     // TODO: Make this nicer (probably can use existing Tailwind classes e.g. clickable, etc.?)
 
