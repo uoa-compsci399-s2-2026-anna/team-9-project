@@ -783,6 +783,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
+const ORBIT_LINE_MINIMUM_WIDTH_OPACITY = 0.2;
+
 /**
  * A function defining the curve/profile of the opacity/width modulation of
  * the orbit line.
@@ -791,7 +793,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
  * @returns Scale factor betwee 0 and 1 of opacity/line width.
  */
 const ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION = (distance) =>
-    Math.max(0.2, 1 - distance);
+    Math.max(ORBIT_LINE_MINIMUM_WIDTH_OPACITY, 1 - distance);
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
