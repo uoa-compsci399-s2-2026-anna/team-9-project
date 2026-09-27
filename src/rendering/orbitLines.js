@@ -140,6 +140,7 @@ function updateOrbitLine(line, a, e, inc, Omega, omega, worldObjectPosition) {
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
 
+        // If object theta is between this iteration of theta and the next...
         if (objectTheta > theta && objectTheta <= theta + thetaStep) {
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
