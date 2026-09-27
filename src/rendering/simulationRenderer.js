@@ -90,7 +90,7 @@ const cameraAnimationSpeed = 0.1; // Proportion of remaining distance covered pe
 const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this proportion of total distance has been covered
 
 // Calculate the number of steps needed to reach the progress threshold.
-// At the n-th step, (1 - cameraAnimationSpeed)^n is the remaining proportion of the distance to cover.
+// At the n-th step, (1 - cameraAnimationSpeed)^n is the remaining proportion of total distance to cover.
 // So, we solve for n in the equation: (1 - cameraAnimationSpeed)^n = 1 - cameraAnimationProgressThreshold
 // to get the number of steps needed for the remaining proportion of total distance to reach 1 - cameraAnimationProgressThreshold.
 const totalCameraAnimationSteps = Math.ceil(
