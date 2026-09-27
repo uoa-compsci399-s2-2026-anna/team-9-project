@@ -78,6 +78,7 @@ const cameraFarMultiplier = 100;
 const controlsMinMultiplier = 10;
 const controlsMaxMultiplier = 1.5;
 const controlsZoomSpeed = 2.5;
+const controlsMinZoomFactor = 2; // The minimum factor that the controls should be able to zoom
 
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
@@ -85,8 +86,18 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
-const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
-const cameraAnimationThresholdMultiplier = 0.001; // Determines the distance threshold to finish the animation
+const cameraAnimationSpeed = 0.1; // Proportion of remaining distance covered per step
+const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this proportion of total distance has been covered
+
+// Calculate the number of steps needed to reach the progress threshold.
+// At the n-th step, (1 - cameraAnimationSpeed)^n is the remaining proportion of total distance to cover.
+// So, we solve for n in the equation: (1 - cameraAnimationSpeed)^n = 1 - cameraAnimationProgressThreshold
+// to get the number of steps needed for the remaining proportion of total distance to reach 1 - cameraAnimationProgressThreshold.
+const totalCameraAnimationSteps = Math.ceil(
+    Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
+);
+
+let currentCameraAnimationStep = 0;
 let animateCameraAndControls = false;
 
 // Animation targets for camera and controls
@@ -104,6 +115,10 @@ const orbitalLines = new Map();
 const objectLabels = new Map();
 
 let viewRadius;
+
+// The view radius when all objects are set to default visibility
+let currentSystemDefaultViewRadius;
+let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
@@ -392,16 +407,18 @@ async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
     let newViewRadius = viewRadiusForCurrentSystem;
 
     if (comparingToSolarSystem) {
-        const viewRadiusForSolarSystem = await getViewRadiusForSystem(
-            "Solar System",
-            true
+        newViewRadius = Math.max(
+            newViewRadius,
+            solarSystemDefaultViewRadius
         );
-        newViewRadius = Math.max(newViewRadius, viewRadiusForSolarSystem);
     }
 
     if (habitableZoneShown && habitableZone) {
         const viewRadiusForHabitableZone = habitableZone.end * viewRadiusMultiplier;
-        newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
+        newViewRadius = Math.max(
+            newViewRadius,
+            viewRadiusForHabitableZone
+        );
     }
 
     viewRadius = newViewRadius;
@@ -746,7 +763,16 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
 
     const coveredRange =
         desiredReferenceGridDivisionSize * referenceGridDivisions;
-    if (coveredRange < viewRadius * 2) return; // Don't scale if it doesn't cover the view radius
+
+    let viewRadiusToCover = currentSystemDefaultViewRadius;
+    if (comparingToSolarSystem) {
+        viewRadiusToCover = Math.max(
+            viewRadiusToCover,
+            solarSystemDefaultViewRadius,
+        );
+    }
+
+    if (coveredRange < viewRadiusToCover * 2) return; // Don't scale if it doesn't cover the view radius
 
     const scaleFactor =
         desiredReferenceGridDivisionSize / referenceGridDivisionSize;
@@ -866,19 +892,53 @@ async function alignSystemToCameraUp(group, useDefault = false) {
 }
 
 /**
- * Initialise the camera for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
+ * Calculate the camera and controls settings based on the view radius.
+ *
  * @param {number} viewRadius The radius of view to fit within the camera
+ * @returns {Object} The camera and controls settings
  */
-function initOrUpdateCamera(canvas, viewRadius) {
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
-    cameraDefaults.position = calculateDefaultCameraPosition(
-        cameraDefaults.up,
-        cameraDistance,
+function calculateCameraAndControlsSettings(viewRadius) {
+    const controlsMinDistance = objectSize * controlsMinMultiplier;
+
+    // Camera distance must be at least the minimum distance for the controls
+    const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
+    const cameraDistance = Math.max(
+        calculateCameraDistance(fov, viewRadius),
+        controlsMinDistance + epsilon
+    );
+
+    // Controls max distance must be at least camera distance * max multiplier,
+    // and must be able to zoom by at least controlsMinZoomFactor
+    const controlsMaxDistance = Math.max(
+        cameraDistance * controlsMaxMultiplier,
+        controlsMinDistance * controlsMinZoomFactor
     );
 
     const cameraNear = objectSize * cameraNearMultiplier;
     const cameraFar = cameraDistance * cameraFarMultiplier;
+
+    return {
+        cameraDistance,
+        cameraNear,
+        cameraFar,
+        controlsMinDistance,
+        controlsMaxDistance,
+    };
+}
+
+/**
+ * Initialise the camera for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ * @param {Object} cameraSettings The camera settings
+ * @param {number} cameraSettings.cameraDistance The distance of the camera
+ * @param {number} cameraSettings.cameraNear The near plane of the camera
+ * @param {number} cameraSettings.cameraFar The far plane of the camera
+ */
+function initOrUpdateCamera(canvas, {cameraDistance, cameraNear, cameraFar}) {
+    cameraDefaults.position = calculateDefaultCameraPosition(
+        cameraDefaults.up,
+        cameraDistance,
+    );
 
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
@@ -900,11 +960,11 @@ function initOrUpdateCamera(canvas, viewRadius) {
 /**
  * Initialise the controls for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {number} viewRadius The radius of view to fit within the camera
+ * @param {Object} controlsSettings The controls settings
+ * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
+ * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
  */
-function initOrUpdateControls(canvas, viewRadius) {
-    const cameraDistance = calculateCameraDistance(fov, viewRadius);
-
+function initOrUpdateControls(canvas, {controlsMinDistance, controlsMaxDistance}) {
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
         controls.addEventListener("start", () => {
@@ -914,8 +974,8 @@ function initOrUpdateControls(canvas, viewRadius) {
         controls.target.copy(cameraDefaults.target);
         controls.update();
     }
-    controls.minDistance = objectSize * controlsMinMultiplier; // Limit to avoid clipping the near plane
-    controls.maxDistance = cameraDistance * controlsMaxMultiplier; // Limit to avoid clipping the far plane
+    controls.minDistance = controlsMinDistance;
+    controls.maxDistance = controlsMaxDistance;
     controls.zoomSpeed = controlsZoomSpeed;
 
     if (controlsChangeHandler) {
@@ -963,6 +1023,20 @@ function initRaycastingEvents(canvas) {
         if (!isDragging) {
             onCanvasClick(event, canvas);
         }
+    });
+}
+
+/**
+ * Register a pointer listener on the canvas that updates the cursor to
+ * a pointer to indicate when an object can be clicked.
+ *
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ */
+function initHoverCursor(canvas) {
+    canvas.addEventListener("pointermove", (event) => {
+        const name = getObjectNameAt(event.clientX, event.clientY, canvas);
+        // Set the cursor to a pointer if there is an object at the cursor
+        canvas.style.cursor = name ? "pointer" : "default";
     });
 }
 
@@ -1037,15 +1111,21 @@ export async function init(name) {
         simulationState.habitableZoneShown
     );
 
-    objectSize = viewRadius * objectSizeMultiplier; // Set the object size
-    hitboxPadding = viewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
+    currentSystemDefaultViewRadius = await getViewRadiusForSystem(currentSystem, true);
+    solarSystemDefaultViewRadius = await getViewRadiusForSystem("Solar System", true);
+
+    objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
+    hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
+
     initRaycastingEvents(canvas);
+    initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
 
@@ -1104,8 +1184,9 @@ export async function resetView(topDown = true) {
     );
 
     // Update the camera and controls for the new view radius
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
 
     // Animate to the default controls target
     animateControlsTargetTo.copy(cameraDefaults.target);
@@ -1131,6 +1212,7 @@ export async function resetView(topDown = true) {
         animateCameraPositionTo.copy(newCameraPosition);
     }
 
+    currentCameraAnimationStep = 0;
     animateCameraAndControls = true;
 }
 
@@ -1142,16 +1224,11 @@ export async function compareToSolarSystem() {
         habitableZoneMesh?.visible
     );
 
-    const currentViewRadius = await getViewRadiusForSystem(currentSystem);
-    const solarViewRadius = await getViewRadiusForSystem("Solar System", true);
-
     // Scale objects for comparison as the smaller of the two sizes
-    const currentSystemObjectSize = currentViewRadius * objectSizeMultiplier;
-    const solarSystemObjectSize = solarViewRadius * objectSizeMultiplier;
     const comparisonObjectSize = Math.min(
-        currentSystemObjectSize,
-        solarSystemObjectSize,
-    );
+        currentSystemDefaultViewRadius,
+        solarSystemDefaultViewRadius,
+    ) * objectSizeMultiplier;
     objectScale = comparisonObjectSize / objectSize;
 
     // Align the solar system's average normal with the up vector (Z-axis)
@@ -1159,8 +1236,9 @@ export async function compareToSolarSystem() {
 
     solarSystemGroup.visible = true;
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
 
     resetView();
 
@@ -1179,8 +1257,9 @@ export async function hideSolarSystem() {
     );
     solarSystemGroup.visible = false;
 
-    initOrUpdateCamera(canvas, viewRadius);
-    initOrUpdateControls(canvas, viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
+    initOrUpdateCamera(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(canvas, cameraAndControlsSettings);
 
     resetView();
 
@@ -1347,23 +1426,23 @@ async function renderFrame(timestamp) {
     }
 
     if (animateCameraAndControls) {
-        const positionDistance = camera.position.distanceTo(animateCameraPositionTo);
-        const targetDistance = controls.target.distanceTo(animateControlsTargetTo);
-        const threshold = viewRadius * cameraAnimationThresholdMultiplier;
+        // Animate the camera and controls for totalCameraAnimationSteps steps.
+        // Animation stops after enough steps have been taken
+        // or if the user interacts with the controls.
 
-        // Stop animating if the camera and controls are close enough
-        if (positionDistance < threshold && targetDistance < threshold) {
+        if (currentCameraAnimationStep >= totalCameraAnimationSteps) {
             animateCameraAndControls = false;
             camera.position.copy(animateCameraPositionTo);
             controls.target.copy(animateControlsTargetTo);
-            controls.update();
 
         } else {
             // Interpolate towards the desired position and target
             camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
             controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
-            controls.update();
+            currentCameraAnimationStep++;
         }
+
+        controls.update();
     }
 
     renderer.render(scene, camera);
