@@ -753,7 +753,16 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
 
     const coveredRange =
         desiredReferenceGridDivisionSize * referenceGridDivisions;
-    if (coveredRange < viewRadius * 2) return; // Don't scale if it doesn't cover the view radius
+
+    let viewRadiusToCover = currentSystemDefaultViewRadius;
+    if (comparingToSolarSystem) {
+        viewRadiusToCover = Math.max(
+            viewRadiusToCover,
+            solarSystemDefaultViewRadius,
+        );
+    }
+
+    if (coveredRange < viewRadiusToCover * 2) return; // Don't scale if it doesn't cover the view radius
 
     const scaleFactor =
         desiredReferenceGridDivisionSize / referenceGridDivisionSize;
