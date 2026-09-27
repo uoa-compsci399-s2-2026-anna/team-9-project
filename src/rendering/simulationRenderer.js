@@ -840,9 +840,9 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
         /**
          * Offset of alpha channel/byte
          */
-        const aplhaOffset = offset + 3;
+        const alphaOffset = offset + 3;
 
-        data[aplhaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
+        data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
     }
 
     texture.needsUpdate = true;
