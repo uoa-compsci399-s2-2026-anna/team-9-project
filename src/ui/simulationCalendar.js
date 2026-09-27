@@ -106,6 +106,19 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
 });
 
 /**
+ * Converts a date-only string (e.g. "2026-01-01") into the epoch timestamp for midnight
+ * on that date
+ *
+ * @param {string} dateOnlyString A date string in "yyyy-MM-dd" format
+ * @returns {number} Epoch time in milliseconds for midnight on that date
+ */
+function parseDateStringToMidnightMs(dateOnlyString) {
+    const [year, month, day] = dateOnlyString.split("-").map(Number);
+    // So will return time in midnight by default, as time values not passed
+    return Date.UTC(year, month - 1, day); // Date.UTC's month is 0-indexed
+}
+
+/**
  * Gets the elapsed days text which describes how far the simulation time is from today,
  * in the given time zone (e.g., "Today", "3 days from today", "5 days ago").
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
@@ -120,8 +133,8 @@ export function getElapsedDaysText(simulationTime, timeZone) {
         return "Today";
     }
 
-    const simMidnight = new Date(simDateString + "T00:00:00Z").getTime();
-    const nowMidnight = new Date(nowDateString + "T00:00:00Z").getTime();
+    const simMidnight = parseDateStringToMidnightMs(simDateString);
+    const nowMidnight = parseDateStringToMidnightMs(nowDateString);
 
     const daysCount = Math.round((simMidnight - nowMidnight) / MS_PER_DAY);
     const dayWord = Math.abs(daysCount) === 1 ? "day" : "days";
