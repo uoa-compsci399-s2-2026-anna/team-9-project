@@ -96,13 +96,16 @@ function createEmptyOrbitLine(isVisible, colour, lineWidth, e) {
  * @param {THREE.Vector3} worldObjectPosition Position of the object in xyz space
  */
 function updateOrbitLine(line, a, e, inc, Omega, omega, worldObjectPosition) {
+    const isEllipticalOrbit = e < 1;
+    const isHyperbolicOrbit = e > 1;
+
     // Update the geometry of the line to match the orbital parameters
     const points = [];
     let thetaStart = 0;
     let thetaEnd = 2 * Math.PI;
 
     // Limit the angle range for hyperbolic orbits to its asymptotes
-    if (e > 1) {
+    if (isHyperbolicOrbit) {
         const thetaLimit = Math.acos(-1 / e);
         const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
 
@@ -148,13 +151,13 @@ function updateOrbitLine(line, a, e, inc, Omega, omega, worldObjectPosition) {
         }
     }
 
-    if (e > 1) {
+    if (isHyperbolicOrbit) {
         // Add the last point at the end of the range to ensure the line reaches the asymptote
         const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
         points.push(x, y, 0);
     }
 
-    if (e < 1) {
+    if (isEllipticalOrbit) {
         /**
          * Proportion of a full revolution the object is from its starting
          * point/angle.
