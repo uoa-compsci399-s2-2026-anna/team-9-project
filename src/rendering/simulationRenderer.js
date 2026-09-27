@@ -122,7 +122,6 @@ let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
-let objectScale = 1;
 let hitboxPadding;
 
 const orbitPoints = 360; // Number of points to approximate the ellipse
@@ -561,7 +560,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         objectLabels.set(name, label);
     }
 
-    mesh.scale.set(objectScale, objectScale, objectScale);
     mesh.position.set(position.x, position.y, position.z);
 }
 
@@ -1224,13 +1222,6 @@ export async function compareToSolarSystem() {
         habitableZoneMesh?.visible
     );
 
-    // Scale objects for comparison as the smaller of the two sizes
-    const comparisonObjectSize = Math.min(
-        currentSystemDefaultViewRadius,
-        solarSystemDefaultViewRadius,
-    ) * objectSizeMultiplier;
-    objectScale = comparisonObjectSize / objectSize;
-
     // Align the solar system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(solarSystemGroup, true);
 
@@ -1246,8 +1237,6 @@ export async function compareToSolarSystem() {
 }
 
 export async function hideSolarSystem() {
-    objectScale = 1; // Reset object scale to default
-
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
@@ -1404,11 +1393,16 @@ function resizeRendererToDisplaySize() {
     return needResize;
 }
 
-// Screen-space object sizing
+// Screen space object sizing
 const DESIRED_OBJECT_PIXEL_SIZE = 12;
-const minScreenSpaceScale = 0.5;
-const maxScreenSpaceScale = 50;
+const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
+const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects? Idk about this
 
+const minScreenSpaceScale = 0.5;
+const maxScreenSpaceScale = 50; // TODO: can't even zoom out enough rn to trigger this
+
+const minStarScreenSpaceScale = 1; // Or just do (DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE) * minScreenSpaceScale
+const maxStarScreenSpaceScale = 80;
 
 /**
  * Computes a scale factor so the mesh's apparent size on screen stays roughly
@@ -1417,10 +1411,12 @@ const maxScreenSpaceScale = 50;
  * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
  * @param {THREE.PerspectiveCamera} camera The active camera
  * @param {number} canvasHeight The renderer's canvas height in pixels
- * @param {number} desiredPixelSize The target on-screen diameter in pixels
+ * @param {number} desiredPixelSize The target on screen diameter in pixels
+ * @param {number} minScale The minimum allowed scale factor
+ * @param {number} maxScale The maximum allowed scale factor
  * @returns {number} The scale factor to apply to the mesh
  */
-function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize) {
+function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize, minScale, maxScale) {
     const meshWorldPosition = new THREE.Vector3();
     mesh.getWorldPosition(meshWorldPosition);
     const distance = camera.position.distanceTo(meshWorldPosition);
@@ -1430,11 +1426,12 @@ function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize)
     const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
 
     const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
-    const scale = desiredWorldDiameter / (2 * objectSize); // objectSize is the sphere's radius at scale 1
+    const scale = desiredWorldDiameter / (2 * objectSize);
 
-    return THREE.MathUtils.clamp(scale, minScreenSpaceScale, maxScreenSpaceScale);
+    console.log(scale);
+
+    return THREE.MathUtils.clamp(scale, minScale, maxScale);
 }
-
 
 function updateScreenSpaceScales() {
     const canvasHeight = renderer.domElement.clientHeight;
@@ -1442,11 +1439,27 @@ function updateScreenSpaceScales() {
     for (const mesh of objectMeshes.values()) {
         if (!mesh.visible) continue;
 
+        const isComparisonOverlay = mesh.parent === solarSystemGroup;
+        const isStar = objectTypes[mesh.userData.name] === "star";
+        console.log(isStar)
+
+        let desiredPixelSize = DESIRED_OBJECT_PIXEL_SIZE;
+        if (isStar) {
+            desiredPixelSize = DESIRED_STAR_PIXEL_SIZE;
+        } else if (isComparisonOverlay) {
+            desiredPixelSize = DESIRED_COMPARISON_PIXEL_SIZE;
+        }
+
+        const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
+        const maxScale = isStar ? maxStarScreenSpaceScale : maxScreenSpaceScale;
+
         const scale = calculateScreenSpaceScale(
             mesh,
             camera,
             canvasHeight,
-            DESIRED_OBJECT_PIXEL_SIZE,
+            desiredPixelSize,
+            minScale,
+            maxScale,
         );
         mesh.scale.set(scale, scale, scale);
     }
