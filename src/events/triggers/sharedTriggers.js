@@ -225,7 +225,7 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
 
 /**
  * Get the associated button for each keyboard shortcut (according to its button)
- * and replicate the shortcut's associated button's click and hold-repeat behaviour.
+ * and replicate the shortcut's associated button's hold-repeat behaviour.
  */
 for (const [shortcutEvent, { key }] of Object.entries(shortcuts)) {
     const buttonType = buttonsByEvent.get(shortcutEvent);
