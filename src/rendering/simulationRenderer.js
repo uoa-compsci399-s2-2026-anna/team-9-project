@@ -584,7 +584,11 @@ function shouldShowOrbit(
  * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background
  * @returns A new colour faded towards the background colour by (1 - opacity)
  */
-export function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
+export function getFadedColour(
+    colour,
+    opacity,
+    isDarkMode = settings.darkMode,
+) {
     const theme = getTheme(isDarkMode);
     const backgroundColour = theme.background;
 
@@ -707,6 +711,14 @@ async function updateSimulation(forceCalendarUpdate = true) {
             getCurrentSystemColour(name, isDarkMode),
         );
     }
+
+    /**
+     * The width (thickness) of the orbit lines for regular orbits and for orbits
+     * belonging to the Solar System when it's shown only as a comparison overlay.
+     */
+    const ORBIT_LINE_WIDTH = 20;
+    const COMPARISON_ORBIT_LINE_WIDTH = 10;
+
     for (const [name, orbitalData] of Object.entries(
         currentSystemData.orbital_data,
     )) {
@@ -717,8 +729,8 @@ async function updateSimulation(forceCalendarUpdate = true) {
             orbitalData,
             currentSystemGroup,
             getCurrentSystemColour(name, isDarkMode),
+            ORBIT_LINE_WIDTH,
             orbitalLines,
-            currentSystemGroup === solarSystemGroup,
             true,
         );
     }
@@ -744,17 +756,19 @@ async function updateSimulation(forceCalendarUpdate = true) {
             solarSystemData.orbital_data,
         )) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
+
+            const COMPARISON_ORBIT_OPACITY = 0.5;
+
             orbitLines.createOrUpdateOrbitalLine(
                 name,
                 orbitalLines.get(name),
                 solarSystemData.positions[name],
                 orbitalData,
                 solarSystemGroup,
-                overlayColour,
+                getFadedColour(overlayColour, COMPARISON_ORBIT_OPACITY),
+                COMPARISON_ORBIT_LINE_WIDTH,
                 orbitalLines,
-                true,
                 shouldShowOrbit(name, "Solar System", { useDefault: true }),
-
             );
         }
     }

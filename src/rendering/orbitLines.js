@@ -9,15 +9,6 @@ import { getFadedColour } from "./simulationRenderer.js";
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 /**
- * The width (thickness) of the orbit lines for regular orbits and for orbits
- * belonging to the Solar System when it's shown only as a comparison overlay.
- */
-const ORBIT_LINE_WIDTH = 20;
-const COMPARISON_ORBIT_LINE_WIDTH = 10;
-
-const COMPARISON_ORBIT_OPACITY = 0.5;
-
-/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  *
@@ -36,8 +27,8 @@ export function createOrUpdateOrbitalLine(
     orbitalData,
     group,
     colour,
+    lineWidth,
     orbitalLines,
-    isCompareToSolarSystemOrbitLine,
     doShowOrbit,
 ) {
     const { a, e, inc, Omega, omega } = orbitalData;
@@ -45,15 +36,7 @@ export function createOrUpdateOrbitalLine(
     if (e === 1) return; // Parabolic orbits are not supported for now
 
     if (!line) {
-        const lineColour = isCompareToSolarSystemOrbitLine
-            ? getFadedColour(colour, COMPARISON_ORBIT_OPACITY)
-            : colour;
-
-        const lineWidth = isCompareToSolarSystemOrbitLine
-            ? COMPARISON_ORBIT_LINE_WIDTH
-            : ORBIT_LINE_WIDTH;
-
-        line = createOrbitLine(doShowOrbit, lineColour, lineWidth, e);
+        line = createOrbitLine(doShowOrbit, colour, lineWidth, e);
 
         group.add(line);
         orbitalLines.set(name, line);
