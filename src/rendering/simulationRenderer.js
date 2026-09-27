@@ -1258,7 +1258,10 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Do not update canvas CSS dimensions to absolute pixel values (we are 
+    // using w-screen and h-screen)
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
 
     referenceSystemData.set(
         // Add this system's reference data to cache
