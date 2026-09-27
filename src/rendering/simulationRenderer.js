@@ -892,9 +892,10 @@ function calculateCameraAndControlsSettings(viewRadius) {
     const controlsMinDistance = objectSize * controlsMinMultiplier;
 
     // Camera distance must be at least the minimum distance for the controls
+    const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
     const cameraDistance = Math.max(
         calculateCameraDistance(fov, viewRadius),
-        controlsMinDistance
+        controlsMinDistance + epsilon
     );
 
     // Controls max distance must be at least camera distance * max multiplier,
