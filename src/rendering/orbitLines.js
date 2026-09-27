@@ -4,7 +4,7 @@ import {
     calculateOrbitalPosition,
     calculateRotationMatrix,
 } from "./simulationCalculations.js";
-import { getFadedColour } from "./simulationRenderer.js";
+import { orbitalLines } from "./simulationRenderer.js";
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
@@ -27,7 +27,6 @@ export function createOrUpdateOrbitalLine(
     group,
     colour,
     lineWidth,
-    orbitalLines,
     doShowOrbit,
 ) {
     const { a, e, inc, Omega, omega } = orbitalData;

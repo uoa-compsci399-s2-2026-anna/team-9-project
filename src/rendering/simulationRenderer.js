@@ -102,7 +102,7 @@ const solarSystemGroup = new THREE.Group();
 solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
 const objectMeshes = new Map();
-const orbitalLines = new Map();
+export const orbitalLines = new Map();
 const objectLabels = new Map();
 
 let viewRadius;
@@ -729,7 +729,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
             currentSystemGroup,
             getCurrentSystemColour(name, isDarkMode),
             ORBIT_LINE_WIDTH,
-            orbitalLines,
             true,
         );
     }
@@ -765,7 +764,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
                 solarSystemGroup,
                 getFadedColour(overlayColour, COMPARISON_ORBIT_OPACITY),
                 COMPARISON_ORBIT_LINE_WIDTH,
-                orbitalLines,
                 shouldShowOrbit(name, "Solar System", { useDefault: true }),
             );
         }
