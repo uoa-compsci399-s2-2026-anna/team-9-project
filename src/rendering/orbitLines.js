@@ -9,16 +9,15 @@ import { orbitalLines } from "./simulationRenderer.js";
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 /**
- * If the target orbit does not exist, then its orbital line is created with the given orbital data.
- * If the target orbital line does exist, then it is updated.
  *
- * The orbital line is coloured to match its object.
- *
- * @param {*} line The orbital line
- * @param {Object} position The position in real coordinates (xyz) of the object
- * @param {Object} orbitalData Orbital data for the line
- * @param {THREE.Group} group The group to add the orbital line to
- * @param {string} colour CSS colour string used for this orbit's line
+ * @param {string} name Object name
+ * @param {Object} position Object position with attributes `x`, `y`, `z`
+ * @param {Object} orbitalData Object orbital elements
+ * @param {THREE.Group} group Group to add orbit line to
+ * @param {string} colour CSS colour string for orbit line colour
+ * @param {Number} lineWidth Orbit line width
+ * @param {boolean} doShowOrbit Show orbit (visible) by default
+ * @returns
  */
 export function createOrUpdateOrbitalLine(
     name,
