@@ -805,7 +805,11 @@ function createOpaqueOrbitAlphaTexture() {
     const data = new Uint8Array(ORBIT_POINTS_COUNT * RGBA_CHANNEL_COUNT);
     data.fill(RGBA_MAX_VALUE);
 
-    // Create ORBIT_POINTS_COUNT x 1 texture (i.e. a 1D texture)
+    /**
+     * Create ORBIT_POINTS_COUNT x 1 texture (i.e. a 1D texture) for an opacity
+     * map. This is in RGBA format, so each 'point' of the texture is
+     * represented by 4 bytes: a red, green, blue, and alpha channel.
+     */
     const texture = new THREE.DataTexture(
         data,
         ORBIT_POINTS_COUNT,
@@ -819,7 +823,7 @@ function createOpaqueOrbitAlphaTexture() {
 }
 
 /**
- * Updates the given alpha `texture` map based on the new value of 
+ * Updates the given alpha `texture` map based on the new value of
  * `objectProgress` (i.e. the new position of the object). Used so that as the
  * object moves around its orbit, the opacity of the orbit updates correctly
  * so that it is most opaque at the object and gets fainter (or as defined
@@ -829,11 +833,28 @@ function createOpaqueOrbitAlphaTexture() {
  * from its starting point/angle (in interval [0, 1])
  */
 function updateOrbitAlphaTexture(texture, objectProgress) {
+    /**
+     * `texture.image` is an object containing fields `data` (the actual byte
+     * array of the texture), `width` (the number of bytes) in the 'width'
+     * dimension, and `height`. Here we get the raw byte array and the width
+     * of the texture.
+     */
+
     const { data, width } = texture.image;
 
+    // Iterate over the raw texture byte array
     for (let i = 0; i < width; i++) {
+        /**
+         * Proportion of array traversed (in interval [0, 1])
+         */
         const progress = i / (width - 1);
+
+        /**
+         * Proportion of a full revolution this point of `progress` is
+         * from the object.
+         */
         const distance = (objectProgress - progress + 1) % 1;
+
         const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
 
         /**
@@ -842,7 +863,11 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
         const offset = i * RGBA_CHANNEL_COUNT;
 
         /**
-         * Offset of alpha channel/byte
+         * Offset of alpha channel/byte. Here we add 3 because `offset` is the
+         * offset of the byte of the red channel. To get the offset of the alpha
+         * channel, we add 3.
+         * 
+         * [..., red, green, blue, alpha, red, ...]
          */
         const alphaOffset = offset + 3;
 
