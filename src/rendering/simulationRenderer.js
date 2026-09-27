@@ -87,7 +87,11 @@ const cameraDefaults = {
 };
 
 const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
-const totalCameraAnimationSteps = 100;
+const cameraAnimationProgressThreshold = 0.9999; // When to consider the animation complete
+const totalCameraAnimationSteps = Math.floor(
+    Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
+);
+
 let currentCameraAnimationStep = 0;
 let animateCameraAndControls = false;
 
