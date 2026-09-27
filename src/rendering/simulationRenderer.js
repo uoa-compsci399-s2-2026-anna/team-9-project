@@ -767,12 +767,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
              */
             const distance = (objectProgress - progress + 1) % 1;
 
-            const ORBIT_LINE_MIN_WIDTH = 0.5;
-
-            return Math.max(
-                ORBIT_LINE_MIN_WIDTH,
-                ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION(distance),
-            );
+            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
         });
     } else {
         // Display non-elliptical orbits as constant width
@@ -783,7 +778,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
-const ORBIT_LINE_MINIMUM_WIDTH_OPACITY = 0.2;
+const ORBIT_LINE_MINIMUM_OPACITY = 0.2;
+const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 /**
  * A function defining the curve/profile of the opacity/width modulation of
@@ -792,8 +788,11 @@ const ORBIT_LINE_MINIMUM_WIDTH_OPACITY = 0.2;
  * the object.
  * @returns Scale factor betwee 0 and 1 of opacity/line width.
  */
-const ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MINIMUM_WIDTH_OPACITY, 1 - distance);
+const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
+    Math.max(ORBIT_LINE_MINIMUM_OPACITY, 1 - distance);
+
+const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
+    Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -825,7 +824,7 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
     for (let i = 0; i < width; i++) {
         const progress = i / (width - 1);
         const distance = (objectProgress - progress + 1) % 1;
-        const opacity = ORBIT_LINE_WIDTH_OPACITY_MODULATION_FUNCTION(distance);
+        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
 
         /**
          * Offset of red channel/byte
