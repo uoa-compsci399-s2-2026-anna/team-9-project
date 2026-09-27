@@ -819,7 +819,11 @@ function createOpaqueOrbitAlphaTexture() {
 }
 
 /**
- *
+ * Updates the given alpha `texture` map based on the new value of 
+ * `objectProgress` (i.e. the new position of the object). Used so that as the
+ * object moves around its orbit, the opacity of the orbit updates correctly
+ * so that it is most opaque at the object and gets fainter (or as defined
+ * by the opacity modulation function).
  * @param {THREE.DataTexture} texture
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
