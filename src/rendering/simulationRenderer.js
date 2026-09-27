@@ -366,7 +366,7 @@ function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
 
 /**
  * Get the view radius for a given system based on the maximum apoapsis of all visible objects.
- * 
+ *
  * @param {string} system The name of the system
  * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
  * @returns {Promise<number>} The view radius for the system
@@ -376,7 +376,7 @@ async function getViewRadiusForSystem(system, useDefault = false) {
     const orbitalDataValues = getVisibleOrbitalDataValues(
         system,
         referenceSystemData.orbital_data,
-        useDefault
+        useDefault,
     );
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     return maxApoapsis * viewRadiusMultiplier;
@@ -386,14 +386,13 @@ async function getViewRadiusForSystem(system, useDefault = false) {
  * Update the view radius based on the current system, whether the habitable zone is shown, and whether
  * the Solar System is being compared. The view radius is set to the maximum of the current system's view radius,
  * the Solar System's view radius (if comparing), and the habitable zone's end radius (if shown).
- * 
+ *
  * @param {boolean} comparingToSolarSystem Whether the Solar System is being compared
  * @param {boolean} habitableZoneShown Whether the habitable zone is shown
  */
 async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
-    const viewRadiusForCurrentSystem = await getViewRadiusForSystem(
-        currentSystem
-    );
+    const viewRadiusForCurrentSystem =
+        await getViewRadiusForSystem(currentSystem);
 
     let newViewRadius = viewRadiusForCurrentSystem;
 
@@ -1025,7 +1024,7 @@ async function alignSystemToCameraUp(group, useDefault = false) {
     const orbitalDataValues = getVisibleOrbitalDataValues(
         system,
         referenceSystemData.orbital_data,
-        useDefault
+        useDefault,
     );
     const averageNormal = calculateAverageNormal(orbitalDataValues);
 
@@ -1246,11 +1245,6 @@ export async function init(name) {
 
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Do not update canvas CSS dimensions to absolute pixel values (we are 
-    // using w-screen and h-screen)
-    renderer.setSize(window.innerWidth, window.innerHeight, false);
 
     referenceSystemData.set(
         // Add this system's reference data to cache
@@ -1260,7 +1254,7 @@ export async function init(name) {
 
     await updateViewRadius(
         false, // Not comparing to the Solar System
-        simulationState.habitableZoneShown
+        simulationState.habitableZoneShown,
     );
 
     currentSystemDefaultViewRadius = await getViewRadiusForSystem(currentSystem, true);
@@ -1330,10 +1324,7 @@ export function setSimulationTimeToTime(time) {
 export async function resetView(topDown = true) {
     const canvas = renderer.domElement;
 
-    await updateViewRadius(
-        comparingToSolarSystem,
-        habitableZoneMesh?.visible
-    );
+    await updateViewRadius(comparingToSolarSystem, habitableZoneMesh?.visible);
 
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
@@ -1346,7 +1337,6 @@ export async function resetView(topDown = true) {
     if (topDown) {
         // Animate to the default camera position
         animateCameraPositionTo.copy(cameraDefaults.position);
-
     } else {
         // Animate camera position to the same direction as the current camera but at the default distance
 
@@ -1356,7 +1346,9 @@ export async function resetView(topDown = true) {
             .sub(controls.target)
             .normalize();
 
-        const newCameraOffset = currentCameraDirection.multiplyScalar(defaultCameraDistance);
+        const newCameraOffset = currentCameraDirection.multiplyScalar(
+            defaultCameraDistance,
+        );
         const newCameraPosition = animateControlsTargetTo
             .clone()
             .add(newCameraOffset);
@@ -1402,10 +1394,7 @@ export async function hideSolarSystem() {
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
-    await updateViewRadius(
-        false,
-        habitableZoneMesh?.visible
-    );
+    await updateViewRadius(false, habitableZoneMesh?.visible);
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
