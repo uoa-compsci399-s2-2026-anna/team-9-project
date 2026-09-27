@@ -764,10 +764,6 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             /**
              * Proportion of a full revolution this point of `progress` is
              * from the object.
-             *
-             * At the object:
-             * progress == objectProgress
-             * ==> (objectProgress - progress + 1) % 1 == 1 % 1 == 0 == distance
              */
             const distance = (objectProgress - progress + 1) % 1;
 
