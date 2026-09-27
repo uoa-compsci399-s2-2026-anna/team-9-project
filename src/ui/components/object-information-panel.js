@@ -62,7 +62,7 @@ function updateDataField(selector, value) {
 
 /**
  * @param {Number} number The number to convert to scientific notation
- * @param {Number} fractionDigits The number of digits in the fractional component of
+ * @param {Number} decimalPlaces The number of digits in the fractional component of
  * the number in scientific notation (i.e. the number of digits after the
  * decimal point).
  * @param {Number} ignoreAbsoluteExponentsBelow Do not convert to scientific notation
@@ -72,10 +72,10 @@ function updateDataField(selector, value) {
  */
 function toScientificHTML(
     number,
-    fractionDigits = 2,
+    decimalPlaces = 2,
     ignoreAbsoluteExponentsBelow = 4,
 ) {
-    const formatted = number.toExponential(fractionDigits);
+    const formatted = number.toExponential(decimalPlaces);
 
     const [coefficient, exponent] = formatted.split("e");
 
