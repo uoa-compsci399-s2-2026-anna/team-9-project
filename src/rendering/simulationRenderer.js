@@ -1421,7 +1421,10 @@ async function renderFrame(timestamp) {
     }
 
     if (animateCameraAndControls) {
-        // Stop animating if the camera and controls are close enough
+        // Animate the camera and controls for totalCameraAnimationSteps steps.
+        // Animation stops after enough steps have been taken
+        // or if the user interacts with the controls.
+
         if (currentCameraAnimationStep >= totalCameraAnimationSteps) {
             animateCameraAndControls = false;
             camera.position.copy(animateCameraPositionTo);
