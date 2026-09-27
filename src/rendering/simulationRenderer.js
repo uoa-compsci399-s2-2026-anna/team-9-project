@@ -724,7 +724,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
             currentSystemGroup,
             getCurrentSystemColour(name, isDarkMode),
             ORBIT_LINE_WIDTH,
-            true,
+            shouldShowOrbit(name, currentSystem),
         );
     }
 
