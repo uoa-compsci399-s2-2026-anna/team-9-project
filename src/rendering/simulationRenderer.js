@@ -37,7 +37,7 @@ import {
 } from "../ui/simulationCalendar.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import * as orbitLines from "./orbitLines.js";
+import * as ORBIT_LINES from "./orbitLines.js";
 
 let timer;
 
@@ -717,7 +717,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
     for (const [name, orbitalData] of Object.entries(
         currentSystemData.orbital_data,
     )) {
-        orbitLines.createOrUpdateOrbitalLine(
+        ORBIT_LINES.createOrUpdateOrbitalLine(
             name,
             currentSystemData.positions[name],
             orbitalData,
@@ -752,7 +752,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
             const COMPARISON_ORBIT_OPACITY = 0.5;
 
-            orbitLines.createOrUpdateOrbitalLine(
+            ORBIT_LINES.createOrUpdateOrbitalLine(
                 name,
                 solarSystemData.positions[name],
                 orbitalData,
