@@ -1404,6 +1404,54 @@ function resizeRendererToDisplaySize() {
     return needResize;
 }
 
+// Screen-space object sizing
+const DESIRED_OBJECT_PIXEL_SIZE = 12;
+const minScreenSpaceScale = 0.5;
+const maxScreenSpaceScale = 50;
+
+
+/**
+ * Computes a scale factor so the mesh's apparent size on screen stays roughly
+ * constant regardless of camera distance.
+ *
+ * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
+ * @param {THREE.PerspectiveCamera} camera The active camera
+ * @param {number} canvasHeight The renderer's canvas height in pixels
+ * @param {number} desiredPixelSize The target on-screen diameter in pixels
+ * @returns {number} The scale factor to apply to the mesh
+ */
+function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize) {
+    const meshWorldPosition = new THREE.Vector3();
+    mesh.getWorldPosition(meshWorldPosition);
+    const distance = camera.position.distanceTo(meshWorldPosition);
+
+    const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
+    const worldHeightAtDistance = 2 * Math.tan(verticalFovRadians / 2) * distance;
+    const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
+
+    const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
+    const scale = desiredWorldDiameter / (2 * objectSize); // objectSize is the sphere's radius at scale 1
+
+    return THREE.MathUtils.clamp(scale, minScreenSpaceScale, maxScreenSpaceScale);
+}
+
+
+function updateScreenSpaceScales() {
+    const canvasHeight = renderer.domElement.clientHeight;
+
+    for (const mesh of objectMeshes.values()) {
+        if (!mesh.visible) continue;
+
+        const scale = calculateScreenSpaceScale(
+            mesh,
+            camera,
+            canvasHeight,
+            DESIRED_OBJECT_PIXEL_SIZE,
+        );
+        mesh.scale.set(scale, scale, scale);
+    }
+}
+
 /**
  * Render the meshes and objects on every animation frame.
  *
@@ -1444,6 +1492,8 @@ async function renderFrame(timestamp) {
 
         controls.update();
     }
+
+    updateScreenSpaceScales();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
