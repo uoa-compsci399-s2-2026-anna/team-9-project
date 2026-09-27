@@ -86,9 +86,14 @@ const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
-const cameraAnimationSpeed = 0.1; // Percentage of remaining distance covered per step
-const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this percentage of distance has been covered
-const totalCameraAnimationSteps = Math.ceil( // Calculate the number of steps needed to reach the progress threshold
+const cameraAnimationSpeed = 0.1; // Proportion of remaining distance covered per step
+const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this proportion of total distance has been covered
+
+// Calculate the number of steps needed to reach the progress threshold.
+// At the n-th step, (1 - cameraAnimationSpeed)^n is the remaining proportion of the distance to cover.
+// So, we solve for n in the equation: (1 - cameraAnimationSpeed)^n = 1 - cameraAnimationProgressThreshold
+// to get the number of steps needed for the remaining proportion of total distance to reach 1 - cameraAnimationProgressThreshold.
+const totalCameraAnimationSteps = Math.ceil(
     Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
 );
 
