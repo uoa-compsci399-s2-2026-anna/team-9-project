@@ -14,6 +14,8 @@ const MS_PER_DAY = timeToMilliseconds(1, "day");
 // Date range for calender
 const CALENDAR_RANGE_YEARS = 10;
 const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
+const ABSOLUTE_MIN_YEAR = 1;
+const ABSOLUTE_MAX_YEAR = 9999;
 
 // The minimum interval (in milliseconds) for updating the calendar
 const CALENDAR_UPDATE_INTERVAL = 100;
@@ -169,14 +171,20 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
     lastCalendarUpdate = now;
 
     const timeZone = calendarInput.dataset.timezone;
-    FlatpickrInstance.set(
-        "minDate",
-        formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone),
-    );
-    FlatpickrInstance.set(
-        "maxDate",
-        formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),
-    );
+
+    // Sliding window: +/- `CALENDAR_RANGE_YEARS` around the current simulation time
+    const slidingMinMs = simulationTime - CALENDAR_RANGE_MS;
+    const slidingMaxMs = simulationTime + CALENDAR_RANGE_MS;
+
+    // Absolute floor and ceiling: never allow navigating before Y1 or beyond Y9999
+    const absoluteMinMs = Date.UTC(ABSOLUTE_MIN_YEAR, 0, 1);
+    const absoluteMaxMs = Date.UTC(ABSOLUTE_MAX_YEAR, 11, 31);
+
+    const clampedMinMs = Math.max(slidingMinMs, absoluteMinMs);
+    const clampedMaxMs = Math.min(slidingMaxMs, absoluteMaxMs);
+
+    FlatpickrInstance.set("minDate", formatInTimeZone(clampedMinMs, timeZone));
+    FlatpickrInstance.set("maxDate", formatInTimeZone(clampedMaxMs, timeZone));
     FlatpickrInstance.setDate(
         formatInTimeZone(simulationTime, timeZone),
         false,
