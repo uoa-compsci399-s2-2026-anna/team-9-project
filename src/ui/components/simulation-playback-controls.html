@@ -21,20 +21,20 @@
             <p class="text-lg">
               <input
                 type="text"
-                class="calendar bordered w-46 rounded-md pl-0.5 tabular-nums"
+                class="calendar bordered w-46 rounded-md px-1 tabular-nums in-[.font-accessible_&]:w-52"
                 name="calendar"
                 value="{{ sim_date }}"
                 data-timezone="{{ settings.timeZone }}"
               />
               <span
-                class="calendar-timezone-label text-sm text-zinc-500 dark:text-zinc-400"
+                class="calendar-timezone-label px-1 text-sm text-zinc-500 dark:text-zinc-400"
               >
                 {{ settings.timeZone }}
               </span>
             </p>
             <p
               id="elapsed-days"
-              class="pl-0.5 text-sm tabular-nums dark:text-zinc-400"
+              class="pt-1 pl-1 text-xs tabular-nums dark:text-zinc-400"
             >
               {{ elapsed_days_text }}
             </p>
