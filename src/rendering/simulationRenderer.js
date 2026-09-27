@@ -87,7 +87,8 @@ const cameraDefaults = {
 };
 
 const cameraAnimationSpeed = 0.1; // Between 0 and 1, where 1 is instant
-const cameraAnimationThresholdMultiplier = 0.001; // Determines the distance threshold to finish the animation
+const totalCameraAnimationSteps = 100;
+let currentCameraAnimationStep = 0;
 let animateCameraAndControls = false;
 
 // Animation targets for camera and controls
@@ -1201,6 +1202,7 @@ export async function resetView(topDown = true) {
         animateCameraPositionTo.copy(newCameraPosition);
     }
 
+    currentCameraAnimationStep = 0;
     animateCameraAndControls = true;
 }
 
@@ -1414,23 +1416,20 @@ async function renderFrame(timestamp) {
     }
 
     if (animateCameraAndControls) {
-        const positionDistance = camera.position.distanceTo(animateCameraPositionTo);
-        const targetDistance = controls.target.distanceTo(animateControlsTargetTo);
-        const threshold = viewRadius * cameraAnimationThresholdMultiplier;
-
         // Stop animating if the camera and controls are close enough
-        if (positionDistance < threshold && targetDistance < threshold) {
+        if (currentCameraAnimationStep >= totalCameraAnimationSteps) {
             animateCameraAndControls = false;
             camera.position.copy(animateCameraPositionTo);
             controls.target.copy(animateControlsTargetTo);
-            controls.update();
 
         } else {
             // Interpolate towards the desired position and target
             camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
             controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
-            controls.update();
+            currentCameraAnimationStep++;
         }
+
+        controls.update();
     }
 
     renderer.render(scene, camera);
