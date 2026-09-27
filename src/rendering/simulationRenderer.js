@@ -407,13 +407,18 @@ async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
     let newViewRadius = viewRadiusForCurrentSystem;
 
     if (comparingToSolarSystem) {
-        newViewRadius = Math.max(newViewRadius, solarSystemDefaultViewRadius);
+        newViewRadius = Math.max(
+            newViewRadius,
+            solarSystemDefaultViewRadius
+        );
     }
 
     if (habitableZoneShown && habitableZone) {
-        const viewRadiusForHabitableZone =
-            habitableZone.end * viewRadiusMultiplier;
-        newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
+        const viewRadiusForHabitableZone = habitableZone.end * viewRadiusMultiplier;
+        newViewRadius = Math.max(
+            newViewRadius,
+            viewRadiusForHabitableZone
+        );
     }
 
     viewRadius = newViewRadius;
@@ -734,7 +739,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         points.push(x, y, 0);
 
         if (objectTheta > theta && objectTheta <= theta + thetaStep) {
-            // Add a point on the exact coordinates of the object to prevent
+            // Add a point on the exact coordinates of the object to prevent 
             // sampling issues where the object's position falls between points.
             points.push(localObjectPosition.x, localObjectPosition.y, 0);
         }
@@ -838,12 +843,7 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
          */
         const aplhaOffset = offset + 3;
 
-        const MIN_ALPHA = 0.2 * RGBA_MAX_VALUE;
-
-        data[aplhaOffset] = Math.max(
-            MIN_ALPHA,
-            Math.round(opacity * RGBA_MAX_VALUE),
-        );
+        data[aplhaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
     }
 
     texture.needsUpdate = true;
@@ -1067,7 +1067,7 @@ function calculateCameraAndControlsSettings(viewRadius) {
     // and must be able to zoom by at least controlsMinZoomFactor
     const controlsMaxDistance = Math.max(
         cameraDistance * controlsMaxMultiplier,
-        controlsMinDistance * controlsMinZoomFactor,
+        controlsMinDistance * controlsMinZoomFactor
     );
 
     const cameraNear = objectSize * cameraNearMultiplier;
@@ -1090,7 +1090,7 @@ function calculateCameraAndControlsSettings(viewRadius) {
  * @param {number} cameraSettings.cameraNear The near plane of the camera
  * @param {number} cameraSettings.cameraFar The far plane of the camera
  */
-function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraFar }) {
+function initOrUpdateCamera(canvas, {cameraDistance, cameraNear, cameraFar}) {
     cameraDefaults.position = calculateDefaultCameraPosition(
         cameraDefaults.up,
         cameraDistance,
@@ -1120,10 +1120,7 @@ function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraFar }) {
  * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
  * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
  */
-function initOrUpdateControls(
-    canvas,
-    { controlsMinDistance, controlsMaxDistance },
-) {
+function initOrUpdateControls(canvas, {controlsMinDistance, controlsMaxDistance}) {
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
         controls.addEventListener("start", () => {
@@ -1273,14 +1270,8 @@ export async function init(name) {
         simulationState.habitableZoneShown,
     );
 
-    currentSystemDefaultViewRadius = await getViewRadiusForSystem(
-        currentSystem,
-        true,
-    );
-    solarSystemDefaultViewRadius = await getViewRadiusForSystem(
-        "Solar System",
-        true,
-    );
+    currentSystemDefaultViewRadius = await getViewRadiusForSystem(currentSystem, true);
+    solarSystemDefaultViewRadius = await getViewRadiusForSystem("Solar System", true);
 
     objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
@@ -1288,8 +1279,7 @@ export async function init(name) {
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(canvas, cameraAndControlsSettings);
 
@@ -1350,8 +1340,7 @@ export async function resetView(topDown = true) {
     await updateViewRadius(comparingToSolarSystem, habitableZoneMesh?.visible);
 
     // Update the camera and controls for the new view radius
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(canvas, cameraAndControlsSettings);
 
@@ -1387,12 +1376,16 @@ export async function resetView(topDown = true) {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    await updateViewRadius(true, habitableZoneMesh?.visible);
+    await updateViewRadius(
+        true,
+        habitableZoneMesh?.visible
+    );
 
     // Scale objects for comparison as the smaller of the two sizes
-    const comparisonObjectSize =
-        Math.min(currentSystemDefaultViewRadius, solarSystemDefaultViewRadius) *
-        objectSizeMultiplier;
+    const comparisonObjectSize = Math.min(
+        currentSystemDefaultViewRadius,
+        solarSystemDefaultViewRadius,
+    ) * objectSizeMultiplier;
     objectScale = comparisonObjectSize / objectSize;
 
     // Align the solar system's average normal with the up vector (Z-axis)
@@ -1400,8 +1393,7 @@ export async function compareToSolarSystem() {
 
     solarSystemGroup.visible = true;
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(canvas, cameraAndControlsSettings);
 
@@ -1419,8 +1411,7 @@ export async function hideSolarSystem() {
     await updateViewRadius(false, habitableZoneMesh?.visible);
     solarSystemGroup.visible = false;
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(canvas, cameraAndControlsSettings);
 
