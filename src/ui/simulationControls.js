@@ -48,7 +48,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
 
     systemDropdownWrapper
         .querySelector("[data-show-hide-icon]")
-        .classList.toggle("-rotate-90", !showDropdown);
+        .classList.toggle("-rotate-180", showDropdown);
 
     // TODO: Make this nicer (probably can use existing Tailwind classes e.g. clickable, etc.?)
 
