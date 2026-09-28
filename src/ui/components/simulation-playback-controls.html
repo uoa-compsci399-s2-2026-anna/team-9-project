@@ -1,5 +1,4 @@
-{% from "components/button-with-tooltip.html" import button_with_tooltip %}
-{% from "components/input-with-tooltip.html" import input_with_tooltip %}
+{% from "components/button-with-tooltip.html" import button_with_tooltip with context %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
 
@@ -12,7 +11,7 @@
           <!-- 'Now' button (to reset time to current time) -->
           {{
             text_button(
-              button_text="Now",
+              button_text="Reset to now",
               on_click_events=["sim:set_time_to_now"]
             )
           }}
@@ -96,6 +95,8 @@
       {% call container(style="h-full") %}
         <!-- Simulation speed adjuster -->
         <div class="flex items-center gap-2 p-2">
+          <p class="text-secondary">speed</p>
+
           <div class="control bordered flex items-center gap-1 p-0">
             <!-- Decrease speed button -->
             {{
