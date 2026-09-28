@@ -27,6 +27,7 @@ import {
     calculateOrbitalPosition,
     calculateRotationMatrix,
     calculateMaxApoapsis,
+    calculateMaxPeriapsis,
     calculateCameraDistance,
     calculateAverageNormal,
     calculateDefaultCameraPosition,
@@ -387,7 +388,8 @@ async function getViewRadiusForSystem(system, useDefault = false) {
         useDefault,
     );
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    return maxApoapsis * viewRadiusMultiplier;
+    const maxPeriapsis = calculateMaxPeriapsis(orbitalDataValues); // To account for hyperbolic orbits
+    return Math.max(maxApoapsis, maxPeriapsis) * viewRadiusMultiplier;
 }
 
 /**
