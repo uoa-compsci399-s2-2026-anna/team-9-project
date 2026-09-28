@@ -554,6 +554,9 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
         const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
+
+        // 'Anchor' to top-left
+        label.center.set(0, 0);
         label.visible = simulationState.labelsShown;
         mesh.add(label);
         objectLabels.set(name, label);
@@ -561,6 +564,46 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
 
     mesh.scale.set(objectScale, objectScale, objectScale);
     mesh.position.set(position.x, position.y, position.z);
+}
+
+function updateObjectLabelOffsets() {
+    if (!camera || !renderer) {
+        return;
+    }
+
+    camera.updateMatrixWorld();
+    const cameraWorldUp = new THREE.Vector3(0, 1, 0).applyQuaternion(
+        camera.getWorldQuaternion(new THREE.Quaternion()),
+    );
+    const center = new THREE.Vector3();
+    const edge = new THREE.Vector3();
+    const height = renderer.domElement.clientHeight;
+
+    for (const group of [currentSystemGroup, solarSystemGroup]) {
+        for (const mesh of group.children) {
+            const label = mesh.children.find(
+                (child) => child instanceof CSS2DObject,
+            );
+            if (!label) {
+                continue;
+            }
+
+            mesh.getWorldPosition(center);
+            edge.copy(center).addScaledVector(
+                cameraWorldUp,
+                objectSize * mesh.scale.x,
+            );
+            center.project(camera);
+            edge.project(camera);
+
+            const centerY = (-(center.y * 0.5) + 0.5) * height;
+            const edgeY = (-(edge.y * 0.5) + 0.5) * height;
+            const pixelLength = Math.abs(edgeY - centerY);
+
+            label.element.style.marginTop = `${pixelLength}px`;
+            label.element.style.marginLeft = `${pixelLength}px`;
+        }
+    }
 }
 
 /**
@@ -1034,6 +1077,8 @@ async function updateSimulation(forceCalendarUpdate = true) {
             );
         }
     }
+
+    updateObjectLabelOffsets();
 }
 
 /**
@@ -1188,6 +1233,7 @@ function createControlsChangeHandler(viewRadius) {
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
         updateReferenceGridScale(camera.position, controls.target);
+        updateObjectLabelOffsets();
     };
 }
 
