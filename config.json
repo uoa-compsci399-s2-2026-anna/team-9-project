@@ -537,7 +537,7 @@
                         "barycentric": 130448.0634437985
                     },
                     "radius": {
-                        "value": 7.119e07,
+                        "value": 7.119e06,
                         "uncertainty": 8.700e05
                     }
                 },
@@ -560,7 +560,7 @@
                         "barycentric": 209325.0438684336
                     },
                     "radius": {
-                        "value": 6.995e07,
+                        "value": 6.995e06,
                         "uncertainty": 8.600e05
                     }
                 },
@@ -583,7 +583,7 @@
                         "barycentric": 349617.5323445142
                     },
                     "radius": {
-                        "value": 5.026e07,
+                        "value": 5.026e06,
                         "uncertainty": 7.100e05
                     }
                 },
@@ -606,7 +606,7 @@
                         "barycentric": 526983.6611209479
                     },
                     "radius": {
-                        "value": 5.868e07,
+                        "value": 5.868e06,
                         "uncertainty": 8.200e05
                     }
                 },
@@ -629,7 +629,7 @@
                         "barycentric": 795274.6219136146
                     },
                     "radius": {
-                        "value": 6.664e07,
+                        "value": 6.664e06,
                         "uncertainty": 8.500e05
                     }
                 },
@@ -652,7 +652,7 @@
                         "barycentric": 1067296.5881248724
                     },
                     "radius": {
-                        "value": 7.204e07,
+                        "value": 7.204e06,
                         "uncertainty": 9.400e05
                     }
                 },
@@ -675,7 +675,7 @@
                         "barycentric": 1621975.6224000002
                     },
                     "radius": {
-                        "value": 4.817e07,
+                        "value": 4.817e06,
                         "uncertainty": 9.100e05
                     }
                 }
