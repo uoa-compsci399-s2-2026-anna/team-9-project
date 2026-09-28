@@ -99,9 +99,6 @@ async def home(
             "systems": all_systems,
             "dropdown_systems": all_systems,
             # Control which components are rendered on the html page
-            "navigation_bar": True,
-            "system_dropdown": False,
-            "logo": True,
             "sidebar_settings": False,
             "simulation_controls": False,
             "settings_overlay": True,
@@ -176,8 +173,6 @@ async def simulation(
             "dropdown_systems": dropdown_systems,
             "objects": objects,
             # Control which components are rendered on the html page
-            "navigation_bar": True,
-            "system_dropdown": True,
             "settings_overlay": True,
         },
     )
