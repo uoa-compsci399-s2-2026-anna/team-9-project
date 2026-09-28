@@ -46,9 +46,9 @@ const systemInformationButton = document.getElementById(
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
 
-    systemDropdownWrapper.querySelectorAll("path").forEach((path) => {
-        path.classList.toggle("hidden");
-    });
+    systemDropdownWrapper
+        .querySelector("[data-show-hide-icon]")
+        .classList.toggle("-rotate-180", showDropdown);
 
     // TODO: Make this nicer (probably can use existing Tailwind classes e.g. clickable, etc.?)
 
@@ -104,9 +104,7 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
         content.classList.toggle("grid-rows-[1fr]");
 
         // Update open/closed icon
-        showHideIcon.querySelectorAll("path").forEach((path) => {
-            path.classList.toggle("hidden");
-        });
+        showHideIcon.classList.toggle("-rotate-90");
 
         // Do not show scrollbar
         scrollContainer.classList.add("overflow-hidden");
