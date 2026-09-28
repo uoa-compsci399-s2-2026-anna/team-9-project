@@ -1402,6 +1402,10 @@ const minScreenSpaceScale = 0.5;
 const maxScreenSpaceScale = 50; // TODO: can't even zoom out enough rn to trigger this
 
 const minStarScreenSpaceScale = 1; // Or just do (DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE) * minScreenSpaceScale
+/**
+ * TODO: Make this scaled based on the smallest/inner most orbit (so that there is a buffer around the orbit).
+ * To test this: disable labels.
+*/
 const maxStarScreenSpaceScale = 80;
 
 /**
@@ -1458,6 +1462,7 @@ function updateScreenSpaceScales() {
             minScale,
             maxScale,
         );
+
         mesh.scale.set(scale, scale, scale);
     }
 }
