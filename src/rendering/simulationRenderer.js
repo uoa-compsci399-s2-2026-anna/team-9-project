@@ -816,19 +816,6 @@ function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) 
     // Iterate over the raw texture byte array
     for (let i = 0; i < width; i++) {
         /**
-         * Proportion of array traversed (in interval [0, 1])
-         */
-        const progress = i / (width - 1);
-
-        const distance = calculateProgressDistance(
-            progress,
-            objectProgress,
-            isElliptical,
-        );
-
-        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
-
-        /**
          * Offset of red channel/byte
          */
         const offset = i * RGBA_CHANNEL_COUNT;
@@ -842,11 +829,25 @@ function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) 
          */
         const alphaOffset = offset + 3;
 
-        if (settings.orbitLines == "Tapered") {
-            data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
-        } else {
+        if (settings.orbitLines == "Solid") {
             data[alphaOffset] = RGBA_MAX_VALUE;
+            continue;
         }
+
+        /**
+         * Proportion of array traversed (in interval [0, 1])
+         */
+        const progress = i / (width - 1);
+
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical,
+        );
+
+        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
+
+        data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
     }
 
     texture.needsUpdate = true;
