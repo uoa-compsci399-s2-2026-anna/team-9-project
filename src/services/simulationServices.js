@@ -36,7 +36,7 @@ export async function getMultipleSystemsData(names, t) {
     // Show the loader after 1 second
     const waitTimeMs = 1_000;
     const timeoutId = setTimeout(() => {
-        bus.publish(EVENTS.SIM.SET_SIM_LOADER, {
+        bus.publish(EVENTS.SHARED.SET_LOADER_VISIBLE, {
             enabled: true
         });
     }, waitTimeMs);
@@ -46,7 +46,7 @@ export async function getMultipleSystemsData(names, t) {
     // Cancel timeout callback if it has not happened
     clearTimeout(timeoutId);
     // Hide the loader regardless of whether it has been shown
-    bus.publish(EVENTS.SIM.SET_SIM_LOADER, {
+    bus.publish(EVENTS.SHARED.SET_LOADER_VISIBLE, {
         enabled: false
     });
 
