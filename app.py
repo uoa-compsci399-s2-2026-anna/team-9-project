@@ -1,5 +1,5 @@
 import asyncio
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import json
 import os
 import signal
@@ -47,7 +47,7 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
 
 
 # Define a process pool executor
-process_pool = ProcessPoolExecutor()
+process_pool = ThreadPoolExecutor()
 
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
