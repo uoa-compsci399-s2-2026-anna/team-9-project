@@ -1,12 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { Line2 } from "three/addons/lines/Line2.js";
-import { LineGeometry } from "three/addons/lines/LineGeometry.js";
-import { LineMaterial } from "three/addons/lines/LineMaterial.js";
 import {
     CSS2DRenderer,
     CSS2DObject,
 } from "three/addons/renderers/CSS2DRenderer.js";
+import { MeshLineGeometry, MeshLineMaterial } from "three.meshline";
 import {
     simulationState,
     running,
@@ -124,14 +122,15 @@ let objectSize;
 let objectScale = 1;
 let hitboxPadding;
 
-const orbitPoints = 360; // Number of points to approximate the ellipse
+const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 /**
  * The width (thickness) of the orbit lines for regular orbits and for orbits
- * belonging to the Solar System when it's shown only as a comparison overlay.
+ * belonging to the Solar System when it's shown only as a comparison overlay,
+ * in screen pixels.
  */
-const orbitLineWidth = 4;
-const comparisonOrbitLineWidth = 2;
+const ORBIT_LINE_WIDTH = 20;
+const COMPARISON_ORBIT_LINE_WIDTH = 10;
 
 /**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
@@ -616,11 +615,12 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
  * The orbital line is coloured to match its object.
  *
  * @param {string} name Name of the object associated with the orbital line
+ * @param {Object} position The position in real coordinates (xyz) of the object
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
  * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
+function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     const { a, e, inc, Omega, omega } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
@@ -629,24 +629,42 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     if (!line) {
         const canvas = renderer.domElement;
-        const geometry = new LineGeometry();
-        const material = new LineMaterial();
+        const geometry = new MeshLineGeometry();
+
+        const material = new MeshLineMaterial({
+            // Remain constant size (do not grow in size as user zooms in)
+            sizeAttenuation: false,
+            transparent: true,
+            resolution: new THREE.Vector2(
+                window.innerWidth,
+                window.innerHeight,
+            ),
+        });
 
         if (group === solarSystemGroup) {
             const comparisonColour = getFadedColour(
                 colour,
                 comparisonOrbitOpacity,
             );
-            material.linewidth = comparisonOrbitLineWidth;
+
+            material.lineWidth = COMPARISON_ORBIT_LINE_WIDTH;
             material.color.set(comparisonColour);
         } else {
-            material.linewidth = orbitLineWidth;
+            material.lineWidth = ORBIT_LINE_WIDTH;
             material.color.set(colour);
+        }
+
+        if (e < 1) {
+            material.alphaMap = createOpaqueOrbitAlphaTexture();
+            material.useAlphaMap = 1;
         }
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
-        line = new Line2(geometry, material);
+        line = new THREE.Mesh(geometry, material);
+
+        // Render above habitable zone to prevent z fighting
+        line.renderOrder = 1;
 
         if (comparingToSolarSystem && group === solarSystemGroup) {
             line.visible = shouldShowOrbit(name, "Solar System", {
@@ -674,11 +692,49 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         thetaEnd = thetaLimit - epsilon;
     }
 
-    const thetaStep = (thetaEnd - thetaStart) / orbitPoints;
+    const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
+
+    /**
+     * The position of the object in world (xyz) coordinate space.
+     */
+    const worldObjectPosition = new THREE.Vector3(
+        position.x,
+        position.y,
+        position.z,
+    );
+
+    /**
+     * Rotation matrix: local (coordinate system of orbit plane) -> world
+     */
+    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
+
+    /**
+     * World -> local (coordinate system of orbit plane)
+     */
+    const inverseRotationMatrix = rotationMatrix.clone().invert();
+
+    /**
+     * Position of object in local (orbit plane) coordinates
+     */
+    const localObjectPosition = worldObjectPosition.applyMatrix4(
+        inverseRotationMatrix,
+    );
+    /**
+     * Angle between positive x-axis (in local coordinates) and the point
+     * (localPosition.x, localPosition.y) from the 2-argument arctangent.
+     */
+    let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
+    if (objectTheta < 0) objectTheta += 2 * Math.PI;
 
     for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
+
+        if (objectTheta > theta && objectTheta < theta + thetaStep) {
+            // Add a point on the exact coordinates of the object to prevent
+            // sampling issues where the object's position falls between points.
+            points.push(localObjectPosition.x, localObjectPosition.y, 0);
+        }
     }
 
     if (e > 1) {
@@ -687,12 +743,135 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         points.push(x, y, 0);
     }
 
-    // Create or update the position attribute of the line's geometry
-    line.geometry.setPositions(points);
+    if (e < 1) {
+        /**
+         * Proportion of a full revolution the object is from its starting
+         * point/angle.
+         */
+        const objectProgress = THREE.MathUtils.clamp(
+            (objectTheta - thetaStart) / (thetaEnd - thetaStart),
+            0,
+            1,
+        );
+
+        updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
+
+        // Create or update the position attribute and widen the line at the object
+        line.geometry.setPoints(points, (progress) => {
+            /**
+             * Proportion of a full revolution this point of `progress` is
+             * from the object.
+             */
+            const distance = (objectProgress - progress + 1) % 1;
+
+            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        });
+    } else {
+        // Display non-elliptical orbits as constant width
+        line.geometry.setPoints(points);
+    }
 
     // Rotate the line to match the orbital parameters
-    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
+}
+
+const ORBIT_LINE_MINIMUM_OPACITY = 0.2;
+const ORBIT_LINE_MIN_WIDTH = 0.5;
+
+/**
+ * A function defining the curve/profile of the opacity/width modulation of
+ * the orbit line.
+ * @param {Number} distance Proportion of a full revolution this point is from
+ * the object.
+ * @returns Scale factor betwee 0 and 1 of opacity/line width.
+ */
+const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
+    Math.max(ORBIT_LINE_MINIMUM_OPACITY, 1 - distance);
+
+const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
+    Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
+
+const RGBA_CHANNEL_COUNT = 4;
+const RGBA_MAX_VALUE = 255;
+
+/**
+ * @returns `THREE.DataTexture` of a RGBA alpha map filled with values of 255
+ * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
+ */
+function createOpaqueOrbitAlphaTexture() {
+    const data = new Uint8Array(ORBIT_POINTS_COUNT * RGBA_CHANNEL_COUNT);
+    data.fill(RGBA_MAX_VALUE);
+
+    /**
+     * Create ORBIT_POINTS_COUNT x 1 texture (i.e. a 1D texture) for an opacity
+     * map. This is in RGBA format, so each 'point' of the texture is
+     * represented by 4 bytes: a red, green, blue, and alpha channel.
+     */
+    const texture = new THREE.DataTexture(
+        data,
+        ORBIT_POINTS_COUNT,
+        1,
+        THREE.RGBAFormat,
+    );
+
+    texture.needsUpdate = true;
+
+    return texture;
+}
+
+/**
+ * Updates the given alpha `texture` map based on the new value of
+ * `objectProgress` (i.e. the new position of the object). Used so that as the
+ * object moves around its orbit, the opacity of the orbit updates correctly
+ * so that it is most opaque at the object and gets fainter (or as defined
+ * by the opacity modulation function).
+ * @param {THREE.DataTexture} texture
+ * @param {Number} objectProgress Proportion of a full revolution the object is
+ * from its starting point/angle (in interval [0, 1])
+ */
+function updateOrbitAlphaTexture(texture, objectProgress) {
+    /**
+     * `texture.image` is an object containing fields `data` (the actual byte
+     * array of the texture), `width` (the number of bytes) in the 'width'
+     * dimension, and `height`. Here we get the raw byte array and the width
+     * of the texture.
+     */
+
+    const { data, width } = texture.image;
+
+    // Iterate over the raw texture byte array
+    for (let i = 0; i < width; i++) {
+        /**
+         * Proportion of array traversed (in interval [0, 1])
+         */
+        const progress = i / (width - 1);
+
+        /**
+         * Proportion of a full revolution this point of `progress` is
+         * from the object.
+         */
+        const distance = (objectProgress - progress + 1) % 1;
+
+        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
+
+        /**
+         * Offset of red channel/byte
+         */
+        const offset = i * RGBA_CHANNEL_COUNT;
+
+        /**
+         * Offset of alpha channel/byte. Here we add 3 because `offset` is the
+         * offset of the byte of the red channel. To get the offset of the alpha
+         * channel, we add 3.
+         * 
+         * [..., red, green, blue, alpha, red, ...]
+         */
+        const alphaOffset = offset + 3;
+
+        data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
+    }
+
+    texture.needsUpdate = true;
 }
 
 /**
@@ -712,6 +891,9 @@ function createHabitableZoneMesh() {
         opacity: habitableZoneOpacity,
         transparent: true,
         side: THREE.DoubleSide,
+
+        // Do not update depth buffer (to prevent z-fighting with other meshes)
+        depthWrite: false,
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
@@ -813,6 +995,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
     )) {
         createOrUpdateOrbitalLine(
             name,
+            currentSystemData.positions[name],
             orbitalData,
             currentSystemGroup,
             getCurrentSystemColour(name, isDarkMode),
@@ -842,6 +1025,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(
                 name,
+                solarSystemData.positions[name],
                 orbitalData,
                 solarSystemGroup,
                 overlayColour,
