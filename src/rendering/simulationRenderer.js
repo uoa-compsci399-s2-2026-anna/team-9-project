@@ -729,7 +729,11 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
             isElliptical,
         );
 
-        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        if (settings.orbitLines == "Tapered") {
+            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        } else {
+            return 1;
+        }
     });
 
     // Rotate the line to match the orbital parameters
@@ -803,6 +807,11 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
      */
 
     const { data, width } = texture.image;
+
+    if (settings.orbitLines != "Tapered") {
+        texture = createOpaqueOrbitAlphaTexture();
+        return;
+    }
 
     // Iterate over the raw texture byte array
     for (let i = 0; i < width; i++) {
