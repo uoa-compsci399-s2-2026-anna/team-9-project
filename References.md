@@ -14,6 +14,8 @@ Pluto's temperature is calculated from: https://nssdc.gsfc.nasa.gov/planetary/fa
 
 ATLAS' mass is taken from: https://iopscience.iop.org/article/10.3847/2515-5172/ae2915
 
+ATLAS' radius is taken from: https://arxiv.org/abs/2601.21569
+
 Solar system's habitable zone is sourced from: https://arxiv.org/pdf/1205.2429#page=6
 
 Solar system's orbital periods is calculated in REBOUND using data from the NASA Horizons API.
