@@ -9,8 +9,8 @@ bus.subscribe(EVENTS.SHARED.SET_LOADER_VISIBLE, (event) => {
     const loaderText = event.detail.loaderText ?? "Loading undefined";
     loaderTextElement.innerText = loaderText;
     if (enableLoader) {
-        loaderElement.style.display = "flex";
+        loaderElement.style.visibility = "visible";
     } else if (!enableLoader) {
-        loaderElement.style.display = "none";
+        loaderElement.style.visibility = "hidden";
     }
 });
