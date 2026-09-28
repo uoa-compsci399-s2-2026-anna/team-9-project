@@ -863,7 +863,7 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
          * Offset of alpha channel/byte. Here we add 3 because `offset` is the
          * offset of the byte of the red channel. To get the offset of the alpha
          * channel, we add 3.
-         * 
+         *
          * [..., red, green, blue, alpha, red, ...]
          */
         const alphaOffset = offset + 3;
