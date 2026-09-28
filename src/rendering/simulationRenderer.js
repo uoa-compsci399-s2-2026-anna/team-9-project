@@ -727,21 +727,25 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
     if (objectTheta < 0) objectTheta += 2 * Math.PI;
 
-    for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
-        const { x, y } = calculateOrbitalPosition(a, e, theta);
-        points.push(x, y, 0);
+    for (let i = 0; i < ORBIT_POINTS_COUNT; i++) {
+        const theta = thetaStart + i*thetaStep;
+        let x, y;
+
+        if (e > 1 && i === ORBIT_POINTS_COUNT - 1) {
+            // For hyperbolic orbits, add the last point at the end of the range
+            // to ensure the line reaches the asymptote
+            ({ x, y } = calculateOrbitalPosition(a, e, thetaEnd));
+        } else {
+            ({ x, y } = calculateOrbitalPosition(a, e, theta));
+        }
 
         if (objectTheta > theta && objectTheta < theta + thetaStep) {
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
             points.push(localObjectPosition.x, localObjectPosition.y, 0);
+        } else {
+            points.push(x, y, 0);
         }
-    }
-
-    if (e > 1) {
-        // Add the last point at the end of the range to ensure the line reaches the asymptote
-        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
-        points.push(x, y, 0);
     }
 
     /**
