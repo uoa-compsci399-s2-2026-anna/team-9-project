@@ -28,10 +28,10 @@
     ]
   },
   "orbitLines": {
-    "default": "Colour",
+    "default": "Tapered",
     "options": [
-      { "value": "Colour", "label": "Differentiate by colour" },
-      { "value": "Stroke", "label": "Differentiate by stroke" }
+      { "value": "Tapered", "label": "Tapered" },
+      { "value": "Solid", "label": "Solid" }
     ]
   },
   "darkMode": {
