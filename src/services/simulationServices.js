@@ -35,9 +35,11 @@ export async function getMultipleSystemsData(names, t) {
 
     // Show the loader after 500 milisecond
     const waitTimeMs = 500;
+    const loaderText = "Loading simulation";
     const timeoutId = setTimeout(() => {
         bus.publish(EVENTS.SHARED.SET_LOADER_VISIBLE, {
-            enableLoader: true
+            enableLoader: true,
+            loaderText: loaderText,
         });
     }, waitTimeMs);
 
@@ -47,7 +49,7 @@ export async function getMultipleSystemsData(names, t) {
     clearTimeout(timeoutId);
     // Hide the loader regardless of whether it has been shown
     bus.publish(EVENTS.SHARED.SET_LOADER_VISIBLE, {
-        enableLoader: false
+        enableLoader: false,
     });
 
     if (!response.ok) {
