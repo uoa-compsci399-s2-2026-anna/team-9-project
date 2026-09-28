@@ -661,6 +661,7 @@
                         "dark": "#9f92c5",
                         "light": "#68559f"
                     },
+                    "type": "planet",
                     "mass": {
                         "value": 1.945e25,
                         "uncertainty": 1.220e24
