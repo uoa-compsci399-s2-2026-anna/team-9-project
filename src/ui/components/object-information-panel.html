@@ -36,8 +36,13 @@
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
     <div class="mb-3 flex w-full items-center">
-      <!-- Object name -->
-      <strong class="block" data-object-name></strong>
+      <div class="flex flex-col items-start">
+        <!-- Object name -->
+        <strong class="block" data-object-name></strong>
+
+        <!-- Object type -->
+        <em data-object-type class="text-secondary text-xs"></em>
+      </div>
 
       <!-- Close button -->
       <div class="-m-1 ml-auto">

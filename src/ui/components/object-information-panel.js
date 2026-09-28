@@ -28,6 +28,9 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
         : currentSystem.objects[objectName];
 
     panel.querySelector("[data-object-name]").textContent = objectName;
+    panel.querySelector("[data-object-type]").textContent = capitalised(
+        object.type,
+    );
     updateDataField("[data-object-mass]", object.mass.value);
     updateDataField("[data-object-radius]", object.radius.value);
     updateDataField("[data-object-average-temperature]", object.temp.value);
@@ -42,6 +45,14 @@ bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => toggleContainer(false));
 function toggleContainer(doShow) {
     container.classList.toggle("hidden", !doShow);
     container.classList.toggle("inline-flex", doShow);
+}
+
+/**
+ * @param {string} text
+ * @returns string `text` with the first character capitalised
+ */
+function capitalised(text) {
+    return text.charAt(0).toLocaleUpperCase() + text.slice(1);
 }
 
 /**
