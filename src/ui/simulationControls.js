@@ -58,7 +58,6 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     systemInformationButton.classList.toggle("transition-all", !showDropdown);
 
     systemDropdown.classList.toggle("grid-rows-[1fr]", showDropdown);
-    systemDropdown.classList.toggle("bordered", showDropdown);
     systemDropdown.classList.toggle("grid-rows-[0fr]", !showDropdown);
 
     systemDropdownWrapper.classList.toggle("bg-white", showDropdown);
@@ -72,6 +71,8 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     if (showDropdown) {
         // Remove rounded corners from bottom so it looks consistent
         systemInformationButton.classList.add("rounded-b-none");
+
+        systemDropdown.classList.add("bordered", "border-t-0");
     } else {
         // Add back rounded corners after transition has completed
         systemDropdown.addEventListener(
@@ -81,6 +82,8 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
                     "rounded-b-none",
                     "transition-all",
                 );
+
+                systemDropdown.classList.remove("bordered", "border-t-0");
             },
             { once: true },
         );
