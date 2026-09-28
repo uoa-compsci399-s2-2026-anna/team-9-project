@@ -716,7 +716,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
 
     updateOrbitAlphaTexture(
-        line.material.alphaMap,
+        line.material,
         objectProgress,
         isElliptical,
     );
@@ -788,17 +788,17 @@ function createOpaqueOrbitAlphaTexture() {
 }
 
 /**
- * Updates the given alpha `texture` map based on the new value of
+ * Updates the given alpha texture map associated with `material` based on the new value of
  * `objectProgress` (i.e. the new position of the object). Used so that as the
  * object moves around its orbit, the opacity of the orbit updates correctly
  * so that it is most opaque at the object and gets fainter (or as defined
  * by the opacity modulation function).
- * @param {THREE.DataTexture} texture
+ * @param {MeshLineMaterial} material
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
  * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
  */
-function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
+function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) {
     /**
      * `texture.image` is an object containing fields `data` (the actual byte
      * array of the texture), `width` (the number of bytes) in the 'width'
@@ -806,10 +806,14 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
      * of the texture.
      */
 
+    let texture = material.alphaMap;
     const { data, width } = texture.image;
 
     if (settings.orbitLines != "Tapered") {
+        const oldTexture = texture;
         texture = createOpaqueOrbitAlphaTexture();
+        material.alphaMap = texture;
+        oldTexture?.dispose();
         return;
     }
 
@@ -847,6 +851,11 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
 
     texture.needsUpdate = true;
 }
+
+bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
+    // Update simulation to redraw orbit lines with new width/opacity profile
+    updateSimulation();
+});
 
 /**
  * Create a reference grid in the XY plane.
