@@ -39,6 +39,9 @@ const systemDropdown = document.getElementById("system-dropdown");
 const systemDropdownWrapper = document.getElementById(
     "system-dropdown-wrapper",
 );
+const systemInformationButton = document.getElementById(
+    "system-information-button",
+);
 
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
@@ -47,37 +50,39 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
         path.classList.toggle("hidden");
     });
 
+    // TODO: Make this nicer (probably can use existing Tailwind classes e.g. clickable, etc.?)
+
+    // Do not animate transition on open but do animate on close (the borders
+    // rounding is animated on the 'closing' edge)
+    systemInformationButton.classList.toggle("transition-none", showDropdown);
+    systemInformationButton.classList.toggle("transition-all", !showDropdown);
+
+    systemDropdown.classList.toggle("grid-rows-[1fr]", showDropdown);
+    systemDropdown.classList.toggle("bordered", showDropdown);
+    systemDropdown.classList.toggle("grid-rows-[0fr]", !showDropdown);
+
+    systemDropdownWrapper.classList.toggle("bg-white", showDropdown);
+    systemDropdownWrapper.classList.toggle("dark:bg-black", showDropdown);
+    systemDropdownWrapper.classList.toggle("hover:bg-zinc-100", !showDropdown);
+    systemDropdownWrapper.classList.toggle(
+        "dark:hover:bg-zinc-900",
+        !showDropdown,
+    );
+
     if (showDropdown) {
-        systemDropdown.classList.remove("grid-rows-[0fr]");
-        systemDropdown.classList.add("grid-rows-[1fr]");
-
-        systemDropdownWrapper.classList.add(
-            "bg-white",
-            "outline-1",
-            "outline-zinc-900",
-            "dark:bg-black",
-            "dark:outline-zinc-500",
-        );
-
-        systemDropdownWrapper.classList.remove(
-            "hover:bg-zinc-100",
-            "dark:hover:bg-zinc-900",
-        );
+        // Remove rounded corners from bottom so it looks consistent
+        systemInformationButton.classList.add("rounded-b-none");
     } else {
-        systemDropdown.classList.remove("grid-rows-[1fr]");
-        systemDropdown.classList.add("grid-rows-[0fr]");
-
-        systemDropdownWrapper.classList.remove(
-            "bg-white",
-            "outline-1",
-            "outline-zinc-900",
-            "dark:bg-black",
-            "dark:outline-zinc-500",
-        );
-
-        systemDropdownWrapper.classList.add(
-            "hover:bg-zinc-100",
-            "dark:hover:bg-zinc-900",
+        // Add back rounded corners after transition has completed
+        systemDropdown.addEventListener(
+            "transitionend",
+            () => {
+                systemInformationButton.classList.remove(
+                    "rounded-b-none",
+                    "transition-all",
+                );
+            },
+            { once: true },
         );
     }
 });
