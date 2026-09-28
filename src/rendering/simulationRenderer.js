@@ -727,6 +727,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
     if (objectTheta < 0) objectTheta += 2 * Math.PI;
 
+    let objectPointIndex = 0;
     for (let i = 0; i < ORBIT_POINTS_COUNT; i++) {
         const theta = thetaStart + i*thetaStep;
         let x, y;
@@ -740,6 +741,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         }
 
         if (objectTheta > theta && objectTheta < theta + thetaStep) {
+            objectPointIndex = i;
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
             points.push(localObjectPosition.x, localObjectPosition.y, 0);
@@ -750,13 +752,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     /**
      * Proportion of a full revolution the object is from its starting
-     * point/angle.
+     * point/angle (theta = 0).
      */
-    const objectProgress = THREE.MathUtils.clamp(
-        (objectTheta - thetaStart) / (thetaEnd - thetaStart),
-        0,
-        1,
-    );
+    const objectProgress = (objectPointIndex) / (ORBIT_POINTS_COUNT - 1);
 
     updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
 
