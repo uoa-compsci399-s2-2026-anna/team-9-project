@@ -92,7 +92,8 @@ const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once t
 // So, we solve for n in the equation: (1 - cameraAnimationSpeed)^n = 1 - cameraAnimationProgressThreshold
 // to get the number of steps needed for the remaining proportion of total distance to reach 1 - cameraAnimationProgressThreshold.
 const totalCameraAnimationSteps = Math.ceil(
-    Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
+    Math.log(1 - cameraAnimationProgressThreshold) /
+        Math.log(1 - cameraAnimationSpeed),
 );
 
 let currentCameraAnimationStep = 0;
@@ -864,7 +865,7 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
          * Offset of alpha channel/byte. Here we add 3 because `offset` is the
          * offset of the byte of the red channel. To get the offset of the alpha
          * channel, we add 3.
-         * 
+         *
          * [..., red, green, blue, alpha, red, ...]
          */
         const alphaOffset = offset + 3;
@@ -1086,7 +1087,7 @@ function calculateCameraAndControlsSettings(viewRadius) {
     const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
     const cameraDistance = Math.max(
         calculateCameraDistance(fov, viewRadius),
-        controlsMinDistance + epsilon
+        controlsMinDistance + epsilon,
     );
 
     // Controls max distance must be at least camera distance * max multiplier,
@@ -1627,7 +1628,6 @@ async function renderFrame(timestamp) {
             animateCameraAndControls = false;
             camera.position.copy(animateCameraPositionTo);
             controls.target.copy(animateControlsTargetTo);
-
         } else {
             // Interpolate towards the desired position and target
             camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
