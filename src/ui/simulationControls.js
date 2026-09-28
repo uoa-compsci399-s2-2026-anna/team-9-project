@@ -39,45 +39,53 @@ const systemDropdown = document.getElementById("system-dropdown");
 const systemDropdownWrapper = document.getElementById(
     "system-dropdown-wrapper",
 );
+const systemInformationButton = document.getElementById(
+    "system-information-button",
+);
 
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
 
-    systemDropdownWrapper.querySelectorAll("path").forEach((path) => {
-        path.classList.toggle("hidden");
-    });
+    systemDropdownWrapper
+        .querySelector("[data-show-hide-icon]")
+        .classList.toggle("-rotate-180", showDropdown);
+
+    // TODO: Make this nicer (probably can use existing Tailwind classes e.g. clickable, etc.?)
+
+    // Do not animate transition on open but do animate on close (the borders
+    // rounding is animated on the 'closing' edge)
+    systemInformationButton.classList.toggle("transition-none", showDropdown);
+    systemInformationButton.classList.toggle("transition-all", !showDropdown);
+
+    systemDropdown.classList.toggle("grid-rows-[1fr]", showDropdown);
+    systemDropdown.classList.toggle("grid-rows-[0fr]", !showDropdown);
+
+    systemDropdownWrapper.classList.toggle("bg-white", showDropdown);
+    systemDropdownWrapper.classList.toggle("dark:bg-black", showDropdown);
+    systemDropdownWrapper.classList.toggle("hover:bg-zinc-100", !showDropdown);
+    systemDropdownWrapper.classList.toggle(
+        "dark:hover:bg-zinc-900",
+        !showDropdown,
+    );
 
     if (showDropdown) {
-        systemDropdown.classList.remove("grid-rows-[0fr]");
-        systemDropdown.classList.add("grid-rows-[1fr]");
+        // Remove rounded corners from bottom so it looks consistent
+        systemInformationButton.classList.add("rounded-b-none");
 
-        systemDropdownWrapper.classList.add(
-            "bg-white",
-            "outline-1",
-            "outline-zinc-900",
-            "dark:bg-black",
-            "dark:outline-zinc-500",
-        );
-
-        systemDropdownWrapper.classList.remove(
-            "hover:bg-zinc-100",
-            "dark:hover:bg-zinc-900",
-        );
+        systemDropdown.classList.add("bordered", "border-t-0");
     } else {
-        systemDropdown.classList.remove("grid-rows-[1fr]");
-        systemDropdown.classList.add("grid-rows-[0fr]");
+        // Add back rounded corners after transition has completed
+        systemDropdown.addEventListener(
+            "transitionend",
+            () => {
+                systemInformationButton.classList.remove(
+                    "rounded-b-none",
+                    "transition-all",
+                );
 
-        systemDropdownWrapper.classList.remove(
-            "bg-white",
-            "outline-1",
-            "outline-zinc-900",
-            "dark:bg-black",
-            "dark:outline-zinc-500",
-        );
-
-        systemDropdownWrapper.classList.add(
-            "hover:bg-zinc-100",
-            "dark:hover:bg-zinc-900",
+                systemDropdown.classList.remove("bordered", "border-t-0");
+            },
+            { once: true },
         );
     }
 });
@@ -96,9 +104,7 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
         content.classList.toggle("grid-rows-[1fr]");
 
         // Update open/closed icon
-        showHideIcon.querySelectorAll("path").forEach((path) => {
-            path.classList.toggle("hidden");
-        });
+        showHideIcon.classList.toggle("-rotate-90");
 
         // Do not show scrollbar
         scrollContainer.classList.add("overflow-hidden");
@@ -139,13 +145,25 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (e) => {
     document
         .querySelectorAll("[data-colour-indicator]")
         .forEach((colourIndicator) => {
-            const darkModeColour = colourIndicator.dataset.darkModeColour;
-            const lightModeColour = colourIndicator.dataset.lightModeColour;
+            const darkModeColour = colourIndicator.closest(
+                "[data-dark-mode-colour]",
+            ).dataset.darkModeColour;
+            const lightModeColour = colourIndicator.closest(
+                "[data-light-mode-colour]",
+            ).dataset.lightModeColour;
 
             if (enterDarkMode) {
-                colourIndicator.style.backgroundColor = darkModeColour;
+                if (colourIndicator instanceof SVGElement) {
+                    colourIndicator.setAttribute("fill", darkModeColour);
+                } else {
+                    colourIndicator.style.backgroundColor = darkModeColour;
+                }
             } else {
-                colourIndicator.style.backgroundColor = lightModeColour;
+                if (colourIndicator instanceof SVGElement) {
+                    colourIndicator.setAttribute("fill", lightModeColour);
+                } else {
+                    colourIndicator.style.backgroundColor = lightModeColour;
+                }
             }
         });
 });
