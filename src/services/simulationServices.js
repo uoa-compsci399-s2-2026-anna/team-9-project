@@ -37,7 +37,7 @@ export async function getMultipleSystemsData(names, t) {
     const waitTimeMs = 1_000;
     const timeoutId = setTimeout(() => {
         bus.publish(EVENTS.SHARED.SET_LOADER_VISIBLE, {
-            enabled: true
+            enableLoader: true
         });
     }, waitTimeMs);
 
@@ -47,7 +47,7 @@ export async function getMultipleSystemsData(names, t) {
     clearTimeout(timeoutId);
     // Hide the loader regardless of whether it has been shown
     bus.publish(EVENTS.SHARED.SET_LOADER_VISIBLE, {
-        enabled: false
+        enableLoader: false
     });
 
     if (!response.ok) {
