@@ -847,14 +847,6 @@ function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) 
     let texture = material.alphaMap;
     const { data, width } = texture.image;
 
-    if (settings.orbitLines != "Tapered") {
-        const oldTexture = texture;
-        texture = createOpaqueOrbitAlphaTexture();
-        material.alphaMap = texture;
-        oldTexture?.dispose();
-        return;
-    }
-
     // Iterate over the raw texture byte array
     for (let i = 0; i < width; i++) {
         /**
@@ -884,7 +876,11 @@ function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) 
          */
         const alphaOffset = offset + 3;
 
-        data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
+        if (settings.orbitLines == "Tapered") {
+            data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
+        } else {
+            data[alphaOffset] = RGBA_MAX_VALUE;
+        }
     }
 
     texture.needsUpdate = true;
