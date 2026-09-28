@@ -537,7 +537,7 @@
                         "barycentric": 130448.0634437985
                     },
                     "radius": {
-                        "absoulute": 7.119e07,
+                        "value": 7.119e07,
                         "uncertainty": 8.700e05
                     }
                 },
