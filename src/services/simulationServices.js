@@ -50,6 +50,7 @@ export async function getMultipleSystemsData(names, t) {
     // Hide the loader regardless of whether it has been shown
     bus.publish(EVENTS.SHARED.SET_LOADER_VISIBLE, {
         enableLoader: false,
+        loaderText: loaderText,
     });
 
     if (!response.ok) {
