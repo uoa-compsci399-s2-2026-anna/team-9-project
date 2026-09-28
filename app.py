@@ -1,3 +1,5 @@
+import asyncio
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import json
 import os
 import signal
@@ -42,6 +44,10 @@ with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
 # Load the sim state schema
 with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")) as f:
     sim_state_schema = json.load(f)
+
+
+# Define a process pool executor
+process_pool = ThreadPoolExecutor()
 
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
@@ -204,11 +210,12 @@ async def get_system_info(system_name: str = "") -> dict:
     }
 
 
-def get_system_data_at_time(system_name: str, t: float) -> dict:
+async def get_system_data_at_time(system_name: str, t: float) -> dict:
     """
     Gets a system at a specific unix time.
     Returns simulation data.
     """
+    print(f"Getting {system_name} at t={t}")
 
     # Convert the system name to lowercase for API resilience
     system_name = system_name.lower()
@@ -225,8 +232,9 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Integrate to given time
-    sim = sims.quick_integrate(t, system_data)
+    # Integrate to given time using a process pool to keep interactivity
+    loop = asyncio.get_running_loop()
+    sim = await loop.run_in_executor(process_pool, Simulations.quick_integrate, sims, t, system_data)
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -254,6 +262,6 @@ async def get_system_data(
     systems = {}
 
     for system_name in system_names:
-        systems[system_name] = get_system_data_at_time(system_name, t)
+        systems[system_name] = await get_system_data_at_time(system_name, t)
 
     return systems
