@@ -36,13 +36,8 @@
     data-current-system="{{ current_system | tojson | forceescape }}"
   >
     <div class="mb-3 flex w-full items-start">
-      <div class="flex">
-        <!-- Object name -->
-        <strong class="block" data-object-name></strong>
-
-        <!-- Object type -->
-        <em data-object-type class="text-secondary text-xs"></em>
-      </div>
+      <!-- Object name -->
+      <strong class="block" data-object-name></strong>
 
       <!-- Close button -->
       <div class="-m-1 ml-auto">
@@ -58,6 +53,7 @@
     </div>
 
     <div class="grid grid-cols-[max-content_1fr] gap-x-2 text-sm">
+      {{ data_field("Type", "object-type", None) }}
       {{ data_field("Mass", "object-mass", "kg") }}
       {{ data_field("Radius", "object-radius", "m") }}
       {{ data_field("Avg. temp.", "object-average-temperature", "K") }}
