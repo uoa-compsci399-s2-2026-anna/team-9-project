@@ -46,9 +46,9 @@ const systemInformationButton = document.getElementById(
 bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     const { showDropdown } = event.detail;
 
-    systemDropdownWrapper
-        .querySelector("[data-show-hide-icon]")
-        .classList.toggle("-rotate-180", showDropdown);
+    systemDropdownWrapper.querySelectorAll("path").forEach((path) => {
+        path.classList.toggle("hidden");
+    });
 
     // TODO: Make this nicer (probably can use existing Tailwind classes e.g. clickable, etc.?)
 
@@ -58,6 +58,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     systemInformationButton.classList.toggle("transition-all", !showDropdown);
 
     systemDropdown.classList.toggle("grid-rows-[1fr]", showDropdown);
+    systemDropdown.classList.toggle("bordered", showDropdown);
     systemDropdown.classList.toggle("grid-rows-[0fr]", !showDropdown);
 
     systemDropdownWrapper.classList.toggle("bg-white", showDropdown);
@@ -71,8 +72,6 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
     if (showDropdown) {
         // Remove rounded corners from bottom so it looks consistent
         systemInformationButton.classList.add("rounded-b-none");
-
-        systemDropdown.classList.add("bordered", "border-t-0");
     } else {
         // Add back rounded corners after transition has completed
         systemDropdown.addEventListener(
@@ -82,8 +81,6 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
                     "rounded-b-none",
                     "transition-all",
                 );
-
-                systemDropdown.classList.remove("bordered", "border-t-0");
             },
             { once: true },
         );
@@ -104,7 +101,9 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
         content.classList.toggle("grid-rows-[1fr]");
 
         // Update open/closed icon
-        showHideIcon.classList.toggle("-rotate-90");
+        showHideIcon.querySelectorAll("path").forEach((path) => {
+            path.classList.toggle("hidden");
+        });
 
         // Do not show scrollbar
         scrollContainer.classList.add("overflow-hidden");
@@ -145,25 +144,13 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (e) => {
     document
         .querySelectorAll("[data-colour-indicator]")
         .forEach((colourIndicator) => {
-            const darkModeColour = colourIndicator.closest(
-                "[data-dark-mode-colour]",
-            ).dataset.darkModeColour;
-            const lightModeColour = colourIndicator.closest(
-                "[data-light-mode-colour]",
-            ).dataset.lightModeColour;
+            const darkModeColour = colourIndicator.dataset.darkModeColour;
+            const lightModeColour = colourIndicator.dataset.lightModeColour;
 
             if (enterDarkMode) {
-                if (colourIndicator instanceof SVGElement) {
-                    colourIndicator.setAttribute("fill", darkModeColour);
-                } else {
-                    colourIndicator.style.backgroundColor = darkModeColour;
-                }
+                colourIndicator.style.backgroundColor = darkModeColour;
             } else {
-                if (colourIndicator instanceof SVGElement) {
-                    colourIndicator.setAttribute("fill", lightModeColour);
-                } else {
-                    colourIndicator.style.backgroundColor = lightModeColour;
-                }
+                colourIndicator.style.backgroundColor = lightModeColour;
             }
         });
 });
