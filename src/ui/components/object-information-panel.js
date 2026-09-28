@@ -49,9 +49,14 @@ function toggleContainer(doShow) {
 
 /**
  * @param {string} text
- * @returns string `text` with the first character capitalised
+ * @returns string `text` with the first character capitalised (or `null` if 
+ * text is none).
  */
 function capitalised(text) {
+    if (!text) {
+        return null;
+    }
+
     return text.charAt(0).toLocaleUpperCase() + text.slice(1);
 }
 
