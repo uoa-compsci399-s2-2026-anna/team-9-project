@@ -13,19 +13,28 @@
 {% endblock %}
 
 {% block content %}
+  <!-- prettier-ignore-start -->
   <script id="simulation-state" type="application/json">{{ sim_state | tojson }}</script>
+  <!-- prettier-ignore-end -->
 
-  <!-- Simulation content-->
+  <!-- Simulation content (fixed position) -->
   <canvas
     id="simulation-canvas"
     data-current-system="{{ current_system.name }}"
     class="pointer-events-auto fixed inset-0 z-0 h-screen w-screen"
   ></canvas>
 
-  <!-- LHS sidebar settings ('Objects', 'View settings') -->
+  <!-- Controls at top -->
+  <div class="flex">
+    {% include "components/system-picker.html" %}
+
+    <div class="ml-auto">{% include "components/toolbar.html" %}</div>
+  </div>
+
+  <!-- Side panels -->
   {% include "components/sidebar.html" %}
 
-  <!-- Simulation playback controls -->
+  <!-- Playback controls at bottom -->
   {% include "components/simulation-playback-controls.html" %}
 {% endblock %}
 
@@ -63,20 +72,8 @@
     src="/src/controllers/simulationStateController.js"
     defer
   ></script>
-  <script 
-    type="module" 
-    src="/src/ui/simulationControls.js" 
-    defer
-  ></script>
-  <script 
-    type="module" 
-    src="/src/ui/sidebar.js" 
-    defer
-  ></script>
-  <script 
-    type="module" 
-    src="/src/ui/toolbar.js" 
-    defer
-  ></script>
+  <script type="module" src="/src/ui/simulationControls.js" defer></script>
+  <script type="module" src="/src/ui/sidebar.js" defer></script>
+  <script type="module" src="/src/ui/toolbar.js" defer></script>
   <script type="module" src="/src/ui/simulationCalendar.js" defer></script>
 {% endblock %}
