@@ -657,10 +657,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             material.color.set(colour);
         }
 
-        if (e < 1) {
-            material.alphaMap = createOpaqueOrbitAlphaTexture();
-            material.useAlphaMap = 1;
-        }
+        material.alphaMap = createOpaqueOrbitAlphaTexture();
+        material.useAlphaMap = 1;
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
@@ -746,33 +744,28 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         points.push(x, y, 0);
     }
 
-    if (e < 1) {
+    /**
+     * Proportion of a full revolution the object is from its starting
+     * point/angle.
+     */
+    const objectProgress = THREE.MathUtils.clamp(
+        (objectTheta - thetaStart) / (thetaEnd - thetaStart),
+        0,
+        1,
+    );
+
+    updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
+
+    // Create or update the position attribute and widen the line at the object
+    line.geometry.setPoints(points, (progress) => {
         /**
-         * Proportion of a full revolution the object is from its starting
-         * point/angle.
+         * Proportion of a full revolution this point of `progress` is
+         * from the object.
          */
-        const objectProgress = THREE.MathUtils.clamp(
-            (objectTheta - thetaStart) / (thetaEnd - thetaStart),
-            0,
-            1,
-        );
+        const distance = (objectProgress - progress + 1) % 1;
 
-        updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
-
-        // Create or update the position attribute and widen the line at the object
-        line.geometry.setPoints(points, (progress) => {
-            /**
-             * Proportion of a full revolution this point of `progress` is
-             * from the object.
-             */
-            const distance = (objectProgress - progress + 1) % 1;
-
-            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
-        });
-    } else {
-        // Display non-elliptical orbits as constant width
-        line.geometry.setPoints(points);
-    }
+        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+    });
 
     // Rotate the line to match the orbital parameters
     line.quaternion.setFromRotationMatrix(rotationMatrix);
