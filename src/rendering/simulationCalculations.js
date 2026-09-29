@@ -15,6 +15,36 @@ export function calculateOrbitalPosition(a, e, theta) {
 }
 
 /**
+ * Check if angleA is smaller than angleB, considering the circular nature of angles.
+ * @param {number} angleA The first angle in radians
+ * @param {number} angleB The second angle in radians
+ * @returns {boolean} True if angleA is smaller than angleB, false otherwise
+ */
+function isAngleSmaller(angleA, angleB) {
+    // Normalize angles to [0, 2π)
+    const normalizedA = ((angleA % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const normalizedB = ((angleB % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
+    return normalizedA < normalizedB;
+}
+
+/**
+ * Check if an angle is between two other angles, considering the circular nature of angles.
+ * @param {number} angle The angle to check
+ * @param {number} start The starting angle
+ * @param {number} end The ending angle
+ * @returns {boolean} True if the angle is between the two other angles, false otherwise
+ */
+export function isAngleBetween(angle, start, end) {
+    if (isAngleSmaller(start, end)) {
+        return isAngleSmaller(start, angle) && isAngleSmaller(angle, end);
+    }
+    // If the range wraps around 0,
+    // return true if the angle is in (start, 2pi) or [0, end)
+    return isAngleSmaller(start, angle) || isAngleSmaller(angle, end);
+}
+
+/**
  * Calculate the rotation matrix for an orbit based on its parameters.
  * R = Rz(Omega) * Rx(inc) * Rz(omega)
  * @param {number} Omega Longitude of the ascending node in radians
