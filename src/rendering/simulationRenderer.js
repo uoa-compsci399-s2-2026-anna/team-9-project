@@ -1309,6 +1309,8 @@ export async function init(name) {
     objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
+    await updateInnermostPeriapsis(false);
+
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
@@ -1413,6 +1415,8 @@ export async function compareToSolarSystem() {
 
     await updateViewRadius(true, habitableZoneMesh?.visible);
 
+    await updateInnermostPeriapsis(true);
+
     // Align the solar system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(solarSystemGroup, true);
 
@@ -1433,6 +1437,7 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
     await updateViewRadius(false, habitableZoneMesh?.visible);
+    await updateInnermostPeriapsis(false);
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings =
@@ -1602,6 +1607,64 @@ const minStarScreenSpaceScale = 1; // Or just do (DESIRED_STAR_PIXEL_SIZE / DESI
 */
 const maxStarScreenSpaceScale = 80;
 
+// Fraction of the innermost periapsis that an object's on screen radius may occupy
+const MAX_EXTENT_ORBIT_FRACTION = 1.25; // TODO: consider (1 feels small to me?)
+
+// Closest approach (periapsis) of the innermost visible orbit, in world units
+let innermostPeriapsis = Infinity;
+
+/**
+ * Finds the smallest periapsis (closest point to the centre) across all
+ * non-star orbits that are visible by default.
+ *
+ * @param {boolean} comparing Whether the Solar System is being compared to or not
+ */
+async function updateInnermostPeriapsis(comparing) {
+    let smallest = Infinity;
+
+    // TODO: terrible naming
+    const consider = async (system, shouldSkip) => {
+        // TODO: I believe this is cached now (in another branch...)
+        const data = await getReferenceSystemData(system);
+
+        for (const [name, orbit] of Object.entries(data.orbital_data)) {
+            if (isObjectHiddenByDefault(system, name) || shouldSkip(name)) {
+                continue;
+            }
+
+            // TODO: I believe there is a function on some branch/PR to calculate this for me
+            const periapsis = Math.abs(orbit.a) * Math.abs(1 - orbit.e);
+            if (periapsis > 0 && periapsis < smallest) {
+                smallest = periapsis;
+            }
+        }
+    };
+
+    await consider(currentSystem, (name) => objectTypes[name] === "star");
+
+    if (comparing) {
+        await consider("Solar System", (name) => name === "Sun");
+    }
+
+    innermostPeriapsis = smallest;
+}
+
+/**
+ * The largest scale an object may have so that its on screen radius stays
+ * within a fraction of the innermost periapsis.
+ */
+function getOrbitScaleCap(isStar) {
+    if (!Number.isFinite(innermostPeriapsis)) return Infinity;
+
+    // Stars include their glow sprite, which is GLOW_SIZE_MULTIPLIER * objectSize wide
+    // TODO: maybe update how glow size works to avoid the / 2 here
+    const radiusPerScale = isStar
+        ? (objectSize * GLOW_SIZE_MULTIPLIER) / 2
+        : objectSize;
+
+    return (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / radiusPerScale;
+}
+
 /**
  * Computes a scale factor so the mesh's apparent size on screen stays roughly
  * constant regardless of camera distance.
@@ -1646,6 +1709,7 @@ function updateScreenSpaceScales() {
         }
 
         const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
+        // TODO: unused (temp for now?)
         const maxScale = isStar ? maxStarScreenSpaceScale : maxScreenSpaceScale;
 
         const scale = calculateScreenSpaceScale(
@@ -1654,8 +1718,14 @@ function updateScreenSpaceScales() {
             canvasHeight,
             desiredPixelSize,
             minScale,
-            maxScale,
+            getOrbitScaleCap(isStar),
         );
+
+        if (isStar) {
+            console.log(scale);
+            console.log(getOrbitScaleCap(isStar));
+            console.log("-")
+        }
 
         mesh.scale.set(scale, scale, scale);
     }
