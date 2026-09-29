@@ -25,6 +25,7 @@ import {
 } from "../services/simulationServices.js";
 import {
     calculateOrbitalPosition,
+    isAngleBetween,
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
@@ -732,7 +733,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         const theta = thetaStart + i*thetaStep;
         const { x, y } = calculateOrbitalPosition(a, e, theta);
 
-        if (objectTheta > theta && objectTheta < theta + thetaStep) {
+        if (isAngleBetween(objectTheta, theta, theta + thetaStep)) {
             objectPointIndex = i;
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
