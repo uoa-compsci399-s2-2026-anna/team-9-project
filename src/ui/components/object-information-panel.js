@@ -87,6 +87,12 @@ function updateDataField(selector, value) {
     if (value !== null) {
         field.innerHTML = toScientificHTML(value);
     }
+
+    const unit = fieldContainer.querySelector("[data-unit]");
+
+    if (unit.textContent == "days" && value == 1) {
+        unit.textContent = "day";
+    }
 }
 
 /**
