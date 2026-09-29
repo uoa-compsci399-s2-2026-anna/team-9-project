@@ -726,7 +726,6 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
      * (localPosition.x, localPosition.y) from the 2-argument arctangent.
      */
     let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
-    if (objectTheta < 0) objectTheta += 2 * Math.PI;
 
     let objectPointIndex = 0;
     for (let i = 0; i < ORBIT_POINTS_COUNT - 1; i++) {
