@@ -728,17 +728,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     if (objectTheta < 0) objectTheta += 2 * Math.PI;
 
     let objectPointIndex = 0;
-    for (let i = 0; i < ORBIT_POINTS_COUNT; i++) {
+    for (let i = 0; i < ORBIT_POINTS_COUNT - 1; i++) {
         const theta = thetaStart + i*thetaStep;
-        let x, y;
-
-        if (e > 1 && i === ORBIT_POINTS_COUNT - 1) {
-            // For hyperbolic orbits, add the last point at the end of the range
-            // to ensure the line reaches the asymptote
-            ({ x, y } = calculateOrbitalPosition(a, e, thetaEnd));
-        } else {
-            ({ x, y } = calculateOrbitalPosition(a, e, theta));
-        }
+        const { x, y } = calculateOrbitalPosition(a, e, theta);
 
         if (objectTheta > theta && objectTheta < theta + thetaStep) {
             objectPointIndex = i;
@@ -749,6 +741,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             points.push(x, y, 0);
         }
     }
+
+    const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+    points.push(x, y, 0);
 
     /**
      * Proportion of a full revolution the object is from its starting
