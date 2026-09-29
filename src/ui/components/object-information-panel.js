@@ -34,6 +34,19 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     updateDataField("[data-object-mass]", object.mass.value);
     updateDataField("[data-object-radius]", object.radius.value);
     updateDataField("[data-object-average-temperature]", object.temp.value);
+
+    const SECONDS_IN_DAY = 86400;
+
+    const heliocentricPeriod = object.period.heliocentric;
+
+    if (heliocentricPeriod) {
+        updateDataField(
+            "[data-object-period]",
+            Math.round(heliocentricPeriod / SECONDS_IN_DAY),
+        );
+    } else {
+        updateDataField("[data-object-period]", null);
+    }
 });
 
 bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => toggleContainer(false));
@@ -49,7 +62,7 @@ function toggleContainer(doShow) {
 
 /**
  * @param {string} text
- * @returns string `text` with the first character capitalised (or `null` if 
+ * @returns string `text` with the first character capitalised (or `null` if
  * text is none).
  */
 function capitalised(text) {
