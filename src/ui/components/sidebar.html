@@ -125,24 +125,26 @@
   <!-- Spacer -->
   <div class="flex-1"></div>
 
-  {% call container(style="flex gap-2 p-2") %}
-    <!-- Compare to solar system button -->
-    {% if current_system.name != "Solar System" %}
+  <div class="relative flex flex-col items-end justify-end gap-2">
+    {% call container(style="flex gap-2 p-2") %}
+      <!-- Compare to solar system button -->
+      {% if current_system.name != "Solar System" %}
+        {{
+          text_button(
+            "Compare to Solar System",
+            button_id="compare-to-solar-system-button",
+            on_click_events=["sim:compare_to_solar_system"]
+          )
+        }}
+      {% endif %}
+
+      <!-- Reset view button -->
       {{
         text_button(
-          "Compare to Solar System",
-          button_id="compare-to-solar-system-button",
-          on_click_events=["sim:compare_to_solar_system"]
+          "Reset view",
+          on_click_events=["sim:reset_view"]
         )
       }}
-    {% endif %}
-
-    <!-- Reset view button -->
-    {{
-      text_button(
-        "Reset view",
-        on_click_events=["sim:reset_view"]
-      )
-    }}
-  {% endcall %}
+    {% endcall %}
+  </div>
 </div>
