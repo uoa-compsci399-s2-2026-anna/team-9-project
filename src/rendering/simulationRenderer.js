@@ -755,13 +755,21 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
+        const pointIndex = Math.round(progress * (ORBIT_POINTS_COUNT - 1));
+
+        let objectToPointIndexDistance = objectPointIndex - pointIndex;
+        // Wrap the distance around the orbit if it goes negative
+        if (objectToPointIndexDistance < 0) {
+            objectToPointIndexDistance += ORBIT_POINTS_COUNT;
+        }
+
         /**
          * Proportion of a full revolution this point of `progress` is
          * from the object.
          */
-        const distance = (objectProgress - progress + 1) % 1;
+        const objectToPointProgressDistance = objectToPointIndexDistance / (ORBIT_POINTS_COUNT - 1);
 
-        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(objectToPointProgressDistance);
     });
 
     // Rotate the line to match the orbital parameters
@@ -834,18 +842,22 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
 
     // Iterate over the raw texture byte array
     for (let i = 0; i < width; i++) {
-        /**
-         * Proportion of array traversed (in interval [0, 1])
-         */
-        const progress = i / (width - 1);
+        const objectPointIndex = Math.round(objectProgress * (ORBIT_POINTS_COUNT - 1));
+        const pointIndex = i;
+
+        let objectToPointIndexDistance = objectPointIndex - pointIndex;
+        // Wrap the distance around the orbit if it goes negative
+        if (objectToPointIndexDistance < 0) {
+            objectToPointIndexDistance += ORBIT_POINTS_COUNT;
+        }
 
         /**
          * Proportion of a full revolution this point of `progress` is
          * from the object.
          */
-        const distance = (objectProgress - progress + 1) % 1;
+        const objectToPointProgressDistance = objectToPointIndexDistance / (ORBIT_POINTS_COUNT - 1);
 
-        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
+        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(objectToPointProgressDistance);
 
         /**
          * Offset of red channel/byte
