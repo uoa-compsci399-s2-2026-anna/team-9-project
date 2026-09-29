@@ -104,6 +104,10 @@ function toScientificHTML(
     decimalPlaces = 2,
     ignoreAbsoluteExponentsBelow = 4,
 ) {
+    if (!number) {
+        return null;
+    }
+
     const formatted = number.toExponential(decimalPlaces);
 
     const [coefficient, exponent] = formatted.split("e");
