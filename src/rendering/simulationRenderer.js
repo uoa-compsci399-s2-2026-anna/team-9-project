@@ -1718,7 +1718,7 @@ function updateScreenSpaceScales() {
             canvasHeight,
             desiredPixelSize,
             minScale,
-            getOrbitScaleCap(isStar),
+            getOrbitScaleCap(isStar), // TODO: what if this is less than minScale?
         );
 
         if (isStar) {
