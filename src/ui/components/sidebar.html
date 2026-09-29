@@ -3,17 +3,15 @@
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
 
-<div class="flex min-h-0 flex-1 items-end gap-3">
+<div class="flex min-h-0 w-full flex-1 items-end gap-3">
   <!-- Left sidebar -->
   <div class="flex min-h-0 w-48 flex-col justify-end gap-2">
     {% include "templates/objects-panel.html" %}
     {% include "templates/view-settings-panel.html" %}
   </div>
 
-  <!-- Spacer -->
-  <div class="flex-1"></div>
-
-  <div class="relative flex flex-col items-end justify-end gap-2">
+  <!-- RHS controls -->
+  <div class="ml-auto flex flex-col gap-2">
     {% call container(style="flex gap-2 p-2") %}
       <!-- Compare to solar system button -->
       {% if current_system.name != "Solar System" %}
