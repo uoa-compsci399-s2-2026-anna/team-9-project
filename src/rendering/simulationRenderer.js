@@ -47,7 +47,7 @@ let timer;
 // The current simulation time in milliseconds since Unix epoch
 let currentSimulationTime;
 
-let lastFetchedSimulationTime; // The simulation time for which the last system data was fetched
+let lastFetchedSimulationTime = null; // The simulation time for which the last system data was fetched
 
 let currentSystem;
 let currentSystemColours;
@@ -1059,7 +1059,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
  * Sync the calendar to the last fetched simulation time (bypasses the throttle).
  */
 export function syncCalendar() {
-    if (!lastFetchedSimulationTime) {
+    if (lastFetchedSimulationTime === null) {
         return;
     }
 
