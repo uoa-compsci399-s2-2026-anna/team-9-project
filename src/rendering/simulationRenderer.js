@@ -46,6 +46,9 @@ let timer;
 
 // The current simulation time in milliseconds since Unix epoch
 let currentSimulationTime;
+
+let lastFetchedSimulationTime; // The simulation time for which the last system data was fetched
+
 let currentSystem;
 let currentSystemColours;
 let objectTypes;
@@ -986,11 +989,12 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
     } else {
         gettingSystemData = true;
+        lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
             systems,
-            currentSimulationTime
+            lastFetchedSimulationTime
         );
-        updateCalendar(currentSimulationTime, forceCalendarUpdate);
+        updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
         gettingSystemData = false;
         lastSystemData = allSystemData;
     }
@@ -1055,11 +1059,11 @@ async function updateSimulation(forceCalendarUpdate = true) {
  * Sync the calendar to the current simulation time (bypasses the throttle).
  */
 export function syncCalendar() {
-    if (currentSimulationTime === null) {
+    if (!lastFetchedSimulationTime) {
         return;
     }
 
-    updateCalendar(currentSimulationTime, true);
+    updateCalendar(lastFetchedSimulationTime, true);
 }
 
 /**
