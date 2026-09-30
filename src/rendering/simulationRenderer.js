@@ -748,8 +748,6 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
     points.push(x, y, 0);
 
-    console.log(points.length / 3, "points in orbit line for", name);
-
     /**
      * Proportion of a full revolution the object is from its starting
      * point/angle.
