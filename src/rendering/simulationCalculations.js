@@ -55,7 +55,12 @@ function calculateCircularProgressDistance(progressA, progressB) {
 }
 
 /**
- * Calculate the distance between two progress values, considering whether the progress is circular or linear.
+ * Calculate the distance between two progress values in [0, 1].
+ *
+ * If useCircularDistance is true, the circular distance from progressA to progressB is calculated.
+ * If useCircularDistance is false, the linear distance from progressA to progressB is calculated,
+ * and if progressB is less than progressA, a full revolution (1) is returned.
+ *
  * @param {number} progressA The first progress value (0 to 1)
  * @param {number} progressB The second progress value (0 to 1)
  * @param {boolean} useCircularDistance Whether to use circular distance (default: true)
