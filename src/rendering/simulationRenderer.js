@@ -35,6 +35,15 @@ import {
     calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import {
+    FOV,
+    CAMERA_NEAR_MULTIPLIER,
+    CAMERA_FAR_MULTIPLIER,
+    CONTROLS_MIN_MULTIPLIER,
+    CONTROLS_MAX_MULTIPLIER,
+    CONTROLS_ZOOM_SPEED,
+    CONTROLS_MIN_ZOOM_FACTOR,
+} from "./simulationCameraAndControls.js";
+import {
     updateCalendar,
     formatSimulationDate,
     getElapsedDaysText,
@@ -69,19 +78,9 @@ let isDragging = false;
 
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
-// Constants for camera and controls
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
-
-const fov = 45; // Field of view in degrees
-const cameraNearMultiplier = 1;
-const cameraFarMultiplier = 100;
-
-const controlsMinMultiplier = 10;
-const controlsMaxMultiplier = 1.5;
-const controlsZoomSpeed = 2.5;
-const controlsMinZoomFactor = 2; // The minimum factor that the controls should be able to zoom
 
 const cameraDefaults = {
     position: null, // Will be set based on the system's orbital data
@@ -942,7 +941,7 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
         );
 
     const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
-        fov,
+        FOV,
         cameraDistanceToTargetProjection,
         divisionsInView,
     );
@@ -1100,24 +1099,24 @@ async function alignSystemToCameraUp(group, useDefault = false) {
  * @returns {Object} The camera and controls settings
  */
 function calculateCameraAndControlsSettings(viewRadius) {
-    const controlsMinDistance = objectSize * controlsMinMultiplier;
+    const controlsMinDistance = objectSize * CONTROLS_MIN_MULTIPLIER;
 
     // Camera distance must be at least the minimum distance for the controls
     const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
     const cameraDistance = Math.max(
-        calculateCameraDistance(fov, viewRadius),
+        calculateCameraDistance(FOV, viewRadius),
         controlsMinDistance + epsilon
     );
 
     // Controls max distance must be at least camera distance * max multiplier,
-    // and must be able to zoom by at least controlsMinZoomFactor
+    // and must be able to zoom by at least CONTROLS_MIN_ZOOM_FACTOR
     const controlsMaxDistance = Math.max(
-        cameraDistance * controlsMaxMultiplier,
-        controlsMinDistance * controlsMinZoomFactor,
+        cameraDistance * CONTROLS_MAX_MULTIPLIER,
+        controlsMinDistance * CONTROLS_MIN_ZOOM_FACTOR,
     );
 
-    const cameraNear = objectSize * cameraNearMultiplier;
-    const cameraFar = cameraDistance * cameraFarMultiplier;
+    const cameraNear = objectSize * CAMERA_NEAR_MULTIPLIER;
+    const cameraFar = cameraDistance * CAMERA_FAR_MULTIPLIER;
 
     return {
         cameraDistance,
@@ -1145,7 +1144,7 @@ function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraFar }) {
     if (!camera) {
         const aspect = canvas.clientWidth / canvas.clientHeight;
         camera = new THREE.PerspectiveCamera(
-            fov,
+            FOV,
             aspect,
             cameraNear,
             cameraFar,
@@ -1181,7 +1180,7 @@ function initOrUpdateControls(
     }
     controls.minDistance = controlsMinDistance;
     controls.maxDistance = controlsMaxDistance;
-    controls.zoomSpeed = controlsZoomSpeed;
+    controls.zoomSpeed = CONTROLS_ZOOM_SPEED;
 
     if (controlsChangeHandler) {
         controls.removeEventListener("change", controlsChangeHandler);
