@@ -26,6 +26,7 @@ import {
 import {
     calculateOrbitalPosition,
     isAngleBetween,
+    calculateCircularProgressDistance,
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
@@ -758,11 +759,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
-        /**
-         * Proportion of a full revolution this point of `progress` is
-         * from the object.
-         */
-        const distance = (objectProgress - progress + 1) % 1;
+        const distance = calculateCircularProgressDistance(
+            progress,
+            objectProgress
+        );
 
         return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
     });
@@ -842,11 +842,10 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
          */
         const progress = i / (width - 1);
 
-        /**
-         * Proportion of a full revolution this point of `progress` is
-         * from the object.
-         */
-        const distance = (objectProgress - progress + 1) % 1;
+        const distance = calculateCircularProgressDistance(
+            progress,
+            objectProgress
+        );
 
         const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
 

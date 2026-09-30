@@ -45,6 +45,16 @@ export function isAngleBetween(angle, start, end) {
 }
 
 /**
+ * Calculate the circular distance between two progress values, considering the circular nature of progress.
+ * @param {number} progressA The first progress value (0 to 1)
+ * @param {number} progressB The second progress value (0 to 1)
+ * @returns {number} The circular distance from progressA to progressB
+ */
+export function calculateCircularProgressDistance(progressA, progressB) {
+    return (progressB - progressA + 1) % 1;
+}
+
+/**
  * Calculate the rotation matrix for an orbit based on its parameters.
  * R = Rz(Omega) * Rx(inc) * Rz(omega)
  * @param {number} Omega Longitude of the ascending node in radians
