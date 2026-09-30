@@ -43,6 +43,10 @@ with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
 with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")) as f:
     sim_state_schema = json.load(f)
 
+# Load the keyboard shortcuts
+with open(os.path.join(base_path, "src", "shared", "shortcuts.json"), encoding="utf-8") as f:
+    shortcuts = json.load(f)
+
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
@@ -65,7 +69,6 @@ TIMEZONE_MAP = {
     "NZT": "Pacific/Auckland",
     "UTC": "UTC",
 }
-
 
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
     """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
@@ -91,6 +94,7 @@ async def home(
         context={
             "settings": settings_state,
             "settings_schema": settings_schema,
+            "shortcuts": shortcuts,
             "fullscreen": fullscreen,
             "systems": all_systems,
             "dropdown_systems": all_systems,
@@ -158,6 +162,7 @@ async def simulation(
             "settings": settings_state,
             "settings_schema": settings_schema,
             "sim_state_schema": sim_state_schema,
+            "shortcuts": shortcuts,
             "fullscreen": fullscreen,
             "sim_speed": sim_speed,
             "sim_speed_unit": sim_speed_unit,
