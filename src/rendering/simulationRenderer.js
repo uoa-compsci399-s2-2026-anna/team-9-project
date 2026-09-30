@@ -1717,8 +1717,6 @@ function updateScreenSpaceScales() {
             maxScale,
         );
 
-        console.log(scale)
-
         mesh.scale.set(scale, scale, scale);
     }
 }
