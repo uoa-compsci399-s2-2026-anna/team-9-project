@@ -1056,7 +1056,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
 }
 
 /**
- * Sync the calendar to the current simulation time (bypasses the throttle).
+ * Sync the calendar to the last fetched simulation time (bypasses the throttle).
  */
 export function syncCalendar() {
     if (!lastFetchedSimulationTime) {
@@ -1350,7 +1350,7 @@ export async function init(name) {
     initScene();
 
     /**
-     * Persist the current simulation time, formatted simulation date, and days elapsed text
+     * Persist the last fetched simulation time, formatted simulation date, and days elapsed text
      * before the simulation is exited
      */
     window.addEventListener("pagehide", () => {
