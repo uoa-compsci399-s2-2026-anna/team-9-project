@@ -42,6 +42,7 @@ import {
     CONTROLS_MAX_MULTIPLIER,
     CONTROLS_ZOOM_SPEED,
     CONTROLS_MIN_ZOOM_FACTOR,
+    cameraDefaults,
 } from "./simulationCameraAndControls.js";
 import {
     updateCalendar,
@@ -81,12 +82,6 @@ const referenceSystemData = new Map(); // Cache for orbital data at the referenc
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
-
-const cameraDefaults = {
-    position: null, // Will be set based on the system's orbital data
-    target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
-    up: new THREE.Vector3(0, 0, 1), // Z-axis is up
-};
 
 const cameraAnimationSpeed = 0.1; // Proportion of remaining distance covered per step
 const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this proportion of total distance has been covered
