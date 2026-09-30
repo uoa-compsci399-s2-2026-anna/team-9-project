@@ -2,17 +2,19 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import {
+    calculateCameraDistance,
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
 
 export const FOV = 45; // Field of view in degrees
-export const CAMERA_NEAR_MULTIPLIER = 1;
-export const CAMERA_FAR_MULTIPLIER = 100;
 
-export const CONTROLS_MIN_MULTIPLIER = 10;
-export const CONTROLS_MAX_MULTIPLIER = 1.5;
-export const CONTROLS_ZOOM_SPEED = 2.5;
-export const CONTROLS_MIN_ZOOM_FACTOR = 2; // The minimum factor that the controls should be able to zoom
+const CAMERA_NEAR_MULTIPLIER = 1;
+const CAMERA_FAR_MULTIPLIER = 100;
+
+const CONTROLS_MIN_MULTIPLIER = 10;
+const CONTROLS_MAX_MULTIPLIER = 1.5;
+const CONTROLS_ZOOM_SPEED = 2.5;
+const CONTROLS_MIN_ZOOM_FACTOR = 2; // The minimum factor that the controls should be able to zoom
 
 export const CAMERA_ANIMATION_SPEED = 0.1; // Proportion of remaining distance covered per step
 const CAMERA_ANIMATION_PROGRESS_THRESHOLD = 0.9999; // Animation is complete once this proportion of total distance has been covered
@@ -44,6 +46,42 @@ export let camera; // Will be initialized in initOrUpdateCamera
 export let controls; // Will be initialized in initOrUpdateControls
 
 let lastControlsChangeHandler; // Store the controls change handler to remove when updating controls
+
+/**
+ * Calculate the camera and controls settings based on the view radius.
+ *
+ * @param {number} viewRadius The radius of view to fit within the camera
+ * @param {number} objectSize The size of the object
+ * @returns {Object} The camera and controls settings
+ */
+export function calculateCameraAndControlsSettings(viewRadius, objectSize) {
+    const controlsMinDistance = objectSize * CONTROLS_MIN_MULTIPLIER;
+
+    // Camera distance must be at least the minimum distance for the controls
+    const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
+    const cameraDistance = Math.max(
+        calculateCameraDistance(FOV, viewRadius),
+        controlsMinDistance + epsilon
+    );
+
+    // Controls max distance must be at least camera distance * max multiplier,
+    // and must be able to zoom by at least CONTROLS_MIN_ZOOM_FACTOR
+    const controlsMaxDistance = Math.max(
+        cameraDistance * CONTROLS_MAX_MULTIPLIER,
+        controlsMinDistance * CONTROLS_MIN_ZOOM_FACTOR,
+    );
+
+    const cameraNear = objectSize * CAMERA_NEAR_MULTIPLIER;
+    const cameraFar = cameraDistance * CAMERA_FAR_MULTIPLIER;
+
+    return {
+        cameraDistance,
+        cameraNear,
+        cameraFar,
+        controlsMinDistance,
+        controlsMaxDistance,
+    };
+}
 
 /**
  * Initialise the camera for the simulation renderer.

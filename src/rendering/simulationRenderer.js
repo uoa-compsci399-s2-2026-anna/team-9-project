@@ -28,24 +28,19 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
-    calculateCameraDistance,
     calculateAverageNormal,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import {
     FOV,
-    CAMERA_NEAR_MULTIPLIER,
-    CAMERA_FAR_MULTIPLIER,
-    CONTROLS_MIN_MULTIPLIER,
-    CONTROLS_MAX_MULTIPLIER,
-    CONTROLS_MIN_ZOOM_FACTOR,
     CAMERA_ANIMATION_SPEED,
     TOTAL_CAMERA_ANIMATION_STEPS,
     cameraDefaults,
     cameraAnimationState,
     camera,
     controls,
+    calculateCameraAndControlsSettings,
     initOrUpdateCamera,
     initOrUpdateControls,
 } from "./simulationCameraAndControls.js";
@@ -1071,41 +1066,6 @@ async function alignSystemToCameraUp(group, useDefault = false) {
 }
 
 /**
- * Calculate the camera and controls settings based on the view radius.
- *
- * @param {number} viewRadius The radius of view to fit within the camera
- * @returns {Object} The camera and controls settings
- */
-function calculateCameraAndControlsSettings(viewRadius) {
-    const controlsMinDistance = objectSize * CONTROLS_MIN_MULTIPLIER;
-
-    // Camera distance must be at least the minimum distance for the controls
-    const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
-    const cameraDistance = Math.max(
-        calculateCameraDistance(FOV, viewRadius),
-        controlsMinDistance + epsilon
-    );
-
-    // Controls max distance must be at least camera distance * max multiplier,
-    // and must be able to zoom by at least CONTROLS_MIN_ZOOM_FACTOR
-    const controlsMaxDistance = Math.max(
-        cameraDistance * CONTROLS_MAX_MULTIPLIER,
-        controlsMinDistance * CONTROLS_MIN_ZOOM_FACTOR,
-    );
-
-    const cameraNear = objectSize * CAMERA_NEAR_MULTIPLIER;
-    const cameraFar = cameraDistance * CAMERA_FAR_MULTIPLIER;
-
-    return {
-        cameraDistance,
-        cameraNear,
-        cameraFar,
-        controlsMinDistance,
-        controlsMaxDistance,
-    };
-}
-
-/**
  * Creates a handler for the controls change event.
  * @param {number} viewRadius The radius of view to fit within the camera
  * @returns {Function} The controls change handler
@@ -1254,7 +1214,7 @@ export async function init(name) {
     alignSystemToCameraUp(currentSystemGroup);
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
@@ -1320,7 +1280,7 @@ export async function resetView(topDown = true) {
 
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
@@ -1374,7 +1334,7 @@ export async function compareToSolarSystem() {
     solarSystemGroup.visible = true;
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
@@ -1397,7 +1357,7 @@ export async function hideSolarSystem() {
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
