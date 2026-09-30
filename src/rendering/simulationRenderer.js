@@ -778,7 +778,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
-const ORBIT_LINE_MINIMUM_OPACITY = 0.2;
+const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 /**
@@ -789,7 +789,7 @@ const ORBIT_LINE_MIN_WIDTH = 0.5;
  * @returns Scale factor betwee 0 and 1 of opacity/line width.
  */
 const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MINIMUM_OPACITY, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
