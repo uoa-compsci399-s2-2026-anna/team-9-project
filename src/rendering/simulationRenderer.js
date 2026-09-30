@@ -30,7 +30,6 @@ import {
     calculateMaxPeriapsis,
     calculateCameraDistance,
     calculateAverageNormal,
-    calculateDefaultCameraPosition,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
@@ -43,6 +42,8 @@ import {
     CONTROLS_ZOOM_SPEED,
     CONTROLS_MIN_ZOOM_FACTOR,
     cameraDefaults,
+    camera,
+    initOrUpdateCamera,
 } from "./simulationCameraAndControls.js";
 import {
     updateCalendar,
@@ -67,7 +68,6 @@ let gettingSystemData = false; // Flag to prevent multiple concurrent backend re
 let lastSystemData = null;
 
 let scene;
-let camera;
 let controls;
 let renderer;
 let labelRenderer;
@@ -1120,37 +1120,6 @@ function calculateCameraAndControlsSettings(viewRadius) {
         controlsMinDistance,
         controlsMaxDistance,
     };
-}
-
-/**
- * Initialise the camera for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {Object} cameraSettings The camera settings
- * @param {number} cameraSettings.cameraDistance The distance of the camera
- * @param {number} cameraSettings.cameraNear The near plane of the camera
- * @param {number} cameraSettings.cameraFar The far plane of the camera
- */
-function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraFar }) {
-    cameraDefaults.position = calculateDefaultCameraPosition(
-        cameraDefaults.up,
-        cameraDistance,
-    );
-
-    if (!camera) {
-        const aspect = canvas.clientWidth / canvas.clientHeight;
-        camera = new THREE.PerspectiveCamera(
-            FOV,
-            aspect,
-            cameraNear,
-            cameraFar,
-        );
-        camera.up.copy(cameraDefaults.up);
-        camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
-    } else {
-        camera.near = cameraNear;
-        camera.far = cameraFar;
-        camera.updateProjectionMatrix(); // Must update after changing camera parameters
-    }
 }
 
 /**
