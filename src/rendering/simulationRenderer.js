@@ -28,6 +28,7 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
+    calculatePeriapsis,
     calculateCameraDistance,
     calculateAverageNormal,
     calculateDefaultCameraPosition,
@@ -1634,8 +1635,7 @@ async function updateInnermostPeriapsis(comparing) {
                 continue;
             }
 
-            // TODO: I believe there is a function on some branch/PR to calculate this for me
-            const periapsis = Math.abs(orbit.a) * Math.abs(1 - orbit.e);
+            const periapsis = calculatePeriapsis(orbit.a, orbit.e);
             if (periapsis > 0 && periapsis < smallest) {
                 smallest = periapsis;
             }

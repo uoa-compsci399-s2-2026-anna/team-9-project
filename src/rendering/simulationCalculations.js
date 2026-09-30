@@ -48,7 +48,7 @@ function calculateApoapsis(a, e) {
  * @param {number} e Eccentricity of the orbit
  * @returns {number} The periapsis distance
  */
-function calculatePeriapsis(a, e) {
+export function calculatePeriapsis(a, e) {
     return a * (1 - e);
 }
 
