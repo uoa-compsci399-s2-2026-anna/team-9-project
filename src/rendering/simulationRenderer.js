@@ -1354,14 +1354,14 @@ export async function init(name) {
      * before the simulation is exited
      */
     window.addEventListener("pagehide", () => {
-        setSimulationTime(currentSystem, currentSimulationTime);
+        setSimulationTime(currentSystem, lastFetchedSimulationTime);
 
         const formattedSimulationDate = formatSimulationDate(
-            currentSimulationTime,
+            lastFetchedSimulationTime,
         );
         setFormattedSimulationDate(currentSystem, formattedSimulationDate);
 
-        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
+        const elapsedDaysText = getElapsedDaysText(lastFetchedSimulationTime);
         setElapsedText(currentSystem, elapsedDaysText);
     });
 
