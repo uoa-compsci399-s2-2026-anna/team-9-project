@@ -1160,7 +1160,6 @@ function initOrUpdateControls(
  */
 function createControlsChangeHandler(viewRadius) {
     return () => {
-        isDragging = true;
         const cameraOffset = camera.position.clone().sub(controls.target);
 
         // Clamp the target position to be within the view radius
@@ -1179,8 +1178,13 @@ function createControlsChangeHandler(viewRadius) {
  * objects on the scene.
  *
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @param {OrbitControls} controls The orbit controls for the scene
  */
-function initRaycastingEvents(canvas) {
+function initRaycastingEvents(canvas, controls) {
+    controls.addEventListener("change", () => {
+        isDragging = true;
+    });
+
     // Detect when the user holds their mouse down on the canvas
     canvas.addEventListener("pointerdown", () => {
         isDragging = false;
@@ -1302,7 +1306,7 @@ export async function init(name) {
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(canvas, cameraAndControlsSettings);
 
-    initRaycastingEvents(canvas);
+    initRaycastingEvents(canvas, controls);
     initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
