@@ -1711,8 +1711,8 @@ function updateScreenSpaceScales() {
         }
 
         const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
-        // TODO: unused (temp for now?)
-        const maxScale = isStar ? maxStarScreenSpaceScale : maxScreenSpaceScale;
+        // Ensure the max scale is at least the min scale
+        const maxScale = Math.max(getOrbitScaleCap(isStar), minScale);
 
         const scale = calculateScreenSpaceScale(
             mesh,
@@ -1720,14 +1720,8 @@ function updateScreenSpaceScales() {
             canvasHeight,
             desiredPixelSize,
             minScale,
-            getOrbitScaleCap(isStar), // TODO: what if this is less than minScale?
+            maxScale,
         );
-
-        if (isStar) {
-            console.log(scale);
-            console.log(getOrbitScaleCap(isStar));
-            console.log("-")
-        }
 
         mesh.scale.set(scale, scale, scale);
     }
