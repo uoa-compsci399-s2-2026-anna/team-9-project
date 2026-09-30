@@ -50,8 +50,26 @@ export function isAngleBetween(angle, start, end) {
  * @param {number} progressB The second progress value (0 to 1)
  * @returns {number} The circular distance from progressA to progressB
  */
-export function calculateCircularProgressDistance(progressA, progressB) {
+function calculateCircularProgressDistance(progressA, progressB) {
     return (progressB - progressA + 1) % 1;
+}
+
+/**
+ * Calculate the distance between two progress values, considering whether the progress is circular or linear.
+ * @param {number} progressA The first progress value (0 to 1)
+ * @param {number} progressB The second progress value (0 to 1)
+ * @param {boolean} useCircularDistance Whether to use circular distance (default: true)
+ * @returns {number} The distance from progressA to progressB
+ */
+export function calculateProgressDistance(progressA, progressB, useCircularDistance = true) {
+    if (useCircularDistance) {
+        return calculateCircularProgressDistance(progressA, progressB);
+    }
+    const distance = progressB - progressA;
+    if (distance < 0) {
+        return 1; // Return 1 for a full revolution
+    }
+    return distance;
 }
 
 /**

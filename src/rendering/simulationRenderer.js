@@ -26,7 +26,7 @@ import {
 import {
     calculateOrbitalPosition,
     isAngleBetween,
-    calculateCircularProgressDistance,
+    calculateProgressDistance,
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
@@ -630,6 +630,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     if (e === 1) return; // Parabolic orbits are not supported for now
 
+    const isElliptical = e < 1;
+
     let line = orbitalLines.get(name);
 
     if (!line) {
@@ -687,7 +689,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     let thetaEnd = 2 * Math.PI;
 
     // Limit the angle range for hyperbolic orbits to its asymptotes
-    if (e > 1) {
+    if (!isElliptical) {
         const thetaLimit = Math.acos(-1 / e);
         const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
 
@@ -755,13 +757,18 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
      */
     const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
 
-    updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
+    updateOrbitAlphaTexture(
+        line.material.alphaMap,
+        objectProgress,
+        isElliptical
+    );
 
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
-        const distance = calculateCircularProgressDistance(
+        const distance = calculateProgressDistance(
             progress,
-            objectProgress
+            objectProgress,
+            isElliptical
         );
 
         return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
@@ -824,8 +831,9 @@ function createOpaqueOrbitAlphaTexture() {
  * @param {THREE.DataTexture} texture
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
+ * @param {boolean} isElliptical Whether the orbit is elliptical (default: true)
  */
-function updateOrbitAlphaTexture(texture, objectProgress) {
+function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
     /**
      * `texture.image` is an object containing fields `data` (the actual byte
      * array of the texture), `width` (the number of bytes) in the 'width'
@@ -842,9 +850,10 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
          */
         const progress = i / (width - 1);
 
-        const distance = calculateCircularProgressDistance(
+        const distance = calculateProgressDistance(
             progress,
-            objectProgress
+            objectProgress,
+            isElliptical
         );
 
         const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
