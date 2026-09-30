@@ -41,6 +41,8 @@ import {
     CONTROLS_MAX_MULTIPLIER,
     CONTROLS_ZOOM_SPEED,
     CONTROLS_MIN_ZOOM_FACTOR,
+    CAMERA_ANIMATION_SPEED,
+    TOTAL_CAMERA_ANIMATION_STEPS,
     cameraDefaults,
     camera,
     initOrUpdateCamera,
@@ -82,17 +84,6 @@ const referenceSystemData = new Map(); // Cache for orbital data at the referenc
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
-
-const cameraAnimationSpeed = 0.1; // Proportion of remaining distance covered per step
-const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this proportion of total distance has been covered
-
-// Calculate the number of steps needed to reach the progress threshold.
-// At the n-th step, (1 - cameraAnimationSpeed)^n is the remaining proportion of total distance to cover.
-// So, we solve for n in the equation: (1 - cameraAnimationSpeed)^n = 1 - cameraAnimationProgressThreshold
-// to get the number of steps needed for the remaining proportion of total distance to reach 1 - cameraAnimationProgressThreshold.
-const totalCameraAnimationSteps = Math.ceil(
-    Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
-);
 
 let currentCameraAnimationStep = 0;
 let animateCameraAndControls = false;
@@ -1624,19 +1615,19 @@ async function renderFrame(timestamp) {
     }
 
     if (animateCameraAndControls) {
-        // Animate the camera and controls for totalCameraAnimationSteps steps.
+        // Animate the camera and controls for TOTAL_CAMERA_ANIMATION_STEPS steps.
         // Animation stops after enough steps have been taken
         // or if the user interacts with the controls.
 
-        if (currentCameraAnimationStep >= totalCameraAnimationSteps) {
+        if (currentCameraAnimationStep >= TOTAL_CAMERA_ANIMATION_STEPS) {
             animateCameraAndControls = false;
             camera.position.copy(animateCameraPositionTo);
             controls.target.copy(animateControlsTargetTo);
 
         } else {
             // Interpolate towards the desired position and target
-            camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
-            controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
+            camera.position.lerp(animateCameraPositionTo, CAMERA_ANIMATION_SPEED);
+            controls.target.lerp(animateControlsTargetTo, CAMERA_ANIMATION_SPEED);
             currentCameraAnimationStep++;
         }
 
