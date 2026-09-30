@@ -694,7 +694,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         thetaEnd = thetaLimit - epsilon;
     }
 
-    const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
+    // Calculate the step size for theta.
+    // We subtract 2 as the last point is added separately, and we add a point at the object's position
+    const thetaStep = (thetaEnd - thetaStart) / (ORBIT_POINTS_COUNT - 2);
 
     /**
      * The position of the object in world (xyz) coordinate space.
