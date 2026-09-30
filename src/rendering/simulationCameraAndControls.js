@@ -29,6 +29,15 @@ export const cameraDefaults = {
     up: new THREE.Vector3(0, 0, 1), // Z-axis is up
 };
 
+export const cameraAnimationState = {
+    isAnimating: false,
+    currentStep: 0,
+
+    // The position and target to animate towards
+    position: new THREE.Vector3(),
+    target: new THREE.Vector3(),
+};
+
 export let camera; // Will be initialized in initOrUpdateCamera
 
 /**

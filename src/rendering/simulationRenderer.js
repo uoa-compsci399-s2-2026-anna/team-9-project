@@ -44,6 +44,7 @@ import {
     CAMERA_ANIMATION_SPEED,
     TOTAL_CAMERA_ANIMATION_STEPS,
     cameraDefaults,
+    cameraAnimationState,
     camera,
     initOrUpdateCamera,
 } from "./simulationCameraAndControls.js";
@@ -84,13 +85,6 @@ const referenceSystemData = new Map(); // Cache for orbital data at the referenc
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
-
-let currentCameraAnimationStep = 0;
-let animateCameraAndControls = false;
-
-// Animation targets for camera and controls
-let animateCameraPositionTo = new THREE.Vector3();
-let animateControlsTargetTo = new THREE.Vector3();
 
 const raycaster = new THREE.Raycaster();
 
@@ -1129,7 +1123,7 @@ function initOrUpdateControls(
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
         controls.addEventListener("start", () => {
-            animateCameraAndControls = false; // Stop animating on user interaction
+            cameraAnimationState.isAnimating = false; // Stop animating on user interaction
         });
 
         controls.target.copy(cameraDefaults.target);
@@ -1370,11 +1364,11 @@ export async function resetView(topDown = true) {
     );
 
     // Animate to the default controls target
-    animateControlsTargetTo.copy(cameraDefaults.target);
+    cameraAnimationState.target.copy(cameraDefaults.target);
 
     if (topDown) {
         // Animate to the default camera position
-        animateCameraPositionTo.copy(cameraDefaults.position);
+        cameraAnimationState.position.copy(cameraDefaults.position);
     } else {
         // Animate camera position to the same direction as the current camera but at the default distance
 
@@ -1387,15 +1381,15 @@ export async function resetView(topDown = true) {
         const newCameraOffset = currentCameraDirection.multiplyScalar(
             defaultCameraDistance,
         );
-        const newCameraPosition = animateControlsTargetTo
+        const newCameraPosition = cameraAnimationState.target
             .clone()
             .add(newCameraOffset);
 
-        animateCameraPositionTo.copy(newCameraPosition);
+        cameraAnimationState.position.copy(newCameraPosition);
     }
 
-    currentCameraAnimationStep = 0;
-    animateCameraAndControls = true;
+    cameraAnimationState.currentStep = 0;
+    cameraAnimationState.isAnimating = true;
 }
 
 export async function compareToSolarSystem() {
@@ -1614,21 +1608,21 @@ async function renderFrame(timestamp) {
         updateSimulation(false);
     }
 
-    if (animateCameraAndControls) {
+    if (cameraAnimationState.isAnimating) {
         // Animate the camera and controls for TOTAL_CAMERA_ANIMATION_STEPS steps.
         // Animation stops after enough steps have been taken
         // or if the user interacts with the controls.
 
-        if (currentCameraAnimationStep >= TOTAL_CAMERA_ANIMATION_STEPS) {
-            animateCameraAndControls = false;
-            camera.position.copy(animateCameraPositionTo);
-            controls.target.copy(animateControlsTargetTo);
+        if (cameraAnimationState.currentStep >= TOTAL_CAMERA_ANIMATION_STEPS) {
+            cameraAnimationState.isAnimating = false;
+            camera.position.copy(cameraAnimationState.position);
+            controls.target.copy(cameraAnimationState.target);
 
         } else {
             // Interpolate towards the desired position and target
-            camera.position.lerp(animateCameraPositionTo, CAMERA_ANIMATION_SPEED);
-            controls.target.lerp(animateControlsTargetTo, CAMERA_ANIMATION_SPEED);
-            currentCameraAnimationStep++;
+            camera.position.lerp(cameraAnimationState.position, CAMERA_ANIMATION_SPEED);
+            controls.target.lerp(cameraAnimationState.target, CAMERA_ANIMATION_SPEED);
+            cameraAnimationState.currentStep++;
         }
 
         controls.update();
