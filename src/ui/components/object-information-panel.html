@@ -21,7 +21,7 @@
       {% endif %}
 
       {% if unit_text %}
-        <span class="inline">{{ unit_text }}</span>
+        <span class="inline" data-unit>{{ unit_text }}</span>
       {% endif %}
     </div>
   </div>
@@ -57,6 +57,7 @@
       {{ data_field("Mass", "object-mass", "kg") }}
       {{ data_field("Radius", "object-radius", "m") }}
       {{ data_field("Avg. temp.", "object-average-temperature", "K") }}
+      {{ data_field("Period", "object-period", "days") }}
     </div>
   </div>
 {% endcall %}
