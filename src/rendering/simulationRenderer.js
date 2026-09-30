@@ -217,6 +217,22 @@ const CORE_COLOUR = "rgba(255, 255, 255, 1)";
 const GLOW_SIZE_MULTIPLIER = 3.5;
 const SPRITE_Z_SCALE = 1.0;
 
+// Screen space object sizing
+const DESIRED_OBJECT_PIXEL_SIZE = 12;
+const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
+const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects? Idk about this
+
+const minScreenSpaceScale = 0.5;
+
+// Keeps stars proportionally larger than other objects at the minimum scale
+const minStarScreenSpaceScale = (DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE) * minScreenSpaceScale;
+
+// Fraction of the innermost periapsis that an object's on screen radius may occupy
+const MAX_EXTENT_ORBIT_FRACTION = 1;
+
+// Periapsis of the innermost default visible orbit
+let innermostPeriapsis = Infinity;
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -1595,23 +1611,6 @@ function resizeRendererToDisplaySize() {
     return needResize;
 }
 
-// TODO: move consts etc to top
-// Screen space object sizing
-const DESIRED_OBJECT_PIXEL_SIZE = 12;
-const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
-const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects? Idk about this
-
-const minScreenSpaceScale = 0.5;
-
-// TODO: add comment explaining why
-const minStarScreenSpaceScale = (DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE) * minScreenSpaceScale;
-
-// Fraction of the innermost periapsis that an object's on screen radius may occupy
-const MAX_EXTENT_ORBIT_FRACTION = 1;
-
-// Periapsis of the innermost default visible orbit
-let innermostPeriapsis = Infinity;
-
 /**
  * Finds the smallest periapsis (closest point to the centre) across all
  * non-star orbits that are visible by default.
@@ -1654,8 +1653,7 @@ async function updateInnermostPeriapsis(comparing) {
 function getOrbitScaleCap(isStar) {
     if (!Number.isFinite(innermostPeriapsis)) return Infinity;
 
-    // Stars include their glow sprite, which is GLOW_SIZE_MULTIPLIER * objectSize wide
-    // TODO: maybe update how glow size works to avoid the / 2 here
+    // Account for the glow sprite for stars, which is GLOW_SIZE_MULTIPLIER * objectSize wide
     const radiusPerScale = isStar
         ? (objectSize * GLOW_SIZE_MULTIPLIER) / 2
         : objectSize;
