@@ -728,7 +728,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
     if (objectTheta < 0) objectTheta += 2 * Math.PI;
 
-    for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
+    for (let i = 0; i < ORBIT_POINTS_COUNT - 2; i++) {
+        const theta = thetaStart + i * thetaStep;
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
 
@@ -739,11 +740,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         }
     }
 
-    if (e > 1) {
-        // Add the last point at the end of the range to ensure the line reaches the asymptote
-        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
-        points.push(x, y, 0);
-    }
+    // Add the last point at the end of the range
+    const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+    points.push(x, y, 0);
 
     /**
      * Proportion of a full revolution the object is from its starting
