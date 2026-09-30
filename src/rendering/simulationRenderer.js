@@ -1595,25 +1595,21 @@ function resizeRendererToDisplaySize() {
     return needResize;
 }
 
+// TODO: move consts etc to top
 // Screen space object sizing
 const DESIRED_OBJECT_PIXEL_SIZE = 12;
 const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
 const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects? Idk about this
 
 const minScreenSpaceScale = 0.5;
-const maxScreenSpaceScale = 50; // TODO: can't even zoom out enough rn to trigger this
 
-const minStarScreenSpaceScale = 1; // Or just do (DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE) * minScreenSpaceScale
-/**
- * TODO: Make this scaled based on the smallest/inner most orbit (so that there is a buffer around the orbit).
- * To test this: disable labels.
-*/
-const maxStarScreenSpaceScale = 80;
+// TODO: add comment explaining why
+const minStarScreenSpaceScale = (DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE) * minScreenSpaceScale;
 
 // Fraction of the innermost periapsis that an object's on screen radius may occupy
-const MAX_EXTENT_ORBIT_FRACTION = 1.25; // TODO: consider (1 feels small to me?)
+const MAX_EXTENT_ORBIT_FRACTION = 1;
 
-// Closest approach (periapsis) of the innermost visible orbit, in world units
+// Periapsis of the innermost default visible orbit
 let innermostPeriapsis = Infinity;
 
 /**
