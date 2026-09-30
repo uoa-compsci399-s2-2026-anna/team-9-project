@@ -72,7 +72,7 @@ let controls;
 let renderer;
 let labelRenderer;
 
-let controlsChangeHandler; // Store the controls change handler to remove when updating controls
+let lastControlsChangeHandler; // Store the controls change handler to remove when updating controls
 
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
@@ -1128,10 +1128,12 @@ function calculateCameraAndControlsSettings(viewRadius) {
  * @param {Object} controlsSettings The controls settings
  * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
  * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
+ * @param {Function} controlsChangeHandler The handler for the controls change event
  */
 function initOrUpdateControls(
     canvas,
     { controlsMinDistance, controlsMaxDistance },
+    controlsChangeHandler
 ) {
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
@@ -1146,10 +1148,10 @@ function initOrUpdateControls(
     controls.maxDistance = controlsMaxDistance;
     controls.zoomSpeed = CONTROLS_ZOOM_SPEED;
 
-    if (controlsChangeHandler) {
-        controls.removeEventListener("change", controlsChangeHandler);
+    if (lastControlsChangeHandler) {
+        controls.removeEventListener("change", lastControlsChangeHandler);
     }
-    controlsChangeHandler = createControlsChangeHandler(viewRadius);
+    lastControlsChangeHandler = controlsChangeHandler;
     controls.addEventListener("change", controlsChangeHandler);
 }
 
@@ -1304,7 +1306,11 @@ export async function init(name) {
     const cameraAndControlsSettings =
         calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     initRaycastingEvents(canvas, controls);
     initHoverCursor(canvas);
@@ -1366,7 +1372,11 @@ export async function resetView(topDown = true) {
     const cameraAndControlsSettings =
         calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     // Animate to the default controls target
     animateControlsTargetTo.copy(cameraDefaults.target);
@@ -1416,7 +1426,11 @@ export async function compareToSolarSystem() {
     const cameraAndControlsSettings =
         calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     resetView();
 
@@ -1435,7 +1449,11 @@ export async function hideSolarSystem() {
     const cameraAndControlsSettings =
         calculateCameraAndControlsSettings(viewRadius);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     resetView();
 
