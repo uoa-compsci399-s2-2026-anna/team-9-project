@@ -48,10 +48,14 @@ let timer;
 // The current simulation time in milliseconds since Unix epoch
 let currentSimulationTime;
 
-let currentSystem;
+let lastFetchedSimulationTime = null; // The simulation time for which the last system data was fetched
 
+let currentSystem;
 let currentSystemColours;
 let objectTypes;
+
+let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
+let lastSystemData = null;
 
 let scene;
 let camera;
@@ -991,12 +995,26 @@ async function updateSimulation(forceCalendarUpdate = true) {
     if (isComparingToSolarSystem) {
         systems.push("Solar System");
     }
-    const allSystemData = await getMultipleSystemsData(
-        systems,
-        currentSimulationTime,
-    );
+
+    let allSystemData;
+
+    if (gettingSystemData && lastSystemData) {
+        // Use the last fetched data if a request is already in progress
+        allSystemData = lastSystemData;
+
+    } else {
+        gettingSystemData = true;
+        lastFetchedSimulationTime = currentSimulationTime;
+        allSystemData = await getMultipleSystemsData(
+            systems,
+            lastFetchedSimulationTime
+        );
+        updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
+        gettingSystemData = false;
+        lastSystemData = allSystemData;
+    }
+
     const currentSystemData = allSystemData[currentSystem];
-    updateCalendar(currentSimulationTime, forceCalendarUpdate);
 
     for (const [name, position] of Object.entries(
         currentSystemData.positions,
@@ -1053,14 +1071,14 @@ async function updateSimulation(forceCalendarUpdate = true) {
 }
 
 /**
- * Sync the calendar to the current simulation time (bypasses the throttle).
+ * Sync the calendar to the last fetched simulation time (bypasses the throttle).
  */
 export function syncCalendar() {
-    if (currentSimulationTime === null) {
+    if (lastFetchedSimulationTime === null) {
         return;
     }
 
-    updateCalendar(currentSimulationTime, true);
+    updateCalendar(lastFetchedSimulationTime, true);
 }
 
 /**
@@ -1349,18 +1367,18 @@ export async function init(name) {
     initScene();
 
     /**
-     * Persist the current simulation time, formatted simulation date, and days elapsed text
+     * Persist the last fetched simulation time, formatted simulation date, and days elapsed text
      * before the simulation is exited
      */
     window.addEventListener("pagehide", () => {
-        setSimulationTime(currentSystem, currentSimulationTime);
+        setSimulationTime(currentSystem, lastFetchedSimulationTime);
 
         const formattedSimulationDate = formatSimulationDate(
-            currentSimulationTime,
+            lastFetchedSimulationTime,
         );
         setFormattedSimulationDate(currentSystem, formattedSimulationDate);
 
-        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
+        const elapsedDaysText = getElapsedDaysText(lastFetchedSimulationTime);
         setElapsedText(currentSystem, elapsedDaysText);
     });
 
