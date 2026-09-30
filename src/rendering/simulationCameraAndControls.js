@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
 import {
     calculateDefaultCameraPosition,
 } from "./simulationCalculations.js";
@@ -39,6 +41,9 @@ export const cameraAnimationState = {
 };
 
 export let camera; // Will be initialized in initOrUpdateCamera
+export let controls; // Will be initialized in initOrUpdateControls
+
+let lastControlsChangeHandler; // Store the controls change handler to remove when updating controls
 
 /**
  * Initialise the camera for the simulation renderer.
@@ -69,4 +74,37 @@ export function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraF
         camera.far = cameraFar;
         camera.updateProjectionMatrix(); // Must update after changing camera parameters
     }
+}
+
+/**
+ * Initialise the controls for the simulation renderer.
+ * @param {HTMLCanvasElement} canvas The canvas element to render on
+ * @param {Object} controlsSettings The controls settings
+ * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
+ * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
+ * @param {Function} controlsChangeHandler The handler for the controls change event
+ */
+export function initOrUpdateControls(
+    canvas,
+    { controlsMinDistance, controlsMaxDistance },
+    controlsChangeHandler
+) {
+    if (!controls) {
+        controls = new OrbitControls(camera, canvas);
+        controls.addEventListener("start", () => {
+            cameraAnimationState.isAnimating = false; // Stop animating on user interaction
+        });
+
+        controls.target.copy(cameraDefaults.target);
+        controls.update();
+    }
+    controls.minDistance = controlsMinDistance;
+    controls.maxDistance = controlsMaxDistance;
+    controls.zoomSpeed = CONTROLS_ZOOM_SPEED;
+
+    if (lastControlsChangeHandler) {
+        controls.removeEventListener("change", lastControlsChangeHandler);
+    }
+    lastControlsChangeHandler = controlsChangeHandler;
+    controls.addEventListener("change", controlsChangeHandler);
 }

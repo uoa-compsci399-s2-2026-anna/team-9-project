@@ -39,14 +39,15 @@ import {
     CAMERA_FAR_MULTIPLIER,
     CONTROLS_MIN_MULTIPLIER,
     CONTROLS_MAX_MULTIPLIER,
-    CONTROLS_ZOOM_SPEED,
     CONTROLS_MIN_ZOOM_FACTOR,
     CAMERA_ANIMATION_SPEED,
     TOTAL_CAMERA_ANIMATION_STEPS,
     cameraDefaults,
     cameraAnimationState,
     camera,
+    controls,
     initOrUpdateCamera,
+    initOrUpdateControls,
 } from "./simulationCameraAndControls.js";
 import {
     updateCalendar,
@@ -71,11 +72,8 @@ let gettingSystemData = false; // Flag to prevent multiple concurrent backend re
 let lastSystemData = null;
 
 let scene;
-let controls;
 let renderer;
 let labelRenderer;
-
-let lastControlsChangeHandler; // Store the controls change handler to remove when updating controls
 
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
@@ -1105,39 +1103,6 @@ function calculateCameraAndControlsSettings(viewRadius) {
         controlsMinDistance,
         controlsMaxDistance,
     };
-}
-
-/**
- * Initialise the controls for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {Object} controlsSettings The controls settings
- * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
- * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
- * @param {Function} controlsChangeHandler The handler for the controls change event
- */
-function initOrUpdateControls(
-    canvas,
-    { controlsMinDistance, controlsMaxDistance },
-    controlsChangeHandler
-) {
-    if (!controls) {
-        controls = new OrbitControls(camera, canvas);
-        controls.addEventListener("start", () => {
-            cameraAnimationState.isAnimating = false; // Stop animating on user interaction
-        });
-
-        controls.target.copy(cameraDefaults.target);
-        controls.update();
-    }
-    controls.minDistance = controlsMinDistance;
-    controls.maxDistance = controlsMaxDistance;
-    controls.zoomSpeed = CONTROLS_ZOOM_SPEED;
-
-    if (lastControlsChangeHandler) {
-        controls.removeEventListener("change", lastControlsChangeHandler);
-    }
-    lastControlsChangeHandler = controlsChangeHandler;
-    controls.addEventListener("change", controlsChangeHandler);
 }
 
 /**
