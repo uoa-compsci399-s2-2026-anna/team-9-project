@@ -1632,7 +1632,7 @@ async function updateInnermostPeriapsis(comparing) {
             }
 
             const periapsis = calculatePeriapsis(orbit.a, orbit.e);
-            if (periapsis > 0 && periapsis < smallest) {
+            if (periapsis < smallest) {
                 smallest = periapsis;
             }
         }
