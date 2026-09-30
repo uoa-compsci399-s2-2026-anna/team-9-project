@@ -1619,29 +1619,29 @@ let innermostPeriapsis = Infinity;
  * @param {boolean} comparing Whether the Solar System is being compared to or not
  */
 async function updateInnermostPeriapsis(comparing) {
+    // Don't check the periapsis of the stars in the current system
+    const systems = [
+        { system: currentSystem, isExcluded: (name) => objectTypes[name] === "star" },
+    ];
+
+    if (comparing) {
+        // Don't check the periapsis of the Sun
+        systems.push({ system: "Solar System", isExcluded: (name) => name === "Sun" });
+    }
+
     let smallest = Infinity;
 
-    // TODO: terrible naming
-    const consider = async (system, shouldSkip) => {
-        // TODO: I believe this is cached now (in another branch...)
+    for (const { system, isExcluded } of systems) {
         const data = await getReferenceSystemData(system);
 
         for (const [name, orbit] of Object.entries(data.orbital_data)) {
-            if (isObjectHiddenByDefault(system, name) || shouldSkip(name)) {
+            if (isObjectHiddenByDefault(system, name) || isExcluded(name)) {
                 continue;
             }
 
             const periapsis = calculatePeriapsis(orbit.a, orbit.e);
-            if (periapsis < smallest) {
-                smallest = periapsis;
-            }
+            smallest = Math.min(smallest, periapsis);
         }
-    };
-
-    await consider(currentSystem, (name) => objectTypes[name] === "star");
-
-    if (comparing) {
-        await consider("Solar System", (name) => name === "Sun");
     }
 
     innermostPeriapsis = smallest;
@@ -1718,6 +1718,8 @@ function updateScreenSpaceScales() {
             minScale,
             maxScale,
         );
+
+        console.log(scale)
 
         mesh.scale.set(scale, scale, scale);
     }
