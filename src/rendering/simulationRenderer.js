@@ -1154,7 +1154,7 @@ function updateHoverCursor(canvas) {
         pointerPosition &&
         getObjectNameAt(pointerPosition.x, pointerPosition.y, canvas);
 
-    // `name` is null if there is no object at the cursor position
+    // `name` is null if there is no object at the current pointer position
     canvas.style.cursor = name ? "pointer" : "default";
 }
 
