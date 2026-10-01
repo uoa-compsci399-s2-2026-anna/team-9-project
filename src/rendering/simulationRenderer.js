@@ -212,6 +212,9 @@ const MAX_EXTENT_ORBIT_FRACTION = 0.5;
 // Periapsis of the innermost default visible orbit
 let innermostPeriapsis = Infinity;
 
+// Last known pointer position (in viewport coordinates)
+let pointerPosition = null;
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -1129,17 +1132,30 @@ function initRaycastingEvents(canvas, controls) {
 }
 
 /**
- * Register a pointer listener on the canvas that updates the cursor to
- * a pointer to indicate when an object can be clicked.
+ * Track the pointer over the canvas so the cursor can be updated every frame.
  *
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function initHoverCursor(canvas) {
+    // Store the pointer position whenever it moves over the canvas
     canvas.addEventListener("pointermove", (event) => {
-        const name = getObjectNameAt(event.clientX, event.clientY, canvas);
-        // Set the cursor to a pointer if there is an object at the cursor
-        canvas.style.cursor = name ? "pointer" : "default";
+        pointerPosition = { x: event.clientX, y: event.clientY };
     });
+}
+
+/**
+ * Set the cursor to a pointer if an object is under the last known pointer
+ * position, and to the default cursor otherwise. This is called every frame.
+ *
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ */
+function updateHoverCursor(canvas) {
+    const name =
+        pointerPosition &&
+        getObjectNameAt(pointerPosition.x, pointerPosition.y, canvas);
+
+    // `name` is null if there is no object at the cursor position
+    canvas.style.cursor = name ? "pointer" : "default";
 }
 
 /**
@@ -1665,6 +1681,8 @@ async function renderFrame(timestamp) {
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
+
+    updateHoverCursor(renderer.domElement);
 
     // Invoke render() on the next frame
     requestAnimationFrame(renderFrame);
