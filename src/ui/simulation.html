@@ -1,3 +1,7 @@
+{% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
+{% from "components/side-panel.html" import side_panel %}
+{% from "components/text-button.html" import text_button %}
+{% from "components/container.html" import container %}
 {% extends "base.html" %}
 
 <!-- Page title -->
@@ -24,15 +28,50 @@
     class="pointer-events-auto fixed inset-0 z-0 h-screen w-screen"
   ></canvas>
 
+  <!-- Object information panel (absolute position) -->
+  <div class="absolute top-1/2 right-0 z-10 -translate-y-1/2">
+    {% include "components/object-information-panel.html" %}
+  </div>
+
   <!-- Controls at top -->
   <div class="flex">
-    {% include "components/system-picker.html" %}
+    <div>{% include "components/system-picker.html" %}</div>
 
     <div class="ml-auto">{% include "components/toolbar.html" %}</div>
   </div>
 
   <!-- Side panels -->
-  {% include "components/sidebar.html" %}
+  <div class="flex min-h-0 w-full flex-1 items-end gap-3">
+    <!-- Left sidebar -->
+    <div class="flex h-full min-h-0 w-48 flex-col justify-end gap-2">
+      {% include "templates/objects-panel.html" %}
+      {% include "templates/view-settings-panel.html" %}
+    </div>
+
+    <!-- RHS controls -->
+    <div class="ml-auto flex flex-col gap-2">
+      {% call container(style="flex gap-2 p-2") %}
+        <!-- Compare to solar system button -->
+        {% if current_system.name != "Solar System" %}
+          {{
+            text_button(
+              "Compare to Solar System",
+              button_id="compare-to-solar-system-button",
+              on_click_events=["sim:compare_to_solar_system"]
+            )
+          }}
+        {% endif %}
+
+        <!-- Reset view button -->
+        {{
+          text_button(
+            "Reset view",
+            on_click_events=["sim:reset_view"]
+          )
+        }}
+      {% endcall %}
+    </div>
+  </div>
 
   <!-- Playback controls at bottom -->
   {% include "components/simulation-playback-controls.html" %}
@@ -73,7 +112,17 @@
     defer
   ></script>
   <script type="module" src="/src/ui/simulationControls.js" defer></script>
-  <script type="module" src="/src/ui/sidebar.js" defer></script>
   <script type="module" src="/src/ui/toolbar.js" defer></script>
   <script type="module" src="/src/ui/simulationCalendar.js" defer></script>
+  <script
+    type="module"
+    src="/src/ui/components/object-information-panel.js"
+    defer
+  ></script>
+  <script type="module" src="/src/ui/templates/objects-panel.js" defer></script>
+  <script
+    type="module"
+    src="/src/ui/templates/view-settings-panel.js"
+    defer
+  ></script>
 {% endblock %}
