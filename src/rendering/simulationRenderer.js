@@ -103,14 +103,6 @@ let hitboxPadding;
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 /**
- * The width (thickness) of the orbit lines for regular orbits and for orbits
- * belonging to the Solar System when it's shown only as a comparison overlay,
- * in screen pixels.
- */
-const ORBIT_LINE_WIDTH = 20;
-const COMPARISON_ORBIT_LINE_WIDTH = 10;
-
-/**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
  * only as a comparison overlay.
  */
@@ -606,6 +598,26 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
 }
 
 /**
+ * Orbit line widths as a proportion of the smaller canvas dimension, so the
+ * lines keep the same proportion to the orbits at any canvas size.
+ */
+const ORBIT_LINE_WIDTH_PROPORTION = 0.01;
+const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.005;
+const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
+
+// TODO: docstring
+function getOrbitLineWidth(isComparison) {
+    const canvas = renderer.domElement;
+    const canvasSize = Math.min(canvas.clientWidth, canvas.clientHeight);
+    // The orbit line width as a proportion of the canvas size
+    const proportion = isComparison
+        ? COMPARISON_ORBIT_LINE_WIDTH_PROPORTION
+        : ORBIT_LINE_WIDTH_PROPORTION;
+
+    return Math.max(ORBIT_LINE_MIN_PIXEL_WIDTH, canvasSize * proportion);
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  *
@@ -644,10 +656,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
                 comparisonOrbitOpacity,
             );
 
-            material.lineWidth = COMPARISON_ORBIT_LINE_WIDTH;
+            material.lineWidth = getOrbitLineWidth(true);
             material.color.set(comparisonColour);
         } else {
-            material.lineWidth = ORBIT_LINE_WIDTH;
+            material.lineWidth = getOrbitLineWidth(false);
             material.color.set(colour);
         }
 
@@ -1521,6 +1533,9 @@ function resizeRendererToDisplaySize() {
 
         for (const line of orbitalLines.values()) {
             line.material.resolution.set(width, height);
+            line.material.lineWidth = getOrbitLineWidth(
+                line.parent === solarSystemGroup,
+            );
         }
     }
 
