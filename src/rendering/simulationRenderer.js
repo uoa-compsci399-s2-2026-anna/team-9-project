@@ -28,11 +28,10 @@ import {
     calculateOrbitalPosition,
     isAngleBetween,
     calculateProgressDistance,
-    calculateRotationMatrix,
+    calculateOrbitRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
     calculatePeriapsis,
-    calculateCameraDistance,
     calculateAverageNormal,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
@@ -770,7 +769,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     });
 
     // Rotate the line to match the orbital parameters
-    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
+    const rotationMatrix = calculateOrbitRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
