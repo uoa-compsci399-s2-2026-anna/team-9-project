@@ -212,7 +212,8 @@ const MAX_EXTENT_ORBIT_FRACTION = 0.5;
 // Periapsis of the innermost default visible orbit
 let innermostPeriapsis = Infinity;
 
-// Earliest simulation time allowed is 1 January of year 0 (UTC)
+// Earliest simulation time allowed is 1 January of year 0 (UTC).
+// This minimum date is displayed as year 1 (due to how the calendar formats dates).
 const MIN_SIMULATION_TIME = (() => {
     const date = new Date(0);
     date.setUTCFullYear(0, 0, 1);
@@ -1282,7 +1283,7 @@ export async function init(name) {
 }
 
 /**
- * Clamp a simulation time so it never goes before year 0.
+ * Clamp a simulation time so it never goes before the minimum simulation time.
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
