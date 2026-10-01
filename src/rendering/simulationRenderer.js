@@ -215,6 +215,14 @@ let innermostPeriapsis = Infinity;
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
 
+// Earliest simulation time allowed is 1 January of year 1 (UTC)
+const MIN_SIMULATION_TIME = (() => {
+    const date = new Date(0);
+    date.setUTCFullYear(1, 0, 1);
+    date.setUTCHours(0, 0, 0, 0);
+    return date.getTime();
+})();
+
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
@@ -1289,13 +1297,25 @@ export async function init(name) {
     renderFrame();
 }
 
+/**
+ * Clamp a simulation time so it never goes before the minimum simulation time.
+ *
+ * @param {number} time Time in milliseconds since Unix epoch
+ * @returns {number} The clamped time
+ */
+function clampSimulationTime(time) {
+    return Math.max(time, MIN_SIMULATION_TIME);
+}
+
 export function stepForward() {
     currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
     updateSimulation();
 }
 
 export function stepBack() {
-    currentSimulationTime -= getSimulationSpeedMilliseconds(currentSystem);
+    currentSimulationTime = clampSimulationTime(
+        currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
+    );
     updateSimulation();
 }
 
@@ -1305,7 +1325,7 @@ export function resetSimulationTimeToNow() {
 }
 
 export function setSimulationTimeToTime(time) {
-    currentSimulationTime = time;
+    currentSimulationTime = clampSimulationTime(time);
     updateSimulation();
 }
 
