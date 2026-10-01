@@ -16,14 +16,14 @@ const CONTROLS_MAX_MULTIPLIER = 1.5;
 const CONTROLS_ZOOM_SPEED = 2.5;
 const CONTROLS_MIN_ZOOM_FACTOR = 2; // The minimum factor that the controls should be able to zoom
 
-export const CAMERA_ANIMATION_SPEED = 0.1; // Proportion of remaining distance covered per step
+const CAMERA_ANIMATION_SPEED = 0.1; // Proportion of remaining distance covered per step
 const CAMERA_ANIMATION_PROGRESS_THRESHOLD = 0.9999; // Animation is complete once this proportion of total distance has been covered
 
 // Calculate the number of steps needed to reach the progress threshold.
 // At the n-th step, (1 - CAMERA_ANIMATION_SPEED)^n is the remaining proportion of total distance to cover.
 // So, we solve for n in the equation: (1 - CAMERA_ANIMATION_SPEED)^n = 1 - CAMERA_ANIMATION_PROGRESS_THRESHOLD
 // to get the number of steps needed for the remaining proportion of total distance to reach 1 - CAMERA_ANIMATION_PROGRESS_THRESHOLD.
-export const TOTAL_CAMERA_ANIMATION_STEPS = Math.ceil(
+const TOTAL_CAMERA_ANIMATION_STEPS = Math.ceil(
     Math.log(1 - CAMERA_ANIMATION_PROGRESS_THRESHOLD) / Math.log(1 - CAMERA_ANIMATION_SPEED)
 );
 
@@ -145,4 +145,26 @@ export function initOrUpdateControls(
     }
     lastControlsChangeHandler = controlsChangeHandler;
     controls.addEventListener("change", controlsChangeHandler);
+}
+
+export function animateCamera() {
+    if (cameraAnimationState.isAnimating) {
+        // Animate the camera and controls for TOTAL_CAMERA_ANIMATION_STEPS steps.
+        // Animation stops after enough steps have been taken
+        // or if the user interacts with the controls.
+
+        if (cameraAnimationState.currentStep >= TOTAL_CAMERA_ANIMATION_STEPS) {
+            cameraAnimationState.isAnimating = false;
+            camera.position.copy(cameraAnimationState.position);
+            controls.target.copy(cameraAnimationState.target);
+
+        } else {
+            // Interpolate towards the desired position and target
+            camera.position.lerp(cameraAnimationState.position, CAMERA_ANIMATION_SPEED);
+            controls.target.lerp(cameraAnimationState.target, CAMERA_ANIMATION_SPEED);
+            cameraAnimationState.currentStep++;
+        }
+
+        controls.update();
+    }
 }

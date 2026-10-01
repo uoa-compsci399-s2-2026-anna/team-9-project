@@ -34,8 +34,6 @@ import {
 } from "./simulationCalculations.js";
 import {
     FOV,
-    CAMERA_ANIMATION_SPEED,
-    TOTAL_CAMERA_ANIMATION_STEPS,
     cameraDefaults,
     cameraAnimationState,
     camera,
@@ -43,6 +41,7 @@ import {
     calculateCameraAndControlsSettings,
     initOrUpdateCamera,
     initOrUpdateControls,
+    animateCamera,
 } from "./simulationCameraAndControls.js";
 import {
     updateCalendar,
@@ -1533,25 +1532,7 @@ async function renderFrame(timestamp) {
         updateSimulation(false);
     }
 
-    if (cameraAnimationState.isAnimating) {
-        // Animate the camera and controls for TOTAL_CAMERA_ANIMATION_STEPS steps.
-        // Animation stops after enough steps have been taken
-        // or if the user interacts with the controls.
-
-        if (cameraAnimationState.currentStep >= TOTAL_CAMERA_ANIMATION_STEPS) {
-            cameraAnimationState.isAnimating = false;
-            camera.position.copy(cameraAnimationState.position);
-            controls.target.copy(cameraAnimationState.target);
-
-        } else {
-            // Interpolate towards the desired position and target
-            camera.position.lerp(cameraAnimationState.position, CAMERA_ANIMATION_SPEED);
-            controls.target.lerp(cameraAnimationState.target, CAMERA_ANIMATION_SPEED);
-            cameraAnimationState.currentStep++;
-        }
-
-        controls.update();
-    }
+    animateCamera();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
