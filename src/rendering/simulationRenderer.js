@@ -803,7 +803,9 @@ const RGBA_MAX_VALUE = 255;
  * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
  */
 function createOpaqueOrbitAlphaTexture() {
-    const data = new Uint8Array((ORBIT_POINTS_COUNT - 1) * RGBA_CHANNEL_COUNT);
+    const data = new Uint8Array(
+        (ORBIT_POINTS_COUNT - 1) * RGBA_CHANNEL_COUNT // There is one less segment than points
+    );
     data.fill(RGBA_MAX_VALUE);
 
     /**
