@@ -24,7 +24,10 @@ import {
     getMultipleSystemsData,
 } from "../services/simulationServices.js";
 import {
+    TWO_PI,
     calculateOrbitalPosition,
+    isAngleBetween,
+    calculateProgressDistance,
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
@@ -651,6 +654,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
 
     if (e === 1) return; // Parabolic orbits are not supported for now
 
+    const isElliptical = e < 1;
+
     let line = orbitalLines.get(name);
 
     if (!line) {
@@ -680,10 +685,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
             material.color.set(colour);
         }
 
-        if (e < 1) {
-            material.alphaMap = createOpaqueOrbitAlphaTexture();
-            material.useAlphaMap = 1;
-        }
+        material.alphaMap = createOpaqueOrbitAlphaTexture();
+        material.useAlphaMap = 1;
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
@@ -707,10 +710,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     // Update the geometry of the line to match the orbital parameters
     const points = [];
     let thetaStart = 0;
-    let thetaEnd = 2 * Math.PI;
+    let thetaEnd = TWO_PI;
 
     // Limit the angle range for hyperbolic orbits to its asymptotes
-    if (e > 1) {
+    if (!isElliptical) {
         const thetaLimit = Math.acos(-1 / e);
         const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
 
@@ -718,7 +721,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         thetaEnd = thetaLimit - epsilon;
     }
 
-    const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
+    // Calculate the step size for theta.
+    // We subtract 2 as the last point is added separately, and we add a point at the object's position
+    const thetaStep = (thetaEnd - thetaStart) / (ORBIT_POINTS_COUNT - 2);
 
     /**
      * The position of the object in world (xyz) coordinate space.
@@ -750,58 +755,54 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
      * (localPosition.x, localPosition.y) from the 2-argument arctangent.
      */
     let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
-    if (objectTheta < 0) objectTheta += 2 * Math.PI;
+    if (objectTheta < 0) objectTheta += TWO_PI;
 
-    for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
+    let objectIndex = 0;
+    for (let i = 0; i < ORBIT_POINTS_COUNT - 2; i++) {
+        const theta = thetaStart + i * thetaStep;
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
 
-        if (objectTheta > theta && objectTheta < theta + thetaStep) {
+        if (isAngleBetween(objectTheta, theta, theta + thetaStep)) {
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
             points.push(localObjectPosition.x, localObjectPosition.y, 0);
+            objectIndex = i + 1;
         }
     }
 
-    if (e > 1) {
-        // Add the last point at the end of the range to ensure the line reaches the asymptote
-        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
-        points.push(x, y, 0);
-    }
+    // Add the last point at the end of the range
+    const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+    points.push(x, y, 0);
 
-    if (e < 1) {
-        /**
-         * Proportion of a full revolution the object is from its starting
-         * point/angle.
-         */
-        const objectProgress = THREE.MathUtils.clamp(
-            (objectTheta - thetaStart) / (thetaEnd - thetaStart),
-            0,
-            1,
+    /**
+     * Proportion of a full revolution the object is from its starting
+     * point/angle.
+     */
+    const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
+
+    updateOrbitAlphaTexture(
+        line.material.alphaMap,
+        objectProgress,
+        isElliptical
+    );
+
+    // Create or update the position attribute and widen the line at the object
+    line.geometry.setPoints(points, (progress) => {
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical
         );
 
-        updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
-
-        // Create or update the position attribute and widen the line at the object
-        line.geometry.setPoints(points, (progress) => {
-            /**
-             * Proportion of a full revolution this point of `progress` is
-             * from the object.
-             */
-            const distance = (objectProgress - progress + 1) % 1;
-
-            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
-        });
-    } else {
-        // Display non-elliptical orbits as constant width
-        line.geometry.setPoints(points);
-    }
+        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+    });
 
     // Rotate the line to match the orbital parameters
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
-const ORBIT_LINE_MINIMUM_OPACITY = 0.2;
+const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 /**
@@ -812,7 +813,7 @@ const ORBIT_LINE_MIN_WIDTH = 0.5;
  * @returns Scale factor betwee 0 and 1 of opacity/line width.
  */
 const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MINIMUM_OPACITY, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
@@ -825,17 +826,19 @@ const RGBA_MAX_VALUE = 255;
  * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
  */
 function createOpaqueOrbitAlphaTexture() {
-    const data = new Uint8Array(ORBIT_POINTS_COUNT * RGBA_CHANNEL_COUNT);
+    const data = new Uint8Array(
+        (ORBIT_POINTS_COUNT - 1) * RGBA_CHANNEL_COUNT // There is one less segment than points
+    );
     data.fill(RGBA_MAX_VALUE);
 
     /**
-     * Create ORBIT_POINTS_COUNT x 1 texture (i.e. a 1D texture) for an opacity
+     * Create (ORBIT_POINTS_COUNT - 1) x 1 texture (i.e. a 1D texture) for an opacity
      * map. This is in RGBA format, so each 'point' of the texture is
      * represented by 4 bytes: a red, green, blue, and alpha channel.
      */
     const texture = new THREE.DataTexture(
         data,
-        ORBIT_POINTS_COUNT,
+        ORBIT_POINTS_COUNT - 1,
         1,
         THREE.RGBAFormat,
     );
@@ -854,8 +857,9 @@ function createOpaqueOrbitAlphaTexture() {
  * @param {THREE.DataTexture} texture
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
+ * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
  */
-function updateOrbitAlphaTexture(texture, objectProgress) {
+function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
     /**
      * `texture.image` is an object containing fields `data` (the actual byte
      * array of the texture), `width` (the number of bytes) in the 'width'
@@ -872,11 +876,11 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
          */
         const progress = i / (width - 1);
 
-        /**
-         * Proportion of a full revolution this point of `progress` is
-         * from the object.
-         */
-        const distance = (objectProgress - progress + 1) % 1;
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical
+        );
 
         const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
 
