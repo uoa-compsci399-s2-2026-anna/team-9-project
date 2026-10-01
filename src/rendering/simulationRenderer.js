@@ -831,7 +831,7 @@ function createOpaqueOrbitAlphaTexture() {
  * @param {THREE.DataTexture} texture
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
- * @param {boolean} isElliptical Whether the orbit is elliptical (default: true)
+ * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
  */
 function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
     /**
