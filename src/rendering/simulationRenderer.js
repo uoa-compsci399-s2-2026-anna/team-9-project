@@ -28,6 +28,8 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
+    calculatePeriapsis,
+    calculateCameraDistance,
     calculateAverageNormal,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
@@ -96,7 +98,6 @@ let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
-let objectScale = 1;
 let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
@@ -191,6 +192,25 @@ const CORE_COLOUR = "rgba(255, 255, 255, 1)";
 
 const GLOW_SIZE_MULTIPLIER = 3.5;
 const SPRITE_Z_SCALE = 1.0;
+
+// Screen space object sizing
+const DESIRED_OBJECT_PIXEL_SIZE = 12;
+const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
+const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects
+
+// How much larger stars are compared to other objects
+const STAR_SIZE_RATIO = DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE;
+
+const minScreenSpaceScale = 0.5;
+
+// Keeps stars proportionally larger than other objects at the minimum scale
+const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
+
+// Fraction of the innermost periapsis that an object's on screen radius may occupy
+const MAX_EXTENT_ORBIT_FRACTION = 0.5;
+
+// Periapsis of the innermost default visible orbit
+let innermostPeriapsis = Infinity;
 
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
@@ -535,7 +555,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         objectLabels.set(name, label);
     }
 
-    mesh.scale.set(objectScale, objectScale, objectScale);
     mesh.position.set(position.x, position.y, position.z);
 }
 
@@ -1209,6 +1228,8 @@ export async function init(name) {
     objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
+    await updateInnermostPeriapsis(false);
+
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
@@ -1321,11 +1342,7 @@ export async function compareToSolarSystem() {
 
     await updateViewRadius(true, habitableZoneMesh?.visible);
 
-    // Scale objects for comparison as the smaller of the two sizes
-    const comparisonObjectSize =
-        Math.min(currentSystemDefaultViewRadius, solarSystemDefaultViewRadius) *
-        objectSizeMultiplier;
-    objectScale = comparisonObjectSize / objectSize;
+    await updateInnermostPeriapsis(true);
 
     // Align the solar system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(solarSystemGroup, true);
@@ -1347,12 +1364,11 @@ export async function compareToSolarSystem() {
 }
 
 export async function hideSolarSystem() {
-    objectScale = 1; // Reset object scale to default
-
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
     await updateViewRadius(false, habitableZoneMesh?.visible);
+    await updateInnermostPeriapsis(false);
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings =
@@ -1512,6 +1528,117 @@ function resizeRendererToDisplaySize() {
 }
 
 /**
+ * Finds the smallest periapsis (closest point to the centre) across all
+ * non-star orbits that are visible by default.
+ *
+ * @param {boolean} comparing Whether the Solar System is being compared to or not
+ */
+async function updateInnermostPeriapsis(comparing) {
+    // Don't check the periapsis of the stars in the current system
+    const systems = [
+        { system: currentSystem, isExcluded: (name) => objectTypes[name] === "star" },
+    ];
+
+    if (comparing) {
+        // Don't check the periapsis of the Sun
+        systems.push({ system: "Solar System", isExcluded: (name) => name === "Sun" });
+    }
+
+    let smallest = Infinity;
+
+    for (const { system, isExcluded } of systems) {
+        const data = await getReferenceSystemData(system);
+
+        for (const [name, orbit] of Object.entries(data.orbital_data)) {
+            if (isObjectHiddenByDefault(system, name) || isExcluded(name)) {
+                continue;
+            }
+
+            const periapsis = calculatePeriapsis(orbit.a, orbit.e);
+            smallest = Math.min(smallest, periapsis);
+        }
+    }
+
+    innermostPeriapsis = smallest;
+}
+
+/**
+/**
+ * The largest scale an object may have so that its on screen radius stays
+ * within a fraction of the innermost periapsis.
+ * 
+ * @param {boolean} isStar Whether the object is a star or not 
+ * @returns The cap on the scale for an object
+ */
+function getOrbitScaleCap(isStar) {
+    // The maximum size for a star
+    const starSizeCap = (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize
+
+    // Objects should always be STAR_SIZE_RATIO smaller than stars
+    return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
+}
+
+/**
+ * Computes a scale factor so the mesh's apparent size on screen stays roughly
+ * constant regardless of camera distance.
+ *
+ * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
+ * @param {THREE.PerspectiveCamera} camera The active camera
+ * @param {number} canvasHeight The renderer's canvas height in pixels
+ * @param {number} desiredPixelSize The target on screen diameter in pixels
+ * @param {number} minScale The minimum allowed scale factor
+ * @param {number} maxScale The maximum allowed scale factor
+ * @returns {number} The scale factor to apply to the mesh
+ */
+function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize, minScale, maxScale) {
+    const meshWorldPosition = new THREE.Vector3();
+    mesh.getWorldPosition(meshWorldPosition);
+    const distance = camera.position.distanceTo(meshWorldPosition);
+
+    const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
+    const worldHeightAtDistance = 2 * Math.tan(verticalFovRadians / 2) * distance;
+    const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
+
+    const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
+    const scale = desiredWorldDiameter / (2 * objectSize);
+
+    return THREE.MathUtils.clamp(scale, minScale, maxScale);
+}
+
+function updateScreenSpaceScales() {
+    const canvasHeight = renderer.domElement.clientHeight;
+
+    for (const mesh of objectMeshes.values()) {
+        if (!mesh.visible) continue;
+
+        const isComparisonOverlay = mesh.parent === solarSystemGroup;
+        const isStar = objectTypes[mesh.userData.name] === "star";
+
+        let desiredPixelSize = DESIRED_OBJECT_PIXEL_SIZE;
+        if (isStar) {
+            desiredPixelSize = DESIRED_STAR_PIXEL_SIZE;
+        } else if (isComparisonOverlay) {
+            desiredPixelSize = DESIRED_COMPARISON_PIXEL_SIZE;
+        }
+
+        const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
+        // Ensure the max scale is at least the min scale
+        const maxScale = Math.max(getOrbitScaleCap(isStar), minScale);
+
+        const scale = calculateScreenSpaceScale(
+            mesh,
+            camera,
+            canvasHeight,
+            desiredPixelSize,
+            minScale,
+            maxScale,
+        );
+
+        mesh.scale.set(scale, scale, scale);
+    }
+}
+
+/**
  * Render the meshes and objects on every animation frame.
  *
  * TODO: Rendering the system on every animation frame leads to high CPU usage.
@@ -1533,6 +1660,8 @@ async function renderFrame(timestamp) {
     }
 
     animateCamera();
+
+    updateScreenSpaceScales();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
