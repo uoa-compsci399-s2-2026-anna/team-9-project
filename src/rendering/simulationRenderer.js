@@ -1660,8 +1660,6 @@ function updateScreenSpaceScales() {
 
 /**
  * Render the meshes and objects on every animation frame.
- *
- * TODO: Rendering the system on every animation frame leads to high CPU usage.
  */
 async function renderFrame(timestamp) {
     resizeRendererToDisplaySize();
