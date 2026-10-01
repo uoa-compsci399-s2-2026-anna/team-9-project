@@ -43,6 +43,16 @@ function calculateApoapsis(a, e) {
 }
 
 /**
+ * Calculate the periapsis (closest point in orbit) for an object given its semi-major axis and eccentricity.
+ * @param {number} a Semi-major axis of the orbit
+ * @param {number} e Eccentricity of the orbit
+ * @returns {number} The periapsis distance
+ */
+export function calculatePeriapsis(a, e) {
+    return a * (1 - e);
+}
+
+/**
  * Calculate the maximum apoapsis distance among all objects in the system.
  * @param {Array} orbitalDataValues Array of orbital data values for all objects
  * @returns {number} The maximum apoapsis distance
