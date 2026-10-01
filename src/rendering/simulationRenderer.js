@@ -28,12 +28,21 @@ import {
     calculateRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
-    calculateCameraDistance,
     calculateAverageNormal,
-    calculateDefaultCameraPosition,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
+import {
+    FOV,
+    cameraDefaults,
+    cameraAnimationState,
+    camera,
+    controls,
+    calculateCameraAndControlsSettings,
+    initOrUpdateCamera,
+    initOrUpdateControls,
+    animateCamera,
+} from "./simulationCameraAndControls.js";
 import {
     updateCalendar,
     formatSimulationDate,
@@ -57,55 +66,17 @@ let gettingSystemData = false; // Flag to prevent multiple concurrent backend re
 let lastSystemData = null;
 
 let scene;
-let camera;
-let controls;
 let renderer;
 let labelRenderer;
-
-let controlsChangeHandler; // Store the controls change handler to remove when updating controls
 
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
 
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
-// Constants for camera and controls
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
-
-const fov = 45; // Field of view in degrees
-const cameraNearMultiplier = 1;
-const cameraFarMultiplier = 100;
-
-const controlsMinMultiplier = 10;
-const controlsMaxMultiplier = 1.5;
-const controlsZoomSpeed = 2.5;
-const controlsMinZoomFactor = 2; // The minimum factor that the controls should be able to zoom
-
-const cameraDefaults = {
-    position: null, // Will be set based on the system's orbital data
-    target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
-    up: new THREE.Vector3(0, 0, 1), // Z-axis is up
-};
-
-const cameraAnimationSpeed = 0.1; // Proportion of remaining distance covered per step
-const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this proportion of total distance has been covered
-
-// Calculate the number of steps needed to reach the progress threshold.
-// At the n-th step, (1 - cameraAnimationSpeed)^n is the remaining proportion of total distance to cover.
-// So, we solve for n in the equation: (1 - cameraAnimationSpeed)^n = 1 - cameraAnimationProgressThreshold
-// to get the number of steps needed for the remaining proportion of total distance to reach 1 - cameraAnimationProgressThreshold.
-const totalCameraAnimationSteps = Math.ceil(
-    Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
-);
-
-let currentCameraAnimationStep = 0;
-let animateCameraAndControls = false;
-
-// Animation targets for camera and controls
-let animateCameraPositionTo = new THREE.Vector3();
-let animateControlsTargetTo = new THREE.Vector3();
 
 const raycaster = new THREE.Raycaster();
 
@@ -942,7 +913,7 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
         );
 
     const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
-        fov,
+        FOV,
         cameraDistanceToTargetProjection,
         divisionsInView,
     );
@@ -1094,110 +1065,12 @@ async function alignSystemToCameraUp(group, useDefault = false) {
 }
 
 /**
- * Calculate the camera and controls settings based on the view radius.
- *
- * @param {number} viewRadius The radius of view to fit within the camera
- * @returns {Object} The camera and controls settings
- */
-function calculateCameraAndControlsSettings(viewRadius) {
-    const controlsMinDistance = objectSize * controlsMinMultiplier;
-
-    // Camera distance must be at least the minimum distance for the controls
-    const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
-    const cameraDistance = Math.max(
-        calculateCameraDistance(fov, viewRadius),
-        controlsMinDistance + epsilon
-    );
-
-    // Controls max distance must be at least camera distance * max multiplier,
-    // and must be able to zoom by at least controlsMinZoomFactor
-    const controlsMaxDistance = Math.max(
-        cameraDistance * controlsMaxMultiplier,
-        controlsMinDistance * controlsMinZoomFactor,
-    );
-
-    const cameraNear = objectSize * cameraNearMultiplier;
-    const cameraFar = cameraDistance * cameraFarMultiplier;
-
-    return {
-        cameraDistance,
-        cameraNear,
-        cameraFar,
-        controlsMinDistance,
-        controlsMaxDistance,
-    };
-}
-
-/**
- * Initialise the camera for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {Object} cameraSettings The camera settings
- * @param {number} cameraSettings.cameraDistance The distance of the camera
- * @param {number} cameraSettings.cameraNear The near plane of the camera
- * @param {number} cameraSettings.cameraFar The far plane of the camera
- */
-function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraFar }) {
-    cameraDefaults.position = calculateDefaultCameraPosition(
-        cameraDefaults.up,
-        cameraDistance,
-    );
-
-    if (!camera) {
-        const aspect = canvas.clientWidth / canvas.clientHeight;
-        camera = new THREE.PerspectiveCamera(
-            fov,
-            aspect,
-            cameraNear,
-            cameraFar,
-        );
-        camera.up.copy(cameraDefaults.up);
-        camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
-    } else {
-        camera.near = cameraNear;
-        camera.far = cameraFar;
-        camera.updateProjectionMatrix(); // Must update after changing camera parameters
-    }
-}
-
-/**
- * Initialise the controls for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {Object} controlsSettings The controls settings
- * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
- * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
- */
-function initOrUpdateControls(
-    canvas,
-    { controlsMinDistance, controlsMaxDistance },
-) {
-    if (!controls) {
-        controls = new OrbitControls(camera, canvas);
-        controls.addEventListener("start", () => {
-            animateCameraAndControls = false; // Stop animating on user interaction
-        });
-
-        controls.target.copy(cameraDefaults.target);
-        controls.update();
-    }
-    controls.minDistance = controlsMinDistance;
-    controls.maxDistance = controlsMaxDistance;
-    controls.zoomSpeed = controlsZoomSpeed;
-
-    if (controlsChangeHandler) {
-        controls.removeEventListener("change", controlsChangeHandler);
-    }
-    controlsChangeHandler = createControlsChangeHandler(viewRadius);
-    controls.addEventListener("change", controlsChangeHandler);
-}
-
-/**
  * Creates a handler for the controls change event.
  * @param {number} viewRadius The radius of view to fit within the camera
  * @returns {Function} The controls change handler
  */
 function createControlsChangeHandler(viewRadius) {
     return () => {
-        isDragging = true;
         const cameraOffset = camera.position.clone().sub(controls.target);
 
         // Clamp the target position to be within the view radius
@@ -1216,8 +1089,13 @@ function createControlsChangeHandler(viewRadius) {
  * objects on the scene.
  *
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @param {OrbitControls} controls The orbit controls for the scene
  */
-function initRaycastingEvents(canvas) {
+function initRaycastingEvents(canvas, controls) {
+    controls.addEventListener("change", () => {
+        isDragging = true;
+    });
+
     // Detect when the user holds their mouse down on the canvas
     canvas.addEventListener("pointerdown", () => {
         isDragging = false;
@@ -1335,11 +1213,15 @@ export async function init(name) {
     alignSystemToCameraUp(currentSystemGroup);
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
-    initRaycastingEvents(canvas);
+    initRaycastingEvents(canvas, controls);
     initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
@@ -1397,16 +1279,20 @@ export async function resetView(topDown = true) {
 
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     // Animate to the default controls target
-    animateControlsTargetTo.copy(cameraDefaults.target);
+    cameraAnimationState.target.copy(cameraDefaults.target);
 
     if (topDown) {
         // Animate to the default camera position
-        animateCameraPositionTo.copy(cameraDefaults.position);
+        cameraAnimationState.position.copy(cameraDefaults.position);
     } else {
         // Animate camera position to the same direction as the current camera but at the default distance
 
@@ -1419,15 +1305,15 @@ export async function resetView(topDown = true) {
         const newCameraOffset = currentCameraDirection.multiplyScalar(
             defaultCameraDistance,
         );
-        const newCameraPosition = animateControlsTargetTo
+        const newCameraPosition = cameraAnimationState.target
             .clone()
             .add(newCameraOffset);
 
-        animateCameraPositionTo.copy(newCameraPosition);
+        cameraAnimationState.position.copy(newCameraPosition);
     }
 
-    currentCameraAnimationStep = 0;
-    animateCameraAndControls = true;
+    cameraAnimationState.currentStep = 0;
+    cameraAnimationState.isAnimating = true;
 }
 
 export async function compareToSolarSystem() {
@@ -1447,9 +1333,13 @@ export async function compareToSolarSystem() {
     solarSystemGroup.visible = true;
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     resetView();
 
@@ -1466,9 +1356,13 @@ export async function hideSolarSystem() {
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     resetView();
 
@@ -1638,25 +1532,7 @@ async function renderFrame(timestamp) {
         updateSimulation(false);
     }
 
-    if (animateCameraAndControls) {
-        // Animate the camera and controls for totalCameraAnimationSteps steps.
-        // Animation stops after enough steps have been taken
-        // or if the user interacts with the controls.
-
-        if (currentCameraAnimationStep >= totalCameraAnimationSteps) {
-            animateCameraAndControls = false;
-            camera.position.copy(animateCameraPositionTo);
-            controls.target.copy(animateControlsTargetTo);
-
-        } else {
-            // Interpolate towards the desired position and target
-            camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
-            controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
-            currentCameraAnimationStep++;
-        }
-
-        controls.update();
-    }
+    animateCamera();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
