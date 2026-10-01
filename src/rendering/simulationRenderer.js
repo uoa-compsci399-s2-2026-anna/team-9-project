@@ -650,7 +650,7 @@ function getOrbitLineWidth(isComparison) {
  * @param {string} colour CSS colour string used for this orbit's line
  */
 function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
-    const { a, e, inc, Omega, omega } = orbitalData;
+    const { a, e, inc, Omega, omega, f } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
 
@@ -722,40 +722,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     }
 
     // Calculate the step size for theta.
-    // We subtract 2 as the last point is added separately, and we add a point at the object's position
+    // ORBIT_POINTS_COUNT - 2 is used as:
+    // * A point is added at the object's position
+    // * The last point is added separately
     const thetaStep = (thetaEnd - thetaStart) / (ORBIT_POINTS_COUNT - 2);
-
-    /**
-     * The position of the object in world (xyz) coordinate space.
-     */
-    const worldObjectPosition = new THREE.Vector3(
-        position.x,
-        position.y,
-        position.z,
-    );
-
-    /**
-     * Rotation matrix: local (coordinate system of orbit plane) -> world
-     */
-    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
-
-    /**
-     * World -> local (coordinate system of orbit plane)
-     */
-    const inverseRotationMatrix = rotationMatrix.clone().invert();
-
-    /**
-     * Position of object in local (orbit plane) coordinates
-     */
-    const localObjectPosition = worldObjectPosition.applyMatrix4(
-        inverseRotationMatrix,
-    );
-    /**
-     * Angle between positive x-axis (in local coordinates) and the point
-     * (localPosition.x, localPosition.y) from the 2-argument arctangent.
-     */
-    let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
-    if (objectTheta < 0) objectTheta += TWO_PI;
 
     let objectIndex = 0;
     for (let i = 0; i < ORBIT_POINTS_COUNT - 2; i++) {
@@ -763,10 +733,11 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
 
-        if (isAngleBetween(objectTheta, theta, theta + thetaStep)) {
+        if (isAngleBetween(f, theta, theta + thetaStep)) {
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
-            points.push(localObjectPosition.x, localObjectPosition.y, 0);
+            const { x, y } = calculateOrbitalPosition(a, e, f);
+            points.push(x, y, 0);
             objectIndex = i + 1;
         }
     }
@@ -799,6 +770,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     });
 
     // Rotate the line to match the orbital parameters
+    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
