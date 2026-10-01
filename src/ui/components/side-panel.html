@@ -3,11 +3,12 @@
     panel_title_text,
     reset_button_id,
     toggle_event,
-    panel_button_id=None
+    panel_button_id=None,
+    min_h="min-h-0"
   )
 %}
   <div
-    class="shadowed bordered-light relative container flex h-auto min-h-0 w-48 flex-col"
+    class="shadowed bordered-light {{ min_h }} relative container flex h-auto w-48 flex-col"
     data-panel
     data-toggle-event="{{ toggle_event }}"
   >
