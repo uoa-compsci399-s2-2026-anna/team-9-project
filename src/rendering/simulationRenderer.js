@@ -1335,12 +1335,7 @@ export async function init(name) {
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, currentSimulationTime);
 
-        const timeZone = document.querySelector(".calendar").dataset.timezone;
-        const elapsedDaysText = getElapsedDaysText(
-            currentSimulationTime,
-            timeZone,
-        );
-        setElapsedText(currentSystem, elapsedDaysText);
+        setElapsedText(currentSystem, getElapsedDaysText(currentSimulationTime));
     });
 
     // Start rendering frames and updating the simulation
