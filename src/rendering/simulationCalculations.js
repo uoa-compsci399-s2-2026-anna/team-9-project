@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+export const TWO_PI = 2 * Math.PI;
+
 /**
  * Calculate the Cartesian coordinates of a point in an elliptical orbit.
  * @param {number} a Semi-major axis of the orbit
@@ -22,8 +24,8 @@ export function calculateOrbitalPosition(a, e, theta) {
  */
 function isAngleSmaller(angleA, angleB) {
     // Normalize angles to [0, 2π)
-    const normalizedA = ((angleA % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-    const normalizedB = ((angleB % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const normalizedA = ((angleA % TWO_PI) + TWO_PI) % TWO_PI;
+    const normalizedB = ((angleB % TWO_PI) + TWO_PI) % TWO_PI;
 
     return normalizedA < normalizedB;
 }

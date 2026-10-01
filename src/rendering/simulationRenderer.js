@@ -24,6 +24,7 @@ import {
     getMultipleSystemsData,
 } from "../services/simulationServices.js";
 import {
+    TWO_PI,
     calculateOrbitalPosition,
     isAngleBetween,
     calculateProgressDistance,
@@ -686,7 +687,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     // Update the geometry of the line to match the orbital parameters
     const points = [];
     let thetaStart = 0;
-    let thetaEnd = 2 * Math.PI;
+    let thetaEnd = TWO_PI;
 
     // Limit the angle range for hyperbolic orbits to its asymptotes
     if (!isElliptical) {
@@ -731,7 +732,7 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
      * (localPosition.x, localPosition.y) from the 2-argument arctangent.
      */
     let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
-    if (objectTheta < 0) objectTheta += 2 * Math.PI;
+    if (objectTheta < 0) objectTheta += TWO_PI;
 
     let objectIndex = 0;
     for (let i = 0; i < ORBIT_POINTS_COUNT - 2; i++) {
