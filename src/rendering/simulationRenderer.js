@@ -196,15 +196,18 @@ const SPRITE_Z_SCALE = 1.0;
 // Screen space object sizing
 const DESIRED_OBJECT_PIXEL_SIZE = 12;
 const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
-const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects? Idk about this
+const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects
+
+// How much larger stars are compared to other objects
+const STAR_SIZE_RATIO = DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE;
 
 const minScreenSpaceScale = 0.5;
 
 // Keeps stars proportionally larger than other objects at the minimum scale
-const minStarScreenSpaceScale = (DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE) * minScreenSpaceScale;
+const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
 
 // Fraction of the innermost periapsis that an object's on screen radius may occupy
-const MAX_EXTENT_ORBIT_FRACTION = 1;
+const MAX_EXTENT_ORBIT_FRACTION = 0.5;
 
 // Periapsis of the innermost default visible orbit
 let innermostPeriapsis = Infinity;
@@ -1560,18 +1563,19 @@ async function updateInnermostPeriapsis(comparing) {
 }
 
 /**
+/**
  * The largest scale an object may have so that its on screen radius stays
  * within a fraction of the innermost periapsis.
+ * 
+ * @param {boolean} isStar Whether the object is a star or not 
+ * @returns The cap on the scale for an object
  */
 function getOrbitScaleCap(isStar) {
-    if (!Number.isFinite(innermostPeriapsis)) return Infinity;
+    // The maximum size for a star
+    const starSizeCap = (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize
 
-    // Account for the glow sprite for stars, which is GLOW_SIZE_MULTIPLIER * objectSize wide
-    const radiusPerScale = isStar
-        ? (objectSize * GLOW_SIZE_MULTIPLIER) / 2
-        : objectSize;
-
-    return (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / radiusPerScale;
+    // Objects should always be STAR_SIZE_RATIO smaller than stars
+    return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
 }
 
 /**
