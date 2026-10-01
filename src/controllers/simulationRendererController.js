@@ -6,6 +6,7 @@ import {
     stepBack,
     resetSimulationTimeToNow,
     setSimulationTimeToTime,
+    setSimulationTimeToLastFetched,
     resetView,
     compareToSolarSystem,
     hideSolarSystem,
@@ -27,10 +28,12 @@ init(currentSystem);
 // Step forward/Step back
 
 bus.subscribe(EVENTS.SIM.STEP_FORWARD, () => {
+    setSimulationTimeToLastFetched();
     stepForward();
 });
 
 bus.subscribe(EVENTS.SIM.STEP_BACK, () => {
+    setSimulationTimeToLastFetched();
     stepBack();
 });
 
@@ -107,6 +110,7 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 
 // Sync the calendar on simulation pause
 bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
+    setSimulationTimeToLastFetched();
     if (!event.detail.startSimulation) {
         syncCalendar();
     }
