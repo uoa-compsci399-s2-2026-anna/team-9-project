@@ -33,6 +33,11 @@
               {{ current_system.name }}
             {% endif %}
           </h1>
+          {% if current_system and current_system.name != "Solar System" %}
+            <p class="pl-2.5 text-xs dark:text-zinc-400">
+              [] light-years from Earth
+            </p>
+          {% endif %}
         </span>
 
         <svg
