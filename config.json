@@ -275,8 +275,8 @@
                         "barycentric": null
                     },
                     "radius": {
-                        "value": 1.3e3,
-                        "uncertainty": 0.2e3
+                        "value": 6371e3,
+                        "uncertainty": 10.6925e3
                     }
                 }
             },
@@ -495,7 +495,7 @@
         {
             "name": "TRAPPIST-1",
             "objects": {
-                "TRAPPIST-1": {
+                "Trappist-1": {
                     "colour": {
                         "dark": "#d88379",
                         "light": "#a93d31"
@@ -518,7 +518,7 @@
                         "uncertainty": 9.044e05
                     }
                 },
-                "TRAPPIST-1b": {
+                "Trappist-1b": {
                     "colour": {
                         "dark": "#e1812e",
                         "light": "#945015"
@@ -537,11 +537,11 @@
                         "barycentric": 130448.0634437985
                     },
                     "radius": {
-                        "value": 7.119e06,
+                        "absoulute": 7.119e07,
                         "uncertainty": 8.700e05
                     }
                 },
-                "TRAPPIST-1c": {
+                "Trappist-1c": {
                     "colour": {
                         "dark": "#b79614",
                         "light": "#74600d"
@@ -560,11 +560,11 @@
                         "barycentric": 209325.0438684336
                     },
                     "radius": {
-                        "value": 6.995e06,
+                        "value": 6.995e07,
                         "uncertainty": 8.600e05
                     }
                 },
-                "TRAPPIST-1d": {
+                "Trappist-1d": {
                     "colour": {
                         "dark": "#29a7c1",
                         "light": "#1a6a7b"
@@ -583,11 +583,11 @@
                         "barycentric": 349617.5323445142
                     },
                     "radius": {
-                        "value": 5.026e06,
+                        "value": 5.026e07,
                         "uncertainty": 7.100e05
                     }
                 },
-                "TRAPPIST-1e": {
+                "Trappist-1e": {
                     "colour": {
                         "dark": "#44a1de",
                         "light": "#1b6698"
@@ -606,11 +606,11 @@
                         "barycentric": 526983.6611209479
                     },
                     "radius": {
-                        "value": 5.868e06,
+                        "value": 5.868e07,
                         "uncertainty": 8.200e05
                     }
                 },
-                "TRAPPIST-1f": {
+                "Trappist-1f": {
                     "colour": {
                         "dark": "#bb85d1",
                         "light": "#8b40a9"
@@ -629,11 +629,11 @@
                         "barycentric": 795274.6219136146
                     },
                     "radius": {
-                        "value": 6.664e06,
+                        "value": 6.664e07,
                         "uncertainty": 8.500e05
                     }
                 },
-                "TRAPPIST-1g": {
+                "Trappist-1g": {
                     "colour": {
                         "dark": "#e274b1",
                         "light": "#b12673"
@@ -652,16 +652,15 @@
                         "barycentric": 1067296.5881248724
                     },
                     "radius": {
-                        "value": 7.204e06,
+                        "value": 7.204e07,
                         "uncertainty": 9.400e05
                     }
                 },
-                "TRAPPIST-1h": {
+                "Trappist-1h": {
                     "colour": {
                         "dark": "#9f92c5",
                         "light": "#68559f"
                     },
-                    "type": "planet",
                     "mass": {
                         "value": 1.945e25,
                         "uncertainty": 1.220e24
@@ -675,7 +674,7 @@
                         "barycentric": 1621975.6224000002
                     },
                     "radius": {
-                        "value": 4.817e06,
+                        "value": 4.817e07,
                         "uncertainty": 9.100e05
                     }
                 }
@@ -686,10 +685,10 @@
                 "end": 0.052
             },
             "orbits": {
-                "TRAPPIST-1": {
+                "Trappist-1": {
                     "m": 0.0898
                 },
-                "TRAPPIST-1b": {
+                "Trappist-1b": {
                     "m": 4.13610554870027e-06,
                     "P": 1.510826,
                     "e": 0.0030547340309755285,
@@ -698,7 +697,7 @@
                     "inc": 1.5707963267948966,
                     "Omega": 0
                 },
-                "TRAPPIST-1c": {
+                "Trappist-1c": {
                     "m": 3.93607314034689e-06,
                     "P": 2.421937,
                     "e": 0.0005500909015790027,
@@ -707,7 +706,7 @@
                     "inc": 1.5707963267948966,
                     "Omega": 0
                 },
-                "TRAPPIST-1d": {
+                "Trappist-1d": {
                     "m": 1.16685571539471e-06,
                     "P": 4.049219,
                     "e": 0.005632983223834418,
@@ -716,7 +715,7 @@
                     "inc": 1.5707963267948966,
                     "Omega": 0
                 },
-                "TRAPPIST-1e": {
+                "Trappist-1e": {
                     "m": 2.08201900105949e-06,
                     "P": 6.101013,
                     "e": 0.006324634376784163,
@@ -725,7 +724,7 @@
                     "inc": 1.5707963267948966,
                     "Omega": 0
                 },
-                "TRAPPIST-1f": {
+                "Trappist-1f": {
                     "m": 3.12693303808863e-06,
                     "P": 9.207540,
                     "e": 0.00841546790143008,
@@ -734,7 +733,7 @@
                     "inc": 1.5707963267948966,
                     "Omega": 0
                 },
-                "TRAPPIST-1g": {
+                "Trappist-1g": {
                     "m": 3.97601955222527e-06,
                     "P": 12.352446,
                     "e": 0.004009788024322483,
@@ -743,7 +742,7 @@
                     "inc": 1.5707963267948966,
                     "Omega": 0
                 },
-                "TRAPPIST-1h": {
+                "Trappist-1h": {
                     "m": 9.79437963423977e-07,
                     "P": 18.772866,
                     "e": 0.003650054794109261,

@@ -110,7 +110,7 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
  * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns The elapsed days text
  */
-export function getElapsedDaysText(simulationTime, timeZone = calendarInput.dataset.timezone) {
+export function getElapsedDaysText(simulationTime, timeZone) {
     const simDateString = dateOnly(new Date(simulationTime), timeZone);
     const nowDateString = dateOnly(new Date(), timeZone);
 

@@ -1,6 +1,6 @@
 import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
-import {
+import { 
     getObjectVisibilityChanges,
     defaultSimulationState,
     simulationState,
