@@ -212,11 +212,10 @@ const MAX_EXTENT_ORBIT_FRACTION = 0.5;
 // Periapsis of the innermost default visible orbit
 let innermostPeriapsis = Infinity;
 
-// Earliest simulation time allowed is 1 January of year 0 (UTC).
-// This minimum date is displayed as year 1 (due to how the calendar formats dates).
+// Earliest simulation time allowed is 1 January of year 1 (UTC)
 const MIN_SIMULATION_TIME = (() => {
     const date = new Date(0);
-    date.setUTCFullYear(0, 0, 1);
+    date.setUTCFullYear(1, 0, 1);
     date.setUTCHours(0, 0, 0, 0);
     return date.getTime();
 })();
