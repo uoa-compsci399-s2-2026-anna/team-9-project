@@ -392,6 +392,7 @@
         },
         {
             "name": "Kepler-16",
+            "distance": 245,
             "objects": {
                 "Kepler-16A": {
                     "colour": {
@@ -494,6 +495,7 @@
         },
         {
             "name": "TRAPPIST-1",
+            "distance": 41,
             "objects": {
                 "TRAPPIST-1": {
                     "colour": {

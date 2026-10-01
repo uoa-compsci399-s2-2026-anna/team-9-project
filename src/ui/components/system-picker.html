@@ -25,26 +25,34 @@
     >
       <button
         id="system-information-button"
-        class="control clickable bordered flex w-full items-center rounded-t-md rounded-b-md py-2 text-left duration-300"
+        class="control clickable bordered flex w-full items-center rounded-t-md rounded-b-md px-3 py-2 text-left duration-300"
       >
-        <span class="flex-1">
-          <h1 class="pl-2 text-3xl font-bold">
-            {% if current_system %}
-              {{ current_system.name }}
-            {% endif %}
-          </h1>
-        </span>
+        <div class="flex flex-col gap-0.5">
+          <div class="flex items-center gap-1">
+            <h1 class="text-3xl font-bold">
+              {% if current_system %}
+                {{ current_system.name }}
+              {% endif %}
+            </h1>
 
-        <svg
-          class="size-7 transition-transform duration-300 ease-in-out"
-          viewBox="0 0 24 24"
-          data-show-hide-icon
-        >
-          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-          <path
-            d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
-          />
-        </svg>
+            <svg
+              class="-mr-1.5 size-7 transition-transform duration-300 ease-in-out"
+              viewBox="0 0 24 24"
+              data-show-hide-icon
+            >
+              <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+              <path
+                d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
+              />
+            </svg>
+          </div>
+
+          {% if current_system and current_system.name != "Solar System" %}
+            <p class="text-sm dark:text-zinc-400">
+              {{ current_system.distance }} light-years from Earth
+            </p>
+          {% endif %}
+        </div>
       </button>
 
       <div

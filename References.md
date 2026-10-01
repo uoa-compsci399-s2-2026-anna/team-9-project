@@ -5,6 +5,7 @@
 Planets (Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune) radius and mass are taken from: https://ssd.jpl.nasa.gov/planets/phys_par.html
 
 Units are converted to SI units via:
+
 - Mass is multiplied by $10^{24}$ and kept in kg
 - Radius is converted from km to m ($\times 10^3$)
 
@@ -30,6 +31,7 @@ https://arxiv.org/abs/1109.3432
 All data is sourced from: https://arxiv.org/pdf/1109.3432#page=13
 
 Units are converted to SI units via conversions sourced from NASA:
+
 - Kelper-16A and B's mass are multiplied by the mass of the sun ($1.9891 \times 10^{30}$ kg)
 - Kelper-16A and B's radius are multiplied by the radius of the sun ($6.96 \times 10^8$ m)
 - Kepler-16b's mass is multiplied by the mass of Jupiter ($1.898125 \times 10^{27}$ kg)
@@ -41,12 +43,15 @@ Kepler-16's habitable zones are from: https://arxiv.org/pdf/1306.2890#page=26
 
 Kepler-16's star temperatures are from: https://arxiv.org/html/1802.06856v2#S3
 
+Kepler-16's distance in light-years is calculated from the parsec value in: https://exoplanetarchive.ipac.caltech.edu/overview/kepler-16
+
 ## TRAPPIST-1
 
 Data is calculated from data given in Agol et al. 2021, "Refined masses and densities of the TRAPPIST-1 planets", The Astrophysical Journal, 922:107
 https://arxiv.org/abs/2010.01074
 
 Units are converted to SI units via conversions sourced from NASA:
+
 - The star's mass is multiplied by the mass of the sun ($1.9891 \times 10^{30}$ kg)
 - The star's radius is multiplied by the radius of the sun ($6.96 \times 10^8$ m)
 - The planets' masses are multiplied by the mass of Jupiter ($1.898125 \times 10^{27}$ kg)
@@ -56,5 +61,8 @@ TRAPPIST-1's orbital periods are calculated in REBOUND using data from the cited
 
 TRAPPIST-1's habitable zone is given by Dr. Larissa Markwardt (Research Fellow in the Department of Physics at the University of Auckland) and verified with Figure 1 of: https://arxiv.org/pdf/1702.06936#page=2
 
+TRAPPIST-1's distance in light-years is calculated from the parsec value in: https://arxiv.org/abs/1909.13859
+
 ## Spreadsheet
+
 This [spreadsheet](https://docs.google.com/spreadsheets/d/1KE7ZVozelEonUsZPyBT29NdcSsfFrvfnJ53fg395jJ0/edit?usp=sharing) containing unit conversions is accessible by anyone within the organisation
