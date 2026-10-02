@@ -178,6 +178,15 @@ def heartbeat(sim_ptr):
         done_integrating()
 
 
+def heartbeat(sim_ptr):
+    """
+    Heartbeat function for rebound simulations occurs every timestep.
+    Used to preempt simulation to stop integration.
+    """
+    sim: rebound.Simulation = sim_ptr.contents()
+    pass
+
+
 def get_position_dict(particle: rebound.Particle) -> dict:
     """
     Convert a particle to a dictionary of a positions
