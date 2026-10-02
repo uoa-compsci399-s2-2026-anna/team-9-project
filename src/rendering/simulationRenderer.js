@@ -643,12 +643,11 @@ function getOrbitLineWidth(isComparison) {
  * The orbital line is coloured to match its object.
  *
  * @param {string} name Name of the object associated with the orbital line
- * @param {Object} position The position in real coordinates (xyz) of the object
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
  * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
+function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     const { a, e, inc, Omega, omega, f } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
@@ -1010,7 +1009,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
     )) {
         createOrUpdateOrbitalLine(
             name,
-            currentSystemData.positions[name],
             orbitalData,
             currentSystemGroup,
             getCurrentSystemColour(name, isDarkMode),
@@ -1040,7 +1038,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(
                 name,
-                solarSystemData.positions[name],
                 orbitalData,
                 solarSystemGroup,
                 overlayColour,
