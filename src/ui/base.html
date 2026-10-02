@@ -57,7 +57,14 @@
       }
     </script>
 
+    {% include "components/loader.html" %}
+
     <!-- COMPONENT: Scripts block -->
     {% block scripts %}{% endblock %}
+    <script
+      type="module"
+      src="/src/controllers/sharedEventController.js"
+      defer
+    ></script>
   </body>
 </html>

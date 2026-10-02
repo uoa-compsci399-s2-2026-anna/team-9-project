@@ -63,4 +63,10 @@ export const EVENTS = {
          */
         CLOSE_RESET_SETTINGS_MENU: "settings:close_reset_settings_menu",
     },
+    SHARED: {
+        /**
+         * Show/hiding the loader available always.
+         */
+        SET_LOADER_VISIBLE: "shared:set_loader_visible",
+    }
 };
