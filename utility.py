@@ -117,7 +117,8 @@ def done_integrating():
         stopping_integration.release()
 
     # Declare that we are no longer integrating
-    is_integrating.release()
+    if is_integrating.locked():
+        is_integrating.release()
 
 
 async def end_integrating():
