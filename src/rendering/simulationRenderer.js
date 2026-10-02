@@ -22,6 +22,7 @@ import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
     getMultipleSystemsData,
+    stopSimulationIntegrating,
 } from "../services/simulationServices.js";
 import {
     TWO_PI,
@@ -62,6 +63,10 @@ import {
 import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import {
+    runSimulationUpdate,
+    updateSimulationWithPriority,
+} from "./internal/priorityUpdate.js";
 
 let timer;
 
@@ -1052,7 +1057,7 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
  *
  * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
  */
-async function updateSimulation(forceCalendarUpdate = true) {
+export async function updateSimulation(forceCalendarUpdate = true) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
@@ -1378,7 +1383,7 @@ export async function init(name) {
     });
 
     // Start rendering frames and updating the simulation
-    updateSimulation();
+    runSimulationUpdate();
     renderFrame();
 }
 
@@ -1394,24 +1399,26 @@ function clampSimulationTime(time) {
 
 export function stepForward() {
     currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
-    updateSimulation();
+    runSimulationUpdate();
 }
 
 export function stepBack() {
     currentSimulationTime = clampSimulationTime(
         currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
     );
-    updateSimulation();
+    runSimulationUpdate();
 }
 
 export function resetSimulationTimeToNow() {
-    currentSimulationTime = Date.now();
-    updateSimulation();
+    const postFinishClosure = function () {
+        currentSimulationTime = Date.now();
+    };
+    updateSimulationWithPriority(postFinishClosure);
 }
 
 export function setSimulationTimeToTime(time) {
     currentSimulationTime = clampSimulationTime(time);
-    updateSimulation();
+    runSimulationUpdate();
 }
 
 export async function resetView(topDown = true) {
@@ -1485,7 +1492,7 @@ export async function compareToSolarSystem() {
 
     resetView();
 
-    updateSimulation();
+    runSimulationUpdate();
 }
 
 export async function hideSolarSystem() {
@@ -1509,7 +1516,7 @@ export async function hideSolarSystem() {
 
     resetView();
 
-    updateSimulation();
+    runSimulationUpdate();
 }
 
 export function setHabitableZoneVisibility(value) {
@@ -1802,7 +1809,7 @@ async function renderFrame(timestamp) {
             getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         // Update the simulation but do not bypass the calendar update throttle
-        updateSimulation(false);
+        runSimulationUpdate(false);
     }
 
     animateCamera();
