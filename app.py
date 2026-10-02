@@ -16,6 +16,7 @@ from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
 from utility import (
+    end_integrating,
     get_osculating_orbit,
     get_position_dict,
     begin_integrating,
@@ -281,3 +282,13 @@ async def get_system_data(
     done_integrating()
 
     return systems
+
+
+@app.delete("/current_integration")
+async def stop_currently_integrating_sim():
+    """
+    Endpoint for priority actions to stop rebound from integrating early.
+    I.e. if a user is integrating, reset to now should stop it and get to
+    integrate instead.
+    """
+    await end_integrating()
