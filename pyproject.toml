@@ -10,6 +10,3 @@ dependencies = [
     "rebound==5.2.2",
     "tzdata>=2026.3",
 ]
-
-[tool.uv.sources]
-rebound = { git = "https://github.com/s-0fia/rebound-fix-heartbeat" }
