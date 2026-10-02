@@ -323,11 +323,11 @@ async function createWindow(python_url) {
         mainWindow.webContents
             .executeJavaScript(
                 `new Promise((resolve) => {
-                const c = document.getElementById("simulation-canvas");
-                if (c) c.style.display = "none";
-                // Two frames (to apply change & confirm)
-                requestAnimationFrame(() => requestAnimationFrame(resolve));
-            })`,
+                    const c = document.getElementById("simulation-canvas");
+                    if (c) c.style.display = "none";
+                    // Two frames (to apply change & confirm)
+                    requestAnimationFrame(() => requestAnimationFrame(resolve));
+                })`,
             )
             .catch(() => {})
             .finally(() => mainWindow.loadURL(parsed.toString()));
