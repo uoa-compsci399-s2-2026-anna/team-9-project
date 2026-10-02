@@ -3,7 +3,7 @@ from typing import cast
 import rebound
 from astropy.time import Time
 
-from utility import get_osculating_orbit, get_position_dict
+from utility import get_osculating_orbit, get_position_dict, heartbeat
 
 UNITS = ("AU", "day", "Msun")
 
@@ -160,6 +160,7 @@ def init_system(
     # Initialise the simulation
     sim = rebound.Simulation()
     sim.units = UNITS
+    sim.heartbeat = heartbeat
 
     sim_initial_jd_tdb[name] = system_data["timestamp"]
 
