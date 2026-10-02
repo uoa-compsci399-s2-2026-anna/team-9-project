@@ -14,15 +14,8 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from systems import Simulations, sim_to_unix_time
-from utility import (
-    begin_integrating,
-    check_sim_was_stopped,
-    done_integrating,
-    end_integrating,
-    get_osculating_orbit,
-    get_position_dict,
-)
+from systems import Simulations
+from utility import get_multithreader, get_osculating_orbit, get_position_dict
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -61,7 +54,7 @@ with open(
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
-thread_pool = ThreadPoolExecutor()
+thread_pool = get_multithreader()
 
 
 def get_system_with_name(name: str):
@@ -223,9 +216,7 @@ async def get_system_info(system_name: str = "") -> dict:
     }
 
 
-async def get_system_data_at_time(
-    system_name: str, t: float, should_integrate: bool = True
-) -> dict:
+async def get_system_data_at_time(system_name: str, t: float) -> dict:
     """
     Gets a system at a specific unix time.
     Returns simulation data.
@@ -246,13 +237,11 @@ async def get_system_data_at_time(
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Only integrate if we should be integrating
-    if should_integrate:
-        # Integrate to given time using a process pool to keep interactivity
-        loop = asyncio.get_running_loop()
-        sim = await loop.run_in_executor(
-            thread_pool, Simulations.quick_integrate, sims, t, system_data
-        )
+    # Integrate to given time using a process pool to keep interactivity
+    loop = asyncio.get_running_loop()
+    sim = await loop.run_in_executor(
+        thread_pool, Simulations.quick_integrate, sims, t, system_data
+    )
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -283,23 +272,8 @@ async def get_system_data(
 
     systems = {}
 
-    # If any sim was preempted during integration at any point
-    aborted = False
-
-    try:
-        await begin_integrating()
-        for system_name in system_names:
-            # Get system_data at a specific time unless a sim has been stopped
-            # Then just get the system's data at it's current time
-            systems[system_name] = await get_system_data_at_time(
-                system_name, t, should_integrate=(not aborted)
-            )
-
-            # If the sim was preempted during integration do not integrate the other
-            # systems but still get the data (at the time it was at)
-            aborted = True if aborted else check_sim_was_stopped()
-    finally:
-        done_integrating()
+    for system_name in system_names:
+        systems[system_name] = await get_system_data_at_time(system_name, t)
 
     return systems
 
