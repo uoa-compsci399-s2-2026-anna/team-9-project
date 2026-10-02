@@ -786,7 +786,7 @@ const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_WIDTH, Math.cos(Math.PI * distance / 2));
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
