@@ -53,37 +53,47 @@ export function updateObjectLabelOffsets() {
                 continue;
             }
 
-            /**
-             * Vector to center of object in world coordinates.
-             */
-            const objectCenter = new THREE.Vector3();
-            mesh.getWorldPosition(objectCenter);
-
-            /**
-             * Vector to edge of object in world coordinates.
-             */
-            const objectEdge = new THREE.Vector3();
-            objectEdge.copy(objectCenter).addScaledVector(
-                // Scale a unit vector by the object mesh's scale
-                new THREE.Vector3(0, 1, 0),
-                objectSize * mesh.scale.y,
-            );
-
-            // Project vectors to NDC space (coordinates in interval [-1, 1])
-            objectCenter.project(camera);
-            objectEdge.project(camera);
-
-            // Get scalars in screen pixel coordinate space
-            const centerY = ndcScalarToScreenScalar(objectCenter.y);
-            const edgeY = ndcScalarToScreenScalar(objectEdge.y);
-
-            // Calculate object radius in screen pixels
-            const pixelLength = Math.abs(edgeY - centerY);
+            const pixelLength = getObjectApparentPixelRadius(mesh);
 
             label.element.style.marginTop = `${pixelLength}px`;
             label.element.style.marginLeft = `${pixelLength}px`;
         }
     }
+}
+
+/**
+ * @param {THREE.Object3D} object ThreeJS mesh of object
+ * @returns How many pixels the object's radius is on a screen
+ */
+function getObjectApparentPixelRadius(object) {
+    /**
+     * Vector to center of object in world coordinates.
+     */
+    const objectCenter = new THREE.Vector3();
+    object.getWorldPosition(objectCenter);
+
+    /**
+     * Vector to edge of object in world coordinates.
+     */
+    const objectEdge = new THREE.Vector3();
+    objectEdge.copy(objectCenter).addScaledVector(
+        // Scale a unit vector by the object mesh's scale
+        new THREE.Vector3(0, 1, 0),
+        objectSize * object.scale.y,
+    );
+
+    // Project vectors to NDC space (coordinates in interval [-1, 1])
+    objectCenter.project(camera);
+    objectEdge.project(camera);
+
+    // Get scalars in screen pixel coordinate space
+    const centerY = ndcScalarToScreenScalar(objectCenter.y);
+    const edgeY = ndcScalarToScreenScalar(objectEdge.y);
+
+    // Calculate object radius in screen pixels
+    const pixelLength = Math.abs(edgeY - centerY);
+
+    return pixelLength;
 }
 
 /**
