@@ -63,3 +63,12 @@ export async function getMultipleSystemsData(names, t) {
 
     return await response.json();
 }
+
+/**
+ * Stop the current simulation from integrating so that precedence can be taken.
+ */
+export async function stopSimulationIntegrating() {
+    await fetch(`/current_integration`, {
+        method: "DELETE",
+    });
+}
