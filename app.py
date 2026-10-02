@@ -1,4 +1,5 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import signal
@@ -14,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
-from utility import get_multithreader, get_osculating_orbit, get_position_dict
+from utility import get_osculating_orbit, get_position_dict
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -53,7 +54,7 @@ with open(
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
-thread_pool = get_multithreader()
+thread_pool = ThreadPoolExecutor()
 
 
 def get_system_with_name(name: str):
