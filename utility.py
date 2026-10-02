@@ -71,9 +71,23 @@ def heartbeat(sim_ptr):
     """
     Heartbeat function for rebound simulations occurs every timestep.
     Used to preempt simulation to stop integration.
+    Called by rebound.
     """
-    sim: rebound.Simulation = sim_ptr.contents
-    pass
+    global should_stop
+
+    # Get the sim from the cpointer that we are given by rebound
+    sim = cast(rebound.Simulation, sim_ptr.contents)
+
+    # If a thread has declared we should stop
+    if should_stop:
+        # Stop the simulation
+        sim.stop()
+        # We should no longer stop (i.e. run this code) until another request to
+        # stop has been made
+        should_stop = False
+        # Release the locks declaring we are done with: stopping integration and
+        # done with integrating in general
+        done_integrating()
 
 
 def get_position_dict(particle: rebound.Particle) -> dict:
