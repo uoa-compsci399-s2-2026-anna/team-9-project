@@ -125,6 +125,8 @@ async def end_integrating():
     """
     Stop the currently integrating simulation if one is doing so currently.
     """
+    global should_stop
+
     # Only 1 request gets to stop integration at a time which prevents
     # should_stop being left in a faulty state (True when no integration is
     # running)
@@ -157,7 +159,7 @@ def heartbeat(sim_ptr):
     Used to preempt simulation to stop integration.
     Called by rebound.
     """
-    global should_stop
+    global should_stop, sim_was_stopped
 
     # Get the sim from the cpointer that we are given by rebound
     sim = cast(rebound.Simulation, sim_ptr.contents)
