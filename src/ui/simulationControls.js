@@ -1,6 +1,16 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
+// GRID SCALE TEXT
+
+const gridScaleText = document.getElementById("grid-scale-text");
+
+bus.subscribe(EVENTS.SIM.UPDATE_GRID_SCALE, (e) => {
+    const scale = e.detail.value;
+
+    gridScaleText.textContent = `${scale} AU / square`;
+});
+
 // PLAY/PAUSE BUTTON
 
 const playPauseSvgPath = document.getElementById("play-pause-svg-path");

@@ -49,7 +49,10 @@
     </div>
 
     <!-- RHS controls -->
-    <div class="ml-auto flex flex-col gap-2">
+    <div class="z-10 ml-auto flex flex-col items-end gap-2">
+      <!-- Grid scale indicator -->
+      <p id="grid-scale-text" class="text-secondary text-sm"></p>
+
       {% call container(style="flex gap-2 p-2") %}
         <!-- Compare to solar system button -->
         {% if current_system.name != "Solar System" %}
