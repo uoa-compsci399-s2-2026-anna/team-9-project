@@ -15,7 +15,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
-from utility import get_osculating_orbit, get_position_dict
+from utility import (
+    get_osculating_orbit,
+    get_position_dict,
+    begin_integrating,
+    done_integrating,
+)
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -268,7 +273,11 @@ async def get_system_data(
 
     systems = {}
 
+    await begin_integrating()
     for system_name in system_names:
         systems[system_name] = await get_system_data_at_time(system_name, t)
+        # TODO: If a simulation was killed do NOT start integrating the next
+        # system
+    done_integrating()
 
     return systems
