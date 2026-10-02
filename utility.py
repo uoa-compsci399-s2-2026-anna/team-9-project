@@ -85,6 +85,17 @@ stopping_integration = asyncio.Lock()
 # Whether the current simulation should stop integrating
 # Faulty state: this is True and no sim is integrating right now
 should_stop: bool = False
+sim_was_stopped: bool = False
+
+
+def check_sim_was_stopped() -> bool:
+    """
+    Check's if the sim that just ran was stopped during integration.
+    Resets the value to False.
+    """
+    global sim_was_stopped
+    has_been_stopped, sim_was_stopped = sim_was_stopped, False
+    return has_been_stopped
 
 
 async def begin_integrating():
@@ -157,6 +168,8 @@ def heartbeat(sim_ptr):
         # We should no longer stop (i.e. run this code) until another request to
         # stop has been made
         should_stop = False
+        # This sim was stopped, used in app.py so that more sims do not spawn
+        sim_was_stopped = True
         # Release the locks declaring we are done with: stopping integration and
         # done with integrating in general
         done_integrating()
