@@ -553,6 +553,9 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         label.position.set(0, 0, 0);
         label.visible = simulationState.labelsShown;
 
+        // 'Anchors' the label to the top-left
+        label.center.set(0, 0);
+
         mesh.add(label);
         objectLabels.set(name, label);
     }
