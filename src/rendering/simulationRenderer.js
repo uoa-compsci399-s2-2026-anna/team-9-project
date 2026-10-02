@@ -773,7 +773,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 }
 
 const ORBIT_LINE_MIN_OPACITY = 0.2;
-const ORBIT_LINE_MIN_WIDTH = 0.5;
+const ORBIT_LINE_MIN_WIDTH = 1;
 
 /**
  * A function defining the curve/profile of the opacity/width modulation of
