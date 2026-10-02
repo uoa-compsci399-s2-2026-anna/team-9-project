@@ -54,6 +54,7 @@ import {
 } from "../ui/simulationCalendar.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { getLabel } from "./objectLabels.js";
 
 let timer;
 
@@ -222,15 +223,15 @@ const MIN_SIMULATION_TIME = (() => {
     return date.getTime();
 })();
 
-function getTheme(isDarkMode = settings.darkMode) {
+export function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
 
-function getFontSize(size) {
+export function getFontSize(size) {
     return fontSizes[size] ?? fontSizes.Default;
 }
 
-function getFontFamily(chosenFont) {
+export function getFontFamily(chosenFont) {
     return fontFamilies[chosenFont] ?? fontFamilies.Default;
 }
 
@@ -543,24 +544,15 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
-        const labelDiv = document.createElement("div");
-        labelDiv.className = "planet-label";
-        labelDiv.textContent = name;
-        labelDiv.style.color = colour;
-        if (group === solarSystemGroup) {
-            labelDiv.style.opacity = comparisonLabelOpacity;
-        }
-        labelDiv.style.fontSize = getFontSize(settings.textSize);
-        labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.fontWeight = "bold";
-        labelDiv.style.backgroundColor = getTheme().labelBackground;
-        labelDiv.style.padding = "1px 5px";
-        labelDiv.style.borderRadius = "4px";
-        labelDiv.style.whiteSpace = "nowrap";
+        const label = getLabel(
+            name, 
+            colour,
+            group === solarSystemGroup ? comparisonLabelOpacity : 1
+        );
 
-        const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
         label.visible = simulationState.labelsShown;
+
         mesh.add(label);
         objectLabels.set(name, label);
     }
