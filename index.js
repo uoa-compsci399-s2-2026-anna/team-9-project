@@ -47,6 +47,17 @@ store.set("settings", {
 // Initialise the simulation state to the default simulation state
 let simulationState = { ...DEFAULT_SIMULATION_STATE };
 
+const WINDOW_BACKGROUND = {
+    dark: "#000000",
+    light: "#FFFFFF",
+};
+
+function getWindowBackground() {
+    return store.get("settings")?.darkMode
+        ? WINDOW_BACKGROUND.dark
+        : WINDOW_BACKGROUND.light;
+}
+
 // Handle settings saved between run
 ipcMain.handle("settings:get", () => {
     return store.get("settings");
@@ -265,6 +276,7 @@ async function createWindow(python_url) {
         height: 600,
         minWidth: 800,
         minHeight: 600,
+        backgroundColor: getWindowBackground(),
         show: false,
         webPreferences: {
             nodeIntegration: false,
@@ -353,6 +365,17 @@ async function createWindow(python_url) {
     url = buildInitialUrl(url);
 
     log.info(`ELECTRON: Connecting to Python process at '${url}'...`);
+
+    await mainWindow.webContents
+        .executeJavaScript(
+            `new Promise((resolve) => {
+                for (const child of document.body.children) {
+                    child.style.display = "none";
+                }
+                requestAnimationFrame(() => requestAnimationFrame(resolve));
+            })`,
+        )
+        .catch(() => {});
 
     // Change the window to the given url
     mainWindow.loadURL(url);
