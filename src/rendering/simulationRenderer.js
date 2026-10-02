@@ -54,7 +54,7 @@ import {
 } from "../ui/simulationCalendar.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { getLabel } from "./objectLabels.js";
+import { getLabel, updateObjectLabelOffsets } from "./objectLabels.js";
 
 let timer;
 
@@ -71,7 +71,7 @@ let gettingSystemData = false; // Flag to prevent multiple concurrent backend re
 let lastSystemData = null;
 
 let scene;
-let renderer;
+export let renderer;
 let labelRenderer;
 
 // Stores whether the user is currently dragging the camera
@@ -85,8 +85,8 @@ const hitboxPaddingMultiplier = 0.0005;
 
 const raycaster = new THREE.Raycaster();
 
-const currentSystemGroup = new THREE.Group();
-const solarSystemGroup = new THREE.Group();
+export const currentSystemGroup = new THREE.Group();
+export const solarSystemGroup = new THREE.Group();
 solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
 const objectMeshes = new Map();
@@ -100,7 +100,7 @@ let currentSystemDefaultViewRadius;
 let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
-let objectSize;
+export let objectSize;
 let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
@@ -1039,6 +1039,11 @@ async function updateSimulation(forceCalendarUpdate = true) {
             );
         }
     }
+
+    // Update the meshes' scales (which are used to calculate label offets)
+    updateScreenSpaceScales();
+
+    updateObjectLabelOffsets();
 }
 
 /**
@@ -1095,6 +1100,7 @@ function createControlsChangeHandler(viewRadius) {
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
         updateReferenceGridScale(camera.position, controls.target);
+        updateObjectLabelOffsets();
     };
 }
 
