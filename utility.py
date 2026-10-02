@@ -80,7 +80,7 @@ def heartbeat(sim_ptr):
     Heartbeat function for rebound simulations occurs every timestep.
     Used to preempt simulation to stop integration.
     """
-    sim: rebound.Simulation = sim_ptr.contents()
+    sim: rebound.Simulation = sim_ptr.contents
     pass
 
 
