@@ -13,9 +13,11 @@ def get_osculating_orbit(sim: rebound.Simulation, i: int) -> dict:
     Given a REBOUND simulation, calculate:
     - Barycentric osculating orbital information
         - Semi-major axis: AU
-        - Eccentricity: -1 - 1
-        - Longitude of the ascending node: radians (0-2pi)
-        - Inclination: radians (0-2pi)
+        - Eccentricity: in (0, infinity)
+        - Inclination: radians in [0, pi]
+        - Longitude of the ascending node: radians in [0, 2pi)
+        - Argument of pericenter: radians in [0, 2pi)
+        - True anomaly: radians in [0, 2pi)
     """
     particle: rebound.Particle = sim.particles.get(i)
 
@@ -53,11 +55,12 @@ def get_osculating_orbit(sim: rebound.Simulation, i: int) -> dict:
     Return only necessary orbital information
     https://rebound.hanno-rein.de/particles/orbitalelements/
     
-    a 	    semi-major axis
-    e 	    eccentricity
-    inc 	inclination, in radians
-    Omega 	longitude of ascending node, in radians
-    omega 	argument of pericenter, in radians
+    a       semi-major axis
+    e       eccentricity
+    inc     inclination, in radians
+    Omega   longitude of ascending node, in radians
+    omega   argument of pericenter, in radians
+    f       true anomaly, in radians
     """
     return {
         "a": orbit.a * total_mass / (total_mass + particle.m),
@@ -65,4 +68,5 @@ def get_osculating_orbit(sim: rebound.Simulation, i: int) -> dict:
         "inc": orbit.inc,
         "Omega": orbit.Omega,
         "omega": orbit.omega,
+        "f": orbit.f,
     }

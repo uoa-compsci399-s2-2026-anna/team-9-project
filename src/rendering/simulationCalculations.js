@@ -87,7 +87,7 @@ export function calculateProgressDistance(progressA, progressB, useCircularDista
  * @param {number} omega Argument of periapsis in radians
  * @returns {THREE.Matrix4} The rotation matrix representing the orientation of the orbit
  */
-export function calculateRotationMatrix(Omega, inc, omega) {
+export function calculateOrbitRotationMatrix(Omega, inc, omega) {
     const rotateAscendingNode = new THREE.Matrix4().makeRotationZ(Omega);
     const rotateInclination = new THREE.Matrix4().makeRotationX(inc);
     const rotatePeriapsis = new THREE.Matrix4().makeRotationZ(omega);
