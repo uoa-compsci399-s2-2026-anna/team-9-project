@@ -70,7 +70,7 @@ let gettingSystemData = false; // Flag to prevent multiple concurrent backend re
 let lastSystemData = null;
 
 let scene;
-let renderer;
+export let renderer;
 let labelRenderer;
 
 // Stores whether the user is currently dragging the camera
@@ -84,8 +84,8 @@ const hitboxPaddingMultiplier = 0.0005;
 
 const raycaster = new THREE.Raycaster();
 
-const currentSystemGroup = new THREE.Group();
-const solarSystemGroup = new THREE.Group();
+export const currentSystemGroup = new THREE.Group();
+export const solarSystemGroup = new THREE.Group();
 solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
 const objectMeshes = new Map();
@@ -99,7 +99,7 @@ let currentSystemDefaultViewRadius;
 let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
-let objectSize;
+export let objectSize;
 let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
@@ -222,15 +222,15 @@ const MIN_SIMULATION_TIME = (() => {
     return date.getTime();
 })();
 
-function getTheme(isDarkMode = settings.darkMode) {
+export function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
 
-function getFontSize(size) {
+export function getFontSize(size) {
     return fontSizes[size] ?? fontSizes.Default;
 }
 
-function getFontFamily(chosenFont) {
+export function getFontFamily(chosenFont) {
     return fontFamilies[chosenFont] ?? fontFamilies.Default;
 }
 
@@ -543,29 +543,141 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
-        const labelDiv = document.createElement("div");
-        labelDiv.className = "planet-label";
-        labelDiv.textContent = name;
-        labelDiv.style.color = colour;
-        if (group === solarSystemGroup) {
-            labelDiv.style.opacity = comparisonLabelOpacity;
-        }
-        labelDiv.style.fontSize = getFontSize(settings.textSize);
-        labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.fontWeight = "bold";
-        labelDiv.style.backgroundColor = getTheme().labelBackground;
-        labelDiv.style.padding = "1px 5px";
-        labelDiv.style.borderRadius = "4px";
-        labelDiv.style.whiteSpace = "nowrap";
+        const label = getLabel(
+            name, 
+            colour,
+            group === solarSystemGroup ? comparisonLabelOpacity : 1
+        );
 
-        const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
         label.visible = simulationState.labelsShown;
+
+        // 'Anchors' the label to the top-left
+        label.center.set(0, 0);
+
         mesh.add(label);
         objectLabels.set(name, label);
     }
 
     mesh.position.set(position.x, position.y, position.z);
+}
+
+/**
+ * Creates a label. The font size and family, and the div's background colour
+ * are set as per the settings state.
+ * @param {string} name Object name
+ * @param {string} colour CSS colour string of label colour
+ * @param {Number} opacity Opacity of label in interval [0, 1]
+ * @returns {CSS2DObject} Created label div
+ */
+export function getLabel(name, colour, opacity) {
+    const labelDiv = document.createElement("div");
+
+    labelDiv.className = "planet-label";
+    labelDiv.textContent = name;
+
+    labelDiv.style.color = colour;
+    labelDiv.style.backgroundColor = getTheme().labelBackground;
+
+    labelDiv.style.opacity = opacity;
+
+    labelDiv.style.fontSize = getFontSize(settings.textSize);
+    labelDiv.style.fontFamily = getFontFamily(settings.font);
+    labelDiv.style.fontWeight = "bold";
+
+    labelDiv.style.padding = "1px 5px";
+    labelDiv.style.borderRadius = "4px";
+    labelDiv.style.whiteSpace = "nowrap";
+
+    const label = new CSS2DObject(labelDiv);
+
+    return label;
+}
+
+export function updateObjectLabelOffsets() {
+    for (const group of [currentSystemGroup, solarSystemGroup]) {
+        for (const mesh of group.children) {
+            const label = mesh.children.find(
+                (child) => child instanceof CSS2DObject,
+            );
+
+            if (!label) {
+                continue;
+            }
+
+            const pixelLength = getObjectApparentPixelRadius(mesh);
+
+            label.element.style.marginTop = `${pixelLength}px`;
+            label.element.style.marginLeft = `${pixelLength}px`;
+        }
+    }
+}
+
+/**
+ * @param {THREE.Object3D} object ThreeJS mesh of object
+ * @returns How many pixels the object's radius is on a screen
+ */
+function getObjectApparentPixelRadius(object) {
+    /**
+     * The 'up' direction in world space.
+     */
+    const worldUp = new THREE.Vector3(0, 1, 0);
+
+    /**
+     * The 'up' direction in camera space.
+     */
+    const cameraWorldUp = worldUp.applyQuaternion(
+        camera.getWorldQuaternion(new THREE.Quaternion()),
+    );
+
+    /**
+     * Vector to center of object in world coordinates.
+     */
+    const objectCenter = new THREE.Vector3();
+    object.getWorldPosition(objectCenter);
+
+    /**
+     * Vector to edge of object in world coordinates.
+     */
+    const objectEdge = new THREE.Vector3();
+    objectEdge.copy(objectCenter).addScaledVector(
+        // Scale the camera 'up' direction vector by the object mesh's scale
+        cameraWorldUp,
+        objectSize * object.scale.y,
+    );
+
+    // Project vectors to NDC space (coordinates in interval [-1, 1])
+    objectCenter.project(camera);
+    objectEdge.project(camera);
+
+    // Get scalars in screen pixel coordinate space
+    const centerY = ndcScalarToScreenScalar(objectCenter.y);
+    const edgeY = ndcScalarToScreenScalar(objectEdge.y);
+
+    // Calculate object radius in screen pixels
+    const pixelLength = Math.abs(edgeY - centerY);
+
+    return pixelLength;
+}
+
+/**
+ * Converts a scalar in NDC space to a scalar in screen pixel space.
+ *
+ * i.e. a mapping from NDC space in interval [-1, 1] to screen pixel space
+ * in interval [0, screen height].
+ *
+ * @param {Number} ndcDimension Single dimension of normalised device coordinate
+ * system (i.e a scalar in NDC space) (in interval [-1, 1])
+ * @returns Single dimension of `ndcDimension` scalar in screen pixel
+ * coorindates
+ */
+function ndcScalarToScreenScalar(ndcDimension) {
+    /**
+     * The client height of the renderer.
+     */
+    const clientHeight = renderer.domElement.clientHeight;
+
+    return ((ndcDimension + 1) / 2) * clientHeight;
 }
 
 /**
@@ -1044,6 +1156,11 @@ async function updateSimulation(forceCalendarUpdate = true) {
             );
         }
     }
+
+    // Update the meshes' scales (which are used to calculate label offets)
+    updateScreenSpaceScales();
+
+    updateObjectLabelOffsets();
 }
 
 /**
@@ -1100,6 +1217,7 @@ function createControlsChangeHandler(viewRadius) {
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
         updateReferenceGridScale(camera.position, controls.target);
+        updateObjectLabelOffsets();
     };
 }
 
