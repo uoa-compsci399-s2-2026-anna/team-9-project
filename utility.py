@@ -1,4 +1,70 @@
+import asyncio
+from typing import cast
 import rebound
+
+
+# Whether we are integrating a simulation currently (empty lock)
+is_integrating = asyncio.Lock()
+# Whether we are killing an integration by request currently (empty lock)
+killing_integration = asyncio.Lock()
+# Whether we are waiting for heartbeat to reach its next interval to stop
+# currently (empty lock)
+stopping_integration = asyncio.Lock()
+# Whether the current simulation should stop integrating
+# Faulty state: this is True and no sim is integrating right now
+should_stop: bool = False
+
+
+async def begin_integrating():
+    """
+    Stops all other running simulations to let this sim run.
+    Also aquires necessary mutexes
+    """
+    # Declare that we are integrating right now
+    await is_integrating.acquire()
+
+
+def done_integrating():
+    """
+    Run after integration is done and release locks.
+    """
+    # If called from heartbeat() we should release this lock (as this will only
+    # be locked if called from there)
+    if stopping_integration.locked():
+        stopping_integration.release()
+
+    # Declare that we are no longer integrating
+    is_integrating.release()
+
+
+async def end_integrating():
+    """
+    Stop the currently integrating simulation if one is doing so currently.
+    """
+    # Only 1 request gets to stop integration at a time which prevents
+    # should_stop being left in a faulty state (True when no integration is
+    # running)
+    async with killing_integration:
+        # If we are current integrating, stop (via heartbeat callback)
+        if is_integrating.locked():
+            # Acquire the stopping integration lock so we can wait for heartbeat
+            # to end integration on a seperate thread
+            await stopping_integration.acquire()
+
+            # Tell heartbeat to actually stop the current integration
+            should_stop = True
+        # If we are not integrating: do nothing
+        else:
+            return
+
+        # Wait for heartbeat to finish stopping the current integration so that
+        # we can check if we have been left in a faulty state
+        async with stopping_integration:
+            # If the heartbeat has managed to release the stopping integration
+            # lock without actually stopping the integration
+            if should_stop:
+                # Theoretically unreachable code
+                raise Exception("Failed to stop")
 
 
 def heartbeat(sim_ptr):
