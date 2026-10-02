@@ -67,6 +67,18 @@ export function updateObjectLabelOffsets() {
  */
 function getObjectApparentPixelRadius(object) {
     /**
+     * The 'up' direction in world space.
+     */
+    const worldUp = new THREE.Vector3(0, 1, 0);
+
+    /**
+     * The 'up' direction in camera space.
+     */
+    const cameraWorldUp = worldUp.applyQuaternion(
+        camera.getWorldQuaternion(new THREE.Quaternion()),
+    );
+
+    /**
      * Vector to center of object in world coordinates.
      */
     const objectCenter = new THREE.Vector3();
@@ -77,8 +89,8 @@ function getObjectApparentPixelRadius(object) {
      */
     const objectEdge = new THREE.Vector3();
     objectEdge.copy(objectCenter).addScaledVector(
-        // Scale a unit vector by the object mesh's scale
-        new THREE.Vector3(0, 1, 0),
+        // Scale the camera 'up' direction vector by the object mesh's scale
+        cameraWorldUp,
         objectSize * object.scale.y,
     );
 
