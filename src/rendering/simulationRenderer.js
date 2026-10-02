@@ -956,6 +956,8 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
     const scaleFactor =
         desiredReferenceGridDivisionSize / referenceGridDivisionSize;
     referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+    bus.publish(EVENTS.SIM.UPDATE_GRID_SCALE, { value: scaleFactor });
 }
 
 /**
