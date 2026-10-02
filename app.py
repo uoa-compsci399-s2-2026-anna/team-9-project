@@ -17,6 +17,7 @@ from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
 from utility import (
+    end_integrating,
     get_osculating_orbit,
     get_position_dict,
     begin_integrating,
