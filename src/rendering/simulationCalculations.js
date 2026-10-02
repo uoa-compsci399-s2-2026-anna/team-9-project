@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+export const TWO_PI = 2 * Math.PI;
+
 /**
  * Calculate the Cartesian coordinates of a point in an elliptical orbit.
  * @param {number} a Semi-major axis of the orbit
@@ -12,6 +14,69 @@ export function calculateOrbitalPosition(a, e, theta) {
     const x = r * Math.cos(theta);
     const y = r * Math.sin(theta);
     return { x, y };
+}
+
+/**
+ * Check if angleA is smaller than angleB, considering the circular nature of angles.
+ * @param {number} angleA The first angle in radians
+ * @param {number} angleB The second angle in radians
+ * @returns {boolean} True if angleA is smaller than angleB, false otherwise
+ */
+function isAngleSmaller(angleA, angleB) {
+    // Normalize angles to [0, 2π)
+    const normalizedA = ((angleA % TWO_PI) + TWO_PI) % TWO_PI;
+    const normalizedB = ((angleB % TWO_PI) + TWO_PI) % TWO_PI;
+
+    return normalizedA < normalizedB;
+}
+
+/**
+ * Check if an angle is between two other angles, considering the circular nature of angles.
+ * @param {number} angle The angle to check
+ * @param {number} start The starting angle
+ * @param {number} end The ending angle
+ * @returns {boolean} True if the angle is between the two other angles, false otherwise
+ */
+export function isAngleBetween(angle, start, end) {
+    if (isAngleSmaller(start, end)) {
+        return isAngleSmaller(start, angle) && isAngleSmaller(angle, end);
+    }
+    // If the range wraps around 0,
+    // return true if the angle is in (start, 2pi) or [0, end)
+    return isAngleSmaller(start, angle) || isAngleSmaller(angle, end);
+}
+
+/**
+ * Calculate the circular distance between two progress values, considering the circular nature of progress.
+ * @param {number} progressA The first progress value (0 to 1)
+ * @param {number} progressB The second progress value (0 to 1)
+ * @returns {number} The circular distance from progressA to progressB
+ */
+function calculateCircularProgressDistance(progressA, progressB) {
+    return (progressB - progressA + 1) % 1;
+}
+
+/**
+ * Calculate the distance between two progress values in [0, 1].
+ *
+ * If useCircularDistance is true, the circular distance from progressA to progressB is calculated.
+ * If useCircularDistance is false, the linear distance from progressA to progressB is calculated,
+ * and if progressB is less than progressA, a full revolution (1) is returned.
+ *
+ * @param {number} progressA The first progress value (0 to 1)
+ * @param {number} progressB The second progress value (0 to 1)
+ * @param {boolean} useCircularDistance Whether to use circular distance (default: true)
+ * @returns {number} The distance from progressA to progressB
+ */
+export function calculateProgressDistance(progressA, progressB, useCircularDistance = true) {
+    if (useCircularDistance) {
+        return calculateCircularProgressDistance(progressA, progressB);
+    }
+    const distance = progressB - progressA;
+    if (distance < 0) {
+        return 1; // Return 1 for a full revolution
+    }
+    return distance;
 }
 
 /**
@@ -43,6 +108,16 @@ function calculateApoapsis(a, e) {
 }
 
 /**
+ * Calculate the periapsis (closest point in orbit) for an object given its semi-major axis and eccentricity.
+ * @param {number} a Semi-major axis of the orbit
+ * @param {number} e Eccentricity of the orbit
+ * @returns {number} The periapsis distance
+ */
+export function calculatePeriapsis(a, e) {
+    return a * (1 - e);
+}
+
+/**
  * Calculate the maximum apoapsis distance among all objects in the system.
  * @param {Array} orbitalDataValues Array of orbital data values for all objects
  * @returns {number} The maximum apoapsis distance
@@ -51,6 +126,20 @@ export function calculateMaxApoapsis(orbitalDataValues) {
     return Math.max(
         ...orbitalDataValues.map(
             ({ a, e }) => calculateApoapsis(a, e)
+        ),
+        0 // Ensure the result is non-negative
+    );
+}
+
+/**
+ * Calculate the maximum periapsis distance among all objects in the system.
+ * @param {Array} orbitalDataValues Array of orbital data values for all objects
+ * @returns {number} The maximum periapsis distance
+ */
+export function calculateMaxPeriapsis(orbitalDataValues) {
+    return Math.max(
+        ...orbitalDataValues.map(
+            ({ a, e }) => calculatePeriapsis(a, e)
         ),
         0 // Ensure the result is non-negative
     );

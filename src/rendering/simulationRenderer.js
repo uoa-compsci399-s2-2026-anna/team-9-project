@@ -24,15 +24,30 @@ import {
     getMultipleSystemsData,
 } from "../services/simulationServices.js";
 import {
+    TWO_PI,
     calculateOrbitalPosition,
+    isAngleBetween,
+    calculateProgressDistance,
     calculateRotationMatrix,
     calculateMaxApoapsis,
+    calculateMaxPeriapsis,
+    calculatePeriapsis,
     calculateCameraDistance,
     calculateAverageNormal,
-    calculateDefaultCameraPosition,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
+import {
+    FOV,
+    cameraDefaults,
+    cameraAnimationState,
+    camera,
+    controls,
+    calculateCameraAndControlsSettings,
+    initOrUpdateCamera,
+    initOrUpdateControls,
+    animateCamera,
+} from "./simulationCameraAndControls.js";
 import {
     updateCalendar,
     formatSimulationDate,
@@ -46,61 +61,27 @@ let timer;
 // The current simulation time in milliseconds since Unix epoch
 let currentSimulationTime;
 
-let currentSystem;
+let lastFetchedSimulationTime = null; // The simulation time for which the last system data was fetched
 
+let currentSystem;
 let currentSystemColours;
 let objectTypes;
 
+let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
+let lastSystemData = null;
+
 let scene;
-let camera;
-let controls;
 let renderer;
 let labelRenderer;
-
-let controlsChangeHandler; // Store the controls change handler to remove when updating controls
 
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
 
 const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
-// Constants for camera and controls
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
-
-const fov = 45; // Field of view in degrees
-const cameraNearMultiplier = 1;
-const cameraFarMultiplier = 100;
-
-const controlsMinMultiplier = 10;
-const controlsMaxMultiplier = 1.5;
-const controlsZoomSpeed = 2.5;
-const controlsMinZoomFactor = 2; // The minimum factor that the controls should be able to zoom
-
-const cameraDefaults = {
-    position: null, // Will be set based on the system's orbital data
-    target: new THREE.Vector3(0, 0, 0), // Look at the barycenter
-    up: new THREE.Vector3(0, 0, 1), // Z-axis is up
-};
-
-const cameraAnimationSpeed = 0.1; // Proportion of remaining distance covered per step
-const cameraAnimationProgressThreshold = 0.9999; // Animation is complete once this proportion of total distance has been covered
-
-// Calculate the number of steps needed to reach the progress threshold.
-// At the n-th step, (1 - cameraAnimationSpeed)^n is the remaining proportion of total distance to cover.
-// So, we solve for n in the equation: (1 - cameraAnimationSpeed)^n = 1 - cameraAnimationProgressThreshold
-// to get the number of steps needed for the remaining proportion of total distance to reach 1 - cameraAnimationProgressThreshold.
-const totalCameraAnimationSteps = Math.ceil(
-    Math.log(1 - cameraAnimationProgressThreshold) / Math.log(1 - cameraAnimationSpeed)
-);
-
-let currentCameraAnimationStep = 0;
-let animateCameraAndControls = false;
-
-// Animation targets for camera and controls
-let animateCameraPositionTo = new THREE.Vector3();
-let animateControlsTargetTo = new THREE.Vector3();
 
 const raycaster = new THREE.Raycaster();
 
@@ -120,18 +101,14 @@ let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
-let objectScale = 1;
 let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
-/**
- * The width (thickness) of the orbit lines for regular orbits and for orbits
- * belonging to the Solar System when it's shown only as a comparison overlay,
- * in screen pixels.
- */
-const ORBIT_LINE_WIDTH = 20;
-const COMPARISON_ORBIT_LINE_WIDTH = 10;
+// Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height)
+const ORBIT_LINE_WIDTH_PROPORTION = 0.02;
+const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.01;
+const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 
 /**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
@@ -215,6 +192,36 @@ const CORE_COLOUR = "rgba(255, 255, 255, 1)";
 
 const GLOW_SIZE_MULTIPLIER = 3.5;
 const SPRITE_Z_SCALE = 1.0;
+
+// Screen space object sizing
+const DESIRED_OBJECT_PIXEL_SIZE = 12;
+const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
+const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects
+
+// How much larger stars are compared to other objects
+const STAR_SIZE_RATIO = DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE;
+
+const minScreenSpaceScale = 0.5;
+
+// Keeps stars proportionally larger than other objects at the minimum scale
+const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
+
+// Fraction of the innermost periapsis that an object's on screen radius may occupy
+const MAX_EXTENT_ORBIT_FRACTION = 0.5;
+
+// Periapsis of the innermost default visible orbit
+let innermostPeriapsis = Infinity;
+
+// Last known pointer position (in viewport coordinates)
+let pointerPosition = null;
+
+// Earliest simulation time allowed is 1 January of year 1 (UTC)
+const MIN_SIMULATION_TIME = (() => {
+    const date = new Date(0);
+    date.setUTCFullYear(1, 0, 1);
+    date.setUTCHours(0, 0, 0, 0);
+    return date.getTime();
+})();
 
 function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
@@ -387,7 +394,8 @@ async function getViewRadiusForSystem(system, useDefault = false) {
         useDefault,
     );
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    return maxApoapsis * viewRadiusMultiplier;
+    const maxPeriapsis = calculateMaxPeriapsis(orbitalDataValues); // To account for hyperbolic orbits
+    return Math.max(maxApoapsis, maxPeriapsis) * viewRadiusMultiplier;
 }
 
 /**
@@ -558,7 +566,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         objectLabels.set(name, label);
     }
 
-    mesh.scale.set(objectScale, objectScale, objectScale);
     mesh.position.set(position.x, position.y, position.z);
 }
 
@@ -610,6 +617,27 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
 }
 
 /**
+ * Get the line width for orbits, based on the current size of the canvas.
+ * 
+ * The orbital line width is different for normal orbits and the Solar System orbits when
+ * comparing to the Solar System.
+ * 
+ * @param {boolean} isComparison Whether to get the width for a comparison orbit or a normal orbit
+ * @returns The line width for orbits
+ */
+function getOrbitLineWidth(isComparison) {
+    const canvas = renderer.domElement;
+    const canvasSize = Math.min(canvas.clientWidth, canvas.clientHeight);
+
+    // The orbit line width as a proportion of the canvas size
+    const proportion = isComparison
+        ? COMPARISON_ORBIT_LINE_WIDTH_PROPORTION
+        : ORBIT_LINE_WIDTH_PROPORTION;
+
+    return Math.max(ORBIT_LINE_MIN_PIXEL_WIDTH, canvasSize * proportion);
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  *
@@ -625,6 +653,8 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     const { a, e, inc, Omega, omega } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
+
+    const isElliptical = e < 1;
 
     let line = orbitalLines.get(name);
 
@@ -648,17 +678,15 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
                 comparisonOrbitOpacity,
             );
 
-            material.lineWidth = COMPARISON_ORBIT_LINE_WIDTH;
+            material.lineWidth = getOrbitLineWidth(true);
             material.color.set(comparisonColour);
         } else {
-            material.lineWidth = ORBIT_LINE_WIDTH;
+            material.lineWidth = getOrbitLineWidth(false);
             material.color.set(colour);
         }
 
-        if (e < 1) {
-            material.alphaMap = createOpaqueOrbitAlphaTexture();
-            material.useAlphaMap = 1;
-        }
+        material.alphaMap = createOpaqueOrbitAlphaTexture();
+        material.useAlphaMap = 1;
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
@@ -682,10 +710,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     // Update the geometry of the line to match the orbital parameters
     const points = [];
     let thetaStart = 0;
-    let thetaEnd = 2 * Math.PI;
+    let thetaEnd = TWO_PI;
 
     // Limit the angle range for hyperbolic orbits to its asymptotes
-    if (e > 1) {
+    if (!isElliptical) {
         const thetaLimit = Math.acos(-1 / e);
         const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
 
@@ -693,7 +721,9 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         thetaEnd = thetaLimit - epsilon;
     }
 
-    const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
+    // Calculate the step size for theta.
+    // We subtract 2 as the last point is added separately, and we add a point at the object's position
+    const thetaStep = (thetaEnd - thetaStart) / (ORBIT_POINTS_COUNT - 2);
 
     /**
      * The position of the object in world (xyz) coordinate space.
@@ -725,58 +755,54 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
      * (localPosition.x, localPosition.y) from the 2-argument arctangent.
      */
     let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
-    if (objectTheta < 0) objectTheta += 2 * Math.PI;
+    if (objectTheta < 0) objectTheta += TWO_PI;
 
-    for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
+    let objectIndex = 0;
+    for (let i = 0; i < ORBIT_POINTS_COUNT - 2; i++) {
+        const theta = thetaStart + i * thetaStep;
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
 
-        if (objectTheta > theta && objectTheta < theta + thetaStep) {
+        if (isAngleBetween(objectTheta, theta, theta + thetaStep)) {
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
             points.push(localObjectPosition.x, localObjectPosition.y, 0);
+            objectIndex = i + 1;
         }
     }
 
-    if (e > 1) {
-        // Add the last point at the end of the range to ensure the line reaches the asymptote
-        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
-        points.push(x, y, 0);
-    }
+    // Add the last point at the end of the range
+    const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+    points.push(x, y, 0);
 
-    if (e < 1) {
-        /**
-         * Proportion of a full revolution the object is from its starting
-         * point/angle.
-         */
-        const objectProgress = THREE.MathUtils.clamp(
-            (objectTheta - thetaStart) / (thetaEnd - thetaStart),
-            0,
-            1,
+    /**
+     * Proportion of a full revolution the object is from its starting
+     * point/angle.
+     */
+    const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
+
+    updateOrbitAlphaTexture(
+        line.material.alphaMap,
+        objectProgress,
+        isElliptical
+    );
+
+    // Create or update the position attribute and widen the line at the object
+    line.geometry.setPoints(points, (progress) => {
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical
         );
 
-        updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
-
-        // Create or update the position attribute and widen the line at the object
-        line.geometry.setPoints(points, (progress) => {
-            /**
-             * Proportion of a full revolution this point of `progress` is
-             * from the object.
-             */
-            const distance = (objectProgress - progress + 1) % 1;
-
-            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
-        });
-    } else {
-        // Display non-elliptical orbits as constant width
-        line.geometry.setPoints(points);
-    }
+        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+    });
 
     // Rotate the line to match the orbital parameters
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
-const ORBIT_LINE_MINIMUM_OPACITY = 0.2;
+const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 /**
@@ -787,7 +813,7 @@ const ORBIT_LINE_MIN_WIDTH = 0.5;
  * @returns Scale factor betwee 0 and 1 of opacity/line width.
  */
 const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MINIMUM_OPACITY, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
@@ -800,17 +826,19 @@ const RGBA_MAX_VALUE = 255;
  * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
  */
 function createOpaqueOrbitAlphaTexture() {
-    const data = new Uint8Array(ORBIT_POINTS_COUNT * RGBA_CHANNEL_COUNT);
+    const data = new Uint8Array(
+        (ORBIT_POINTS_COUNT - 1) * RGBA_CHANNEL_COUNT // There is one less segment than points
+    );
     data.fill(RGBA_MAX_VALUE);
 
     /**
-     * Create ORBIT_POINTS_COUNT x 1 texture (i.e. a 1D texture) for an opacity
+     * Create (ORBIT_POINTS_COUNT - 1) x 1 texture (i.e. a 1D texture) for an opacity
      * map. This is in RGBA format, so each 'point' of the texture is
      * represented by 4 bytes: a red, green, blue, and alpha channel.
      */
     const texture = new THREE.DataTexture(
         data,
-        ORBIT_POINTS_COUNT,
+        ORBIT_POINTS_COUNT - 1,
         1,
         THREE.RGBAFormat,
     );
@@ -829,8 +857,9 @@ function createOpaqueOrbitAlphaTexture() {
  * @param {THREE.DataTexture} texture
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
+ * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
  */
-function updateOrbitAlphaTexture(texture, objectProgress) {
+function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
     /**
      * `texture.image` is an object containing fields `data` (the actual byte
      * array of the texture), `width` (the number of bytes) in the 'width'
@@ -847,11 +876,11 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
          */
         const progress = i / (width - 1);
 
-        /**
-         * Proportion of a full revolution this point of `progress` is
-         * from the object.
-         */
-        const distance = (objectProgress - progress + 1) % 1;
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical
+        );
 
         const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
 
@@ -936,7 +965,7 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
         );
 
     const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
-        fov,
+        FOV,
         cameraDistanceToTargetProjection,
         divisionsInView,
     );
@@ -974,12 +1003,26 @@ async function updateSimulation(forceCalendarUpdate = true) {
     if (isComparingToSolarSystem) {
         systems.push("Solar System");
     }
-    const allSystemData = await getMultipleSystemsData(
-        systems,
-        currentSimulationTime,
-    );
+
+    let allSystemData;
+
+    if (gettingSystemData && lastSystemData) {
+        // Use the last fetched data if a request is already in progress
+        allSystemData = lastSystemData;
+
+    } else {
+        gettingSystemData = true;
+        lastFetchedSimulationTime = currentSimulationTime;
+        allSystemData = await getMultipleSystemsData(
+            systems,
+            lastFetchedSimulationTime
+        );
+        updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
+        gettingSystemData = false;
+        lastSystemData = allSystemData;
+    }
+
     const currentSystemData = allSystemData[currentSystem];
-    updateCalendar(currentSimulationTime, forceCalendarUpdate);
 
     for (const [name, position] of Object.entries(
         currentSystemData.positions,
@@ -1036,14 +1079,14 @@ async function updateSimulation(forceCalendarUpdate = true) {
 }
 
 /**
- * Sync the calendar to the current simulation time (bypasses the throttle).
+ * Sync the calendar to the last fetched simulation time (bypasses the throttle).
  */
 export function syncCalendar() {
-    if (currentSimulationTime === null) {
+    if (lastFetchedSimulationTime === null) {
         return;
     }
 
-    updateCalendar(currentSimulationTime, true);
+    updateCalendar(lastFetchedSimulationTime, true);
 }
 
 /**
@@ -1074,110 +1117,12 @@ async function alignSystemToCameraUp(group, useDefault = false) {
 }
 
 /**
- * Calculate the camera and controls settings based on the view radius.
- *
- * @param {number} viewRadius The radius of view to fit within the camera
- * @returns {Object} The camera and controls settings
- */
-function calculateCameraAndControlsSettings(viewRadius) {
-    const controlsMinDistance = objectSize * controlsMinMultiplier;
-
-    // Camera distance must be at least the minimum distance for the controls
-    const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
-    const cameraDistance = Math.max(
-        calculateCameraDistance(fov, viewRadius),
-        controlsMinDistance + epsilon
-    );
-
-    // Controls max distance must be at least camera distance * max multiplier,
-    // and must be able to zoom by at least controlsMinZoomFactor
-    const controlsMaxDistance = Math.max(
-        cameraDistance * controlsMaxMultiplier,
-        controlsMinDistance * controlsMinZoomFactor,
-    );
-
-    const cameraNear = objectSize * cameraNearMultiplier;
-    const cameraFar = cameraDistance * cameraFarMultiplier;
-
-    return {
-        cameraDistance,
-        cameraNear,
-        cameraFar,
-        controlsMinDistance,
-        controlsMaxDistance,
-    };
-}
-
-/**
- * Initialise the camera for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {Object} cameraSettings The camera settings
- * @param {number} cameraSettings.cameraDistance The distance of the camera
- * @param {number} cameraSettings.cameraNear The near plane of the camera
- * @param {number} cameraSettings.cameraFar The far plane of the camera
- */
-function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraFar }) {
-    cameraDefaults.position = calculateDefaultCameraPosition(
-        cameraDefaults.up,
-        cameraDistance,
-    );
-
-    if (!camera) {
-        const aspect = canvas.clientWidth / canvas.clientHeight;
-        camera = new THREE.PerspectiveCamera(
-            fov,
-            aspect,
-            cameraNear,
-            cameraFar,
-        );
-        camera.up.copy(cameraDefaults.up);
-        camera.position.copy(cameraDefaults.position); // Set initial camera position for the current system
-    } else {
-        camera.near = cameraNear;
-        camera.far = cameraFar;
-        camera.updateProjectionMatrix(); // Must update after changing camera parameters
-    }
-}
-
-/**
- * Initialise the controls for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
- * @param {Object} controlsSettings The controls settings
- * @param {number} controlsSettings.controlsMinDistance The minimum distance for the controls
- * @param {number} controlsSettings.controlsMaxDistance The maximum distance for the controls
- */
-function initOrUpdateControls(
-    canvas,
-    { controlsMinDistance, controlsMaxDistance },
-) {
-    if (!controls) {
-        controls = new OrbitControls(camera, canvas);
-        controls.addEventListener("start", () => {
-            animateCameraAndControls = false; // Stop animating on user interaction
-        });
-
-        controls.target.copy(cameraDefaults.target);
-        controls.update();
-    }
-    controls.minDistance = controlsMinDistance;
-    controls.maxDistance = controlsMaxDistance;
-    controls.zoomSpeed = controlsZoomSpeed;
-
-    if (controlsChangeHandler) {
-        controls.removeEventListener("change", controlsChangeHandler);
-    }
-    controlsChangeHandler = createControlsChangeHandler(viewRadius);
-    controls.addEventListener("change", controlsChangeHandler);
-}
-
-/**
  * Creates a handler for the controls change event.
  * @param {number} viewRadius The radius of view to fit within the camera
  * @returns {Function} The controls change handler
  */
 function createControlsChangeHandler(viewRadius) {
     return () => {
-        isDragging = true;
         const cameraOffset = camera.position.clone().sub(controls.target);
 
         // Clamp the target position to be within the view radius
@@ -1196,8 +1141,13 @@ function createControlsChangeHandler(viewRadius) {
  * objects on the scene.
  *
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @param {OrbitControls} controls The orbit controls for the scene
  */
-function initRaycastingEvents(canvas) {
+function initRaycastingEvents(canvas, controls) {
+    controls.addEventListener("change", () => {
+        isDragging = true;
+    });
+
     // Detect when the user holds their mouse down on the canvas
     canvas.addEventListener("pointerdown", () => {
         isDragging = false;
@@ -1212,17 +1162,30 @@ function initRaycastingEvents(canvas) {
 }
 
 /**
- * Register a pointer listener on the canvas that updates the cursor to
- * a pointer to indicate when an object can be clicked.
+ * Track the pointer over the canvas so the cursor can be updated every frame.
  *
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function initHoverCursor(canvas) {
+    // Store the pointer position whenever it moves over the canvas
     canvas.addEventListener("pointermove", (event) => {
-        const name = getObjectNameAt(event.clientX, event.clientY, canvas);
-        // Set the cursor to a pointer if there is an object at the cursor
-        canvas.style.cursor = name ? "pointer" : "default";
+        pointerPosition = { x: event.clientX, y: event.clientY };
     });
+}
+
+/**
+ * Set the cursor to a pointer if an object is under the last known pointer
+ * position, and to the default cursor otherwise. This is called every frame.
+ *
+ * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ */
+function updateHoverCursor(canvas) {
+    const name =
+        pointerPosition &&
+        getObjectNameAt(pointerPosition.x, pointerPosition.y, canvas);
+
+    // `name` is null if there is no object at the current pointer position
+    canvas.style.cursor = name ? "pointer" : "default";
 }
 
 /**
@@ -1311,15 +1274,21 @@ export async function init(name) {
     objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
 
+    await updateInnermostPeriapsis(false);
+
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
-    initRaycastingEvents(canvas);
+    initRaycastingEvents(canvas, controls);
     initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
@@ -1330,18 +1299,18 @@ export async function init(name) {
     initScene();
 
     /**
-     * Persist the current simulation time, formatted simulation date, and days elapsed text
+     * Persist the last fetched simulation time, formatted simulation date, and days elapsed text
      * before the simulation is exited
      */
     window.addEventListener("pagehide", () => {
-        setSimulationTime(currentSystem, currentSimulationTime);
+        setSimulationTime(currentSystem, lastFetchedSimulationTime);
 
         const formattedSimulationDate = formatSimulationDate(
-            currentSimulationTime,
+            lastFetchedSimulationTime,
         );
         setFormattedSimulationDate(currentSystem, formattedSimulationDate);
 
-        const elapsedDaysText = getElapsedDaysText(currentSimulationTime);
+        const elapsedDaysText = getElapsedDaysText(lastFetchedSimulationTime);
         setElapsedText(currentSystem, elapsedDaysText);
     });
 
@@ -1350,13 +1319,25 @@ export async function init(name) {
     renderFrame();
 }
 
+/**
+ * Clamp a simulation time so it never goes before the minimum simulation time.
+ *
+ * @param {number} time Time in milliseconds since Unix epoch
+ * @returns {number} The clamped time
+ */
+function clampSimulationTime(time) {
+    return Math.max(time, MIN_SIMULATION_TIME);
+}
+
 export function stepForward() {
     currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
     updateSimulation();
 }
 
 export function stepBack() {
-    currentSimulationTime -= getSimulationSpeedMilliseconds(currentSystem);
+    currentSimulationTime = clampSimulationTime(
+        currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
+    );
     updateSimulation();
 }
 
@@ -1366,7 +1347,7 @@ export function resetSimulationTimeToNow() {
 }
 
 export function setSimulationTimeToTime(time) {
-    currentSimulationTime = time;
+    currentSimulationTime = clampSimulationTime(time);
     updateSimulation();
 }
 
@@ -1377,16 +1358,20 @@ export async function resetView(topDown = true) {
 
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     // Animate to the default controls target
-    animateControlsTargetTo.copy(cameraDefaults.target);
+    cameraAnimationState.target.copy(cameraDefaults.target);
 
     if (topDown) {
         // Animate to the default camera position
-        animateCameraPositionTo.copy(cameraDefaults.position);
+        cameraAnimationState.position.copy(cameraDefaults.position);
     } else {
         // Animate camera position to the same direction as the current camera but at the default distance
 
@@ -1399,15 +1384,15 @@ export async function resetView(topDown = true) {
         const newCameraOffset = currentCameraDirection.multiplyScalar(
             defaultCameraDistance,
         );
-        const newCameraPosition = animateControlsTargetTo
+        const newCameraPosition = cameraAnimationState.target
             .clone()
             .add(newCameraOffset);
 
-        animateCameraPositionTo.copy(newCameraPosition);
+        cameraAnimationState.position.copy(newCameraPosition);
     }
 
-    currentCameraAnimationStep = 0;
-    animateCameraAndControls = true;
+    cameraAnimationState.currentStep = 0;
+    cameraAnimationState.isAnimating = true;
 }
 
 export async function compareToSolarSystem() {
@@ -1415,11 +1400,7 @@ export async function compareToSolarSystem() {
 
     await updateViewRadius(true, habitableZoneMesh?.visible);
 
-    // Scale objects for comparison as the smaller of the two sizes
-    const comparisonObjectSize =
-        Math.min(currentSystemDefaultViewRadius, solarSystemDefaultViewRadius) *
-        objectSizeMultiplier;
-    objectScale = comparisonObjectSize / objectSize;
+    await updateInnermostPeriapsis(true);
 
     // Align the solar system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(solarSystemGroup, true);
@@ -1427,9 +1408,13 @@ export async function compareToSolarSystem() {
     solarSystemGroup.visible = true;
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     resetView();
 
@@ -1437,18 +1422,21 @@ export async function compareToSolarSystem() {
 }
 
 export async function hideSolarSystem() {
-    objectScale = 1; // Reset object scale to default
-
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
     await updateViewRadius(false, habitableZoneMesh?.visible);
+    await updateInnermostPeriapsis(false);
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius);
+        calculateCameraAndControlsSettings(viewRadius, objectSize);
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
-    initOrUpdateControls(canvas, cameraAndControlsSettings);
+    initOrUpdateControls(
+        canvas,
+        cameraAndControlsSettings,
+        createControlsChangeHandler(viewRadius)
+    );
 
     resetView();
 
@@ -1591,6 +1579,9 @@ function resizeRendererToDisplaySize() {
 
         for (const line of orbitalLines.values()) {
             line.material.resolution.set(width, height);
+            line.material.lineWidth = getOrbitLineWidth(
+                line.parent === solarSystemGroup,
+            );
         }
     }
 
@@ -1598,9 +1589,118 @@ function resizeRendererToDisplaySize() {
 }
 
 /**
- * Render the meshes and objects on every animation frame.
+ * Finds the smallest periapsis (closest point to the centre) across all
+ * non-star orbits that are visible by default.
  *
- * TODO: Rendering the system on every animation frame leads to high CPU usage.
+ * @param {boolean} comparing Whether the Solar System is being compared to or not
+ */
+async function updateInnermostPeriapsis(comparing) {
+    // Don't check the periapsis of the stars in the current system
+    const systems = [
+        { system: currentSystem, isExcluded: (name) => objectTypes[name] === "star" },
+    ];
+
+    if (comparing) {
+        // Don't check the periapsis of the Sun
+        systems.push({ system: "Solar System", isExcluded: (name) => name === "Sun" });
+    }
+
+    let smallest = Infinity;
+
+    for (const { system, isExcluded } of systems) {
+        const data = await getReferenceSystemData(system);
+
+        for (const [name, orbit] of Object.entries(data.orbital_data)) {
+            if (isObjectHiddenByDefault(system, name) || isExcluded(name)) {
+                continue;
+            }
+
+            const periapsis = calculatePeriapsis(orbit.a, orbit.e);
+            smallest = Math.min(smallest, periapsis);
+        }
+    }
+
+    innermostPeriapsis = smallest;
+}
+
+/**
+/**
+ * The largest scale an object may have so that its on screen radius stays
+ * within a fraction of the innermost periapsis.
+ * 
+ * @param {boolean} isStar Whether the object is a star or not 
+ * @returns The cap on the scale for an object
+ */
+function getOrbitScaleCap(isStar) {
+    // The maximum size for a star
+    const starSizeCap = (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize
+
+    // Objects should always be STAR_SIZE_RATIO smaller than stars
+    return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
+}
+
+/**
+ * Computes a scale factor so the mesh's apparent size on screen stays roughly
+ * constant regardless of camera distance.
+ *
+ * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
+ * @param {THREE.PerspectiveCamera} camera The active camera
+ * @param {number} canvasHeight The renderer's canvas height in pixels
+ * @param {number} desiredPixelSize The target on screen diameter in pixels
+ * @param {number} minScale The minimum allowed scale factor
+ * @param {number} maxScale The maximum allowed scale factor
+ * @returns {number} The scale factor to apply to the mesh
+ */
+function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize, minScale, maxScale) {
+    const meshWorldPosition = new THREE.Vector3();
+    mesh.getWorldPosition(meshWorldPosition);
+    const distance = camera.position.distanceTo(meshWorldPosition);
+
+    const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
+    const worldHeightAtDistance = 2 * Math.tan(verticalFovRadians / 2) * distance;
+    const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
+
+    const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
+    const scale = desiredWorldDiameter / (2 * objectSize);
+
+    return THREE.MathUtils.clamp(scale, minScale, maxScale);
+}
+
+function updateScreenSpaceScales() {
+    const canvasHeight = renderer.domElement.clientHeight;
+
+    for (const mesh of objectMeshes.values()) {
+        if (!mesh.visible) continue;
+
+        const isComparisonOverlay = mesh.parent === solarSystemGroup;
+        const isStar = objectTypes[mesh.userData.name] === "star";
+
+        let desiredPixelSize = DESIRED_OBJECT_PIXEL_SIZE;
+        if (isStar) {
+            desiredPixelSize = DESIRED_STAR_PIXEL_SIZE;
+        } else if (isComparisonOverlay) {
+            desiredPixelSize = DESIRED_COMPARISON_PIXEL_SIZE;
+        }
+
+        const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
+        // Ensure the max scale is at least the min scale
+        const maxScale = Math.max(getOrbitScaleCap(isStar), minScale);
+
+        const scale = calculateScreenSpaceScale(
+            mesh,
+            camera,
+            canvasHeight,
+            desiredPixelSize,
+            minScale,
+            maxScale,
+        );
+
+        mesh.scale.set(scale, scale, scale);
+    }
+}
+
+/**
+ * Render the meshes and objects on every animation frame.
  */
 async function renderFrame(timestamp) {
     resizeRendererToDisplaySize();
@@ -1618,28 +1718,14 @@ async function renderFrame(timestamp) {
         updateSimulation(false);
     }
 
-    if (animateCameraAndControls) {
-        // Animate the camera and controls for totalCameraAnimationSteps steps.
-        // Animation stops after enough steps have been taken
-        // or if the user interacts with the controls.
+    animateCamera();
 
-        if (currentCameraAnimationStep >= totalCameraAnimationSteps) {
-            animateCameraAndControls = false;
-            camera.position.copy(animateCameraPositionTo);
-            controls.target.copy(animateControlsTargetTo);
-
-        } else {
-            // Interpolate towards the desired position and target
-            camera.position.lerp(animateCameraPositionTo, cameraAnimationSpeed);
-            controls.target.lerp(animateControlsTargetTo, cameraAnimationSpeed);
-            currentCameraAnimationStep++;
-        }
-
-        controls.update();
-    }
+    updateScreenSpaceScales();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
+
+    updateHoverCursor(renderer.domElement);
 
     // Invoke render() on the next frame
     requestAnimationFrame(renderFrame);

@@ -1,4 +1,4 @@
-{% from "components/overlay.html" import overlay %}
+{% from "components/overlay.html" import overlay with context %}
 {% from "components/settings-option.html" import settings_option %}
 {% from "components/text-button.html" import text_button %}
 
@@ -33,7 +33,7 @@
 
     open_overlay_event="settings:open_settings_menu",
     close_overlay_event="settings:close_settings_menu",
-    width_class="max-w-[72ch] [.font-accessible_&]:max-w-[85ch]"
+    width_class="max-w-[62ch] [.font-accessible_&]:max-w-[90ch]"
   )
 %}
   <!-- General settings section -->

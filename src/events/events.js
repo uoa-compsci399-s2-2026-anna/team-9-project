@@ -26,6 +26,8 @@ export const EVENTS = {
          * When the 'Now' button is clicked.
          */
         SET_TIME_TO_NOW: "sim:set_time_to_now",
+
+        CLOSE_OBJECT_INFO: "sim:close_object_info",
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
