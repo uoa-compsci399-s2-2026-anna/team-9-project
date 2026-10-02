@@ -617,10 +617,10 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
 
 /**
  * Get the line width for orbits, based on the current size of the canvas.
- * 
+ *
  * The orbital line width is different for normal orbits and the Solar System orbits when
  * comparing to the Solar System.
- * 
+ *
  * @param {boolean} isComparison Whether to get the width for a comparison orbit or a normal orbit
  * @returns The line width for orbits
  */
@@ -751,20 +751,27 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
 
     updateOrbitAlphaTexture(
-        line.material.alphaMap,
+        line.material,
         objectProgress,
-        isElliptical
+        isElliptical,
     );
 
-    // Create or update the position attribute and widen the line at the object
-    line.geometry.setPoints(points, (progress) => {
-        const distance = calculateProgressDistance(
-            progress,
-            objectProgress,
-            isElliptical
-        );
+        // Create or update the position attribute and widen the line at the object
+        line.geometry.setPoints(points, (progress) => {
+            if (settings.orbitLines == "Solid") {
+                return 1;
+            }
+            /**
+             * Proportion of a full revolution this point of `progress` is
+             * from the object.
+             */
+            const distance = (objectProgress - progress + 1) % 1;
 
-        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        if (settings.orbitLines == "Tapered") {
+            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        } else {
+            return 1;
+        }
     });
 
     // Rotate the line to match the orbital parameters
@@ -797,7 +804,7 @@ const RGBA_MAX_VALUE = 255;
  */
 function createOpaqueOrbitAlphaTexture() {
     const data = new Uint8Array(
-        (ORBIT_POINTS_COUNT - 1) * RGBA_CHANNEL_COUNT // There is one less segment than points
+        (ORBIT_POINTS_COUNT - 1) * RGBA_CHANNEL_COUNT, // There is one less segment than points
     );
     data.fill(RGBA_MAX_VALUE);
 
@@ -819,17 +826,17 @@ function createOpaqueOrbitAlphaTexture() {
 }
 
 /**
- * Updates the given alpha `texture` map based on the new value of
+ * Updates the given alpha texture map associated with `material` based on the new value of
  * `objectProgress` (i.e. the new position of the object). Used so that as the
  * object moves around its orbit, the opacity of the orbit updates correctly
  * so that it is most opaque at the object and gets fainter (or as defined
  * by the opacity modulation function).
- * @param {THREE.DataTexture} texture
+ * @param {MeshLineMaterial} material
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
  * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
  */
-function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
+function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) {
     /**
      * `texture.image` is an object containing fields `data` (the actual byte
      * array of the texture), `width` (the number of bytes) in the 'width'
@@ -837,23 +844,11 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
      * of the texture.
      */
 
+    let texture = material.alphaMap;
     const { data, width } = texture.image;
 
     // Iterate over the raw texture byte array
     for (let i = 0; i < width; i++) {
-        /**
-         * Proportion of array traversed (in interval [0, 1])
-         */
-        const progress = i / (width - 1);
-
-        const distance = calculateProgressDistance(
-            progress,
-            objectProgress,
-            isElliptical
-        );
-
-        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
-
         /**
          * Offset of red channel/byte
          */
@@ -863,16 +858,39 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
          * Offset of alpha channel/byte. Here we add 3 because `offset` is the
          * offset of the byte of the red channel. To get the offset of the alpha
          * channel, we add 3.
-         * 
+         *
          * [..., red, green, blue, alpha, red, ...]
          */
         const alphaOffset = offset + 3;
+
+        if (settings.orbitLines == "Solid") {
+            data[alphaOffset] = RGBA_MAX_VALUE;
+            continue;
+        }
+
+        /**
+         * Proportion of array traversed (in interval [0, 1])
+         */
+        const progress = i / (width - 1);
+
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical,
+        );
+
+        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
 
         data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
     }
 
     texture.needsUpdate = true;
 }
+
+bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
+    // Update simulation to redraw orbit lines with new width/opacity profile
+    updateSimulation();
+});
 
 /**
  * Create a mesh representing the habitable zone as a ring in the XY plane.
@@ -979,13 +997,12 @@ async function updateSimulation(forceCalendarUpdate = true) {
     if (gettingSystemData && lastSystemData) {
         // Use the last fetched data if a request is already in progress
         allSystemData = lastSystemData;
-
     } else {
         gettingSystemData = true;
         lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
             systems,
-            lastFetchedSimulationTime
+            lastFetchedSimulationTime,
         );
         updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
         gettingSystemData = false;
@@ -1247,13 +1264,15 @@ export async function init(name) {
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     initRaycastingEvents(canvas, controls);
@@ -1325,13 +1344,15 @@ export async function resetView(topDown = true) {
     await updateViewRadius(comparingToSolarSystem, habitableZoneMesh?.visible);
 
     // Update the camera and controls for the new view radius
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     // Animate to the default controls target
@@ -1375,13 +1396,15 @@ export async function compareToSolarSystem() {
 
     solarSystemGroup.visible = true;
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     resetView();
@@ -1397,13 +1420,15 @@ export async function hideSolarSystem() {
     await updateInnermostPeriapsis(false);
     solarSystemGroup.visible = false;
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     resetView();
@@ -1565,12 +1590,18 @@ function resizeRendererToDisplaySize() {
 async function updateInnermostPeriapsis(comparing) {
     // Don't check the periapsis of the stars in the current system
     const systems = [
-        { system: currentSystem, isExcluded: (name) => objectTypes[name] === "star" },
+        {
+            system: currentSystem,
+            isExcluded: (name) => objectTypes[name] === "star",
+        },
     ];
 
     if (comparing) {
         // Don't check the periapsis of the Sun
-        systems.push({ system: "Solar System", isExcluded: (name) => name === "Sun" });
+        systems.push({
+            system: "Solar System",
+            isExcluded: (name) => name === "Sun",
+        });
     }
 
     let smallest = Infinity;
@@ -1601,7 +1632,8 @@ async function updateInnermostPeriapsis(comparing) {
  */
 function getOrbitScaleCap(isStar) {
     // The maximum size for a star
-    const starSizeCap = (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize
+    const starSizeCap =
+        (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize;
 
     // Objects should always be STAR_SIZE_RATIO smaller than stars
     return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
@@ -1619,13 +1651,21 @@ function getOrbitScaleCap(isStar) {
  * @param {number} maxScale The maximum allowed scale factor
  * @returns {number} The scale factor to apply to the mesh
  */
-function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize, minScale, maxScale) {
+function calculateScreenSpaceScale(
+    mesh,
+    camera,
+    canvasHeight,
+    desiredPixelSize,
+    minScale,
+    maxScale,
+) {
     const meshWorldPosition = new THREE.Vector3();
     mesh.getWorldPosition(meshWorldPosition);
     const distance = camera.position.distanceTo(meshWorldPosition);
 
     const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
-    const worldHeightAtDistance = 2 * Math.tan(verticalFovRadians / 2) * distance;
+    const worldHeightAtDistance =
+        2 * Math.tan(verticalFovRadians / 2) * distance;
     const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
 
     const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
