@@ -16,6 +16,7 @@ from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
 from utility import (
+    check_sim_was_stopped,
     end_integrating,
     get_osculating_orbit,
     get_position_dict,
@@ -222,7 +223,9 @@ async def get_system_info(system_name: str = "") -> dict:
     }
 
 
-async def get_system_data_at_time(system_name: str, t: float) -> dict:
+async def get_system_data_at_time(
+    system_name: str, t: float, should_integrate: bool = True
+) -> dict:
     """
     Gets a system at a specific unix time.
     Returns simulation data.
@@ -243,11 +246,13 @@ async def get_system_data_at_time(system_name: str, t: float) -> dict:
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Integrate to given time using a process pool to keep interactivity
-    loop = asyncio.get_running_loop()
-    sim = await loop.run_in_executor(
-        thread_pool, Simulations.quick_integrate, sims, t, system_data
-    )
+    # Only integrate if we should be integrating
+    if should_integrate:
+        # Integrate to given time using a process pool to keep interactivity
+        loop = asyncio.get_running_loop()
+        sim = await loop.run_in_executor(
+            thread_pool, Simulations.quick_integrate, sims, t, system_data
+        )
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -274,11 +279,20 @@ async def get_system_data(
 
     systems = {}
 
+    # If any sim was preempted during integration at any point
+    any_sim_was_stopped = False
+
     await begin_integrating()
     for system_name in system_names:
-        systems[system_name] = await get_system_data_at_time(system_name, t)
-        # TODO: If a simulation was killed do NOT start integrating the next
-        # system
+        # Get system_data at a specific time unless a sim has been stopped
+        # Then just get the system's data at it's current time
+        systems[system_name] = await get_system_data_at_time(
+            system_name, t, should_integrate=(not any_sim_was_stopped)
+        )
+
+        # If the sim was preempted during integration do not integrate the other
+        # systems
+        any_sim_was_stopped = True if any_sim_was_stopped else check_sim_was_stopped()
     done_integrating()
 
     return systems
