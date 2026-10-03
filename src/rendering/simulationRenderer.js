@@ -52,6 +52,7 @@ import {
     formatSimulationDate,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
+import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
@@ -135,29 +136,6 @@ function getCurrentSystemColour(name, isDarkMode) {
     return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
 
-const fontSizes = {
-    Default: "12px",
-    Larger: "18px",
-};
-
-const fontFamilies = {
-    Default: "inherit",
-    OpenDyslexic: "OpenDyslexic",
-};
-
-const themes = {
-    light: {
-        background: new THREE.Color("white"),
-        labelBackground: "rgba(255, 255, 255, 0.5)",
-        referenceGrid: 0xcccccc,
-    },
-    dark: {
-        background: new THREE.Color("black"),
-        labelBackground: "rgba(0, 0, 0, 0.5)",
-        referenceGrid: 0x555555,
-    },
-};
-
 const habitableZoneSegments = 64; // Number of segments to approximate the ring
 const habitableZoneColor = 0x00ff00; // Green
 const habitableZoneOpacity = 0.2;
@@ -221,18 +199,6 @@ const MIN_SIMULATION_TIME = (() => {
     date.setUTCHours(0, 0, 0, 0);
     return date.getTime();
 })();
-
-function getTheme(isDarkMode = settings.darkMode) {
-    return isDarkMode ? themes.dark : themes.light;
-}
-
-function getFontSize(size) {
-    return fontSizes[size] ?? fontSizes.Default;
-}
-
-function getFontFamily(chosenFont) {
-    return fontFamilies[chosenFont] ?? fontFamilies.Default;
-}
 
 /**
  * Get the reference system data for a given system.
