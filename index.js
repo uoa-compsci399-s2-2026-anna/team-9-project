@@ -29,6 +29,53 @@ const DEFAULT_SIMULATION_STATE = Object.fromEntries(
 
 const store = new Store();
 
+let mainWindow;
+
+const WINDOW_BACKGROUND_COLOUR = {
+    dark: "black",
+    light: "white",
+};
+
+/**
+ * Decide whether dark mode should be used.
+ *
+ * @param {boolean | undefined} candidate A dark mode value that may be missing
+ * or invalid (for example, from an IPC message). If it is not a boolean, falls
+ * back to the stored setting, then the OS theme.
+ * @returns {boolean} Whether or not dark mode should be used.
+ */
+function resolveDarkMode(candidate) {
+    if (typeof candidate === "boolean") {
+        return candidate;
+    }
+
+    const stored = store.get("settings")?.darkMode;
+    if (typeof stored === "boolean") {
+        return stored;
+    }
+
+    return nativeTheme.shouldUseDarkColors;
+}
+
+/**
+ * Get the background colour for the window based on the user's current theme.
+ */
+function getWindowBackgroundColour() {
+    const isDarkMode = resolveDarkMode();
+    return isDarkMode
+        ? WINDOW_BACKGROUND_COLOUR.dark
+        : WINDOW_BACKGROUND_COLOUR.light;
+}
+
+function updateWindowBackgroundColour() {
+    if (!mainWindow) {
+        return;
+    }
+
+    const backgroundColour = getWindowBackgroundColour();
+    mainWindow.setBackgroundColor(backgroundColour);
+}
+
 function getDefaultSettings() {
     return {
         ...DEFAULT_SETTINGS,
@@ -47,17 +94,6 @@ store.set("settings", {
 // Initialise the simulation state to the default simulation state
 let simulationState = { ...DEFAULT_SIMULATION_STATE };
 
-const WINDOW_BACKGROUND = {
-    dark: "#000000",
-    light: "#FFFFFF",
-};
-
-function getWindowBackground() {
-    return store.get("settings")?.darkMode
-        ? WINDOW_BACKGROUND.dark
-        : WINDOW_BACKGROUND.light;
-}
-
 // Handle settings saved between run
 ipcMain.handle("settings:get", () => {
     return store.get("settings");
@@ -68,13 +104,10 @@ ipcMain.handle("settings:getDefaults", () => {
 });
 
 ipcMain.handle("settings:set", (_event, newSettings) => {
-    store.set("settings", {
-        ...store.get("settings"),
-        ...newSettings,
-    });
+    const mergedSettings = { ...store.get("settings"), ...newSettings };
+    store.set("settings", mergedSettings);
+    updateWindowBackgroundColour();
 });
-
-let mainWindow;
 
 // Refresh the current web page
 ipcMain.on("app:refresh", () => {
@@ -276,7 +309,7 @@ async function createWindow(python_url) {
         height: 600,
         minWidth: 800,
         minHeight: 600,
-        backgroundColor: getWindowBackground(),
+        backgroundColor: getWindowBackgroundColour(),
         show: false,
         webPreferences: {
             nodeIntegration: false,
