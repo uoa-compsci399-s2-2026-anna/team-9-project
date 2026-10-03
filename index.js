@@ -289,10 +289,9 @@ function buildInitialUrl(baseUrl) {
  * @returns Javascript Object of { query: { darkmode: true/false } }
  */
 function darkModeQueryParameter() {
-    const settings = store.get("settings");
     return {
         query: {
-            darkmode: settings.darkMode,
+            darkmode: resolveDarkMode(),
         },
     };
 }
