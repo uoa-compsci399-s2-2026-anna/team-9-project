@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { settings } from "../shared/settingsState.js";
 
 // Unit conversions into milliseconds
 const unit_to_ms = {
@@ -8,7 +7,7 @@ const unit_to_ms = {
     week: 604800000, // 7 * 24 * 60 * 60 * 1000
     month: 2629800000, // (365.25 / 12) * 24 * 60 * 60 * 1000 (Julian month)
     year: 31557600000, // 365.25 * 24 * 60 * 60 * 1000 (Julian year)
-}
+};
 
 /**
  * Converts a given amount of time (time + unit) into milliseconds.
@@ -49,26 +48,42 @@ export const TIMEZONE_MAP = {
 };
 
 /**
- * Converts a datetime-local string into an epoch timestamp, using the given
+ * Converts a datetime string into an epoch timestamp, using the given
  * time zone to interpret it.
- * @param {string} dateString A date/time string in "yyyy-MM-ddTHH:mm" format
+ * @param {string} dateString A date/time string in "dd-MM-yyyy hh:mm a" format
  * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
  * @returns {number} Epoch time in milliseconds
  */
 export function convertToEpoch(dateString, timeZone) {
     const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
-    return DateTime.fromISO(dateString, { zone: formattedTimeZone }).toMillis();
+    return DateTime.fromFormat(dateString, "dd-MM-yyyy hh:mm a", {
+        zone: formattedTimeZone,
+    }).toMillis();
 }
 
+/**
+ * Formats an epoch timestamp as a string in the given time zone;
+ * the inverse of `convertToEpoch`.
+ * @param {number} epochMs Epoch time in milliseconds
+ * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
+ * @returns {string} The formatted date string as "dd-MM-yyyy hh:mm a"
+ */
+export function formatInTimeZone(epochMs, timeZone) {
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
+    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat(
+        "dd-MM-yyyy hh:mm a",
+    );
+}
 
 /**
  * @param {Date} date A `Date` object
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns Formatted date/time string in the format taken by
  * `<input type="datetime-local">` (yyyy-MM-dd'T'HH:mm), respecting the time
  * zone setting.
  */
-export function formatDate(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function formatDate(date, timeZone) {
+    var timeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
 
     // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
     return new Intl.DateTimeFormat("sv", {
@@ -84,14 +99,13 @@ export function formatDate(date) {
         .replace(" ", "T"); // Replace the ' ' with a 'T' to conform to format
 }
 
-
-
 /**
  * @param {Date} date A `Date` object
- * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
+ * @returns The date portion (yyyy-MM-dd) of `date`, in the given time zone
  */
-export function dateOnly(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function dateOnly(date, timeZone) {
+    var timeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
 
     return new Intl.DateTimeFormat("sv", {
         timeZone: timeZone,

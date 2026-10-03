@@ -15,7 +15,6 @@ import {
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
-    setFormattedSimulationDate,
     setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
@@ -49,7 +48,6 @@ import {
 } from "./simulationCameraAndControls.js";
 import {
     updateCalendar,
-    formatSimulationDate,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
 import { bus } from "../events/eventBus.js";

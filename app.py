@@ -71,7 +71,7 @@ TIMEZONE_MAP = {
 }
 
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
-    """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
+    """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone."""
     if timezone_key is None:
         raise ValueError("Invalid timezone")
     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
@@ -79,7 +79,7 @@ def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
 
     sim_date = datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
 
-    return sim_date.strftime("%Y-%m-%dT%H:%M")
+    return sim_date.strftime("%d-%m-%Y %I:%M %p")
 
 
 @app.get("/")
@@ -132,17 +132,11 @@ async def simulation(
     sim_speed = sim_state["simulationSpeed"][system_name]
     sim_speed_unit = sim_state["simulationSpeedUnit"][system_name]
 
-    # Get the current simulation date string for the system as a "yyyy-MM-ddTHH:mm" string
-    if sim_state and system_name in sim_state["formattedSimulationDates"]:
-        simulation_date = sim_state["formattedSimulationDates"][system_name]
-    elif settings_state:
-        # Fallback to the current time
-        # Note: Simulation times are stored and managed on the frontend in milliseconds
-        simulation_date = format_sim_date(
-            time.time() * MS_PER_SECOND, settings_state["timeZone"]
-        )
-    else:
-        simulation_date = format_sim_date(time.time() * MS_PER_SECOND, None)
+    # Format simulation time (epoch Ms) in the user's time zone, falling back on the current time
+    sim_time_ms = sim_state.get("simulationTimes", {}).get(
+        system_name, time.time() * MS_PER_SECOND
+    )
+    simulation_date = format_sim_date(sim_time_ms, settings_state.get("timeZone"))
 
     # Get the elapsed days text for the system (e.g., "10 days from today")
     elapsed_days_fallback_text = sim_state_schema["elapsedDaysTexts"]["fallbackText"]
