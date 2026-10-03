@@ -14,6 +14,21 @@ if (require("electron-squirrel-startup")) {
     return;
 }
 
+// Script to hide the simulation canvas
+const HIDE_SIMULATION_CANVAS = `
+    const canvas = document.getElementById("simulation-canvas");
+    if (canvas) {
+        canvas.style.display = "none";
+    }
+`;
+
+// Script to hide all body content
+const HIDE_ALL_BODY_CONTENT = `
+    for (const child of document.body.children) {
+        child.style.display = "none";
+    }
+`;
+
 // Initialise the default settings from the settings schema
 const DEFAULT_SETTINGS = Object.fromEntries(
     Object.entries(settingsSchema).map(([key, field]) => [key, field.default]),
@@ -297,6 +312,25 @@ function darkModeQueryParameter() {
 }
 
 /**
+ * Hide the current page's content and wait for two frames (so that the change is
+ * applied and painted before the next navigation starts). This prevents unexpected
+ * flashes due to state being temporarily lost when the page unloads.
+ *
+ * @param {string} hideScript Script that hides the content to be removed
+ */
+function hidePageContent(hideScript) {
+    return mainWindow.webContents
+        .executeJavaScript(
+            `new Promise((resolve) => {
+                ${hideScript}
+                // Two frames (to apply the change and confirm it)
+                requestAnimationFrame(() => requestAnimationFrame(resolve));
+            })`,
+        )
+        .catch(() => {});
+}
+
+/**
  * Creates the electron window and binds itself to the given url
  *
  * @param {Promise} url - A promise to the entry url to bind the application to
@@ -352,17 +386,9 @@ async function createWindow(python_url) {
             parsed.searchParams.set("state", JSON.stringify(simulationState));
         }
 
-        mainWindow.webContents
-            .executeJavaScript(
-                `new Promise((resolve) => {
-                    const c = document.getElementById("simulation-canvas");
-                    if (c) c.style.display = "none";
-                    // Two frames (to apply change & confirm)
-                    requestAnimationFrame(() => requestAnimationFrame(resolve));
-                })`,
-            )
-            .catch(() => {})
-            .finally(() => mainWindow.loadURL(parsed.toString()));
+        hidePageContent(HIDE_SIMULATION_CANVAS).finally(() =>
+            mainWindow.loadURL(parsed.toString()),
+        );
     });
 
     var url;
@@ -398,16 +424,7 @@ async function createWindow(python_url) {
 
     log.info(`ELECTRON: Connecting to Python process at '${url}'...`);
 
-    await mainWindow.webContents
-        .executeJavaScript(
-            `new Promise((resolve) => {
-                for (const child of document.body.children) {
-                    child.style.display = "none";
-                }
-                requestAnimationFrame(() => requestAnimationFrame(resolve));
-            })`,
-        )
-        .catch(() => {});
+    await hidePageContent(HIDE_ALL_BODY_CONTENT);
 
     // Change the window to the given url
     mainWindow.loadURL(url);
