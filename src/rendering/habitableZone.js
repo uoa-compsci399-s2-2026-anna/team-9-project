@@ -3,6 +3,11 @@ import { simulationState } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
 import { getTheme, getFontFamily } from "./themes.js";
 
+// Ensure required fonts are loaded before creating the habitable zone texture.
+// Otherwise, the text may not render correctly on the texture.
+await document.fonts.load("16px OpenDyslexic");
+await document.fonts.load("16px Geist");
+
 export let habitableZone = {
     // Data will be set when the simulation is initialised
     start: null,
