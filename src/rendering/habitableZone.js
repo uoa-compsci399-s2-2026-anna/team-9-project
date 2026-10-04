@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { simulationState } from "../shared/simulationState.js";
+import { getTheme } from "./themes.js";
 
 export let habitableZone = {
     // Data will be set when the simulation is initialised
@@ -8,7 +9,6 @@ export let habitableZone = {
 };
 
 const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the ring
-const HABITABLE_ZONE_COLOR = "#00ff00"; // Green
 const HABITABLE_ZONE_OPACITY = 0.2;
 const HABITABLE_ZONE_TEXTURE_SIZE = 2048; // Size in pixels
 
@@ -42,13 +42,13 @@ function calculateHabitableZoneTextPosition(flipY = false) {
     return { x, y };
 }
 
-function createHabitableZoneTexture() {
+function createHabitableZoneTexture(colour) {
     const canvas = document.createElement("canvas");
     canvas.width = HABITABLE_ZONE_TEXTURE_SIZE;
     canvas.height = HABITABLE_ZONE_TEXTURE_SIZE;
     const ctx = canvas.getContext("2d");
 
-    ctx.fillStyle = HABITABLE_ZONE_COLOR;
+    ctx.fillStyle = colour;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "black";
@@ -89,7 +89,7 @@ export function createHabitableZoneMesh() {
         endRadius,
         HABITABLE_ZONE_SEGMENTS,
     );
-    const texture = createHabitableZoneTexture();
+    const texture = createHabitableZoneTexture(getTheme().habitableZone);
     const material = new THREE.MeshBasicMaterial({
         map: texture,
         opacity: HABITABLE_ZONE_OPACITY,
@@ -101,4 +101,12 @@ export function createHabitableZoneMesh() {
     });
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
+}
+
+export function toggleHabitableZoneDarkMode(isDarkMode) {
+    const habitableZoneTexture = createHabitableZoneTexture(
+        getTheme(isDarkMode).habitableZone,
+    );
+    habitableZoneMesh.material.map = habitableZoneTexture;
+    habitableZoneMesh.material.needsUpdate = true;
 }

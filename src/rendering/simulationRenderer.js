@@ -51,6 +51,7 @@ import {
     habitableZone,
     habitableZoneMesh,
     createHabitableZoneMesh,
+    toggleHabitableZoneDarkMode,
 } from "./habitableZone.js";
 import {
     updateCalendar,
@@ -1477,6 +1478,8 @@ export function toggleSimulationDarkMode(isDarkMode) {
                 : getCurrentSystemColour(name, isDarkMode),
         );
     }
+
+    toggleHabitableZoneDarkMode(isDarkMode);
 }
 
 /**
