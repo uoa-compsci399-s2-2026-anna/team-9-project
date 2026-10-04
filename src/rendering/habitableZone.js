@@ -11,6 +11,9 @@ export let habitableZone = {
 const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the ring
 const HABITABLE_ZONE_OPACITY = 0.5;
 const HABITABLE_ZONE_TEXTURE_SIZE = 2048; // Size in pixels
+const HABITABLE_ZONE_TEXT = "Habitable zone";
+const HABITABLE_ZONE_TEXT_FONT_SIZE = 48;
+const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
 
 export let habitableZoneMesh;
 
@@ -52,7 +55,12 @@ function createHabitableZoneTexture(colour, textColour) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = textColour;
-    ctx.font = "bold 100px sans-serif";
+
+    // Use computed style to get the font family from the body as inherit does not work in canvas
+    const computedStyle = window.getComputedStyle(document.body);
+    const fontFamily = computedStyle.fontFamily;
+    ctx.font = `${HABITABLE_ZONE_TEXT_FONT_WEIGHT} ${HABITABLE_ZONE_TEXT_FONT_SIZE}px ${fontFamily}`;
+
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -64,13 +72,13 @@ function createHabitableZoneTexture(colour, textColour) {
 
     ctx.save();
     ctx.translate(x, y);
-    ctx.fillText("Habitable zone", 0, 0);
+    ctx.fillText(HABITABLE_ZONE_TEXT, 0, 0);
     ctx.restore();
 
     ctx.save();
     ctx.translate(flippedX, flippedY);
     ctx.rotate(Math.PI);
-    ctx.fillText("Habitable zone", 0, 0);
+    ctx.fillText(HABITABLE_ZONE_TEXT, 0, 0);
     ctx.restore();
 
     const texture = new THREE.CanvasTexture(canvas);
