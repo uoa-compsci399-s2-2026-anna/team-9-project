@@ -8,10 +8,23 @@ export let habitableZone = {
 };
 
 const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the ring
-const HABITABLE_ZONE_COLOR = 0x00ff00; // Green
+const HABITABLE_ZONE_COLOR = "#00ff00"; // Green
 const HABITABLE_ZONE_OPACITY = 0.2;
 
 export let habitableZoneMesh;
+
+function createHabitableZoneTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = HABITABLE_ZONE_COLOR;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    return texture;
+}
 
 /**
  * Create a mesh representing the habitable zone as a ring in the XY plane.
@@ -25,8 +38,9 @@ export function createHabitableZoneMesh() {
         endRadius,
         HABITABLE_ZONE_SEGMENTS,
     );
+    const texture = createHabitableZoneTexture();
     const material = new THREE.MeshBasicMaterial({
-        color: HABITABLE_ZONE_COLOR,
+        map: texture,
         opacity: HABITABLE_ZONE_OPACITY,
         transparent: true,
         side: THREE.DoubleSide,
