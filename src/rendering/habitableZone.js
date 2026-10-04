@@ -23,6 +23,8 @@ const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
 
 export let habitableZoneMesh;
 
+let lastCameraPositionZ = 1; // Set to positive value to avoid flipping texture initially
+
 /**
  * Calculate the position of the habitable zone text in texture coordinates,
  * positioned at the midpoint of the habitable zone ring.
@@ -142,4 +144,21 @@ export function updateHabitableZoneTexture(theme, fontFamily) {
     );
     habitableZoneMesh.material.map = habitableZoneTexture;
     habitableZoneMesh.material.needsUpdate = true;
+}
+
+/**
+ * Flip the habitable zone texture vertically when the camera crosses the XY plane.
+ * This ensures that the text on the texture is always readable from the camera's perspective.
+ *
+ * @param {THREE.Vector3} cameraPosition - The current position of the camera in 3D space.
+ */
+export function flipHabitableZoneTexture(cameraPosition) {
+    if (Math.sign(cameraPosition.z) === Math.sign(lastCameraPositionZ)) {
+        return;
+    }
+
+    const texture = habitableZoneMesh.material.map;
+    texture.flipY = !texture.flipY;
+    texture.needsUpdate = true;
+    lastCameraPositionZ = cameraPosition.z;
 }
