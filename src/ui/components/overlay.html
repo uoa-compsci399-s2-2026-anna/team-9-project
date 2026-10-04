@@ -12,7 +12,7 @@
 %}
   <div
     id="{{ id }}"
-    class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
+    class="pointer-events-none fixed inset-0 z-40 flex h-full w-full items-center justify-center bg-white/30 p-6 opacity-0 backdrop-blur-sm transition-opacity duration-200 ease-in-out dark:bg-zinc-900/30"
     data-overlay
     data-toggle-event-name="{{ toggle_event_name }}"
     data-open-overlay-event="{{ open_overlay_event }}"
@@ -20,10 +20,10 @@
   >
     <!-- Settings menu itself -->
     <div
-      class="shadowed bordered-light w-full {{ width_class }} rounded-2xl bg-white p-10 dark:bg-zinc-950"
+      class="shadowed bordered-light {{ width_class }} short:p-6 flex w-full flex-col rounded-2xl bg-white p-10 dark:bg-zinc-950"
     >
       <!-- 'Settings' heading and close button -->
-      <div class="mb-8 flex items-start">
+      <div class="short:mb-4 mb-6 flex shrink-0 items-start">
         <h1 class="flex-1 text-2xl font-bold">{{ title }}</h1>
 
         <!-- Close button -->
@@ -37,7 +37,11 @@
       </div>
 
       <!-- Actual settings -->
-      <div class="flex flex-col gap-8">{{ caller() }}</div>
+      <div
+        class="short:gap-5 -m-1 flex min-h-0 flex-col gap-7 overflow-y-auto p-1"
+      >
+        {{ caller() }}
+      </div>
     </div>
   </div>
 {% endmacro %}
