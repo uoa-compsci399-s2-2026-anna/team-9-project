@@ -14,7 +14,7 @@
     <!-- Center content div -->
     <div class="flex h-full w-full items-center justify-center">
       <!-- Content div -->
-      <div class="-mt-12 flex flex-col items-center justify-center gap-7">
+      <div class="mt-2 flex flex-col items-center justify-center gap-7">
         <!-- Main OPIS logo -->
         <div class="flex w-55">{% include "components/logo.html" %}</div>
 
@@ -22,13 +22,11 @@
 
         <!-- Available systems -->
         <div class="mx-auto w-fit">
-          <div
-            class="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <div class="grid grid-cols-3 justify-items-center gap-6 max-lg:gap-4">
             {% for system in systems %}
               <a
                 id="{{ system.name }}"
-                class="system-path-button control bordered-light clickable shadowed flex h-35 w-55 grid-flow-col flex-col items-center justify-center gap-2 text-xl font-semibold"
+                class="system-path-button control bordered-light clickable shadowed flex h-35 w-55 flex-col items-center justify-center gap-2 text-xl font-semibold max-lg:h-30 max-lg:w-48 max-lg:text-lg"
                 href="/simulation/{{ system.name }}"
               >
                 {{ system.name }}
