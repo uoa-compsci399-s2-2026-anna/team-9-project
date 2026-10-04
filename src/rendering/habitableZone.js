@@ -137,12 +137,12 @@ export function createHabitableZoneMesh() {
  * @param {string} fontFamily - The font family to use for the text.
  */
 export function updateHabitableZoneTexture(theme, fontFamily) {
-    const habitableZoneTexture = createHabitableZoneTexture(
+    habitableZoneMesh.material.map?.dispose();
+    habitableZoneMesh.material.map = createHabitableZoneTexture(
         theme.habitableZone,
         theme.habitableZoneText,
         fontFamily,
     );
-    habitableZoneMesh.material.map = habitableZoneTexture;
     habitableZoneMesh.material.needsUpdate = true;
 }
 
