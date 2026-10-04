@@ -1418,7 +1418,7 @@ export function setFontFamily(chosenFont) {
     for (const label of objectLabels.values()) {
         label.element.style.fontFamily = fontFamily;
     }
-    updateHabitableZoneTexture(getTheme());
+    updateHabitableZoneTexture(getTheme(), fontFamily);
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
@@ -1480,7 +1480,7 @@ export function toggleSimulationDarkMode(isDarkMode) {
         );
     }
 
-    updateHabitableZoneTexture(theme);
+    updateHabitableZoneTexture(theme, getFontFamily(settings.font));
 }
 
 /**

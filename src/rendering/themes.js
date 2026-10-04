@@ -25,7 +25,7 @@ const fontSizes = {
 };
 
 const fontFamilies = {
-    Default: "inherit",
+    Default: "Geist",
     OpenDyslexic: "OpenDyslexic",
 };
 

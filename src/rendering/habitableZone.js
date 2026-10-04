@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { simulationState } from "../shared/simulationState.js";
-import { getTheme } from "./themes.js";
+import { settings } from "../shared/settingsState.js";
+import { getTheme, getFontFamily } from "./themes.js";
 
 export let habitableZone = {
     // Data will be set when the simulation is initialised
@@ -50,9 +51,10 @@ function calculateHabitableZoneTextPosition(flipY = false) {
  *
  * @param {string} colour - The color of the habitable zone ring
  * @param {string} textColour - The color of the text on the texture
+ * @param {string} fontFamily - The font family to use for the text
  * @returns {THREE.Texture} The generated texture for the habitable zone
  */
-function createHabitableZoneTexture(colour, textColour) {
+function createHabitableZoneTexture(colour, textColour, fontFamily) {
     const canvas = document.createElement("canvas");
     canvas.width = HABITABLE_ZONE_TEXTURE_SIZE;
     canvas.height = HABITABLE_ZONE_TEXTURE_SIZE;
@@ -62,12 +64,7 @@ function createHabitableZoneTexture(colour, textColour) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = textColour;
-
-    // Use computed style to get the font family from the body as inherit does not work in canvas
-    const computedStyle = window.getComputedStyle(document.body);
-    const fontFamily = computedStyle.fontFamily;
     ctx.font = `${HABITABLE_ZONE_TEXT_FONT_WEIGHT} ${HABITABLE_ZONE_TEXT_FONT_SIZE}px ${fontFamily}`;
-
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -109,6 +106,7 @@ export function createHabitableZoneMesh() {
     const texture = createHabitableZoneTexture(
         theme.habitableZone,
         theme.habitableZoneText,
+        getFontFamily(settings.font),
     );
 
     const material = new THREE.MeshBasicMaterial({
@@ -126,14 +124,16 @@ export function createHabitableZoneMesh() {
 }
 
 /**
- * Update the habitable zone texture based on the current theme.
+ * Update the habitable zone texture based on the current theme and font family.
  *
  * @param {Object} theme - The current theme object containing color information.
+ * @param {string} fontFamily - The font family to use for the text.
  */
-export function updateHabitableZoneTexture(theme) {
+export function updateHabitableZoneTexture(theme, fontFamily) {
     const habitableZoneTexture = createHabitableZoneTexture(
         theme.habitableZone,
         theme.habitableZoneText,
+        fontFamily,
     );
     habitableZoneMesh.material.map = habitableZoneTexture;
     habitableZoneMesh.material.needsUpdate = true;
