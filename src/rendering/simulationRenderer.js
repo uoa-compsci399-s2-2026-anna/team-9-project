@@ -47,7 +47,12 @@ import {
     initOrUpdateControls,
     animateCamera,
 } from "./simulationCameraAndControls.js";
-import { habitableZone } from "./habitableZone.js";
+import {
+    habitableZone,
+    HABITABLE_ZONE_SEGMENTS,
+    HABITABLE_ZONE_COLOR,
+    HABITABLE_ZONE_OPACITY,
+} from "./habitableZone.js";
 import {
     updateCalendar,
     formatSimulationDate,
@@ -137,9 +142,6 @@ function getCurrentSystemColour(name, isDarkMode) {
     return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
 
-const habitableZoneSegments = 64; // Number of segments to approximate the ring
-const habitableZoneColor = 0x00ff00; // Green
-const habitableZoneOpacity = 0.2;
 let habitableZoneMesh;
 
 // Size of the reference grid in AU when scale = 1.
@@ -850,11 +852,11 @@ function createHabitableZoneMesh() {
     const geometry = new THREE.RingGeometry(
         startRadius,
         endRadius,
-        habitableZoneSegments,
+        HABITABLE_ZONE_SEGMENTS,
     );
     const material = new THREE.MeshBasicMaterial({
-        color: habitableZoneColor,
-        opacity: habitableZoneOpacity,
+        color: HABITABLE_ZONE_COLOR,
+        opacity: HABITABLE_ZONE_OPACITY,
         transparent: true,
         side: THREE.DoubleSide,
 
