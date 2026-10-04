@@ -18,9 +18,10 @@ export let habitableZoneMesh;
  * Calculate the position of the habitable zone text in texture coordinates,
  * positioned at the midpoint of the habitable zone ring.
  *
+ * @param {boolean} [flipY=false] Whether to flip the y-coordinate of the position
  * @returns {Object} The x and y coordinates of the label in texture space
  */
-function calculateHabitableZoneTextPosition() {
+function calculateHabitableZoneTextPosition(flipY = false) {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
 
@@ -30,6 +31,13 @@ function calculateHabitableZoneTextPosition() {
     const y =
         (HABITABLE_ZONE_TEXTURE_SIZE * habitableZoneHalfWidth) /
         (2 * endRadius);
+
+    if (flipY) {
+        return {
+            x: x,
+            y: HABITABLE_ZONE_TEXTURE_SIZE - y,
+        };
+    }
 
     return { x, y };
 }
@@ -47,8 +55,23 @@ function createHabitableZoneTexture() {
     ctx.font = "bold 100px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+
     const { x, y } = calculateHabitableZoneTextPosition();
-    ctx.fillText("Habitable zone", x, y);
+    const { x: flippedX, y: flippedY } =
+        calculateHabitableZoneTextPosition(true);
+
+    // Draw the text twice, once normally and once flipped
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillText("Habitable zone", 0, 0);
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(flippedX, flippedY);
+    ctx.rotate(Math.PI);
+    ctx.fillText("Habitable zone", 0, 0);
+    ctx.restore();
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
