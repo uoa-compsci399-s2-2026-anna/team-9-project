@@ -351,6 +351,11 @@ async function createWindow(python_url) {
         },
     });
 
+    // Hide dev tools if we are running an executable
+    if (!isDev) {
+        mainWindow.removeMenu();
+    }
+
     // Inform the renderer process upon the application entering/exiting fullscreen
     mainWindow.on("enter-full-screen", () =>
         mainWindow.webContents.send("fullscreen:changed", true),
