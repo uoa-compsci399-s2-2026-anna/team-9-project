@@ -8,7 +8,7 @@ const gridScaleText = document.getElementById("grid-scale-text");
 bus.subscribe(EVENTS.SIM.UPDATE_GRID_SCALE, (e) => {
     const scale = e.detail.value;
 
-    gridScaleText.textContent = `${scale} AU / square`;
+    gridScaleText.textContent = `${scale} AU/square`;
 });
 
 // PLAY/PAUSE BUTTON
