@@ -49,9 +49,8 @@ import {
 } from "./simulationCameraAndControls.js";
 import {
     habitableZone,
-    HABITABLE_ZONE_SEGMENTS,
-    HABITABLE_ZONE_COLOR,
-    HABITABLE_ZONE_OPACITY,
+    habitableZoneMesh,
+    createHabitableZoneMesh,
 } from "./habitableZone.js";
 import {
     updateCalendar,
@@ -141,8 +140,6 @@ function getCurrentSystemColour(name, isDarkMode) {
     const fallbackColour = isDarkMode ? "white" : "black";
     return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
-
-let habitableZoneMesh;
 
 // Size of the reference grid in AU when scale = 1.
 // This will be scaled when the camera zoom changes.
@@ -840,31 +837,6 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
     }
 
     texture.needsUpdate = true;
-}
-
-/**
- * Create a mesh representing the habitable zone as a ring in the XY plane.
- */
-function createHabitableZoneMesh() {
-    const startRadius = habitableZone.start;
-    const endRadius = habitableZone.end;
-
-    const geometry = new THREE.RingGeometry(
-        startRadius,
-        endRadius,
-        HABITABLE_ZONE_SEGMENTS,
-    );
-    const material = new THREE.MeshBasicMaterial({
-        color: HABITABLE_ZONE_COLOR,
-        opacity: HABITABLE_ZONE_OPACITY,
-        transparent: true,
-        side: THREE.DoubleSide,
-
-        // Do not update depth buffer (to prevent z-fighting with other meshes)
-        depthWrite: false,
-    });
-    habitableZoneMesh = new THREE.Mesh(geometry, material);
-    habitableZoneMesh.visible = simulationState.habitableZoneShown;
 }
 
 /**
