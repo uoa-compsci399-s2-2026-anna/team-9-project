@@ -47,6 +47,7 @@ import {
     initOrUpdateControls,
     animateCamera,
 } from "./simulationCameraAndControls.js";
+import { habitableZone } from "./habitableZone.js";
 import {
     updateCalendar,
     formatSimulationDate,
@@ -139,7 +140,6 @@ function getCurrentSystemColour(name, isDarkMode) {
 const habitableZoneSegments = 64; // Number of segments to approximate the ring
 const habitableZoneColor = 0x00ff00; // Green
 const habitableZoneOpacity = 0.2;
-let habitableZone;
 let habitableZoneMesh;
 
 // Size of the reference grid in AU when scale = 1.
@@ -1166,7 +1166,8 @@ export async function init(name) {
     currentSimulationTime = getSimulationTime(name);
 
     const systemInfo = await getSystemInfo(currentSystem);
-    habitableZone = systemInfo["habitable zone"];
+    habitableZone.start = systemInfo["habitable zone"].start;
+    habitableZone.end = systemInfo["habitable zone"].end;
     currentSystemColours = Object.fromEntries(
         Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
             name,
