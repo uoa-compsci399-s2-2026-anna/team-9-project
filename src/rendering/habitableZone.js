@@ -45,6 +45,13 @@ function calculateHabitableZoneTextPosition(flipY = false) {
     return { x, y };
 }
 
+/**
+ * Create a texture for the habitable zone ring with the specified color and text color.
+ *
+ * @param {string} colour - The color of the habitable zone ring
+ * @param {string} textColour - The color of the text on the texture
+ * @returns {THREE.Texture} The generated texture for the habitable zone
+ */
 function createHabitableZoneTexture(colour, textColour) {
     const canvas = document.createElement("canvas");
     canvas.width = HABITABLE_ZONE_TEXTURE_SIZE;
