@@ -51,7 +51,7 @@ import {
     habitableZone,
     habitableZoneMesh,
     createHabitableZoneMesh,
-    toggleHabitableZoneDarkMode,
+    updateHabitableZoneTexture,
 } from "./habitableZone.js";
 import {
     updateCalendar,
@@ -1418,6 +1418,7 @@ export function setFontFamily(chosenFont) {
     for (const label of objectLabels.values()) {
         label.element.style.fontFamily = fontFamily;
     }
+    updateHabitableZoneTexture(getTheme());
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
@@ -1479,7 +1480,7 @@ export function toggleSimulationDarkMode(isDarkMode) {
         );
     }
 
-    toggleHabitableZoneDarkMode(isDarkMode);
+    updateHabitableZoneTexture(theme);
 }
 
 /**

@@ -118,8 +118,12 @@ export function createHabitableZoneMesh() {
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
 }
 
-export function toggleHabitableZoneDarkMode(isDarkMode) {
-    const theme = getTheme(isDarkMode);
+/**
+ * Update the habitable zone texture based on the current theme.
+ *
+ * @param {Object} theme - The current theme object containing color information.
+ */
+export function updateHabitableZoneTexture(theme) {
     const habitableZoneTexture = createHabitableZoneTexture(
         theme.habitableZone,
         theme.habitableZoneText,
