@@ -54,16 +54,9 @@ const WINDOW_BACKGROUND_COLOUR = {
 /**
  * Decide whether dark mode should be used.
  *
- * @param {boolean | undefined} candidate A dark mode value that may be missing
- * or invalid (for example, from an IPC message). If it is not a boolean, falls
- * back to the stored setting, then the OS theme.
  * @returns {boolean} Whether or not dark mode should be used.
  */
-function resolveDarkMode(candidate) {
-    if (typeof candidate === "boolean") {
-        return candidate;
-    }
-
+function resolveDarkMode() {
     const stored = store.get("settings")?.darkMode;
     if (typeof stored === "boolean") {
         return stored;
