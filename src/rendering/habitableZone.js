@@ -14,6 +14,26 @@ const HABITABLE_ZONE_TEXTURE_SIZE = 2048; // Size in pixels
 
 export let habitableZoneMesh;
 
+/**
+ * Calculate the position of the habitable zone text in texture coordinates,
+ * positioned at the midpoint of the habitable zone ring.
+ *
+ * @returns {Object} The x and y coordinates of the label in texture space
+ */
+function calculateHabitableZoneTextPosition() {
+    const startRadius = habitableZone.start;
+    const endRadius = habitableZone.end;
+
+    const habitableZoneWidth = endRadius - startRadius;
+    const habitableZoneHalfWidth = habitableZoneWidth / 2;
+    const x = HABITABLE_ZONE_TEXTURE_SIZE / 2;
+    const y =
+        (HABITABLE_ZONE_TEXTURE_SIZE * habitableZoneHalfWidth) /
+        (2 * endRadius);
+
+    return { x, y };
+}
+
 function createHabitableZoneTexture() {
     const canvas = document.createElement("canvas");
     canvas.width = HABITABLE_ZONE_TEXTURE_SIZE;
@@ -27,7 +47,8 @@ function createHabitableZoneTexture() {
     ctx.font = "bold 100px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Habitable zone", canvas.width / 2, canvas.height / 2);
+    const { x, y } = calculateHabitableZoneTextPosition();
+    ctx.fillText("Habitable zone", x, y);
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
