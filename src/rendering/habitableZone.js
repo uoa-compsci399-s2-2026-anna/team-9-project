@@ -9,7 +9,7 @@ export let habitableZone = {
 };
 
 const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the ring
-const HABITABLE_ZONE_OPACITY = 0.2;
+const HABITABLE_ZONE_OPACITY = 0.5;
 const HABITABLE_ZONE_TEXTURE_SIZE = 2048; // Size in pixels
 
 export let habitableZoneMesh;
@@ -42,7 +42,7 @@ function calculateHabitableZoneTextPosition(flipY = false) {
     return { x, y };
 }
 
-function createHabitableZoneTexture(colour) {
+function createHabitableZoneTexture(colour, textColour) {
     const canvas = document.createElement("canvas");
     canvas.width = HABITABLE_ZONE_TEXTURE_SIZE;
     canvas.height = HABITABLE_ZONE_TEXTURE_SIZE;
@@ -51,7 +51,7 @@ function createHabitableZoneTexture(colour) {
     ctx.fillStyle = colour;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "black";
+    ctx.fillStyle = textColour;
     ctx.font = "bold 100px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -89,7 +89,13 @@ export function createHabitableZoneMesh() {
         endRadius,
         HABITABLE_ZONE_SEGMENTS,
     );
-    const texture = createHabitableZoneTexture(getTheme().habitableZone);
+
+    const theme = getTheme();
+    const texture = createHabitableZoneTexture(
+        theme.habitableZone,
+        theme.habitableZoneText,
+    );
+
     const material = new THREE.MeshBasicMaterial({
         map: texture,
         opacity: HABITABLE_ZONE_OPACITY,
@@ -99,13 +105,16 @@ export function createHabitableZoneMesh() {
         // Do not update depth buffer (to prevent z-fighting with other meshes)
         depthWrite: false,
     });
+
     habitableZoneMesh = new THREE.Mesh(geometry, material);
     habitableZoneMesh.visible = simulationState.habitableZoneShown;
 }
 
 export function toggleHabitableZoneDarkMode(isDarkMode) {
+    const theme = getTheme(isDarkMode);
     const habitableZoneTexture = createHabitableZoneTexture(
-        getTheme(isDarkMode).habitableZone,
+        theme.habitableZone,
+        theme.habitableZoneText,
     );
     habitableZoneMesh.material.map = habitableZoneTexture;
     habitableZoneMesh.material.needsUpdate = true;
