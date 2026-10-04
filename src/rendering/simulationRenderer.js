@@ -67,6 +67,13 @@ import {
     flipHabitableZoneTexture,
 } from "./habitableZone.js";
 import {
+    REFERENCE_GRID_SIZE,
+    REFERENCE_GRID_DIVISIONS,
+    REFERENCE_GRID_DIVISION_SIZE,
+    DIVISIONS_IN_VIEW,
+    REFERENCE_GRID_OPACITY,
+} from "./referenceGrid.js";
+import {
     updateCalendar,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
@@ -146,14 +153,6 @@ function getCurrentSystemColour(name, isDarkMode) {
     return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
 
-// Size of the reference grid in AU when scale = 1.
-// This will be scaled when the camera zoom changes.
-const referenceGridSize = 1000;
-
-const referenceGridDivisions = 1000;
-const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
-const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
-const referenceGridOpacity = 0.5;
 let referenceGrid;
 
 // Star glow texture constants
@@ -934,13 +933,13 @@ bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
 function createReferenceGrid() {
     const referenceGridColor = getTheme().referenceGrid;
     referenceGrid = new THREE.GridHelper(
-        referenceGridSize,
-        referenceGridDivisions,
+        REFERENCE_GRID_SIZE,
+        REFERENCE_GRID_DIVISIONS,
     );
     referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
     referenceGrid.material.color.set(referenceGridColor);
     referenceGrid.material.transparent = true;
-    referenceGrid.material.opacity = referenceGridOpacity;
+    referenceGrid.material.opacity = REFERENCE_GRID_OPACITY;
     referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
     referenceGrid.visible = simulationState.referenceGridShown;
 
@@ -966,11 +965,11 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
     const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
         FOV,
         cameraDistanceToTargetProjection,
-        divisionsInView,
+        DIVISIONS_IN_VIEW,
     );
 
     const coveredRange =
-        desiredReferenceGridDivisionSize * referenceGridDivisions;
+        desiredReferenceGridDivisionSize * REFERENCE_GRID_DIVISIONS;
 
     let viewRadiusToCover = currentSystemDefaultViewRadius;
     if (comparingToSolarSystem) {
@@ -983,7 +982,7 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
     if (coveredRange < viewRadiusToCover * 2) return; // Don't scale if it doesn't cover the view radius
 
     const scaleFactor =
-        desiredReferenceGridDivisionSize / referenceGridDivisionSize;
+        desiredReferenceGridDivisionSize / REFERENCE_GRID_DIVISION_SIZE;
     referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
     bus.publish(EVENTS.SIM.UPDATE_GRID_SCALE, { value: scaleFactor });
