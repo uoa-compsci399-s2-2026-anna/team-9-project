@@ -76,7 +76,7 @@ let gettingSystemData = false; // Flag to prevent multiple concurrent backend re
 let lastSystemData = null;
 
 let scene;
-export let renderer;
+let renderer;
 let labelRenderer;
 
 // Stores whether the user is currently dragging the camera
@@ -90,8 +90,8 @@ const hitboxPaddingMultiplier = 0.0005;
 
 const raycaster = new THREE.Raycaster();
 
-export const currentSystemGroup = new THREE.Group();
-export const solarSystemGroup = new THREE.Group();
+const currentSystemGroup = new THREE.Group();
+const solarSystemGroup = new THREE.Group();
 solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
 const objectMeshes = new Map();
@@ -105,7 +105,7 @@ let currentSystemDefaultViewRadius;
 let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
-export let objectSize;
+let objectSize;
 let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
