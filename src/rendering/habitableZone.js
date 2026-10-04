@@ -7,9 +7,9 @@ export let habitableZone = {
     end: null,
 };
 
-export const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the ring
-export const HABITABLE_ZONE_COLOR = 0x00ff00; // Green
-export const HABITABLE_ZONE_OPACITY = 0.2;
+const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the ring
+const HABITABLE_ZONE_COLOR = 0x00ff00; // Green
+const HABITABLE_ZONE_OPACITY = 0.2;
 
 export let habitableZoneMesh;
 
