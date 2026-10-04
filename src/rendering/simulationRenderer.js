@@ -1100,8 +1100,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
     // Update the meshes' scales (which are used to calculate label offets)
     updateScreenSpaceScales();
-
-    updateObjectLabelOffsets();
 }
 
 /**
@@ -1158,7 +1156,6 @@ function createControlsChangeHandler(viewRadius) {
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
         updateReferenceGridScale(camera.position, controls.target);
-        updateObjectLabelOffsets();
     };
 }
 
@@ -1772,6 +1769,8 @@ async function renderFrame(timestamp) {
     animateCamera();
 
     updateScreenSpaceScales();
+
+    updateObjectLabelOffsets();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
