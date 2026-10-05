@@ -20,6 +20,8 @@ const HABITABLE_ZONE_TEXTURE_SIZE = 4096; // Size in pixels
 const HABITABLE_ZONE_TEXT = "Habitable zone";
 const HABITABLE_ZONE_TEXT_FONT_SIZE = 180;
 const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
+
+const HABITABLE_ZONE_CHAR_ANGLE_OFFSET = Math.PI; // Offset to start the text at the top of the ring
 const HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER = 0.0008; // Adjusts the curvature of the text around the ring
 
 export let habitableZoneMesh;
@@ -77,11 +79,9 @@ function createHabitableZoneTexture(colour, textColour, fontFamily) {
 
     const { x, y } = calculateHabitableZoneTextPosition();
 
-    let prevCharWidth = 0;
+    let angle = HABITABLE_ZONE_CHAR_ANGLE_OFFSET;
 
     for (const char of HABITABLE_ZONE_TEXT) {
-        const angle = prevCharWidth * HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER;
-
         ctx.translate(
             HABITABLE_ZONE_TEXTURE_SIZE / 2,
             HABITABLE_ZONE_TEXTURE_SIZE / 2,
@@ -93,7 +93,8 @@ function createHabitableZoneTexture(colour, textColour, fontFamily) {
         );
         ctx.fillText(char, x, y);
 
-        prevCharWidth = ctx.measureText(char).width;
+        const charWidth = ctx.measureText(char).width;
+        angle = charWidth * HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER;
     }
 
     const texture = new THREE.CanvasTexture(canvas);
