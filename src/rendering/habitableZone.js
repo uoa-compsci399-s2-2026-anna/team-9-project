@@ -18,7 +18,7 @@ const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the rin
 const HABITABLE_ZONE_OPACITY = 0.8;
 const HABITABLE_ZONE_TEXTURE_SIZE = 4096; // Size in pixels
 const HABITABLE_ZONE_TEXT = "Habitable zone";
-const HABITABLE_ZONE_TEXT_FONT_SIZE = 150;
+const HABITABLE_ZONE_TEXT_FONT_SIZE = 180;
 const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
 
 export let habitableZoneMesh;
