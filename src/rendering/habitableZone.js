@@ -39,12 +39,16 @@ function calculateHabitableZoneTextPosition(flipY = false) {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
 
-    const habitableZoneWidth = endRadius - startRadius;
-    const habitableZoneHalfWidth = habitableZoneWidth / 2;
+    // Calculate the half-width of the habitable zone ring in AU,
+    // i.e. distance from the midpoint of the ring to either edge.
+    const halfWidth = (endRadius - startRadius) / 2;
+    const halfWidthProportion = halfWidth / (2 * endRadius); // Proportion of diameter
+
+    // Position of text in texture coordinates with origin at the top-left.
+    // x is the midpoint of the texture,
+    // y is the midpoint of the habitable zone ring in texture coordinates.
     const x = HABITABLE_ZONE_TEXTURE_SIZE / 2;
-    const y =
-        (HABITABLE_ZONE_TEXTURE_SIZE * habitableZoneHalfWidth) /
-        (2 * endRadius);
+    const y = HABITABLE_ZONE_TEXTURE_SIZE * halfWidthProportion;
 
     if (flipY) {
         return {
