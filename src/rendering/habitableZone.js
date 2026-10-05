@@ -174,7 +174,7 @@ export function flipHabitableZoneTexture(cameraPosition) {
     texture.flipY = !texture.flipY;
 
     // Rotate 180 degrees around the centre to keep the text upright
-    texture.center.set(0.5, 0.5);
+    texture.center.set(0.5, 0.5); // Set centre of rotation to the centre of the texture
     texture.rotation += Math.PI;
 
     texture.needsUpdate = true;
