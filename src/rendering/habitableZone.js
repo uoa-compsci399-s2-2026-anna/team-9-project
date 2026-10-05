@@ -76,21 +76,21 @@ function createHabitableZoneTexture(colour, textColour, fontFamily) {
     ctx.textBaseline = "middle";
 
     const { x, y } = calculateHabitableZoneTextPosition();
-    const { x: flippedX, y: flippedY } =
-        calculateHabitableZoneTextPosition(true);
 
-    // Draw the text twice, once normally and once flipped
+    const angleIncrement = 4 * (Math.PI / 180);
 
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.fillText(HABITABLE_ZONE_TEXT, 0, 0);
-    ctx.restore();
-
-    ctx.save();
-    ctx.translate(flippedX, flippedY);
-    ctx.rotate(Math.PI);
-    ctx.fillText(HABITABLE_ZONE_TEXT, 0, 0);
-    ctx.restore();
+    for (const char of HABITABLE_ZONE_TEXT) {
+        ctx.translate(
+            HABITABLE_ZONE_TEXTURE_SIZE / 2,
+            HABITABLE_ZONE_TEXTURE_SIZE / 2,
+        );
+        ctx.rotate(angleIncrement);
+        ctx.translate(
+            -HABITABLE_ZONE_TEXTURE_SIZE / 2,
+            -HABITABLE_ZONE_TEXTURE_SIZE / 2,
+        );
+        ctx.fillText(char, x, y);
+    }
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
