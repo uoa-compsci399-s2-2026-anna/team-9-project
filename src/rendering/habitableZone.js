@@ -20,6 +20,7 @@ const HABITABLE_ZONE_TEXTURE_SIZE = 4096; // Size in pixels
 const HABITABLE_ZONE_TEXT = "Habitable zone";
 const HABITABLE_ZONE_TEXT_FONT_SIZE = 180;
 const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
+const HABITABLE_ZONE_TEXT_BASELINE = "middle";
 
 const HABITABLE_ZONE_CHAR_ANGLE_OFFSET = 2.6; // Offset (in radians) so that the text is centred by default
 const HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER = 0.0008; // Adjusts the curvature of the text around the ring
@@ -79,7 +80,7 @@ function createHabitableZoneTexture(colour, textColour, fontFamily) {
 
     ctx.fillStyle = textColour;
     ctx.font = `${HABITABLE_ZONE_TEXT_FONT_WEIGHT} ${HABITABLE_ZONE_TEXT_FONT_SIZE}px ${fontFamily}`;
-    ctx.textBaseline = "middle";
+    ctx.textBaseline = HABITABLE_ZONE_TEXT_BASELINE;
 
     const { x, y } = calculateHabitableZoneTextPosition();
 
