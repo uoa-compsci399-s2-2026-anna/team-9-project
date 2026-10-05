@@ -27,7 +27,7 @@ const HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER = 0.0008; // Adjusts the curvature of
 
 export let habitableZoneMesh;
 
-let lastCameraPositionZ = 1; // Set to positive value to avoid flipping texture initially
+let lastCameraPositionZ = null;
 
 /**
  * Calculate the position of the habitable zone text in texture coordinates,
@@ -166,6 +166,11 @@ export function updateHabitableZoneTexture(theme, fontFamily) {
  * @param {THREE.Vector3} cameraPosition - The current position of the camera in 3D space.
  */
 export function flipHabitableZoneTexture(cameraPosition) {
+    if (lastCameraPositionZ === null) {
+        lastCameraPositionZ = cameraPosition.z;
+        return;
+    }
+
     if (Math.sign(cameraPosition.z) === Math.sign(lastCameraPositionZ)) {
         return;
     }
