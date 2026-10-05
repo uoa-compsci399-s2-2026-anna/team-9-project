@@ -21,7 +21,7 @@ const HABITABLE_ZONE_TEXT = "Habitable zone";
 const HABITABLE_ZONE_TEXT_FONT_SIZE = 180;
 const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
 
-const HABITABLE_ZONE_CHAR_ANGLE_OFFSET = Math.PI; // Offset to start the text at the top of the ring
+const HABITABLE_ZONE_CHAR_ANGLE_OFFSET = 2.6; // Offset (in radians) so that the text is centred by default
 const HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER = 0.0008; // Adjusts the curvature of the text around the ring
 
 export let habitableZoneMesh;
