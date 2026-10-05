@@ -508,7 +508,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
-        const label = getLabel(
+        const label = createLabel(
             name, 
             colour,
             group === solarSystemGroup ? comparisonLabelOpacity : 1
@@ -535,7 +535,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
  * @param {Number} opacity Opacity of label in interval [0, 1]
  * @returns {CSS2DObject} Created label div
  */
-export function getLabel(name, colour, opacity) {
+export function createLabel(name, colour, opacity) {
     const labelDiv = document.createElement("div");
 
     labelDiv.className = "planet-label";
