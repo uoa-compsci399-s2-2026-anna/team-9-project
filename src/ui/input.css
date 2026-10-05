@@ -39,6 +39,22 @@
 
 @custom-variant short (@media (max-height: 700px));
 
+@utility ui-zoom {
+  @media (max-height: 700px) {
+    zoom: 0.9;
+  }
+}
+
+@utility ui-zoom-strong {
+  @media (max-height: 700px) {
+    zoom: 0.8;
+
+    html[data-text-size="Larger"] & {
+      zoom: 0.7;
+    }
+  }
+}
+
 @theme {
   --color-primary: var(--color-zinc-700);
   --color-secondary: var(--color-zinc-500);
