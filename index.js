@@ -52,9 +52,10 @@ const WINDOW_BACKGROUND_COLOUR = {
 };
 
 /**
- * Decide whether dark mode should be used.
+ * Decide whether dark mode should be used based on the persisted settings state.
+ * Fallback to the system default if no valid preference has been persisted.
  *
- * @returns {boolean} Whether or not dark mode should be used.
+ * @returns {boolean} Whether or not dark mode should be used
  */
 function resolveDarkMode() {
     const stored = store.get("settings")?.darkMode;
