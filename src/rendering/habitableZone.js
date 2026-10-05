@@ -164,6 +164,11 @@ export function flipHabitableZoneTexture(cameraPosition) {
 
     const texture = habitableZoneMesh.material.map;
     texture.flipY = !texture.flipY;
+
+    // Rotate 180 degrees around the centre to keep the text upright
+    texture.center.set(0.5, 0.5);
+    texture.rotation += Math.PI;
+
     texture.needsUpdate = true;
     lastCameraPositionZ = cameraPosition.z;
 }
