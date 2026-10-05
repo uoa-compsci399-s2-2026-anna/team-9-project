@@ -82,11 +82,14 @@ function createHabitableZoneTexture(colour, textColour, fontFamily) {
     let angle = HABITABLE_ZONE_CHAR_ANGLE_OFFSET;
 
     for (const char of HABITABLE_ZONE_TEXT) {
+        // Set the centre of rotation to the centre of the texture and rotate the context
         ctx.translate(
             HABITABLE_ZONE_TEXTURE_SIZE / 2,
             HABITABLE_ZONE_TEXTURE_SIZE / 2,
         );
         ctx.rotate(angle);
+
+        // Translate back to the top-left corner as the character's position is in texture coordinates
         ctx.translate(
             -HABITABLE_ZONE_TEXTURE_SIZE / 2,
             -HABITABLE_ZONE_TEXTURE_SIZE / 2,
