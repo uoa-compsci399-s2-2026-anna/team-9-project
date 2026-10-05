@@ -7,7 +7,7 @@ const themes = {
         background: new THREE.Color("white"),
         labelBackground: "rgba(255, 255, 255, 0.5)",
         referenceGrid: 0xcccccc,
-        habitableZone: "#d1fdd1",
+        habitableZone: "#89f689",
         habitableZoneText: "#043204",
     },
     dark: {
