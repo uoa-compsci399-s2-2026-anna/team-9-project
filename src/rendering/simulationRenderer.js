@@ -1812,7 +1812,9 @@ async function renderFrame(timestamp) {
             getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         // Update the simulation but do not bypass the calendar update throttle
-        runSimulationUpdate(false);
+        runSimulationUpdate({
+            forceCalendarUpdate: false,
+        });
     }
 
     animateCamera();
