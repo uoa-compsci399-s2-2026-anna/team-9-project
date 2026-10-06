@@ -835,8 +835,9 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
+        const FULL_WIDTH = 1;
+
         if (settings.orbitLines == "Solid") {
-            const FULL_WIDTH = 1;
             return FULL_WIDTH;
         }
 
@@ -849,7 +850,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         if (settings.orbitLines === "Tapered") {
             return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
         } else {
-            return 1;
+            return FULL_WIDTH;
         }
     });
 
