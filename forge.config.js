@@ -25,10 +25,7 @@ module.exports = {
             /^\/pyproject\.toml/,
             /^\/uv\.lock/,
         ],
-        icon: [
-            "src/assets/opis.icon",
-            "src/assets/opis.icns"
-        ]
+        icon: "src/assets/app-icon/opis"
     },
     rebuildConfig: {},
     makers: [
@@ -39,14 +36,14 @@ module.exports = {
         {
             name: '@electron-forge/maker-dmg',
             config: {
-                icon: "src/assets/opis.icns"
+                icon: "src/assets/app-icon/opis.icns"
             },
         },
         {
             name: '@electron-forge/maker-deb',
             config: {
                 options: {
-                    icon: "src/assets/opis.png"
+                    icon: "src/assets/app-icon/opis.png"
                 }
             },
         },
