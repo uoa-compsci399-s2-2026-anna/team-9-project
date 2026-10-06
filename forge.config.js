@@ -26,7 +26,7 @@ module.exports = {
             /^\/uv\.lock/,
         ],
         icon: [
-            "/src/assets/opis.icon"
+            "src/assets/opis.icon"
         ]
     },
     rebuildConfig: {},
