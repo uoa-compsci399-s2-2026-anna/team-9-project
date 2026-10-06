@@ -17,6 +17,7 @@ export let habitableZone = {
 const HABITABLE_ZONE_SEGMENTS = 64; // Number of segments to approximate the ring
 const HABITABLE_ZONE_OPACITY = 0.8;
 const HABITABLE_ZONE_TEXTURE_SIZE = 4096; // Size in pixels
+
 const HABITABLE_ZONE_TEXT = "Habitable zone";
 const HABITABLE_ZONE_TEXT_FONT_SIZE = 180;
 const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
@@ -59,10 +60,11 @@ function calculateHabitableZoneTextPosition() {
 
 /**
  * Add the habitable zone text to the texture context, rotating each character around the centre of the texture.
- * @param {CanvasRenderingContext2D} ctx
- * @param {number} offsetAngle
- * @param {string} textColour
- * @param {string} fontFamily
+ *
+ * @param {CanvasRenderingContext2D} ctx - The 2D rendering context of the canvas
+ * @param {string} offsetAngle - The angle offset to start the text at (in radians)
+ * @param {string} textColour - The colour of the text on the texture
+ * @param {string} fontFamily - The font family to use for the text
  */
 function addTextToHabitableZoneTexture(
     ctx,
@@ -101,10 +103,10 @@ function addTextToHabitableZoneTexture(
 }
 
 /**
- * Create a texture for the habitable zone ring with the specified color and text color.
+ * Create a texture for the habitable zone ring with the specified colour and text colour.
  *
- * @param {string} colour - The color of the habitable zone ring
- * @param {string} textColour - The color of the text on the texture
+ * @param {string} colour - The colour of the habitable zone ring
+ * @param {string} textColour - The colour of the text on the texture
  * @param {string} fontFamily - The font family to use for the text
  * @returns {THREE.Texture} The generated texture for the habitable zone
  */
@@ -172,7 +174,7 @@ export function createHabitableZoneMesh() {
  * Update the habitable zone texture based on the current theme and font family.
  * The flipY state of the previous texture is preserved.
  *
- * @param {Object} theme - The current theme object containing color information.
+ * @param {Object} theme - The current theme object containing colour information.
  * @param {string} fontFamily - The font family to use for the text.
  */
 export function updateHabitableZoneTexture(theme, fontFamily) {
