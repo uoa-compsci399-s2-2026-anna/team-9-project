@@ -1,5 +1,5 @@
-import { stopSimulationIntegrating } from "../../services/simulationServices.js";
-import { updateSimulation } from "../simulationRenderer.js";
+import { stopSimulationIntegrating } from "../services/simulationServices.js";
+import { updateSimulation } from "./simulationRenderer.js";
 
 let simulationUpdatingPromise;
 let simulationIsUpdating;

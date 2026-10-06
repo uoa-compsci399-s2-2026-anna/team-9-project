@@ -66,7 +66,7 @@ import { EVENTS } from "../events/events.js";
 import {
     runSimulationUpdate,
     updateSimulationWithPriority,
-} from "./internal/priorityUpdate.js";
+} from "./priorityUpdate.js";
 
 let timer;
 
