@@ -22,7 +22,11 @@ const HABITABLE_ZONE_TEXT_FONT_SIZE = 180;
 const HABITABLE_ZONE_TEXT_FONT_WEIGHT = "bold";
 const HABITABLE_ZONE_TEXT_BASELINE = "middle";
 
-const HABITABLE_ZONE_CHAR_ANGLE_OFFSET = 2.6; // Offset (in radians) so that the text is centred by default
+// Offset (in radians) to set the starting angle for the text
+const HABITABLE_ZONE_CHAR_ANGLE_OFFSET_1 = 2.6;
+const HABITABLE_ZONE_CHAR_ANGLE_OFFSET_2 =
+    HABITABLE_ZONE_CHAR_ANGLE_OFFSET_1 + Math.PI;
+
 const HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER = 0.0008; // Adjusts the curvature of the text around the ring
 
 export let habitableZoneMesh;
@@ -62,29 +66,25 @@ function calculateHabitableZoneTextPosition(flipY = false) {
 }
 
 /**
- * Create a texture for the habitable zone ring with the specified color and text color.
- *
- * @param {string} colour - The color of the habitable zone ring
- * @param {string} textColour - The color of the text on the texture
- * @param {string} fontFamily - The font family to use for the text
- * @returns {THREE.Texture} The generated texture for the habitable zone
+ * Add the habitable zone text to the texture context, rotating each character around the centre of the texture.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} offsetAngle
+ * @param {string} textColour
+ * @param {string} fontFamily
  */
-function createHabitableZoneTexture(colour, textColour, fontFamily) {
-    const canvas = document.createElement("canvas");
-    canvas.width = HABITABLE_ZONE_TEXTURE_SIZE;
-    canvas.height = HABITABLE_ZONE_TEXTURE_SIZE;
-    const ctx = canvas.getContext("2d");
-
-    ctx.fillStyle = colour;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+function addTextToHabitableZoneTexture(
+    ctx,
+    offsetAngle,
+    textColour,
+    fontFamily,
+) {
     ctx.fillStyle = textColour;
     ctx.font = `${HABITABLE_ZONE_TEXT_FONT_WEIGHT} ${HABITABLE_ZONE_TEXT_FONT_SIZE}px ${fontFamily}`;
     ctx.textBaseline = HABITABLE_ZONE_TEXT_BASELINE;
+    ctx.save();
 
     const { x, y } = calculateHabitableZoneTextPosition();
-
-    let angle = HABITABLE_ZONE_CHAR_ANGLE_OFFSET;
+    let angle = offsetAngle;
 
     for (const char of HABITABLE_ZONE_TEXT) {
         // Set the centre of rotation to the centre of the texture and rotate the context
@@ -104,6 +104,39 @@ function createHabitableZoneTexture(colour, textColour, fontFamily) {
         const charWidth = ctx.measureText(char).width;
         angle = charWidth * HABITABLE_ZONE_CHAR_ANGLE_MULTIPLIER;
     }
+
+    ctx.restore();
+}
+
+/**
+ * Create a texture for the habitable zone ring with the specified color and text color.
+ *
+ * @param {string} colour - The color of the habitable zone ring
+ * @param {string} textColour - The color of the text on the texture
+ * @param {string} fontFamily - The font family to use for the text
+ * @returns {THREE.Texture} The generated texture for the habitable zone
+ */
+function createHabitableZoneTexture(colour, textColour, fontFamily) {
+    const canvas = document.createElement("canvas");
+    canvas.width = HABITABLE_ZONE_TEXTURE_SIZE;
+    canvas.height = HABITABLE_ZONE_TEXTURE_SIZE;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = colour;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    addTextToHabitableZoneTexture(
+        ctx,
+        HABITABLE_ZONE_CHAR_ANGLE_OFFSET_1,
+        textColour,
+        fontFamily,
+    );
+    addTextToHabitableZoneTexture(
+        ctx,
+        HABITABLE_ZONE_CHAR_ANGLE_OFFSET_2,
+        textColour,
+        fontFamily,
+    );
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
