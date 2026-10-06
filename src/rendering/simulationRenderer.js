@@ -1410,12 +1410,13 @@ export function stepBack() {
 }
 
 export function resetSimulationTimeToNow() {
-    // Function that runs after the last update takes effect and before this
-    // update is run and requested.
-    const preRequestFunction = function () {
-        currentSimulationTime = Date.now();
-    };
-    updateSimulationWithPriority(preRequestFunction);
+    updateSimulationWithPriority({
+        // Function that runs after the last update takes effect and before this
+        // update is run and requested.
+        preRequestFunction: function () {
+            currentSimulationTime = Date.now();
+        },
+    });
 }
 
 export function setSimulationTimeToTime(time) {
