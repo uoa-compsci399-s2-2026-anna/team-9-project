@@ -51,6 +51,8 @@ import {
     habitableZone,
     habitableZoneMesh,
     createHabitableZoneMesh,
+    updateHabitableZoneTexture,
+    flipHabitableZoneTexture,
 } from "./habitableZone.js";
 import {
     updateCalendar,
@@ -1188,6 +1190,7 @@ function createControlsChangeHandler(viewRadius) {
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
         updateReferenceGridScale(camera.position, controls.target);
+        flipHabitableZoneTexture(camera.position);
     };
 }
 
@@ -1564,6 +1567,7 @@ export function setFontFamily(chosenFont) {
     for (const label of objectLabels.values()) {
         label.element.style.fontFamily = fontFamily;
     }
+    updateHabitableZoneTexture(getTheme(), fontFamily);
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
@@ -1624,6 +1628,8 @@ export function toggleSimulationDarkMode(isDarkMode) {
                 : getCurrentSystemColour(name, isDarkMode),
         );
     }
+
+    updateHabitableZoneTexture(theme, getFontFamily(settings.font));
 }
 
 /**
