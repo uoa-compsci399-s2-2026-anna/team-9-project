@@ -14,7 +14,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from systems import Simulations
+from systems import Simulations, jd_tdb_to_unix
 from utility import (
     check_sim_was_stopped,
     end_integrating,
@@ -262,7 +262,11 @@ async def get_system_data_at_time(
         objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
     }
 
-    return {"positions": positions, "orbital_data": orbital_data}
+    return {
+        "positions": positions,
+        "orbital_data": orbital_data,
+        "time": jd_tdb_to_unix(sim.t),
+    }
 
 
 @app.get("/system")
