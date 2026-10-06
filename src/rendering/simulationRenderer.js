@@ -846,7 +846,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
             isElliptical,
         );
 
-        if (settings.orbitLines == "Tapered") {
+        if (settings.orbitLines === "Tapered") {
             return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
         } else {
             return 1;
