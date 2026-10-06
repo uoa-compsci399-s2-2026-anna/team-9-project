@@ -37,10 +37,9 @@ let lastCameraPositionZ = null;
  * Calculate the position of the habitable zone text in texture coordinates,
  * positioned at the midpoint of the habitable zone ring.
  *
- * @param {boolean} [flipY=false] Whether to flip the y-coordinate of the position
  * @returns {Object} The x and y coordinates of the label in texture space
  */
-function calculateHabitableZoneTextPosition(flipY = false) {
+function calculateHabitableZoneTextPosition() {
     const startRadius = habitableZone.start;
     const endRadius = habitableZone.end;
 
@@ -54,13 +53,6 @@ function calculateHabitableZoneTextPosition(flipY = false) {
     // y is the midpoint of the habitable zone ring in texture coordinates.
     const x = HABITABLE_ZONE_TEXTURE_SIZE / 2;
     const y = HABITABLE_ZONE_TEXTURE_SIZE * halfWidthProportion;
-
-    if (flipY) {
-        return {
-            x: x,
-            y: HABITABLE_ZONE_TEXTURE_SIZE - y,
-        };
-    }
 
     return { x, y };
 }
