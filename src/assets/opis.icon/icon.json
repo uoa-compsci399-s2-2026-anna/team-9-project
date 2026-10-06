@@ -9,12 +9,33 @@
     {
       "layers" : [
         {
-          "blend-mode" : "normal",
-          "fill" : "none",
+          "blend-mode-specializations" : [
+            {
+              "value" : "hard-light"
+            },
+            {
+              "appearance" : "dark",
+              "value" : "normal"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:1.00000,1.00000,1.00000,1.00000",
+                  "display-p3:0.81823,0.80959,0.97389,1.00000"
+                ]
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : "automatic"
+            }
+          ],
           "glass" : true,
           "image-name" : "logo-white copy.svg",
           "name" : "logo-white copy",
-          "opacity" : 0.8,
+          "opacity" : 1,
           "position" : {
             "scale" : 5.18,
             "translation-in-points" : [
