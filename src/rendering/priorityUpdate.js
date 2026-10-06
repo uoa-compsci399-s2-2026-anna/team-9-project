@@ -22,7 +22,10 @@ export async function updateSimulationWithPriority(preRequestFunction) {
  *
  * @param preRequestFunction The function that runs to set state prior to running the update
  */
-export async function runSimulationUpdate(preRequestFunction) {
+export async function runSimulationUpdate(
+    preRequestFunction,
+    forceCalendarUpdate = true,
+) {
     if (simulationIsUpdating) {
         await simulationUpdatingPromise;
     }
@@ -33,7 +36,7 @@ export async function runSimulationUpdate(preRequestFunction) {
 
     simulationUpdatingPromise = new Promise(async (resolve) => {
         simulationIsUpdating = true;
-        await updateSimulation();
+        await updateSimulation((forceCalendarUpdate = forceCalendarUpdate));
         simulationIsUpdating = false;
         resolve();
     });
