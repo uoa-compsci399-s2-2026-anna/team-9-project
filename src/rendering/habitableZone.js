@@ -178,17 +178,26 @@ export function createHabitableZoneMesh() {
 
 /**
  * Update the habitable zone texture based on the current theme and font family.
+ * The flipY state of the previous texture is preserved.
  *
  * @param {Object} theme - The current theme object containing color information.
  * @param {string} fontFamily - The font family to use for the text.
  */
 export function updateHabitableZoneTexture(theme, fontFamily) {
-    habitableZoneMesh.material.map?.dispose();
+    const prevTexture = habitableZoneMesh.material.map;
+    let prevFlipY = false;
+
+    if (prevTexture) {
+        prevFlipY = prevTexture.flipY;
+        prevTexture.dispose();
+    }
+
     habitableZoneMesh.material.map = createHabitableZoneTexture(
         theme.habitableZone,
         theme.habitableZoneText,
         fontFamily,
     );
+    habitableZoneMesh.material.map.flipY = prevFlipY;
     habitableZoneMesh.material.needsUpdate = true;
 }
 
