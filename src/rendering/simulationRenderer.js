@@ -841,6 +841,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
          * the PROPORTION of the original line width as defined for the material
          * to define the line width at that point (`progress`) along the line.
          */
+
         const FULL_WIDTH_PROPORTION = 1;
 
         if (settings.orbitLines == "Solid") {
