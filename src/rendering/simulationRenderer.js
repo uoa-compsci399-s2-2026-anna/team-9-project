@@ -509,9 +509,9 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         objectMeshes.set(name, mesh);
 
         const label = createLabel(
-            name, 
+            name,
             colour,
-            group === solarSystemGroup ? comparisonLabelOpacity : 1
+            group === solarSystemGroup ? comparisonLabelOpacity : 1,
         );
 
         label.position.set(0, 0, 0);
@@ -835,10 +835,10 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
-        const FULL_WIDTH = 1;
+        const FULL_WIDTH_PROPORTION = 1;
 
         if (settings.orbitLines == "Solid") {
-            return FULL_WIDTH;
+            return FULL_WIDTH_PROPORTION;
         }
 
         const distance = calculateProgressDistance(
@@ -850,7 +850,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         if (settings.orbitLines === "Tapered") {
             return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
         } else {
-            return FULL_WIDTH;
+            return FULL_WIDTH_PROPORTION;
         }
     });
 
@@ -912,7 +912,7 @@ function createOpaqueOrbitAlphaTexture() {
  * so that it is most opaque at the object and gets fainter (or as defined
  * by the opacity modulation function).
  * @param {THREE.Texture} texture An alpha texture map as a 1 x N byte array in
- * RGBA format, where each 4 bytes represents an RGBA value for that point in 
+ * RGBA format, where each 4 bytes represents an RGBA value for that point in
  * the texture.
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
