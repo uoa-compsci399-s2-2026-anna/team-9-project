@@ -943,7 +943,7 @@ function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) 
          */
         const alphaOffset = offset + 3;
 
-        if (settings.orbitLines == "Solid") {
+        if (settings.orbitLines === "Solid") {
             data[alphaOffset] = RGBA_MAX_VALUE;
             continue;
         }
