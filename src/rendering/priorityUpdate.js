@@ -4,17 +4,19 @@ import { updateSimulation } from "./simulationRenderer.js";
 let simulationUpdatingPromise;
 let simulationIsUpdating;
 
-export async function updateSimulationWithPriority(postUpdateClosure) {
+export async function updateSimulationWithPriority(preRequestFunction) {
     stopSimulationIntegrating();
-    await runSimulationUpdate(postUpdateClosure);
+    await runSimulationUpdate(preRequestFunction);
 }
 
-export async function runSimulationUpdate(postUpdateClosure) {
+export async function runSimulationUpdate(preRequestFunction) {
     if (simulationIsUpdating) {
         await simulationUpdatingPromise;
     }
 
-    if (postUpdateClosure) postUpdateClosure();
+    if (preRequestFunction) {
+        preRequestFunction();
+    }
 
     simulationUpdatingPromise = new Promise(async (resolve) => {
         simulationIsUpdating = true;
