@@ -7,9 +7,6 @@ requires-python = ">=3.13"
 dependencies = [
     "astropy>=8.0.1",
     "fastapi[standard]>=0.141.1",
-    "rebound",
+    "rebound==5.2.2",
     "tzdata>=2026.3",
 ]
-
-[tool.uv.sources]
-rebound = { git = "https://github.com/s-0fia/rebound-fix-heartbeat" }
