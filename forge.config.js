@@ -26,7 +26,8 @@ module.exports = {
             /^\/uv\.lock/,
         ],
         icon: [
-            "src/assets/opis.icon"
+            "src/assets/opis.icon",
+            "src/assets/opis.icns"
         ]
     },
     rebuildConfig: {},
@@ -37,7 +38,9 @@ module.exports = {
         },
         {
             name: '@electron-forge/maker-dmg',
-            config: {},
+            config: {
+                icon: "src/assets/opis.icns"
+            },
         },
         {
             name: '@electron-forge/maker-deb',
