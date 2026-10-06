@@ -828,7 +828,7 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
 
     updateOrbitAlphaTexture(
-        line.material,
+        line.material.alphaMap,
         objectProgress,
         isElliptical,
     );
@@ -911,12 +911,14 @@ function createOpaqueOrbitAlphaTexture() {
  * object moves around its orbit, the opacity of the orbit updates correctly
  * so that it is most opaque at the object and gets fainter (or as defined
  * by the opacity modulation function).
- * @param {MeshLineMaterial} material
+ * @param {THREE.Texture} texture An alpha texture map as a 1 x N byte array in
+ * RGBA format, where each 4 bytes represents an RGBA value for that point in 
+ * the texture.
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
  * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
  */
-function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) {
+function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
     /**
      * `texture.image` is an object containing fields `data` (the actual byte
      * array of the texture), `width` (the number of bytes) in the 'width'
@@ -924,7 +926,6 @@ function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) 
      * of the texture.
      */
 
-    let texture = material.alphaMap;
     const { data: textureArray, width: textureArraySize } = texture.image;
 
     // Iterate over the raw texture byte array
