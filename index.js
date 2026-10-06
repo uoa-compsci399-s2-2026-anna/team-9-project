@@ -14,8 +14,10 @@ if (require("electron-squirrel-startup")) {
     return;
 }
 
-// Application name to display as the window title
+// Display name of the application
 const APPLICATION_NAME = "OPIS";
+
+app.setName(APPLICATION_NAME);
 
 // Script to hide the simulation canvas
 const HIDE_SIMULATION_CANVAS = `
