@@ -68,6 +68,10 @@ npm run make
 ```
 Example output executable path: `./out/team-9-project-linux-x64/team-9-project`
 
+NOTE: Packaging the application on macOS 26 and later requires Xcode 26 or later 
+because Electron Packager uses Apple's `actool` tool to compile the Icon 
+Composer asset (found in `/src/assets/app-icon/opis.icon`).
+
 ## Windows
 Tested with `node.js` version `v24.20.0`
 ```sh
