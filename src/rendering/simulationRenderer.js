@@ -949,7 +949,8 @@ function updateOrbitAlphaTexture(material, objectProgress, isElliptical = true) 
         }
 
         /**
-         * Proportion of array traversed (in interval [0, 1])
+         * Proportion of array traversed (in interval [0, 1]). Max value of `i`
+         * is `textureArraySize - 1`, hence `(textureArraySize - 1)`.
          */
         const progress = i / (textureArraySize - 1);
 
