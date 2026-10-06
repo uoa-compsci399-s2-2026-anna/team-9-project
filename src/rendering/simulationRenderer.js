@@ -906,11 +906,13 @@ function createOpaqueOrbitAlphaTexture() {
 }
 
 /**
- * Updates the given alpha texture map associated with `material` based on the new value of
- * `objectProgress` (i.e. the new position of the object). Used so that as the
- * object moves around its orbit, the opacity of the orbit updates correctly
- * so that it is most opaque at the object and gets fainter (or as defined
- * by the opacity modulation function).
+ * Updates the given alpha texture map based on the new value of
+ * `objectProgress` (i.e. the new position of the object).
+ *
+ * Used so that as the object moves around its orbit, the opacity of the orbit
+ * updates correctly so that it is most opaque at the object and gets fainter
+ * (or as defined by the opacity modulation function).
+ *
  * @param {THREE.Texture} texture An alpha texture map as a 1 x N byte array in
  * RGBA format, where each 4 bytes represents an RGBA value for that point in
  * the texture.
