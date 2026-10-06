@@ -1,18 +1,14 @@
-const { FusesPlugin } = require('@electron-forge/plugin-fuses');
-const { FuseV1Options, FuseVersion } = require('@electron/fuses');
-const path = require('path');
-const fs = require('fs');
-const { execSync } = require('child_process');
+const { FusesPlugin } = require("@electron-forge/plugin-fuses");
+const { FuseV1Options, FuseVersion } = require("@electron/fuses");
+const path = require("path");
+const fs = require("fs");
+const { execSync } = require("child_process");
 
 module.exports = {
     packagerConfig: {
-        name: 'team-9-project',
+        name: "OPIS",
         asar: true,
-        extraResource: [
-            './dist/',
-            './src/',
-            './config.json',
-        ],
+        extraResource: ["./dist/", "./src/", "./config.json"],
         ignore: [
             /^\/\.git/,
             /^\/\.github/,
@@ -24,30 +20,30 @@ module.exports = {
             /^\/\.python-version/,
             /^\/pyproject\.toml/,
             /^\/uv\.lock/,
-        ]
+        ],
     },
     rebuildConfig: {},
     makers: [
         {
-            name: '@electron-forge/maker-squirrel',
+            name: "@electron-forge/maker-squirrel",
             config: {},
         },
         {
-            name: '@electron-forge/maker-dmg',
+            name: "@electron-forge/maker-dmg",
             config: {},
         },
         {
-            name: '@electron-forge/maker-deb',
+            name: "@electron-forge/maker-deb",
             config: {},
         },
         {
-            name: '@electron-forge/maker-rpm',
+            name: "@electron-forge/maker-rpm",
             config: {},
         },
     ],
     plugins: [
         {
-            name: '@electron-forge/plugin-auto-unpack-natives',
+            name: "@electron-forge/plugin-auto-unpack-natives",
             config: {},
         },
         // Fuses are used to enable/disable various Electron functionality
@@ -65,7 +61,7 @@ module.exports = {
     hooks: {
         // Application crashes on macOS if it is not signed correctly
         postPackage: async (_forgeConfig, options) => {
-            if (options.platform !== 'darwin') {
+            if (options.platform !== "darwin") {
                 return;
             }
 
@@ -73,7 +69,7 @@ module.exports = {
                 // Find the .app bundle inside this output directory
                 const appBundle = fs
                     .readdirSync(appPath)
-                    .find((f) => f.endsWith('.app'));
+                    .find((f) => f.endsWith(".app"));
 
                 if (appBundle) {
                     const fullPath = path.join(appPath, appBundle);
@@ -84,4 +80,3 @@ module.exports = {
         },
     },
 };
-
