@@ -24,6 +24,9 @@ module.exports = {
             /^\/\.python-version/,
             /^\/pyproject\.toml/,
             /^\/uv\.lock/,
+        ],
+        icon: [
+            "/src/assets/opis.icon"
         ]
     },
     rebuildConfig: {},
