@@ -1398,15 +1398,27 @@ function clampSimulationTime(time) {
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
-    runSimulationUpdate();
+    runSimulationUpdate({
+        // Function that runs after the last update takes effect and before this
+        // update is run and requested.
+        preRequestFunction: function () {
+            currentSimulationTime +=
+                getSimulationSpeedMilliseconds(currentSystem);
+        },
+    });
 }
 
 export function stepBack() {
-    currentSimulationTime = clampSimulationTime(
-        currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
-    );
-    runSimulationUpdate();
+    runSimulationUpdate({
+        // Function that runs after the last update takes effect and before this
+        // update is run and requested.
+        preRequestFunction: function () {
+            currentSimulationTime = clampSimulationTime(
+                currentSimulationTime -
+                    getSimulationSpeedMilliseconds(currentSystem),
+            );
+        },
+    });
 }
 
 export function resetSimulationTimeToNow() {
@@ -1420,8 +1432,13 @@ export function resetSimulationTimeToNow() {
 }
 
 export function setSimulationTimeToTime(time) {
-    currentSimulationTime = clampSimulationTime(time);
-    runSimulationUpdate();
+    runSimulationUpdate({
+        // Function that runs after the last update takes effect and before this
+        // update is run and requested.
+        preRequestFunction: function () {
+            currentSimulationTime = clampSimulationTime(time);
+        },
+    });
 }
 
 export async function resetView(topDown = true) {
@@ -1808,11 +1825,14 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime +=
-            getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
-
         // Update the simulation but do not bypass the calendar update throttle
         runSimulationUpdate({
+            // Function that runs after the last update takes effect and before this
+            // update is run and requested.
+            preRequestFunction: function () {
+                currentSimulationTime +=
+                    getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
+            },
             forceCalendarUpdate: false,
         });
     }
