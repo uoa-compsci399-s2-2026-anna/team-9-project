@@ -7,7 +7,7 @@ const { execSync } = require("child_process");
 module.exports = {
     packagerConfig: {
         name: "OPIS",
-        executableName: "OPIS",
+        executableName: "opis",
         asar: true,
         extraResource: ["./dist/", "./src/", "./config.json"],
         ignore: [
