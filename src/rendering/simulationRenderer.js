@@ -836,7 +836,8 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
         if (settings.orbitLines == "Solid") {
-            return 1;
+            const FULL_WIDTH = 1;
+            return FULL_WIDTH;
         }
 
         const distance = calculateProgressDistance(
