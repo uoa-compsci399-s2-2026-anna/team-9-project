@@ -835,6 +835,12 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
+        /**
+         * setPoints takes a callback which has a `progress` parameter which defines
+         * the progress across the line (as a proportion, in [0, 1]), and returns
+         * the PROPORTION of the original line width as defined for the material
+         * to define the line width at that point (`progress`) along the line.
+         */
         const FULL_WIDTH_PROPORTION = 1;
 
         if (settings.orbitLines == "Solid") {
