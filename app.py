@@ -280,20 +280,22 @@ async def get_system_data(
     systems = {}
 
     # If any sim was preempted during integration at any point
-    any_sim_was_stopped = False
+    aborted = False
 
-    await begin_integrating()
-    for system_name in system_names:
-        # Get system_data at a specific time unless a sim has been stopped
-        # Then just get the system's data at it's current time
-        systems[system_name] = await get_system_data_at_time(
-            system_name, t, should_integrate=(not any_sim_was_stopped)
-        )
+    try:
+        await begin_integrating()
+        for system_name in system_names:
+            # Get system_data at a specific time unless a sim has been stopped
+            # Then just get the system's data at it's current time
+            systems[system_name] = await get_system_data_at_time(
+                system_name, t, should_integrate=(not aborted)
+            )
 
-        # If the sim was preempted during integration do not integrate the other
-        # systems
-        any_sim_was_stopped = True if any_sim_was_stopped else check_sim_was_stopped()
-    done_integrating()
+            # If the sim was preempted during integration do not integrate the other
+            # systems but still get the data (at the time it was at)
+            aborted = True if aborted else check_sim_was_stopped()
+    finally:
+        done_integrating()
 
     return systems
 
