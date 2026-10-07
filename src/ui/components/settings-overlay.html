@@ -86,6 +86,15 @@
         on_change_event_name="settings:object_marker_size_select"
       )
     }}
+
+    {{
+      settings_option(
+        label_text="Orbit lines",
+        initial_selected=settings.orbitLines,
+        options=settings_schema.orbitLines.options,
+        on_change_event_name="settings:orbit_lines_select"
+      )
+    }}
   {% endcall %}
 
   <!-- Restore defaults button -->
