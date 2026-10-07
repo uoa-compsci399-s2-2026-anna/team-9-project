@@ -30,7 +30,7 @@ module.exports = {
             config: {
                 // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
                 iconUrl:
-                    "https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/blob/db4d16494d244d017a13e71b6d324547730f5985/src/assets/app-icon/opis.ico",
+                    "https://raw.githubusercontent.com/uoa-compsci399-s2-2026-anna/team-9-project/db4d16494d244d017a13e71b6d324547730f5985/src/assets/app-icon/opis.ico",
                 // The ICO file to use as the icon for the generated Setup.exe
                 setupIcon: "src/assets/app-icon/opis.ico",
             },
