@@ -27,6 +27,13 @@
       { "value": "Larger", "label": "Larger" }
     ]
   },
+  "orbitLines": {
+    "default": "Tapered",
+    "options": [
+      { "value": "Tapered", "label": "Tapered" },
+      { "value": "Solid", "label": "Solid" }
+    ]
+  },
   "darkMode": {
     "default": null
   }
