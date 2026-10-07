@@ -16,7 +16,6 @@ from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
 from utility import (
-    check_sim_was_stopped,
     request_abort,
     get_osculating_orbit,
     get_position_dict,
@@ -275,8 +274,6 @@ async def get_system_data(
 
     systems = {}
 
-    any_sim_was_stopped = False
-
     # How many aborts had happened when this request arrived
     abort_count_on_arrival = get_abort_count()
 
@@ -285,13 +282,11 @@ async def get_system_data(
         for system_name in system_names:
             # An abort since we arrived means a newer request is coming,
             # so this one is stale (so we should skip it)
-            aborted_while_waiting = get_abort_count() != abort_count_on_arrival
-            skip = any_sim_was_stopped or aborted_while_waiting
+            aborted = get_abort_count() != abort_count_on_arrival
 
             systems[system_name] = await get_system_data_at_time(
-                system_name, t, should_integrate=(not skip)
+                system_name, t, should_integrate=(not aborted)
             )
-            any_sim_was_stopped = any_sim_was_stopped or check_sim_was_stopped()
     finally:
         done_integrating()
 
