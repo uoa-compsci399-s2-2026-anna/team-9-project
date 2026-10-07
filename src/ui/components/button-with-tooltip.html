@@ -35,7 +35,8 @@
     {%
       set tooltip_positions = {
         "above": "top-0 -mt-2 -translate-y-full",
-        "below": "top-full mt-2"
+        "below": "top-full mt-2",
+        "left": "right-full top-1/2 mr-2 -translate-y-1/2"
       }
     %}
 
@@ -53,7 +54,8 @@
     <div
       class="{{ tooltip_positions[tooltip_position] }} {{ tooltip_aligns[tooltip_align] }} bordered-light control text-secondary pointer-events-none absolute block px-2 text-center text-nowrap opacity-0 group-hover:opacity-100"
     >
-      <span id="{{ tooltip_id }}">{{ tooltip_text }}</span>{% if shortcut %} ({{ shortcut.label }}){% endif %}
+      <span id="{{ tooltip_id }}">{{ tooltip_text }}</span
+      >{% if shortcut %}({{ shortcut.label }}){% endif %}
     </div>
   </div>
 {% endmacro %}
