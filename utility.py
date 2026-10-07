@@ -2,6 +2,7 @@ import asyncio
 import threading
 from typing import cast
 import rebound
+import time
 
 
 is_integrating = asyncio.Lock()
@@ -33,10 +34,21 @@ def done_integrating():
     # We are no longer integrating
     # Note: based on how I am using this function there is no need to check if
     # the lock is actually locked, but feel free to add this check
+    print(f"{time.time()*1000:.0f} lock released")
     is_integrating.release()
 
 
+# TODO: temp placement
+_abort_generation = 0
+
+
+def get_abort_generation() -> int:
+    return _abort_generation
+
+
 def request_abort():
+    global _abort_generation
+    _abort_generation += 1
     # Ask the currently running integration (if any) to stop early
     if is_integrating.locked():
         abort_integration.set()
@@ -47,6 +59,7 @@ def heartbeat(sim_ptr):
 
     # Stop the simulation if there was a request to abort integration
     if abort_integration.is_set():
+        print(f"{time.time()*1000:.0f} heartbeat stopped sim")
         sim = cast(rebound.Simulation, sim_ptr.contents)
         sim.stop()
         abort_integration.clear()

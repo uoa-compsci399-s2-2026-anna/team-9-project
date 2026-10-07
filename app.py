@@ -22,6 +22,7 @@ from utility import (
     get_position_dict,
     begin_integrating,
     done_integrating,
+    get_abort_generation,
 )
 
 # Prevent internal server errors when adding objects to the simulation
@@ -242,6 +243,7 @@ async def get_system_data_at_time(
 
     # Only integrate if we should be integrating
     if should_integrate:
+        print(f"{time.time()*1000:.0f} new integration starting")
         # TODO: reconsider this
         # Integrate to given time using a process pool to keep interactivity
         loop = asyncio.get_running_loop()
@@ -276,12 +278,18 @@ async def get_system_data(
 
     any_sim_was_stopped = False
 
+    # TODO... think about this
+    arrival_generation = get_abort_generation()
+
     await begin_integrating() # Acquires the lock and clears any stale state
     try:
         for system_name in system_names:
-            # TODO: update method
+            # Skip integrating if this sim was aborted, or if an abort
+            # happened after this request arrived
+            skip = any_sim_was_stopped or get_abort_generation() != arrival_generation
+
             systems[system_name] = await get_system_data_at_time(
-                system_name, t, should_integrate=(not any_sim_was_stopped)
+                system_name, t, should_integrate=(not skip)
             )
             any_sim_was_stopped = any_sim_was_stopped or check_sim_was_stopped()
     finally:

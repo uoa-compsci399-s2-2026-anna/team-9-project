@@ -1067,8 +1067,12 @@ async function updateSimulation(forceCalendarUpdate = true, priority = false) {
     let allSystemData;
 
     // Priority updates always fetch (even if another fetch is in progress)
-    if (gettingSystemData && lastSystemData && !priority) {
+    // TODO: I temporarily changed the check here to try fix now taking forever
+    if (gettingSystemData && !priority) {
         // Use the last fetched data if a request is already in progress
+        if (!lastSystemData) {
+            return;
+        }
         allSystemData = lastSystemData;
     } else {
         /**
