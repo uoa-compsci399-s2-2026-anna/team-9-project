@@ -1189,7 +1189,6 @@ function initRaycastingEvents(canvas, controls) {
     canvas.addEventListener("click", (event) => {
         // Handle the event as long as the user isn't dragging the camera
         if (!isDragging) {
-            // event.stopPropagation();
             onCanvasClick(event, canvas);
         }
     });
