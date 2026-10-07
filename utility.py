@@ -4,7 +4,7 @@ from typing import cast
 import rebound
 
 
-is_integrating = asyncio.lock()
+is_integrating = asyncio.Lock()
 
 # Stores whether or not integration should be aborted (interrupted/stopped)
 abort_integration = threading.Event()

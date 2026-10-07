@@ -274,6 +274,8 @@ async def get_system_data(
 
     systems = {}
 
+    any_sim_was_stopped = False
+
     await begin_integrating() # Acquires the lock and clears any stale state
     try:
         for system_name in system_names:
@@ -295,4 +297,4 @@ async def stop_currently_integrating_sim():
     I.e. if a user is integrating, reset to now should stop it and get to
     integrate instead.
     """
-    await request_abort()
+    request_abort()
