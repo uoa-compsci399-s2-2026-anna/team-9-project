@@ -39,16 +39,17 @@ def done_integrating():
 
 
 # TODO: temp placement
-_abort_generation = 0
+# Number of times request_abort() has been called
+_abort_count = 0
 
 
-def get_abort_generation() -> int:
-    return _abort_generation
+def get_abort_count() -> int:
+    return _abort_count
 
 
 def request_abort():
-    global _abort_generation
-    _abort_generation += 1
+    global _abort_count
+    _abort_count += 1
     # Ask the currently running integration (if any) to stop early
     if is_integrating.locked():
         abort_integration.set()
