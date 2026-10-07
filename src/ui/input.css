@@ -14,7 +14,8 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url(../src/fonts/geist-latin-wght-normal.woff2) format("woff2-variations");
+  src: url(../src/fonts/geist-latin-wght-normal.woff2)
+    format("woff2-variations");
 }
 
 @font-face {
@@ -22,7 +23,8 @@
   font-style: italic;
   font-weight: 100 900;
   font-display: swap;
-  src: url(../src/fonts/geist-latin-wght-italic.woff2) format("woff2-variations");
+  src: url(../src/fonts/geist-latin-wght-italic.woff2)
+    format("woff2-variations");
 }
 
 @theme {
@@ -102,6 +104,10 @@
 
   .container {
     @apply z-10 rounded-xl bg-white/60 p-1 backdrop-blur-md dark:bg-zinc-950/60;
+  }
+
+  .container1 {
+    @apply z-10 rounded-xl border border-black/10 bg-white/60 p-1 shadow-2xl/50 shadow-black/50 backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/60 dark:shadow-purple-300/30;
   }
 
   .shadowed {
