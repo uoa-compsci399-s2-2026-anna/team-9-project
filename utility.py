@@ -1,7 +1,7 @@
 import asyncio
 from typing import cast
-import rebound
 
+import rebound
 
 # Whether we are integrating a simulation currently (empty lock)
 is_integrating = asyncio.Lock()
@@ -11,6 +11,7 @@ killing_integration = asyncio.Lock()
 abort_integration = asyncio.Event()
 # Whether the sim aborted
 last_sim_was_aborted = asyncio.Event()
+
 
 def check_sim_was_stopped() -> bool:
     """
@@ -35,6 +36,10 @@ def done_integrating():
     # Declare that we are no longer integrating
     if is_integrating.locked():
         is_integrating.release()
+
+    # Clear relevant events
+    abort_integration.clear()
+    last_sim_was_aborted.clear()
 
 
 async def end_integrating():
@@ -64,9 +69,6 @@ def heartbeat(sim_ptr):
         sim.stop()
         # State that this sim aborted
         last_sim_was_aborted.set()
-        # Release the locks declaring we are done with: stopping integration and
-        # done with integrating in general
-        done_integrating()
 
 
 def get_position_dict(particle: rebound.Particle) -> dict:
