@@ -8,6 +8,13 @@ const panel = document.getElementById("object-information-panel");
  */
 const container = panel.closest("[data-container]");
 
+// Close the object info panel when the user clicks off the panel.
+document.addEventListener("click", (e) => {
+    if (!container.contains(e.target) && container.checkVisibility()) {
+        bus.publish(EVENTS.SIM.CLOSE_OBJECT_INFO);
+    }
+});
+
 // Update object information panel when an object is clicked.
 bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     const objectName = e.detail.objectName;

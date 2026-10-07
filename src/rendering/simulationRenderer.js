@@ -406,6 +406,12 @@ function onCanvasClick(event, canvas) {
         return;
     }
 
+    // Stop the further propagation of this click event (fired when the object
+    // is clicked) so that the same event isn't intercepted by the event
+    // listener which closes the Object information panel when the user clicks
+    // off the panel.
+    event.stopPropagation();
+
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
 }
 
@@ -511,9 +517,9 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         objectMeshes.set(name, mesh);
 
         const label = createLabel(
-            name, 
+            name,
             colour,
-            group === solarSystemGroup ? comparisonLabelOpacity : 1
+            group === solarSystemGroup ? comparisonLabelOpacity : 1,
         );
 
         label.position.set(0, 0, 0);
@@ -1183,6 +1189,7 @@ function initRaycastingEvents(canvas, controls) {
     canvas.addEventListener("click", (event) => {
         // Handle the event as long as the user isn't dragging the camera
         if (!isDragging) {
+            // event.stopPropagation();
             onCanvasClick(event, canvas);
         }
     });
