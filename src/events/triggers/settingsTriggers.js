@@ -8,6 +8,11 @@ document.querySelectorAll("[data-overlay]").forEach((overlay) => {
     // Close menu if user clicks outside of main panel
     overlay.addEventListener("click", (event) => {
         if (event.target === event.currentTarget) {
+            // Stop the further propagation of this click event, so that it
+            // does not trigger the event listener for closing the object info
+            // panel.
+            event.stopPropagation();
+
             bus.publish(closeOverlayEvent);
         }
     });

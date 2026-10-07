@@ -10,7 +10,19 @@ const container = panel.closest("[data-container]");
 
 // Close the object info panel when the user clicks off the panel.
 document.addEventListener("click", (e) => {
-    if (!container.contains(e.target) && container.checkVisibility()) {
+    if (
+        // Container is visible
+        container.checkVisibility() &&
+        // Target is outside of all containers (including the object info panel
+        // container), side panels, and overlays
+        [
+            ...document.querySelectorAll(
+                "[data-container], [data-panel], [data-overlay]",
+            ),
+        ].every((container) => {
+            return !container.contains(e.target);
+        })
+    ) {
         bus.publish(EVENTS.SIM.CLOSE_OBJECT_INFO);
     }
 });
