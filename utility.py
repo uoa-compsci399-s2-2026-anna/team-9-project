@@ -1,4 +1,56 @@
+import asyncio
+import threading
+from typing import cast
 import rebound
+
+
+is_integrating = asyncio.lock()
+
+# Stores whether or not integration should be aborted (interrupted/stopped)
+abort_integration = threading.Event()
+
+
+def check_sim_was_stopped() -> bool:
+    """
+    Check's if the sim that just ran was stopped during integration.
+    Resets the value to False.
+    """
+    global sim_was_stopped
+    has_been_stopped, sim_was_stopped = sim_was_stopped, False
+    return has_been_stopped
+
+
+async def begin_integrating():
+    global sim_was_stopped
+    await is_integrating.acquire()
+
+    # Clear stale state
+    abort_integration.clear()
+    sim_was_stopped = False
+
+
+def done_integrating():
+    # We are no longer integrating
+    # Note: based on how I am using this function there is no need to check if
+    # the lock is actually locked, but feel free to add this check
+    is_integrating.release()
+
+
+def request_abort():
+    # Ask the currently running integration (if any) to stop early
+    if is_integrating.locked():
+        abort_integration.set()
+
+
+def heartbeat(sim_ptr):
+    global sim_was_stopped
+
+    # Stop the simulation if there was a request to abort integration
+    if abort_integration.is_set():
+        sim = cast(rebound.Simulation, sim_ptr.contents)
+        sim.stop()
+        abort_integration.clear()
+        sim_was_stopped = True
 
 
 def get_position_dict(particle: rebound.Particle) -> dict:
