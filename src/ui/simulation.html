@@ -49,7 +49,10 @@
     </div>
 
     <!-- RHS controls -->
-    <div class="z-10 ml-auto flex flex-col items-end gap-2">
+    <div class="z-10 ml-auto flex h-full flex-col items-end gap-2">
+      <!-- Zoom control -->
+      <div class="mb-auto">{% include "templates/zoom-control.html" %}</div>
+
       <!-- Grid scale indicator -->
       <p id="grid-scale-text" class="text-secondary pr-2 text-sm">AU/square</p>
 
