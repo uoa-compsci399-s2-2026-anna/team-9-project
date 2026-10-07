@@ -63,3 +63,7 @@ export async function getMultipleSystemsData(names, t) {
 
     return await response.json();
 }
+
+export async function abortCurrentIntegration() {
+    await fetch("/current_integration", { method: "DELETE" });
+}

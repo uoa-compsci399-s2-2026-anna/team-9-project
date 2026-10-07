@@ -22,6 +22,7 @@ import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
     getMultipleSystemsData,
+    abortCurrentIntegration,
 } from "../services/simulationServices.js";
 import {
     TWO_PI,
@@ -1051,8 +1052,9 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
  * Update the calendar to display the current simulation time.
  *
  * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
+ * @param {boolean} [priority=false] TODO
  */
-async function updateSimulation(forceCalendarUpdate = true) {
+async function updateSimulation(forceCalendarUpdate = true, priority = false) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
@@ -1064,10 +1066,19 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
     let allSystemData;
 
-    if (gettingSystemData && lastSystemData) {
+    // Priority updates always fetch (even if another fetch is in progress)
+    if (gettingSystemData && lastSystemData && !priority) {
         // Use the last fetched data if a request is already in progress
         allSystemData = lastSystemData;
     } else {
+        /**
+         * TODO: I realise that this is an unnecessary call if nothing is integrating,
+         * but its a no-op on the backend and shouldn't have any cost
+         */
+        if (priority) {
+            await abortCurrentIntegration();
+        }
+
         gettingSystemData = true;
         lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
@@ -1405,12 +1416,12 @@ export function stepBack() {
 
 export function resetSimulationTimeToNow() {
     currentSimulationTime = Date.now();
-    updateSimulation();
+    updateSimulation(true, true);
 }
 
 export function setSimulationTimeToTime(time) {
     currentSimulationTime = clampSimulationTime(time);
-    updateSimulation();
+    updateSimulation(true, true);
 }
 
 export async function resetView(topDown = true) {
