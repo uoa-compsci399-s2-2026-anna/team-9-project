@@ -1818,3 +1818,13 @@ async function renderFrame(timestamp) {
     // Invoke render() on the next frame
     requestAnimationFrame(renderFrame);
 }
+
+const DOLLY_IN_OUT_SCALE_FACTOR = 0.5;
+
+export function zoomIn() {
+    controls.dollyIn(1 - DOLLY_IN_OUT_SCALE_FACTOR);
+}
+
+export function zoomOut() {
+    controls.dollyIn(1 + DOLLY_IN_OUT_SCALE_FACTOR);
+}

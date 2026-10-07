@@ -18,6 +18,8 @@ import {
     setFontFamily,
     toggleSimulationDarkMode,
     syncCalendar,
+    zoomIn,
+    zoomOut,
 } from "../rendering/simulationRenderer.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -111,3 +113,6 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
         syncCalendar();
     }
 });
+
+bus.subscribe(EVENTS.SIM.ZOOM_IN, zoomIn);
+bus.subscribe(EVENTS.SIM.ZOOM_OUT, zoomOut);
