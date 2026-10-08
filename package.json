@@ -1,5 +1,6 @@
 {
-  "name": "team-9-project",
+  "name": "opis",
+  "productName": "OPIS",
   "version": "1.0.0",
   "description": "COMPSCI 399 project repository for Team 9 - JEDEJ",
   "main": "index.js",
