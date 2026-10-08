@@ -1057,7 +1057,9 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
  *
- * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
+ * @param params The function's parameters object (used for optional named parameters)
+ * @param {boolean} [params.forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
+ * @param {boolean} [params.priorityUpdate=false] Whether or not to force this update by stopping integration
  */
 async function updateSimulation({
     forceCalendarUpdate = true,
