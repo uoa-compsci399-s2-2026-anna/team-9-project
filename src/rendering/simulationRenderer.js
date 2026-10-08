@@ -60,7 +60,8 @@ import {
 import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { MIN_SIMULATION_TIME } from "../utils/utils.js";
+import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
+import { clamp } from "three/src/math/MathUtils.js";
 
 let timer;
 
@@ -1280,7 +1281,7 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
-    currentSimulationTime = getSimulationTime(name);
+    currentSimulationTime = clampSimulationTime(getSimulationTime(name));
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone.start = systemInfo["habitable zone"].start;
@@ -1373,17 +1374,19 @@ export async function init(name) {
 }
 
 /**
- * Clamp a simulation time so it never goes before the minimum simulation time.
+ * Clamp a simulation time so it stays between the minimum and maximum simulation times.
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    return Math.max(time, MIN_SIMULATION_TIME);
+    return Math.min(Math.max(time, MIN_SIMULATION_TIME), MAX_SIMULATION_TIME);
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
+    currentSimulationTime = clampSimulationTime(
+        currentSimulationTime + getSimulationSpeedMilliseconds(currentSystem),
+    );
     updateSimulation();
 }
 
@@ -1788,8 +1791,10 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime +=
-            getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
+        currentSimulationTime = clampSimulationTime(
+            currentSimulationTime +
+                getSimulationSpeedMilliseconds(currentSystem) * deltaTime,
+        );
 
         // Update the simulation but do not bypass the calendar update throttle
         updateSimulation(false);
