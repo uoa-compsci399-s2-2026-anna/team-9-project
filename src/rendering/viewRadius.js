@@ -1,0 +1,1 @@
+export const VIEW_RADIUS_MULTIPLIER = 1.3;
