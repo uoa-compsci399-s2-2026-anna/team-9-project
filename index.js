@@ -83,21 +83,23 @@ function getWindowBackgroundColour() {
         : WINDOW_BACKGROUND_COLOUR.light;
 }
 
-function updateWindowBackgroundColour() {
-    if (!mainWindow) {
-        return;
+async function applyTheme(isDark) {
+    const theme = isDark ? "dark" : "light";
+    const background = isDark ? "black" : "white";
+
+    if (nativeTheme.themeSource !== theme) {
+        const nativeThemeUpdated = new Promise((resolve) => {
+            nativeTheme.once("updated", resolve);
+        });
+
+        nativeTheme.themeSource = theme;
+
+        // Wait for Electron to acknowledge the native theme change
+        await nativeThemeUpdated;
     }
 
-    const backgroundColour = getWindowBackgroundColour();
-    mainWindow.setBackgroundColor(backgroundColour);
-}
-
-/**
- * Update the application theme based on the user's current theme.
- * This is reflected in the application title bar.
- */
-function applyNativeTheme() {
-    nativeTheme.themeSource = resolveDarkMode() ? "dark" : "light";
+    // Now update Chromium's native window background
+    mainWindow.setBackgroundColor(background);
 }
 
 function getDefaultSettings() {
@@ -116,7 +118,7 @@ store.set("settings", {
 });
 
 // Apply the saved theme to the native frame
-applyNativeTheme();
+nativeTheme.themeSource = resolveDarkMode() ? "dark" : "light";
 
 // Initialise the simulation state to the default simulation state
 let simulationState = { ...DEFAULT_SIMULATION_STATE };
@@ -130,16 +132,15 @@ ipcMain.handle("settings:getDefaults", () => {
     return getDefaultSettings();
 });
 
-/**
- * Wait until the theme has been updated before updating the background colour to minimise
- * the delay between updates
- */
-nativeTheme.on("updated", updateWindowBackgroundColour);
+ipcMain.handle("settings:set", async (_event, newSettings) => {
+    const mergedSettings = {
+        ...store.get("settings"),
+        ...newSettings,
+    };
 
-ipcMain.handle("settings:set", (_event, newSettings) => {
-    const mergedSettings = { ...store.get("settings"), ...newSettings };
     store.set("settings", mergedSettings);
-    applyNativeTheme();
+
+    await applyTheme(mergedSettings.darkMode);
 });
 
 // Refresh the current web page
