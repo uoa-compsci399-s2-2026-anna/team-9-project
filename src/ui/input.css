@@ -41,19 +41,28 @@
 
 @utility ui-zoom {
   @media (max-height: 700px) {
-    zoom: 0.9;
-  }
-}
+    /* Default font, default size */
+    &:not(.font-accessible *):not(html[data-text-size="Larger"] *) {
+      zoom: 0.8; 
+    }
 
-@utility ui-zoom-strong {
-  @media (max-height: 700px) {
-    zoom: 0.8;
+    /* Accessible font, default size */
+    &:is(.font-accessible *):not(html[data-text-size="Larger"] *) {
+      zoom: 0.74;
+    }
 
-    html[data-text-size="Larger"] & {
-      zoom: 0.7;
+    /* Default font, larger size */
+    &:not(.font-accessible *):is(html[data-text-size="Larger"] *) {
+      zoom: 0.74;
+    }
+
+    /* Accessible font, larger size */
+    &:is(.font-accessible *):is(html[data-text-size="Larger"] *) {
+      zoom: 0.74;
     }
   }
 }
+
 
 @theme {
   --color-primary: var(--color-zinc-700);
