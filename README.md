@@ -32,26 +32,6 @@ To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 npm run dev
 ```
 
-#### Running the Python web server
-
-To run [FastAPI](https://fastapi.tiangolo.com) the Python web server in development mode:
-
-```sh
-uv run main.py
-```
-
-Or with `python`, in a [virtual environment](https://www.w3schools.com/python/python_virtualenv.asp):
-
-```sh
-python3 main.py
-```
-
-<!--
-Maybe include this link in the languages/frameworks used section instead?
-## Useful Links
-
-- [`fastapi` Reference Docs](https://fastapi.tiangolo.com/) -->
-
 #### Running Tailwind
 
 To automatically run [Tailwind](https://tailwindcss.com) on file changes:
