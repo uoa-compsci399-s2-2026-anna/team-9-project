@@ -1421,12 +1421,16 @@ export function stepBack() {
 
 export function resetSimulationTimeToNow() {
     currentSimulationTime = Date.now();
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
 export function setSimulationTimeToTime(time) {
     currentSimulationTime = clampSimulationTime(time);
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
 export async function resetView(topDown = true) {
