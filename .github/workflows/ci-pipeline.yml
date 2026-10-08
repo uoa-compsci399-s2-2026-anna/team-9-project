@@ -10,6 +10,7 @@ jobs:
   # Checks with prettier if the project's files are correctly formatted. If not,
   # then prettier runs, formats the files, and commits.
   format:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:
