@@ -130,11 +130,12 @@ ipcMain.handle("settings:getDefaults", () => {
     return getDefaultSettings();
 });
 
+nativeTheme.on("updated", updateWindowBackgroundColour);
+
 ipcMain.handle("settings:set", (_event, newSettings) => {
     const mergedSettings = { ...store.get("settings"), ...newSettings };
     store.set("settings", mergedSettings);
     applyNativeTheme();
-    updateWindowBackgroundColour();
 });
 
 // Refresh the current web page
