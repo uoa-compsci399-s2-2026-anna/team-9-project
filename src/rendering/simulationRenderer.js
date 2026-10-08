@@ -22,6 +22,7 @@ import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
     getMultipleSystemsData,
+    abortCurrentIntegration,
 } from "../services/simulationServices.js";
 import {
     TWO_PI,
@@ -1073,10 +1074,14 @@ async function updateSimulation({
 
     let allSystemData;
 
-    if (gettingSystemData && lastSystemData) {
+    if (!priorityUpdate && gettingSystemData && lastSystemData) {
         // Use the last fetched data if a request is already in progress
         allSystemData = lastSystemData;
     } else {
+        if (priorityUpdate) {
+            await abortCurrentIntegration();
+        }
+
         gettingSystemData = true;
         lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
