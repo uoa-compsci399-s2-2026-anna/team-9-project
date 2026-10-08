@@ -23,12 +23,14 @@ import {
     getMultipleSystemsData,
 } from "../services/simulationServices.js";
 import {
+    TWO_PI,
     calculateOrbitalPosition,
-    calculateRotationMatrix,
+    isAngleBetween,
+    calculateProgressDistance,
+    calculateOrbitRotationMatrix,
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
     calculatePeriapsis,
-    calculateCameraDistance,
     calculateAverageNormal,
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
@@ -45,9 +47,17 @@ import {
     animateCamera,
 } from "./simulationCameraAndControls.js";
 import {
+    habitableZone,
+    habitableZoneMesh,
+    createHabitableZoneMesh,
+    updateHabitableZoneTexture,
+    flipHabitableZoneTexture,
+} from "./habitableZone.js";
+import {
     updateCalendar,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
+import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
@@ -100,13 +110,10 @@ let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
-/**
- * The width (thickness) of the orbit lines for regular orbits and for orbits
- * belonging to the Solar System when it's shown only as a comparison overlay,
- * in screen pixels.
- */
-const ORBIT_LINE_WIDTH = 20;
-const COMPARISON_ORBIT_LINE_WIDTH = 10;
+// Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height)
+const ORBIT_LINE_WIDTH_PROPORTION = 0.02;
+const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.01;
+const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 
 /**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
@@ -133,35 +140,6 @@ function getCurrentSystemColour(name, isDarkMode) {
     const fallbackColour = isDarkMode ? "white" : "black";
     return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
-
-const fontSizes = {
-    Default: "12px",
-    Larger: "18px",
-};
-
-const fontFamilies = {
-    Default: "inherit",
-    OpenDyslexic: "OpenDyslexic",
-};
-
-const themes = {
-    light: {
-        background: new THREE.Color("white"),
-        labelBackground: "rgba(255, 255, 255, 0.5)",
-        referenceGrid: 0xcccccc,
-    },
-    dark: {
-        background: new THREE.Color("black"),
-        labelBackground: "rgba(0, 0, 0, 0.5)",
-        referenceGrid: 0x555555,
-    },
-};
-
-const habitableZoneSegments = 64; // Number of segments to approximate the ring
-const habitableZoneColor = 0x00ff00; // Green
-const habitableZoneOpacity = 0.2;
-let habitableZone;
-let habitableZoneMesh;
 
 // Size of the reference grid in AU when scale = 1.
 // This will be scaled when the camera zoom changes.
@@ -220,18 +198,6 @@ const MIN_SIMULATION_TIME = (() => {
     date.setUTCHours(0, 0, 0, 0);
     return date.getTime();
 })();
-
-function getTheme(isDarkMode = settings.darkMode) {
-    return isDarkMode ? themes.dark : themes.light;
-}
-
-function getFontSize(size) {
-    return fontSizes[size] ?? fontSizes.Default;
-}
-
-function getFontFamily(chosenFont) {
-    return fontFamilies[chosenFont] ?? fontFamilies.Default;
-}
 
 /**
  * Get the reference system data for a given system.
@@ -542,29 +508,141 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
-        const labelDiv = document.createElement("div");
-        labelDiv.className = "planet-label";
-        labelDiv.textContent = name;
-        labelDiv.style.color = colour;
-        if (group === solarSystemGroup) {
-            labelDiv.style.opacity = comparisonLabelOpacity;
-        }
-        labelDiv.style.fontSize = getFontSize(settings.textSize);
-        labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.fontWeight = "bold";
-        labelDiv.style.backgroundColor = getTheme().labelBackground;
-        labelDiv.style.padding = "1px 5px";
-        labelDiv.style.borderRadius = "4px";
-        labelDiv.style.whiteSpace = "nowrap";
+        const label = createLabel(
+            name,
+            colour,
+            group === solarSystemGroup ? comparisonLabelOpacity : 1,
+        );
 
-        const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
         label.visible = simulationState.labelsShown;
+
+        // 'Anchors' the label to the top-left
+        label.center.set(0, 0);
+
         mesh.add(label);
         objectLabels.set(name, label);
     }
 
     mesh.position.set(position.x, position.y, position.z);
+}
+
+/**
+ * Creates a label. The font size and family, and the div's background colour
+ * are set as per the settings state.
+ * @param {string} name Object name
+ * @param {string} colour CSS colour string of label colour
+ * @param {Number} opacity Opacity of label in interval [0, 1]
+ * @returns {CSS2DObject} Created label div
+ */
+export function createLabel(name, colour, opacity) {
+    const labelDiv = document.createElement("div");
+
+    labelDiv.className = "planet-label";
+    labelDiv.textContent = name;
+
+    labelDiv.style.color = colour;
+    labelDiv.style.backgroundColor = getTheme().labelBackground;
+
+    labelDiv.style.opacity = opacity;
+
+    labelDiv.style.fontSize = getFontSize(settings.textSize);
+    labelDiv.style.fontFamily = getFontFamily(settings.font);
+    labelDiv.style.fontWeight = "bold";
+
+    labelDiv.style.padding = "1px 5px";
+    labelDiv.style.borderRadius = "4px";
+    labelDiv.style.whiteSpace = "nowrap";
+
+    const label = new CSS2DObject(labelDiv);
+
+    return label;
+}
+
+export function updateObjectLabelOffsets() {
+    for (const group of [currentSystemGroup, solarSystemGroup]) {
+        for (const mesh of group.children) {
+            const label = mesh.children.find(
+                (child) => child instanceof CSS2DObject,
+            );
+
+            if (!label) {
+                continue;
+            }
+
+            const pixelLength = getObjectApparentPixelRadius(mesh);
+
+            label.element.style.marginTop = `${pixelLength}px`;
+            label.element.style.marginLeft = `${pixelLength}px`;
+        }
+    }
+}
+
+/**
+ * @param {THREE.Object3D} object ThreeJS mesh of object
+ * @returns How many pixels the object's radius is on a screen
+ */
+function getObjectApparentPixelRadius(object) {
+    /**
+     * The 'up' direction in world space.
+     */
+    const worldUp = new THREE.Vector3(0, 1, 0);
+
+    /**
+     * The 'up' direction in camera space.
+     */
+    const cameraWorldUp = worldUp.applyQuaternion(
+        camera.getWorldQuaternion(new THREE.Quaternion()),
+    );
+
+    /**
+     * Vector to center of object in world coordinates.
+     */
+    const objectCenter = new THREE.Vector3();
+    object.getWorldPosition(objectCenter);
+
+    /**
+     * Vector to edge of object in world coordinates.
+     */
+    const objectEdge = new THREE.Vector3();
+    objectEdge.copy(objectCenter).addScaledVector(
+        // Scale the camera 'up' direction vector by the object mesh's scale
+        cameraWorldUp,
+        objectSize * object.scale.y,
+    );
+
+    // Project vectors to NDC space (coordinates in interval [-1, 1])
+    objectCenter.project(camera);
+    objectEdge.project(camera);
+
+    // Get scalars in screen pixel coordinate space
+    const centerY = ndcScalarToScreenScalar(objectCenter.y);
+    const edgeY = ndcScalarToScreenScalar(objectEdge.y);
+
+    // Calculate object radius in screen pixels
+    const pixelLength = Math.abs(edgeY - centerY);
+
+    return pixelLength;
+}
+
+/**
+ * Converts a scalar in NDC space to a scalar in screen pixel space.
+ *
+ * i.e. a mapping from NDC space in interval [-1, 1] to screen pixel space
+ * in interval [0, screen height].
+ *
+ * @param {Number} ndcDimension Single dimension of normalised device coordinate
+ * system (i.e a scalar in NDC space) (in interval [-1, 1])
+ * @returns Single dimension of `ndcDimension` scalar in screen pixel
+ * coorindates
+ */
+function ndcScalarToScreenScalar(ndcDimension) {
+    /**
+     * The client height of the renderer.
+     */
+    const clientHeight = renderer.domElement.clientHeight;
+
+    return ((ndcDimension + 1) / 2) * clientHeight;
 }
 
 /**
@@ -615,21 +693,43 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
 }
 
 /**
+ * Get the line width for orbits, based on the current size of the canvas.
+ *
+ * The orbital line width is different for normal orbits and the Solar System orbits when
+ * comparing to the Solar System.
+ *
+ * @param {boolean} isComparison Whether to get the width for a comparison orbit or a normal orbit
+ * @returns The line width for orbits
+ */
+function getOrbitLineWidth(isComparison) {
+    const canvas = renderer.domElement;
+    const canvasSize = Math.min(canvas.clientWidth, canvas.clientHeight);
+
+    // The orbit line width as a proportion of the canvas size
+    const proportion = isComparison
+        ? COMPARISON_ORBIT_LINE_WIDTH_PROPORTION
+        : ORBIT_LINE_WIDTH_PROPORTION;
+
+    return Math.max(ORBIT_LINE_MIN_PIXEL_WIDTH, canvasSize * proportion);
+}
+
+/**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  *
  * The orbital line is coloured to match its object.
  *
  * @param {string} name Name of the object associated with the orbital line
- * @param {Object} position The position in real coordinates (xyz) of the object
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
  * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
-    const { a, e, inc, Omega, omega } = orbitalData;
+function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
+    const { a, e, inc, Omega, omega, f } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
+
+    const isElliptical = e < 1;
 
     let line = orbitalLines.get(name);
 
@@ -653,17 +753,15 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
                 comparisonOrbitOpacity,
             );
 
-            material.lineWidth = COMPARISON_ORBIT_LINE_WIDTH;
+            material.lineWidth = getOrbitLineWidth(true);
             material.color.set(comparisonColour);
         } else {
-            material.lineWidth = ORBIT_LINE_WIDTH;
+            material.lineWidth = getOrbitLineWidth(false);
             material.color.set(colour);
         }
 
-        if (e < 1) {
-            material.alphaMap = createOpaqueOrbitAlphaTexture();
-            material.useAlphaMap = 1;
-        }
+        material.alphaMap = createOpaqueOrbitAlphaTexture();
+        material.useAlphaMap = 1;
 
         material.resolution.set(canvas.clientWidth, canvas.clientHeight);
 
@@ -687,10 +785,10 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
     // Update the geometry of the line to match the orbital parameters
     const points = [];
     let thetaStart = 0;
-    let thetaEnd = 2 * Math.PI;
+    let thetaEnd = TWO_PI;
 
     // Limit the angle range for hyperbolic orbits to its asymptotes
-    if (e > 1) {
+    if (!isElliptical) {
         const thetaLimit = Math.acos(-1 / e);
         const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
 
@@ -698,90 +796,77 @@ function createOrUpdateOrbitalLine(name, position, orbitalData, group, colour) {
         thetaEnd = thetaLimit - epsilon;
     }
 
-    const thetaStep = (thetaEnd - thetaStart) / ORBIT_POINTS_COUNT;
+    // Calculate the step size for theta.
+    // ORBIT_POINTS_COUNT - 2 is used as:
+    // * A point is added at the object's position
+    // * The last point is added separately
+    const thetaStep = (thetaEnd - thetaStart) / (ORBIT_POINTS_COUNT - 2);
 
-    /**
-     * The position of the object in world (xyz) coordinate space.
-     */
-    const worldObjectPosition = new THREE.Vector3(
-        position.x,
-        position.y,
-        position.z,
-    );
-
-    /**
-     * Rotation matrix: local (coordinate system of orbit plane) -> world
-     */
-    const rotationMatrix = calculateRotationMatrix(Omega, inc, omega);
-
-    /**
-     * World -> local (coordinate system of orbit plane)
-     */
-    const inverseRotationMatrix = rotationMatrix.clone().invert();
-
-    /**
-     * Position of object in local (orbit plane) coordinates
-     */
-    const localObjectPosition = worldObjectPosition.applyMatrix4(
-        inverseRotationMatrix,
-    );
-    /**
-     * Angle between positive x-axis (in local coordinates) and the point
-     * (localPosition.x, localPosition.y) from the 2-argument arctangent.
-     */
-    let objectTheta = Math.atan2(localObjectPosition.y, localObjectPosition.x);
-    if (objectTheta < 0) objectTheta += 2 * Math.PI;
-
-    for (let theta = thetaStart; theta <= thetaEnd; theta += thetaStep) {
+    let objectIndex = 0;
+    for (let i = 0; i < ORBIT_POINTS_COUNT - 2; i++) {
+        const theta = thetaStart + i * thetaStep;
         const { x, y } = calculateOrbitalPosition(a, e, theta);
         points.push(x, y, 0);
 
-        if (objectTheta > theta && objectTheta < theta + thetaStep) {
+        if (isAngleBetween(f, theta, theta + thetaStep)) {
             // Add a point on the exact coordinates of the object to prevent
             // sampling issues where the object's position falls between points.
-            points.push(localObjectPosition.x, localObjectPosition.y, 0);
+            const { x, y } = calculateOrbitalPosition(a, e, f);
+            points.push(x, y, 0);
+            objectIndex = i + 1;
         }
     }
 
-    if (e > 1) {
-        // Add the last point at the end of the range to ensure the line reaches the asymptote
-        const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
-        points.push(x, y, 0);
-    }
+    // Add the last point at the end of the range
+    const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
+    points.push(x, y, 0);
 
-    if (e < 1) {
+    /**
+     * Proportion of a full revolution the object is from its starting
+     * point/angle.
+     */
+    const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
+
+    updateOrbitAlphaTexture(
+        line.material.alphaMap,
+        objectProgress,
+        isElliptical,
+    );
+
+    // Create or update the position attribute and widen the line at the object
+    line.geometry.setPoints(points, (progress) => {
         /**
-         * Proportion of a full revolution the object is from its starting
-         * point/angle.
+         * setPoints takes a callback which has a `progress` parameter which defines
+         * the progress across the line (as a proportion, in [0, 1]), and returns
+         * the PROPORTION of the original line width as defined for the material
+         * to define the line width at that point (`progress`) along the line.
          */
-        const objectProgress = THREE.MathUtils.clamp(
-            (objectTheta - thetaStart) / (thetaEnd - thetaStart),
-            0,
-            1,
+
+        const FULL_WIDTH_PROPORTION = 1;
+
+        if (settings.orbitLines == "Solid") {
+            return FULL_WIDTH_PROPORTION;
+        }
+
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical,
         );
 
-        updateOrbitAlphaTexture(line.material.alphaMap, objectProgress);
-
-        // Create or update the position attribute and widen the line at the object
-        line.geometry.setPoints(points, (progress) => {
-            /**
-             * Proportion of a full revolution this point of `progress` is
-             * from the object.
-             */
-            const distance = (objectProgress - progress + 1) % 1;
-
+        if (settings.orbitLines === "Tapered") {
             return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
-        });
-    } else {
-        // Display non-elliptical orbits as constant width
-        line.geometry.setPoints(points);
-    }
+        } else {
+            return FULL_WIDTH_PROPORTION;
+        }
+    });
 
     // Rotate the line to match the orbital parameters
+    const rotationMatrix = calculateOrbitRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
-const ORBIT_LINE_MINIMUM_OPACITY = 0.2;
+const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 /**
@@ -792,7 +877,7 @@ const ORBIT_LINE_MIN_WIDTH = 0.5;
  * @returns Scale factor betwee 0 and 1 of opacity/line width.
  */
 const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MINIMUM_OPACITY, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
@@ -805,17 +890,19 @@ const RGBA_MAX_VALUE = 255;
  * (i.e. a fully opaque alpha map) based on the number of points in the simulation.
  */
 function createOpaqueOrbitAlphaTexture() {
-    const data = new Uint8Array(ORBIT_POINTS_COUNT * RGBA_CHANNEL_COUNT);
+    const data = new Uint8Array(
+        (ORBIT_POINTS_COUNT - 1) * RGBA_CHANNEL_COUNT, // There is one less segment than points
+    );
     data.fill(RGBA_MAX_VALUE);
 
     /**
-     * Create ORBIT_POINTS_COUNT x 1 texture (i.e. a 1D texture) for an opacity
+     * Create (ORBIT_POINTS_COUNT - 1) x 1 texture (i.e. a 1D texture) for an opacity
      * map. This is in RGBA format, so each 'point' of the texture is
      * represented by 4 bytes: a red, green, blue, and alpha channel.
      */
     const texture = new THREE.DataTexture(
         data,
-        ORBIT_POINTS_COUNT,
+        ORBIT_POINTS_COUNT - 1,
         1,
         THREE.RGBAFormat,
     );
@@ -826,16 +913,21 @@ function createOpaqueOrbitAlphaTexture() {
 }
 
 /**
- * Updates the given alpha `texture` map based on the new value of
- * `objectProgress` (i.e. the new position of the object). Used so that as the
- * object moves around its orbit, the opacity of the orbit updates correctly
- * so that it is most opaque at the object and gets fainter (or as defined
- * by the opacity modulation function).
- * @param {THREE.DataTexture} texture
+ * Updates the given alpha texture map based on the new value of
+ * `objectProgress` (i.e. the new position of the object).
+ *
+ * Used so that as the object moves around its orbit, the opacity of the orbit
+ * updates correctly so that it is most opaque at the object and gets fainter
+ * (or as defined by the opacity modulation function).
+ *
+ * @param {THREE.Texture} texture An alpha texture map as a 1 x N byte array in
+ * RGBA format, where each 4 bytes represents an RGBA value for that point in
+ * the texture.
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
+ * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
  */
-function updateOrbitAlphaTexture(texture, objectProgress) {
+function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
     /**
      * `texture.image` is an object containing fields `data` (the actual byte
      * array of the texture), `width` (the number of bytes) in the 'width'
@@ -843,23 +935,10 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
      * of the texture.
      */
 
-    const { data, width } = texture.image;
+    const { data: textureArray, width: textureArraySize } = texture.image;
 
     // Iterate over the raw texture byte array
-    for (let i = 0; i < width; i++) {
-        /**
-         * Proportion of array traversed (in interval [0, 1])
-         */
-        const progress = i / (width - 1);
-
-        /**
-         * Proportion of a full revolution this point of `progress` is
-         * from the object.
-         */
-        const distance = (objectProgress - progress + 1) % 1;
-
-        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
-
+    for (let i = 0; i < textureArraySize; i++) {
         /**
          * Offset of red channel/byte
          */
@@ -869,41 +948,40 @@ function updateOrbitAlphaTexture(texture, objectProgress) {
          * Offset of alpha channel/byte. Here we add 3 because `offset` is the
          * offset of the byte of the red channel. To get the offset of the alpha
          * channel, we add 3.
-         * 
+         *
          * [..., red, green, blue, alpha, red, ...]
          */
         const alphaOffset = offset + 3;
 
-        data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
+        if (settings.orbitLines === "Solid") {
+            textureArray[alphaOffset] = RGBA_MAX_VALUE;
+            continue;
+        }
+
+        /**
+         * Proportion of array traversed (in interval [0, 1]). Max value of `i`
+         * is `textureArraySize - 1`, hence `(textureArraySize - 1)`.
+         */
+        const progress = i / (textureArraySize - 1);
+
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical,
+        );
+
+        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
+
+        textureArray[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
     }
 
     texture.needsUpdate = true;
 }
 
-/**
- * Create a mesh representing the habitable zone as a ring in the XY plane.
- */
-function createHabitableZoneMesh() {
-    const startRadius = habitableZone.start;
-    const endRadius = habitableZone.end;
-
-    const geometry = new THREE.RingGeometry(
-        startRadius,
-        endRadius,
-        habitableZoneSegments,
-    );
-    const material = new THREE.MeshBasicMaterial({
-        color: habitableZoneColor,
-        opacity: habitableZoneOpacity,
-        transparent: true,
-        side: THREE.DoubleSide,
-
-        // Do not update depth buffer (to prevent z-fighting with other meshes)
-        depthWrite: false,
-    });
-    habitableZoneMesh = new THREE.Mesh(geometry, material);
-    habitableZoneMesh.visible = simulationState.habitableZoneShown;
-}
+bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
+    // Update simulation to redraw orbit lines with new width/opacity profile
+    updateSimulation();
+});
 
 /**
  * Create a reference grid in the XY plane.
@@ -962,6 +1040,8 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
     const scaleFactor =
         desiredReferenceGridDivisionSize / referenceGridDivisionSize;
     referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+    bus.publish(EVENTS.SIM.UPDATE_GRID_SCALE, { value: scaleFactor });
 }
 
 /**
@@ -985,13 +1065,12 @@ async function updateSimulation(forceCalendarUpdate = true) {
     if (gettingSystemData && lastSystemData) {
         // Use the last fetched data if a request is already in progress
         allSystemData = lastSystemData;
-
     } else {
         gettingSystemData = true;
         lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
             systems,
-            lastFetchedSimulationTime
+            lastFetchedSimulationTime,
         );
         updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
         gettingSystemData = false;
@@ -1015,7 +1094,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
     )) {
         createOrUpdateOrbitalLine(
             name,
-            currentSystemData.positions[name],
             orbitalData,
             currentSystemGroup,
             getCurrentSystemColour(name, isDarkMode),
@@ -1045,13 +1123,15 @@ async function updateSimulation(forceCalendarUpdate = true) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(
                 name,
-                solarSystemData.positions[name],
                 orbitalData,
                 solarSystemGroup,
                 overlayColour,
             );
         }
     }
+
+    // Update the meshes' scales (which are used to calculate label offets)
+    updateScreenSpaceScales();
 }
 
 /**
@@ -1108,6 +1188,7 @@ function createControlsChangeHandler(viewRadius) {
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
         updateReferenceGridScale(camera.position, controls.target);
+        flipHabitableZoneTexture(camera.position);
     };
 }
 
@@ -1209,7 +1290,8 @@ export async function init(name) {
     currentSimulationTime = getSimulationTime(name);
 
     const systemInfo = await getSystemInfo(currentSystem);
-    habitableZone = systemInfo["habitable zone"];
+    habitableZone.start = systemInfo["habitable zone"].start;
+    habitableZone.end = systemInfo["habitable zone"].end;
     currentSystemColours = Object.fromEntries(
         Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
             name,
@@ -1255,13 +1337,15 @@ export async function init(name) {
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     initRaycastingEvents(canvas, controls);
@@ -1333,13 +1417,15 @@ export async function resetView(topDown = true) {
     await updateViewRadius(comparingToSolarSystem, habitableZoneMesh?.visible);
 
     // Update the camera and controls for the new view radius
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     // Animate to the default controls target
@@ -1383,13 +1469,15 @@ export async function compareToSolarSystem() {
 
     solarSystemGroup.visible = true;
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     resetView();
@@ -1405,13 +1493,15 @@ export async function hideSolarSystem() {
     await updateInnermostPeriapsis(false);
     solarSystemGroup.visible = false;
 
-    const cameraAndControlsSettings =
-        calculateCameraAndControlsSettings(viewRadius, objectSize);
+    const cameraAndControlsSettings = calculateCameraAndControlsSettings(
+        viewRadius,
+        objectSize,
+    );
     initOrUpdateCamera(canvas, cameraAndControlsSettings);
     initOrUpdateControls(
         canvas,
         cameraAndControlsSettings,
-        createControlsChangeHandler(viewRadius)
+        createControlsChangeHandler(viewRadius),
     );
 
     resetView();
@@ -1475,6 +1565,7 @@ export function setFontFamily(chosenFont) {
     for (const label of objectLabels.values()) {
         label.element.style.fontFamily = fontFamily;
     }
+    updateHabitableZoneTexture(getTheme(), fontFamily);
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
@@ -1535,6 +1626,8 @@ export function toggleSimulationDarkMode(isDarkMode) {
                 : getCurrentSystemColour(name, isDarkMode),
         );
     }
+
+    updateHabitableZoneTexture(theme, getFontFamily(settings.font));
 }
 
 /**
@@ -1555,6 +1648,9 @@ function resizeRendererToDisplaySize() {
 
         for (const line of orbitalLines.values()) {
             line.material.resolution.set(width, height);
+            line.material.lineWidth = getOrbitLineWidth(
+                line.parent === solarSystemGroup,
+            );
         }
     }
 
@@ -1570,12 +1666,18 @@ function resizeRendererToDisplaySize() {
 async function updateInnermostPeriapsis(comparing) {
     // Don't check the periapsis of the stars in the current system
     const systems = [
-        { system: currentSystem, isExcluded: (name) => objectTypes[name] === "star" },
+        {
+            system: currentSystem,
+            isExcluded: (name) => objectTypes[name] === "star",
+        },
     ];
 
     if (comparing) {
         // Don't check the periapsis of the Sun
-        systems.push({ system: "Solar System", isExcluded: (name) => name === "Sun" });
+        systems.push({
+            system: "Solar System",
+            isExcluded: (name) => name === "Sun",
+        });
     }
 
     let smallest = Infinity;
@@ -1606,7 +1708,8 @@ async function updateInnermostPeriapsis(comparing) {
  */
 function getOrbitScaleCap(isStar) {
     // The maximum size for a star
-    const starSizeCap = (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize
+    const starSizeCap =
+        (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize;
 
     // Objects should always be STAR_SIZE_RATIO smaller than stars
     return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
@@ -1624,13 +1727,21 @@ function getOrbitScaleCap(isStar) {
  * @param {number} maxScale The maximum allowed scale factor
  * @returns {number} The scale factor to apply to the mesh
  */
-function calculateScreenSpaceScale(mesh, camera, canvasHeight, desiredPixelSize, minScale, maxScale) {
+function calculateScreenSpaceScale(
+    mesh,
+    camera,
+    canvasHeight,
+    desiredPixelSize,
+    minScale,
+    maxScale,
+) {
     const meshWorldPosition = new THREE.Vector3();
     mesh.getWorldPosition(meshWorldPosition);
     const distance = camera.position.distanceTo(meshWorldPosition);
 
     const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
-    const worldHeightAtDistance = 2 * Math.tan(verticalFovRadians / 2) * distance;
+    const worldHeightAtDistance =
+        2 * Math.tan(verticalFovRadians / 2) * distance;
     const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
 
     const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
@@ -1694,6 +1805,8 @@ async function renderFrame(timestamp) {
     animateCamera();
 
     updateScreenSpaceScales();
+
+    updateObjectLabelOffsets();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);

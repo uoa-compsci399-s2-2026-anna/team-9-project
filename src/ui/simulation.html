@@ -49,7 +49,10 @@
     </div>
 
     <!-- RHS controls -->
-    <div class="ml-auto flex flex-col gap-2">
+    <div class="z-10 ml-auto flex flex-col items-end gap-2">
+      <!-- Grid scale indicator -->
+      <p id="grid-scale-text" class="text-secondary pr-2 text-sm">AU/square</p>
+
       {% call container(style="flex gap-2 p-2") %}
         <!-- Compare to solar system button -->
         {% if current_system.name != "Solar System" %}
@@ -103,6 +106,11 @@
   ></script>
   <script
     type="module"
+    src="/src/events/triggers/system-picker-triggers.js"
+    defer
+  ></script>
+  <script
+    type="module"
     src="/src/controllers/simulationRendererController.js"
     defer
   ></script>
@@ -123,6 +131,11 @@
   <script
     type="module"
     src="/src/ui/templates/view-settings-panel.js"
+    defer
+  ></script>
+  <script
+    type="module"
+    src="/src/ui/components/system-picker.js"
     defer
   ></script>
 {% endblock %}

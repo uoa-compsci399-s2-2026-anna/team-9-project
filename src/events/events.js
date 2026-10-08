@@ -28,6 +28,11 @@ export const EVENTS = {
         SET_TIME_TO_NOW: "sim:set_time_to_now",
 
         CLOSE_OBJECT_INFO: "sim:close_object_info",
+
+        /**
+         * When the grid scale updates.
+         */
+        UPDATE_GRID_SCALE: "sim:update_grid_scale",
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
@@ -41,6 +46,7 @@ export const EVENTS = {
         FONT_SELECT: "settings:font_select",
         TEXT_SIZE_SELECT: "settings:text_size_select",
         OBJECT_MARKER_SIZE_SELECT: "settings:object_marker_size_select",
+        ORBIT_LINES_SELECT: "settings:orbit_lines_select",
         RESET_ALL_SETTINGS: "settings:reset_all_settings",
 
         /**
@@ -63,4 +69,10 @@ export const EVENTS = {
          */
         CLOSE_RESET_SETTINGS_MENU: "settings:close_reset_settings_menu",
     },
+    SHARED: {
+        /**
+         * Show/hiding the loader available always.
+         */
+        SET_LOADER_VISIBLE: "shared:set_loader_visible",
+    }
 };
