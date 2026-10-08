@@ -8,6 +8,7 @@ import {
     formatInTimeZone,
     TIMEZONE_MAP,
     MIN_SIMULATION_TIME,
+    MAX_SIMULATION_TIME,
 } from "../utils/utils.js";
 import { DateTime } from "luxon";
 
@@ -215,11 +216,14 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
         MIN_SIMULATION_TIME,
     );
 
-    FlatpickrInstance.set("minDate", formatInTimeZone(minTime, timeZone));
-    FlatpickrInstance.set(
-        "maxDate",
-        formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),
+    const maxTime = Math.min(
+        simulationTime + CALENDAR_RANGE_MS,
+        MAX_SIMULATION_TIME,
     );
+
+    FlatpickrInstance.set("minDate", formatInTimeZone(minTime, timeZone));
+    FlatpickrInstance.set("maxDate", formatInTimeZone(maxTime, timeZone));
+
     FlatpickrInstance.setDate(
         formatInTimeZone(simulationTime, timeZone),
         false,
