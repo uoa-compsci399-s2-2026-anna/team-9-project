@@ -46,9 +46,12 @@ async def end_integrating():
     """
     Stop the currently integrating simulation if one is doing so currently.
     """
+    # If the integration has already been aborted, do not abort again
+    if abort_integration.is_set():
+        return
+
     # Only 1 request gets to stop integration at a time which prevents
-    # should_stop being left in a faulty state (True when no integration is
-    # running)
+    # being left in a faulty state (i.e. abort integration when no integration)
     async with killing_integration:
         # If we are current integrating, stop (via heartbeat callback)
         if is_integrating.locked():
