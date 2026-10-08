@@ -48,7 +48,7 @@
 
     /* Accessible font, default size */
     &:is(.font-accessible *):not(html[data-text-size="Larger"] *) {
-      zoom: 0.74;
+      zoom: 0.75;
     }
 
     /* Default font, larger size */
@@ -63,6 +63,36 @@
   }
 }
 
+@media (max-height: 700px) {
+  .flatpickr-calendar {
+    transform-origin: top left;
+  }
+
+  /* Default font, default size */
+  .flatpickr-calendar:not(.font-accessible *):not(html[data-text-size="Larger"] *) {
+    scale: 0.8;
+  }
+
+  /* Accessible font, default size */
+  .flatpickr-calendar:is(.font-accessible *):not(html[data-text-size="Larger"] *) {
+    scale: 0.75;
+  }
+
+  /* Default font, larger size */
+  .flatpickr-calendar:not(.font-accessible *):is(html[data-text-size="Larger"] *) {
+    scale: 0.74;
+  }
+
+  /* Accessible font, larger size */
+  .flatpickr-calendar:is(.font-accessible *):is(html[data-text-size="Larger"] *) {
+    scale: 0.74;
+  }
+
+  /* When the calendar opens above the input, shrink towards the input */
+  .flatpickr-calendar.arrowBottom {
+    transform-origin: bottom left;
+  }
+}
 
 @theme {
   --color-primary: var(--color-zinc-700);
