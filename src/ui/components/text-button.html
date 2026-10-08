@@ -23,9 +23,9 @@
       class="{{ button_styling }} control bordered clickable px-2"
       data-button
     >
-    {% if short_button_text %} 
-      <span class="short:hidden">{{ button_text }} </span>
-      <span class="hidden short:inline">{{ short_button_text }}</span>
+      {% if short_button_text %}
+        <span class="short:hidden">{{ button_text }}</span>
+        <span class="short:inline hidden">{{ short_button_text }}</span>
       {% else %}
         {{ button_text }}
       {% endif %}
