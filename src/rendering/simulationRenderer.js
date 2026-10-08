@@ -1074,6 +1074,13 @@ async function updateSimulation(forceCalendarUpdate = true) {
         updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
         gettingSystemData = false;
         lastSystemData = allSystemData;
+
+        // If the simulation paused at a different time while this request was loading,
+        // fetch again so the display shows the exact final time
+        if (!running && lastFetchedSimulationTime !== currentSimulationTime) {
+            updateSimulation();
+            return;
+        }
     }
 
     const currentSystemData = allSystemData[currentSystem];
@@ -1138,6 +1145,14 @@ async function updateSimulation(forceCalendarUpdate = true) {
  */
 export function syncCalendar() {
     if (lastFetchedSimulationTime === null) {
+        return;
+    }
+
+    if (
+        lastFetchedSimulationTime !== currentSimulationTime &&
+        !gettingSystemData
+    ) {
+        updateSimulation();
         return;
     }
 
@@ -1380,12 +1395,20 @@ export async function init(name) {
 
 /**
  * Clamp a simulation time so it stays between the minimum and maximum simulation times.
+ * Publishes LIMIT_REACHED if the time had to be clamped
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    return Math.min(Math.max(time, MIN_SIMULATION_TIME), MAX_SIMULATION_TIME);
+    const clampedTime = Math.min(
+        Math.max(time, MIN_SIMULATION_TIME),
+        MAX_SIMULATION_TIME,
+    );
+    if (clampedTime != time) {
+        bus.publish(EVENTS.SIM.LIMIT_REACHED);
+    }
+    return clampedTime;
 }
 
 export function stepForward() {
