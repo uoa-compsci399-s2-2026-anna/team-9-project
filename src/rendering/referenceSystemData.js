@@ -2,6 +2,12 @@ import { getSystemInfo } from "../services/simulationServices.js";
 
 const allReferenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
+/**
+ * Set the reference system data for a given system in the cache.
+ *
+ * @param {string} system The name of the system
+ * @param {Object} data The reference system data
+ */
 export function setReferenceSystemData(system, data) {
     allReferenceSystemData.set(system, data);
 }
