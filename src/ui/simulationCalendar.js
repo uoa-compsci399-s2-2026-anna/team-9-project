@@ -2,17 +2,22 @@ import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { settings } from "../shared/settingsState.js";
 import {
-    formatDate,
     timeToMilliseconds,
     dateOnly,
     convertToEpoch,
+    formatInTimeZone,
+    TIMEZONE_MAP,
+    MIN_SIMULATION_TIME,
+    MAX_SIMULATION_TIME,
 } from "../utils/utils.js";
+import { DateTime } from "luxon";
 
 // The number of milliseconds in a day
 const MS_PER_DAY = timeToMilliseconds(1, "day");
 
 // Date range for calender
 const CALENDAR_RANGE_YEARS = 10;
+const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
 
 // The minimum interval (in milliseconds) for updating the calendar
 const CALENDAR_UPDATE_INTERVAL = 100;
@@ -22,32 +27,43 @@ let lastCalendarUpdate = 0;
 let lastSimulationTime = null;
 
 // Initialise Flatpickr on every calendar input
-const calendarInputs = document.querySelectorAll(".calendar");
+const calendarInput = document.querySelector(".calendar");
 
-const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
-    flatpickr(input, {
-        enableTime: true,
-        // Internal format: "YYYY-MM-ddTHH:mm"
-        dateFormat: "Y-m-d\\TH:i",
-        altInput: true,
-        // User-facing format: "dd-MM-YYYY hh:mm AM/PM"
-        altFormat: "d-m-Y G:i K",
-        altInputClass: "calendar tabular-nums w-46 [.font-accessible_&]:w-50 pl-0.5",
-        allowInput: false,
-        onReady: (_selectedDates, _dateStr, instance) => {
-            instance.altInput.classList.remove("invisible");
-        },
-        onChange: (_selectedDates, dateStr, instance) => {
-            requestAnimationFrame(() => {
-                instance.hourElement?.blur();
-            });
-            const timeZone = input.dataset.timezone;
-            const epochMs = convertToEpoch(dateStr, timeZone);
-            bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
-                time: epochMs,
-            });
-        },
-    }),
+const FlatpickrInstance = flatpickr(calendarInput, {
+    enableTime: true,
+    dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
+    allowInput: false,
+    onChange: (selectedDates, dateStr, instance) => {
+        if (selectedDates.length === 0) {
+            // Restore the current simulation time
+            if (lastSimulationTime !== null) {
+                updateCalendar(lastSimulationTime, true);
+            }
+            return;
+        }
+
+        // Stop auto-selection of hour after picking a date
+        requestAnimationFrame(() => {
+            instance.hourElement?.blur();
+        });
+        const timeZone = calendarInput.dataset.timezone;
+        const epochMs = convertToEpoch(dateStr, timeZone);
+        bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
+            time: epochMs,
+        });
+    },
+});
+
+// Stop backspace/delete from clearing the calendar input
+calendarInput.addEventListener(
+    "keydown",
+    (event) => {
+        if (event.key === "Backspace" || event.key === "Delete") {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    },
+    { capture: true },
 );
 
 // Set Flatpickr theme
@@ -102,79 +118,83 @@ bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
 bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
     const newTimeZone = event.detail.value;
 
-    calendarInputs.forEach((input) => {
-        input.dataset.timezone = newTimeZone;
-    });
+    calendarInput.dataset.timezone = newTimeZone;
 
-    document.querySelectorAll(".calendar-timezone-label").forEach((label) => {
-        label.textContent = `${newTimeZone}`;
-    });
+    document.querySelector(".calendar-timezone-label").textContent =
+        `${newTimeZone}`;
 
     // Refresh the calendar with the last simulation time to reflect the new time zone
-    updateCalendar(lastSimulationTime);
+    if (lastSimulationTime !== null) {
+        updateCalendar(lastSimulationTime, true);
+    }
 });
 
 /**
- * Given the current simulation time in milliseconds since the Unix epoch, return
- * the formatted simulation date. This is used for persisting the simulation date
- * displayed by the calendar.
- *
- * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
- * @returns Formatted simulation date for the given `simulationTime`
- */
-export function formatSimulationDate(simulationTime) {
-    return formatDate(new Date(simulationTime));
-}
-
-/**
  * Gets the elapsed days text which describes how far the simulation time is from today,
- * in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
+ * in the given time zone (e.g., "Today", "3 days from today", "5 days ago").
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns The elapsed days text
  */
-export function getElapsedDaysText(simulationTime) {
-    const simDateString = dateOnly(new Date(simulationTime));
-    const nowDateString = dateOnly(new Date());
+export function getElapsedDaysText(
+    simulationTime,
+    timeZone = calendarInput.dataset.timezone,
+) {
+    const zone = TIMEZONE_MAP[timeZone] ?? "UTC;";
+    const simLocal = DateTime.fromMillis(simulationTime, { zone });
+    const nowLocal = DateTime.now().setZone(zone);
 
-    if (simDateString === nowDateString) {
+    if (simLocal.hasSame(nowLocal, "day")) {
         return "Today";
     }
 
-    const simMidnight = new Date(simDateString + "T00:00:00Z").getTime();
-    const nowMidnight = new Date(nowDateString + "T00:00:00Z").getTime();
+    // Compare plain calendar dates at midnight UTC
+    const simDate = DateTime.utc(simLocal.year, simLocal.month, simLocal.day);
+    const nowDate = DateTime.utc(nowLocal.year, nowLocal.month, nowLocal.day);
 
-    const daysCount = Math.round((simMidnight - nowMidnight) / MS_PER_DAY);
-    const dayWord = Math.abs(daysCount) === 1 ? "day" : "days";
+    // Always measure from the earlier date to the later one
+    const isFuture = simDate > nowDate;
+    const [start, end] = isFuture ? [nowDate, simDate] : [simDate, nowDate];
 
-    if (daysCount > 0) {
-        return `${daysCount} ${dayWord} from today`;
-    } else {
-        return `${Math.abs(daysCount)} ${dayWord} ago`;
+    const diff = end.diff(start, ["years", "days"]);
+    const years = Math.round(diff.years);
+    const days = Math.round(diff.days);
+
+    const parts = [];
+    if (years > 0) {
+        parts.push(`${years} ${years === 1 ? "year" : "years"}`);
     }
+    if (days > 0) {
+        parts.push(`${days} ${days === 1 ? "day" : "days"}`);
+    }
+
+    const elapsedText = parts.join(" ");
+    return isFuture ? `${elapsedText} from today` : `${elapsedText} ago`;
 }
 
 /**
  * Updates the elapsed days text to show how far the simulation time is from today,
- * in the current time zone (e.g., "Today", "3 days from today", "5 days ago").
+ * in the given time zone (e.g., "Today", "3 days from today", "5 days ago").
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  */
-function updateElapsedDaysText(simulationTime) {
+function updateElapsedDaysText(simulationTime, timeZone) {
     const elapsedDays = document.querySelector("#elapsed-days");
 
     if (!elapsedDays) {
         return;
     }
 
-    const elapsedDaysText = getElapsedDaysText(simulationTime);
+    const elapsedDaysText = getElapsedDaysText(simulationTime, timeZone);
     elapsedDays.textContent = elapsedDaysText;
 }
 
 /**
- * Updates all calendars to show the given simulation time in the given time zone,
- * and sets the minimum and maximum of the calendar to +/- CALENDAR_RANGE_YEARS.
- * 
- * Updates are throttled to at most one per `CALENDAR_MIN_INTERVAL_MS`.
- * 
+ * Updates all calendars to show the given simulation time in each calendar's time zone,
+ * and sets the minimum and maximum of the calendar to +/- `CALENDAR_RANGE_YEARS`.
+ *
+ * Updates are throttled to at most one per `CALENDAR_UPDATE_INTERVAL`.
+ *
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {boolean} forceUpdate Whether or not to bypass the throttle
  */
@@ -189,16 +209,24 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
 
     lastCalendarUpdate = now;
 
-    const date = new Date(simulationTime);
-    const formattedDate = formatDate(date);
+    const timeZone = calendarInput.dataset.timezone;
 
-    const CALENDAR_RANGE_MS = timeToMilliseconds(CALENDAR_RANGE_YEARS, "year");
+    const minTime = Math.max(
+        simulationTime - CALENDAR_RANGE_MS,
+        MIN_SIMULATION_TIME,
+    );
 
-    FlatpickrInstances.forEach((instance) => {
-        instance.set("minDate", new Date(date.getTime() - CALENDAR_RANGE_MS));
-        instance.set("maxDate", new Date(date.getTime() + CALENDAR_RANGE_MS));
-        instance.setDate(formattedDate, false, "Y-m-d\\TH:i");
-    });
+    const maxTime = Math.min(
+        simulationTime + CALENDAR_RANGE_MS,
+        MAX_SIMULATION_TIME,
+    );
 
-    updateElapsedDaysText(simulationTime);
+    FlatpickrInstance.set("minDate", formatInTimeZone(minTime, timeZone));
+    FlatpickrInstance.set("maxDate", formatInTimeZone(maxTime, timeZone));
+
+    FlatpickrInstance.setDate(
+        formatInTimeZone(simulationTime, timeZone),
+        false,
+    );
+    updateElapsedDaysText(simulationTime, timeZone);
 }

@@ -43,6 +43,11 @@ function updatePlayPauseButtonAppearance(isPlaying) {
     }
 }
 
+// Pause when the simulation reaches its min or max time
+bus.subscribe(EVENTS.SIM.LIMIT_REACHED, () => {
+    bus.publish(EVENTS.SIM.TOGGLE, { startSimulation: false });
+});
+
 // COMPARE TO SOLAR SYSTEM BUTTON
 
 const compareToSolarSystemButton = document.querySelector(
