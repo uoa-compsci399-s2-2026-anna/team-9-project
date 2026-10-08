@@ -1061,7 +1061,7 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
 async function updateSimulation({
     forceCalendarUpdate = true,
     priorityUpdate = false,
-}) {
+} = {}) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
