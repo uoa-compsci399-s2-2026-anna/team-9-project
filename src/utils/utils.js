@@ -55,6 +55,14 @@ export const MIN_SIMULATION_TIME = (() => {
     return date.getTime();
 })();
 
+// Latest simulation time allowed is 31 December 9999 00:00 (UTC)
+export const MAX_SIMULATION_TIME = (() => {
+    const date = new Date(0);
+    date.setUTCFullYear(9999, 11, 31);
+    date.setUTCHours(0, 0, 0, 0);
+    return date.getTime();
+})();
+
 /**
  * Converts a datetime string into an epoch timestamp, using the given
  * time zone to interpret it.
