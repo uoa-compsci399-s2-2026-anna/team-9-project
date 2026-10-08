@@ -61,7 +61,6 @@ import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
-import { clamp } from "three/src/math/MathUtils.js";
 
 let timer;
 
