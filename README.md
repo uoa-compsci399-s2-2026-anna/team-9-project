@@ -16,7 +16,9 @@ Acknowledgements (if any) - You can list tutorials used, projects referred to, p
 
 [Link to project management tool (GitHub Projects)](https://github.com/orgs/uoa-compsci399-s2-2026-anna/projects/2)
 
-COMPSCI 399 project repository for Team 9 - JEDEJ
+OPIS is an integrated orbital simulator and visualiser for Windows, macOS, and Linux, developed as a learning tool for the ASTRO 100 lab at the University of Auckland.
+
+OPIS allows for the visualisation of three included planetary systems: the Solar System, TRAPPIST-1, and Kepler-16, as well as being extensible so as to allow maintainers to easily add systems of their own.
 
 # Running Electron
 
