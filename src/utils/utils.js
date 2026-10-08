@@ -47,6 +47,14 @@ export const TIMEZONE_MAP = {
     NZT: "Pacific/Auckland",
 };
 
+// Earliest simulation time allowed is 1 January of year 1 (UTC)
+export const MIN_SIMULATION_TIME = (() => {
+    const date = new Date(0);
+    date.setUTCFullYear(1, 0, 1);
+    date.setUTCHours(0, 0, 0, 0);
+    return date.getTime();
+})();
+
 /**
  * Converts a datetime string into an epoch timestamp, using the given
  * time zone to interpret it.

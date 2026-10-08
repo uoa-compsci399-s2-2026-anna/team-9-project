@@ -60,6 +60,7 @@ import {
 import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { MIN_SIMULATION_TIME } from "../utils/utils.js";
 
 let timer;
 
@@ -190,14 +191,6 @@ let innermostPeriapsis = Infinity;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
-
-// Earliest simulation time allowed is 1 January of year 1 (UTC)
-const MIN_SIMULATION_TIME = (() => {
-    const date = new Date(0);
-    date.setUTCFullYear(1, 0, 1);
-    date.setUTCHours(0, 0, 0, 0);
-    return date.getTime();
-})();
 
 /**
  * Get the reference system data for a given system.
