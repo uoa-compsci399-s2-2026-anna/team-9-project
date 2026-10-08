@@ -47,6 +47,7 @@ import {
     initOrUpdateControls,
     animateCamera,
 } from "./simulationCameraAndControls.js";
+import { VIEW_RADIUS_MULTIPLIER } from "./viewRadius.js";
 import {
     getReferenceSystemData,
     setReferenceSystemData,
@@ -89,7 +90,6 @@ let labelRenderer;
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
 
-const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
 
@@ -331,7 +331,7 @@ async function getViewRadiusForSystem(system, useDefault = false) {
     );
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
     const maxPeriapsis = calculateMaxPeriapsis(orbitalDataValues); // To account for hyperbolic orbits
-    return Math.max(maxApoapsis, maxPeriapsis) * viewRadiusMultiplier;
+    return Math.max(maxApoapsis, maxPeriapsis) * VIEW_RADIUS_MULTIPLIER;
 }
 
 /**
@@ -354,7 +354,7 @@ async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
 
     if (habitableZoneShown && habitableZone) {
         const viewRadiusForHabitableZone =
-            habitableZone.end * viewRadiusMultiplier;
+            habitableZone.end * VIEW_RADIUS_MULTIPLIER;
         newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
     }
 
