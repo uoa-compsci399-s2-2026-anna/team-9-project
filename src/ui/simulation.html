@@ -30,11 +30,13 @@
 
   <!-- Object information panel (absolute position) -->
   <div class="absolute top-1/2 right-0 z-10 -translate-y-1/2">
-    {% include "components/object-information-panel.html" %}
+    <div class="ui-zoom">
+      {% include "components/object-information-panel.html" %}
+    </div>
   </div>
 
   <!-- Controls at top -->
-  <div class="flex">
+  <div class="ui-zoom flex">
     <div>{% include "components/system-picker.html" %}</div>
 
     <div class="ml-auto">{% include "components/toolbar.html" %}</div>
@@ -43,13 +45,15 @@
   <!-- Side panels -->
   <div class="flex min-h-0 w-full flex-1 items-end gap-3">
     <!-- Left sidebar -->
-    <div class="flex h-full min-h-0 w-48 flex-col justify-end gap-2">
+    <div
+      class="ui-zoom flex h-full min-h-0 w-48 flex-col justify-end gap-2 in-[.font-accessible]:w-56"
+    >
       {% include "templates/objects-panel.html" %}
       {% include "templates/view-settings-panel.html" %}
     </div>
 
     <!-- RHS controls -->
-    <div class="z-10 ml-auto flex flex-col items-end gap-2">
+    <div class="ui-zoom z-10 ml-auto flex flex-col items-end gap-2">
       <!-- Grid scale indicator -->
       <p id="grid-scale-text" class="text-secondary pr-2 text-sm">AU/square</p>
 

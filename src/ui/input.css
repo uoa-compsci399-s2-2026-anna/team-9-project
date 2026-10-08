@@ -14,7 +14,8 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url(../src/fonts/geist-latin-wght-normal.woff2) format("woff2-variations");
+  src: url(../src/fonts/geist-latin-wght-normal.woff2)
+    format("woff2-variations");
 }
 
 @font-face {
@@ -22,7 +23,8 @@
   font-style: italic;
   font-weight: 100 900;
   font-display: swap;
-  src: url(../src/fonts/geist-latin-wght-italic.woff2) format("woff2-variations");
+  src: url(../src/fonts/geist-latin-wght-italic.woff2)
+    format("woff2-variations");
 }
 
 @theme {
@@ -31,24 +33,66 @@
     "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
-@theme {
   --color-primary: var(--color-zinc-700);
   --color-secondary: var(--color-zinc-500);
   --color-accent: rgb(64.2% 61.8% 100%);
 }
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@custom-variant short (@media (max-height: 700px));
+
 @layer theme {
   :root,
   :host {
+    --flatpickr-day-hover: var(--color-zinc-200);
+
     @variant dark {
       --color-primary: var(--color-purple-100);
       --color-secondary: oklch(94.6% 0.033 307.174 / 0.6); /* purple-100/60 */
       --color-accent: rgb(57.6% 55.6% 90.2%);
+
+      --flatpickr-day-hover: var(--color-zinc-700);
     }
+  }
+}
+
+@media (max-height: 700px) {
+  /* Default font, default size */
+  :root {
+    --ui-zoom: 0.8;
+  }
+
+  /* Accessible font, default size */
+  .font-accessible {
+    --ui-zoom: 0.75;
+  }
+
+  /* Larger size (both fonts) */
+  html[data-text-size="Larger"],
+  html[data-text-size="Larger"] .font-accessible {
+    --ui-zoom: 0.74;
+  }
+}
+
+@utility ui-zoom {
+  zoom: var(--ui-zoom, 1);
+}
+
+/*
+  The calendar is sized in pixels, so the 110% "Larger" text size doesn't
+  enlarge it. Multiplying by --text-scale keeps it in step with the controls.
+*/
+@media (max-height: 700px) {
+  .flatpickr-calendar {
+    scale: calc(var(--ui-zoom, 1) * var(--text-scale, 1));
+    transform-origin: top left;
+  }
+
+  /* When the calendar opens above the input, shrink towards the input */
+  .flatpickr-calendar.arrowBottom {
+    transform-origin: bottom left;
   }
 }
 
@@ -76,6 +120,7 @@
 
   html[data-text-size="Larger"] {
     font-size: 110%;
+    --text-scale: 1.1;
   }
 }
 
@@ -108,11 +153,39 @@
     @apply p-1 shadow-2xl/50 shadow-black/50 dark:shadow-purple-300/30;
   }
 
-  :where([data-theme="dark"]) {
-    .flatpickr-calendar {
-      background-color: var(--color-zinc-900) !important;
-    }
+  /* Days: same hover/focus colour for every unselected day, including today */
+  .flatpickr-day:not(.selected):hover,
+  .flatpickr-day:not(.selected):focus {
+    background-color: var(--flatpickr-day-hover) !important;
+    border-color: var(--flatpickr-day-hover) !important;
+  }
 
+  .flatpickr-day.today {
+    border-color: transparent !important;
+  }
+
+  .flatpickr-day.today:hover {
+    color: inherit !important;
+  }
+
+  .flatpickr-day.selected {
+    @apply bg-accent! border-accent!;
+    color: inherit !important;
+    font-weight: inherit !important;
+  }
+
+  .flatpickr-hour {
+    font-weight: inherit !important;
+  }
+
+  .flatpickr-prev-month:hover svg,
+  .flatpickr-next-month:hover svg {
+    fill: var(--color-accent) !important;
+  }
+
+  /* Dark mode backgrounds */
+  :where([data-theme="dark"]) {
+    .flatpickr-calendar,
     .flatpickr-weekdays,
     span.flatpickr-weekday,
     .flatpickr-next-month,
@@ -132,33 +205,5 @@
     .flatpickr-time input:focus {
       background-color: var(--color-zinc-800) !important;
     }
-
-    .flatpickr-day:hover {
-      background-color: var(--color-zinc-800) !important;
-      border-color: var(--color-zinc-800) !important;
-    }
-  }
-
-  .flatpickr-day.today {
-    border-color: transparent !important;
-  }
-
-  .flatpickr-day.today:hover {
-    color: inherit !important;
-  }
-
-  .flatpickr-hour {
-    font-weight: inherit !important;
-  }
-
-  .flatpickr-day.selected {
-    @apply bg-accent! border-accent!;
-    color: inherit !important;
-    font-weight: inherit !important;
-  }
-
-  .flatpickr-prev-month:hover svg,
-  .flatpickr-next-month:hover svg {
-    fill: var(--color-accent) !important;
   }
 }

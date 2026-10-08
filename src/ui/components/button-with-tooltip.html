@@ -22,12 +22,18 @@
     data-on-click-events="{{ on_click_events | tojson | forceescape }}"
     data-repeat-delay-ms="{{ repeat_delay_ms }}"
   >
+    {%
+      set svg_sizes = {
+        7: "size-7",
+        10: "size-10"
+      }
+    %}
     <button
       id="{{ button_id }}"
       class="control-no-background clickable"
       data-button
     >
-      <svg class="size-{{ svg_size }}" viewBox="0 0 24 24">
+      <svg class="{{ svg_sizes[svg_size] }}" viewBox="0 0 24 24">
         <path id="{{ svg_path_id }}" d="{{ svg_path }}" />
       </svg>
     </button>
@@ -53,7 +59,8 @@
     <div
       class="{{ tooltip_positions[tooltip_position] }} {{ tooltip_aligns[tooltip_align] }} bordered-light control text-secondary pointer-events-none absolute block px-2 text-center text-nowrap opacity-0 group-hover:opacity-100"
     >
-      <span id="{{ tooltip_id }}">{{ tooltip_text }}</span>{% if shortcut %} ({{ shortcut.label }}){% endif %}
+      <span id="{{ tooltip_id }}">{{ tooltip_text }}</span>
+      {% if shortcut %}({{ shortcut.label }}){% endif %}
     </div>
   </div>
 {% endmacro %}
