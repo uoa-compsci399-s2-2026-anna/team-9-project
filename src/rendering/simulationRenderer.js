@@ -982,7 +982,9 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
  *
  * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
  */
-async function updateSimulation(forceCalendarUpdate = true) {
+async function updateSimulation({
+    forceCalendarUpdate = true,
+}) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
@@ -1723,7 +1725,9 @@ async function renderFrame(timestamp) {
             getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         // Update the simulation but do not bypass the calendar update throttle
-        updateSimulation(false);
+        updateSimulation({
+            forceCalendarUpdate: false,
+        });
     }
 
     animateCamera();
