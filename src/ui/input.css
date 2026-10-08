@@ -80,12 +80,12 @@
 
   /* Default font, larger size */
   .flatpickr-calendar:not(.font-accessible *):is(html[data-text-size="Larger"] *) {
-    scale: 0.74;
+    scale: 0.81;
   }
 
   /* Accessible font, larger size */
   .flatpickr-calendar:is(.font-accessible *):is(html[data-text-size="Larger"] *) {
-    scale: 0.74;
+    scale: 0.81;
   }
 
   /* When the calendar opens above the input, shrink towards the input */
