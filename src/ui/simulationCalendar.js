@@ -6,6 +6,8 @@ import {
     dateOnly,
     convertToEpoch,
     formatInTimeZone,
+    TIMEZONE_MAP,
+    MIN_SIMULATION_TIME,
 } from "../utils/utils.js";
 import { DateTime } from "luxon";
 
@@ -137,16 +139,17 @@ export function getElapsedDaysText(
     simulationTime,
     timeZone = calendarInput.dataset.timezone,
 ) {
-    const simDateString = dateOnly(new Date(simulationTime), timeZone);
-    const nowDateString = dateOnly(new Date(), timeZone);
+    const zone = TIMEZONE_MAP[timeZone] ?? "UTC;";
+    const simLocal = DateTime.fromMillis(simulationTime, { zone });
+    const nowLocal = DateTime.now().setZone(zone);
 
-    if (simDateString === nowDateString) {
+    if (simLocal.hasSame(nowLocal, "day")) {
         return "Today";
     }
 
-    // Both are plain dates (yyyy-MM-dd), so compare them as midnight UTC
-    const simDate = DateTime.fromISO(simDateString, { zone: "UTC" });
-    const nowDate = DateTime.fromISO(nowDateString, { zone: "UTC" });
+    // Compare plain calendar dates at midnight UTC
+    const simDate = DateTime.utc(simLocal.year, simLocal.month, simLocal.day);
+    const nowDate = DateTime.utc(nowLocal.year, nowLocal.month, nowLocal.day);
 
     // Always measure from the earlier date to the later one
     const isFuture = simDate > nowDate;
@@ -206,10 +209,13 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
     lastCalendarUpdate = now;
 
     const timeZone = calendarInput.dataset.timezone;
-    FlatpickrInstance.set(
-        "minDate",
-        formatInTimeZone(simulationTime - CALENDAR_RANGE_MS, timeZone),
+
+    const minTime = Math.max(
+        simulationTime - CALENDAR_RANGE_MS,
+        MIN_SIMULATION_TIME,
     );
+
+    FlatpickrInstance.set("minDate", formatInTimeZone(minTime, timeZone));
     FlatpickrInstance.set(
         "maxDate",
         formatInTimeZone(simulationTime + CALENDAR_RANGE_MS, timeZone),
