@@ -63,13 +63,13 @@ To automatically run [Tailwind](https://tailwindcss.com) on file changes:
 npm run watch
 ```
 
-# Building Everything
+## Packaging
 
 The final executable lives in the `./out/team-9-project-OS-ARCH/` folder **not** the `./dist/` folder.
 
-## Linux/MacOS
+Tested with node.js version `v24.20.0`. Certain later versions of node.js may not work.
 
-Tested with `node.js` version `v24.20.0`
+### Linux/macOS
 
 ```sh
 rm -rf build dist out
@@ -88,9 +88,7 @@ Composer asset (found in `/src/assets/app-icon/opis.icon`). See the
 [Electron Forge documentation](https://www.electronforge.io/guides/create-and-add-icons#macos)
 for more information.
 
-## Windows
-
-Tested with `node.js` version `v24.20.0`
+### Windows
 
 ```sh
 rd /s /q build dist out
@@ -103,7 +101,7 @@ npm run make
 
 Example output executable path: `./out/team-9-project-win32-x64/team-9-project.exe`
 
-# Logging
+## Logging
 
 Log files are written to:
 
