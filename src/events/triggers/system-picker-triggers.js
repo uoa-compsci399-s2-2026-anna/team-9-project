@@ -6,9 +6,17 @@ const systemButton = document.getElementById("system-information-button");
 
 let systemDropdownOpen = false;
 
-systemButton.addEventListener("click", () => {
+systemButton.addEventListener("click", toggleSystemDropdown);
+
+document.addEventListener("click", (event) => {
+    if (systemDropdownOpen && !systemButton.contains(event.target)) {
+        toggleSystemDropdown();
+    }
+});
+
+function toggleSystemDropdown() {
     systemDropdownOpen = !systemDropdownOpen;
     bus.publish(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, {
         showDropdown: systemDropdownOpen,
     });
-});
+}
