@@ -48,6 +48,10 @@ import {
     animateCamera,
 } from "./simulationCameraAndControls.js";
 import {
+    getReferenceSystemData,
+    referenceSystemData,
+} from "./referenceSystemData.js";
+import {
     habitableZone,
     habitableZoneMesh,
     createHabitableZoneMesh,
@@ -83,8 +87,6 @@ let labelRenderer;
 
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
-
-const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
@@ -200,21 +202,6 @@ const MIN_SIMULATION_TIME = (() => {
     date.setUTCHours(0, 0, 0, 0);
     return date.getTime();
 })();
-
-/**
- * Get the reference system data for a given system.
- * If the data is not in the cache, it will be fetched and stored.
- *
- * @param {string} system The name of the system
- * @returns {Promise<Object>} The reference system data
- */
-async function getReferenceSystemData(system) {
-    if (!referenceSystemData.has(system)) {
-        const systemInfo = await getSystemInfo(system);
-        referenceSystemData.set(system, systemInfo["reference"]);
-    }
-    return referenceSystemData.get(system);
-}
 
 /**
  * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
