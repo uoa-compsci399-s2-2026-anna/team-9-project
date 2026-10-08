@@ -47,7 +47,10 @@ import {
 } from "./simulationCameraAndControls.js";
 import {
     VIEW_RADIUS_MULTIPLIER,
+    currentSystemDefaultViewRadius,
+    solarSystemDefaultViewRadius,
     getViewRadiusForSystem,
+    setDefaultViewRadii,
 } from "./viewRadius.js";
 import {
     getReferenceSystemData,
@@ -105,10 +108,6 @@ const orbitalLines = new Map();
 const objectLabels = new Map();
 
 let viewRadius;
-
-// The view radius when all objects are set to default visibility
-let currentSystemDefaultViewRadius;
-let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
@@ -1269,15 +1268,7 @@ export async function init(name) {
         false, // Not comparing to the Solar System
         simulationState.habitableZoneShown,
     );
-
-    currentSystemDefaultViewRadius = await getViewRadiusForSystem(
-        currentSystem,
-        true,
-    );
-    solarSystemDefaultViewRadius = await getViewRadiusForSystem(
-        "Solar System",
-        true,
-    );
+    await setDefaultViewRadii(currentSystem);
 
     objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
