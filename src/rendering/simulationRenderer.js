@@ -1421,6 +1421,9 @@ export function stepBack() {
     updateSimulation();
 }
 
+/*
+ * Resets the simulation to the current time with priority.
+ */
 export function resetSimulationTimeToNow() {
     currentSimulationTime = Date.now();
     updateSimulation({
@@ -1428,6 +1431,9 @@ export function resetSimulationTimeToNow() {
     });
 }
 
+/*
+ * Resets the simulation to the specified time with priority.
+ */
 export function setSimulationTimeToTime(time) {
     currentSimulationTime = clampSimulationTime(time);
     updateSimulation({
