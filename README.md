@@ -35,33 +35,33 @@ To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 npm run dev
 ```
 
-# Running the Python Web-server
+#### Running the Python web server
 
-## Development Mode
+To run [FastAPI](https://fastapi.tiangolo.com) the Python web server in development mode:
 
 ```sh
 uv run main.py
 ```
 
-## Python Only (with URL Override)
-
-Windows
+Or with `python`, in a [virtual environment](https://www.w3schools.com/python/python_virtualenv.asp):
 
 ```sh
-.venv\Scripts\activate
 python3 main.py
 ```
 
-Linux/MacOS
-
-```sh
-source .venv/bin/activate
-python3 main.py
-```
-
+<!--
+Maybe include this link in the languages/frameworks used section instead?
 ## Useful Links
 
-- [`fastapi` Reference Docs](https://fastapi.tiangolo.com/)
+- [`fastapi` Reference Docs](https://fastapi.tiangolo.com/) -->
+
+#### Running Tailwind
+
+To automatically run [Tailwind](https://tailwindcss.com) on file changes:
+
+```sh
+npm run watch
+```
 
 # Building Everything
 
@@ -102,22 +102,6 @@ npm run make
 ```
 
 Example output executable path: `./out/team-9-project-win32-x64/team-9-project.exe`
-
-# Building the Frontend
-
-Install required packages from `package.json`
-
-```
-npm install
-```
-
-Run Tailwind CLI to build CSS files
-
-```
-npm run watch
-```
-
-This runs `npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch`
 
 # Logging
 
