@@ -46,10 +46,10 @@ import {
     animateCamera,
 } from "./simulationCameraAndControls.js";
 import {
-    VIEW_RADIUS_MULTIPLIER,
+    viewRadius,
     currentSystemDefaultViewRadius,
     solarSystemDefaultViewRadius,
-    getViewRadiusForSystem,
+    updateViewRadius,
     setDefaultViewRadii,
 } from "./viewRadius.js";
 import {
@@ -106,8 +106,6 @@ solarSystemGroup.visible = false; // Initially hidden until the user requests a 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
 const objectLabels = new Map();
-
-let viewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
@@ -315,40 +313,6 @@ function getObjectNameAt(clientX, clientY, canvas) {
     }
 
     return null;
-}
-
-/**
- * Update the view radius based on the current system, whether the Solar System is being compared,
- * and whether the habitable zone is shown.
- *
- * The view radius is set to the maximum of the current system's view radius,
- * the Solar System's view radius (if comparing), and the habitable zone's end radius (if shown).
- *
- * @param {string} currentSystem The name of the current system
- * @param {boolean} comparingToSolarSystem Whether the Solar System is being compared
- * @param {boolean} habitableZoneShown Whether the habitable zone is shown
- */
-async function updateViewRadius(
-    currentSystem,
-    comparingToSolarSystem,
-    habitableZoneShown,
-) {
-    const viewRadiusForCurrentSystem =
-        await getViewRadiusForSystem(currentSystem);
-
-    let newViewRadius = viewRadiusForCurrentSystem;
-
-    if (comparingToSolarSystem) {
-        newViewRadius = Math.max(newViewRadius, solarSystemDefaultViewRadius);
-    }
-
-    if (habitableZoneShown && habitableZone) {
-        const viewRadiusForHabitableZone =
-            habitableZone.end * VIEW_RADIUS_MULTIPLIER;
-        newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
-    }
-
-    viewRadius = newViewRadius;
 }
 
 /**
