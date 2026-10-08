@@ -318,14 +318,21 @@ function getObjectNameAt(clientX, clientY, canvas) {
 }
 
 /**
- * Update the view radius based on the current system, whether the habitable zone is shown, and whether
- * the Solar System is being compared. The view radius is set to the maximum of the current system's view radius,
+ * Update the view radius based on the current system, whether the Solar System is being compared,
+ * and whether the habitable zone is shown.
+ *
+ * The view radius is set to the maximum of the current system's view radius,
  * the Solar System's view radius (if comparing), and the habitable zone's end radius (if shown).
  *
+ * @param {string} currentSystem The name of the current system
  * @param {boolean} comparingToSolarSystem Whether the Solar System is being compared
  * @param {boolean} habitableZoneShown Whether the habitable zone is shown
  */
-async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
+async function updateViewRadius(
+    currentSystem,
+    comparingToSolarSystem,
+    habitableZoneShown,
+) {
     const viewRadiusForCurrentSystem =
         await getViewRadiusForSystem(currentSystem);
 
@@ -1265,6 +1272,7 @@ export async function init(name) {
     setReferenceSystemData(currentSystem, systemInfo["reference"]);
 
     await updateViewRadius(
+        currentSystem,
         false, // Not comparing to the Solar System
         simulationState.habitableZoneShown,
     );
@@ -1355,7 +1363,11 @@ export function setSimulationTimeToTime(time) {
 export async function resetView(topDown = true) {
     const canvas = renderer.domElement;
 
-    await updateViewRadius(comparingToSolarSystem, habitableZoneMesh?.visible);
+    await updateViewRadius(
+        currentSystem,
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible,
+    );
 
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
@@ -1401,8 +1413,7 @@ export async function resetView(topDown = true) {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    await updateViewRadius(true, habitableZoneMesh?.visible);
-
+    await updateViewRadius(currentSystem, true, habitableZoneMesh?.visible);
     await updateInnermostPeriapsis(true);
 
     // Align the solar system's average normal with the up vector (Z-axis)
@@ -1430,7 +1441,7 @@ export async function hideSolarSystem() {
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
-    await updateViewRadius(false, habitableZoneMesh?.visible);
+    await updateViewRadius(currentSystem, false, habitableZoneMesh?.visible);
     await updateInnermostPeriapsis(false);
     solarSystemGroup.visible = false;
 
