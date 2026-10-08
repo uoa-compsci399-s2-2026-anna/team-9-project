@@ -351,7 +351,7 @@ async function createWindow(python_url) {
         },
 
         // Load icon (required for Linux; see https://www.electronforge.io/guides/create-and-add-icons#linux)
-        icon: "src/assets/opis.png"
+        icon: "src/assets/opis.png",
     });
 
     // Hide dev tools if we are running an executable

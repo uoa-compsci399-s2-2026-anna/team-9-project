@@ -32,7 +32,8 @@ const FlatpickrInstances = Array.from(calendarInputs).map((input) =>
         altInput: true,
         // User-facing format: "dd-MM-YYYY hh:mm AM/PM"
         altFormat: "d-m-Y G:i K",
-        altInputClass: "calendar tabular-nums w-46 [.font-accessible_&]:w-50 pl-0.5",
+        altInputClass:
+            "calendar tabular-nums w-46 [.font-accessible_&]:w-50 pl-0.5",
         allowInput: false,
         onReady: (_selectedDates, _dateStr, instance) => {
             instance.altInput.classList.remove("invisible");
@@ -172,9 +173,9 @@ function updateElapsedDaysText(simulationTime) {
 /**
  * Updates all calendars to show the given simulation time in the given time zone,
  * and sets the minimum and maximum of the calendar to +/- CALENDAR_RANGE_YEARS.
- * 
+ *
  * Updates are throttled to at most one per `CALENDAR_MIN_INTERVAL_MS`.
- * 
+ *
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {boolean} forceUpdate Whether or not to bypass the throttle
  */
