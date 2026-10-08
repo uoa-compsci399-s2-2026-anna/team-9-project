@@ -49,14 +49,18 @@
     </div>
 
     <!-- RHS controls -->
-    <div class="z-10 ml-auto flex h-full flex-col items-end gap-2">
+    <div
+      class="pointer-events-none z-10 ml-auto flex h-full flex-col items-end gap-2"
+    >
       <!-- Zoom control -->
-      <div class="mb-auto">{% include "templates/zoom-control.html" %}</div>
+      <div class="pointer-events-auto mb-auto">
+        {% include "templates/zoom-control.html" %}
+      </div>
 
       <!-- Grid scale indicator -->
       <p id="grid-scale-text" class="text-secondary pr-2 text-sm">AU/square</p>
 
-      {% call container(style="flex gap-2 p-2") %}
+      {% call container(style="flex gap-2 p-2 pointer-events-auto") %}
         <!-- Compare to solar system button -->
         {% if current_system.name != "Solar System" %}
           {{
