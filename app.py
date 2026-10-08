@@ -3,7 +3,7 @@ import os
 import signal
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from zoneinfo import ZoneInfo
 
@@ -71,16 +71,26 @@ TIMEZONE_MAP = {
 }
 
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
-    """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone."""
+    """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone.
+    
+    Adds the time onto the unix epoch instead of passing it to datetime.fromtimestamp
+    which causes issues for times pre-1970 on Windows
+    """
     if timezone_key is None:
         raise ValueError("Invalid timezone")
     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
     time_zone = ZoneInfo(time_zone_name)
 
-    sim_date = datetime.fromtimestamp(simulation_time_ms / MS_PER_SECOND, tz=time_zone)
+    try:
+        sim_date = (
+            datetime.fromtimestamp(0, tz=timezone.utc) +
+            timedelta(milliseconds=simulation_time_ms)
+        ).astimezone(time_zone)
+    except (ValueError, OverflowError):
+        return ""
 
-    return sim_date.strftime("%d-%m-%Y %I:%M %p")
-
+    # Build the year separately so years below 1000 keep their leading zeroes
+    return f"{sim_date.strftime('%d-%m')}-{sim_date.year:04d} {sim_date.strftime('%I:%M %p')}"
 
 @app.get("/")
 async def home(
