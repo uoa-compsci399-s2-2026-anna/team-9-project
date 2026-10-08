@@ -1,10 +1,10 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import signal
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Annotated
 from zoneinfo import ZoneInfo
@@ -16,12 +16,12 @@ from fastapi.templating import Jinja2Templates
 
 from systems import Simulations, jd_tdb_to_unix
 from utility import (
+    begin_integrating,
     check_sim_was_stopped,
+    done_integrating,
     end_integrating,
     get_osculating_orbit,
     get_position_dict,
-    begin_integrating,
-    done_integrating,
 )
 
 # Prevent internal server errors when adding objects to the simulation
