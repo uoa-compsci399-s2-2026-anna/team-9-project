@@ -25,17 +25,15 @@ npm install
 uv sync
 ```
 
-## Running electron
+### Building and running
 
-To run the program use:
+#### Running Electron
+
+To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 
 ```sh
 npm run dev
 ```
-
-## Useful Links
-
-- [`electron` Reference Docs](https://www.electronjs.org/docs/latest/)
 
 # Running the Python Web-server
 
