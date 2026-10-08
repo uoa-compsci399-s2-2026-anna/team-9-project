@@ -50,7 +50,7 @@ import {
 import {
     getReferenceSystemData,
     setReferenceSystemData,
-    getVisibleOrbitalDataValues,
+    getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
 import {
     habitableZone,
@@ -325,10 +325,8 @@ function getObjectNameAt(clientX, clientY, canvas) {
  * @returns {Promise<number>} The view radius for the system
  */
 async function getViewRadiusForSystem(system, useDefault = false) {
-    const referenceSystemData = await getReferenceSystemData(system);
-    const orbitalDataValues = getVisibleOrbitalDataValues(
+    const orbitalDataValues = await getVisibleReferenceOrbitalDataValues(
         system,
-        referenceSystemData.orbital_data,
         useDefault,
     );
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
@@ -1131,10 +1129,8 @@ async function alignSystemToCameraUp(group, useDefault = false) {
         system = "Solar System";
     }
 
-    const referenceSystemData = await getReferenceSystemData(system);
-    const orbitalDataValues = getVisibleOrbitalDataValues(
+    const orbitalDataValues = await getVisibleReferenceOrbitalDataValues(
         system,
-        referenceSystemData.orbital_data,
         useDefault,
     );
     const averageNormal = calculateAverageNormal(orbitalDataValues);

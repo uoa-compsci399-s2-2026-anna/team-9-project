@@ -39,14 +39,29 @@ export async function getReferenceSystemData(system) {
  * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
  * @returns {Object[]} Orbital data values for visible objects only
  */
-export function getVisibleOrbitalDataValues(
-    system,
-    orbitalData,
-    useDefault = false,
-) {
+function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
     const isHidden = useDefault ? isObjectHiddenByDefault : isObjectHidden;
 
     return Object.keys(orbitalData)
         .filter((name) => !isHidden(system, name))
         .map((name) => orbitalData[name]);
+}
+
+/**
+ * Get the orbital data values for all objects in the given system at the reference timestamp that are not hidden.
+ *
+ * @param {string} system The name of the system
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
+ * @returns {Promise<Object[]>} Orbital data values for visible objects only
+ */
+export async function getVisibleReferenceOrbitalDataValues(
+    system,
+    useDefault = false,
+) {
+    const referenceData = await getReferenceSystemData(system);
+    return getVisibleOrbitalDataValues(
+        system,
+        referenceData.orbital_data,
+        useDefault,
+    );
 }
