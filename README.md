@@ -2,19 +2,27 @@
 
 COMPSCI 399 project repository for Team 9 - JEDEJ
 
-# Running Electron
+## Install and setup
 
-## Packages and Dependencies
+### Releases
 
-`node.js` version `>=22.0.0` is required to be able to run this and higher
-versions are recommended.
+For pre-built installers for Windows, macOS, and Linux, see the OPIS [releases](https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/releases).
 
-- See [node version manager](https://www.nvmnode.com/) on updating or installing node
+### Installing locally
 
-To install packages run:
+#### Packages and Dependencies
+
+`node.js` version `>=22.0.0` is required to be able to run OPIS, and higher
+versions are recommended. See [Node Version Manager](https://www.nvmnode.com/) on installing or updating node.
+
+To install all required packages using [npm](https://www.npmjs.com) and [uv](https://docs.astral.sh/uv/), run:
 
 ```sh
 npm install
+```
+
+```sh
+uv sync
 ```
 
 ## Running electron
@@ -31,15 +39,6 @@ npm run dev
 - [`electron` Reference Docs](https://www.electronjs.org/docs/latest/)
 
 # Running the Python Web-server
-
-## Installing the Packages
-
-```sh
-uv sync
-```
-
-Will install all dependencies (not this is unecessary if using `uv` to run the
-program).
 
 ## Development Mode
 
