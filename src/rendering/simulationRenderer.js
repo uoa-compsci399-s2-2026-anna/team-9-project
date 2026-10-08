@@ -407,12 +407,6 @@ function onCanvasClick(event, canvas) {
         return;
     }
 
-    // Stop the further propagation of this click event (fired when the object
-    // is clicked) so that the same event isn't intercepted by the event
-    // listener which closes the Object information panel when the user clicks
-    // off the panel.
-    event.stopPropagation();
-
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
 }
 

@@ -14,11 +14,6 @@ if (require("electron-squirrel-startup")) {
     return;
 }
 
-// Display name of the application
-const APPLICATION_NAME = "OPIS";
-
-app.setName(APPLICATION_NAME);
-
 // Script to hide the simulation canvas
 const HIDE_SIMULATION_CANVAS = `
     const canvas = document.getElementById("simulation-canvas");
@@ -341,7 +336,6 @@ async function createWindow(python_url) {
         height: 600,
         minWidth: 800,
         minHeight: 600,
-        title: APPLICATION_NAME,
         backgroundColor: getWindowBackgroundColour(),
         show: false,
         webPreferences: {
@@ -358,11 +352,6 @@ async function createWindow(python_url) {
     if (!isDev) {
         mainWindow.removeMenu();
     }
-
-    // Prevent the window title from changing when pages change
-    mainWindow.on("page-title-updated", (event) => {
-        event.preventDefault();
-    });
 
     // Inform the renderer process upon the application entering/exiting fullscreen
     mainWindow.on("enter-full-screen", () =>
