@@ -7,6 +7,7 @@ import {
     convertToEpoch,
     formatInTimeZone,
 } from "../utils/utils.js";
+import { DateTime } from "luxon";
 
 // The number of milliseconds in a day
 const MS_PER_DAY = timeToMilliseconds(1, "day");
@@ -120,6 +121,9 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
         `${newTimeZone}`;
 
     // Refresh the calendar with the last simulation time to reflect the new time zone
+    if (lastSimulationTime !== null) {
+        updateCalendar(lastSimulationTime, true);
+    }
 });
 
 /**
@@ -129,7 +133,10 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
  * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns The elapsed days text
  */
-export function getElapsedDaysText(simulationTime, timeZone = calendarInput.dataset.timezone) {
+export function getElapsedDaysText(
+    simulationTime,
+    timeZone = calendarInput.dataset.timezone,
+) {
     const simDateString = dateOnly(new Date(simulationTime), timeZone);
     const nowDateString = dateOnly(new Date(), timeZone);
 
@@ -137,17 +144,28 @@ export function getElapsedDaysText(simulationTime, timeZone = calendarInput.data
         return "Today";
     }
 
-    const simMidnight = new Date(simDateString + "T00:00:00Z").getTime();
-    const nowMidnight = new Date(nowDateString + "T00:00:00Z").getTime();
+    // Both are plain dates (yyyy-MM-dd), so compare them as midnight UTC
+    const simDate = DateTime.fromISO(simDateString, { zone: "UTC" });
+    const nowDate = DateTime.fromISO(nowDateString, { zone: "UTC" });
 
-    const daysCount = Math.round((simMidnight - nowMidnight) / MS_PER_DAY);
-    const dayWord = Math.abs(daysCount) === 1 ? "day" : "days";
+    // Always measure from the earlier date to the later one
+    const isFuture = simDate > nowDate;
+    const [start, end] = isFuture ? [nowDate, simDate] : [simDate, nowDate];
 
-    if (daysCount > 0) {
-        return `${daysCount} ${dayWord} from today`;
-    } else {
-        return `${Math.abs(daysCount)} ${dayWord} ago`;
+    const diff = end.diff(start, ["years", "days"]);
+    const years = Math.round(diff.years);
+    const days = Math.round(diff.days);
+
+    const parts = [];
+    if (years > 0) {
+        parts.push(`${years} ${years === 1 ? "year" : "years"}`);
     }
+    if (days > 0) {
+        parts.push(`${days} ${days === 1 ? "day" : "days"}`);
+    }
+
+    const elapsedText = parts.join(" ");
+    return isFuture ? `${elapsedText} from today` : `${elapsedText} ago`;
 }
 
 /**
