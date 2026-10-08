@@ -56,6 +56,8 @@ const WINDOW_BACKGROUND_COLOUR = {
     light: "white",
 };
 
+const SYSTEM_PREFERS_DARK = nativeTheme.shouldUseDarkColors;
+
 /**
  * Decide whether dark mode should be used based on the persisted settings state.
  * Fallback to the system default if no valid preference has been persisted.
@@ -90,11 +92,19 @@ function updateWindowBackgroundColour() {
     mainWindow.setBackgroundColor(backgroundColour);
 }
 
+/**
+ * Update the application theme based on the user's current theme.
+ * This is reflected in the application title bar.
+ */
+function applyNativeTheme() {
+    nativeTheme.themeSource = resolveDarkMode() ? "dark" : "light";
+}
+
 function getDefaultSettings() {
     return {
         ...DEFAULT_SETTINGS,
         // By default, whether dark mode is used depends on the theme of the user's device
-        darkMode: nativeTheme.shouldUseDarkColors,
+        darkMode: SYSTEM_PREFERS_DARK,
     };
 }
 
@@ -104,6 +114,9 @@ store.set("settings", {
     ...getDefaultSettings(),
     ...existingSettings,
 });
+
+// Apply the saved theme to the native frame
+applyNativeTheme();
 
 // Initialise the simulation state to the default simulation state
 let simulationState = { ...DEFAULT_SIMULATION_STATE };
@@ -120,6 +133,7 @@ ipcMain.handle("settings:getDefaults", () => {
 ipcMain.handle("settings:set", (_event, newSettings) => {
     const mergedSettings = { ...store.get("settings"), ...newSettings };
     store.set("settings", mergedSettings);
+    applyNativeTheme();
     updateWindowBackgroundColour();
 });
 
@@ -351,7 +365,7 @@ async function createWindow(python_url) {
         },
 
         // Load icon (required for Linux; see https://www.electronforge.io/guides/create-and-add-icons#linux)
-        icon: "src/assets/opis.png"
+        icon: "src/assets/opis.png",
     });
 
     // Hide dev tools if we are running an executable
