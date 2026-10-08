@@ -27,7 +27,7 @@ uv sync
 
 ### Building and running
 
-#### Running Electron
+#### Running OPIS
 
 To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 
