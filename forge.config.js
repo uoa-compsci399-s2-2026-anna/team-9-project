@@ -6,7 +6,9 @@ const { execSync } = require("child_process");
 
 module.exports = {
     packagerConfig: {
-        name: "team-9-project",
+        name: "OPIS",
+        // .deb and .rpm makers expect a lowercase executable name
+        executableName: process.platform !== "linux" ? "OPIS" : "opis",
         asar: true,
         extraResource: ["./dist/", "./src/", "./config.json"],
         ignore: [
