@@ -130,6 +130,10 @@ ipcMain.handle("settings:getDefaults", () => {
     return getDefaultSettings();
 });
 
+/**
+ * Wait until the theme has been updated before updating the background colour to minimise
+ * the delay between updates
+ */
 nativeTheme.on("updated", updateWindowBackgroundColour);
 
 ipcMain.handle("settings:set", (_event, newSettings) => {
