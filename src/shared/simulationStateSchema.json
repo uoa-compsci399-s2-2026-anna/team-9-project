@@ -39,7 +39,7 @@
     ]
   },
   "habitableZoneShown": {
-    "default": true
+    "default": false
   },
   "orbitsShown": {
     "default": true

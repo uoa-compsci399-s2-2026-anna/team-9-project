@@ -51,6 +51,8 @@ import {
     habitableZone,
     habitableZoneMesh,
     createHabitableZoneMesh,
+    updateHabitableZoneTexture,
+    flipHabitableZoneTexture,
 } from "./habitableZone.js";
 import {
     updateCalendar,
@@ -508,29 +510,141 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
-        const labelDiv = document.createElement("div");
-        labelDiv.className = "planet-label";
-        labelDiv.textContent = name;
-        labelDiv.style.color = colour;
-        if (group === solarSystemGroup) {
-            labelDiv.style.opacity = comparisonLabelOpacity;
-        }
-        labelDiv.style.fontSize = getFontSize(settings.textSize);
-        labelDiv.style.fontFamily = getFontFamily(settings.font);
-        labelDiv.style.fontWeight = "bold";
-        labelDiv.style.backgroundColor = getTheme().labelBackground;
-        labelDiv.style.padding = "1px 5px";
-        labelDiv.style.borderRadius = "4px";
-        labelDiv.style.whiteSpace = "nowrap";
+        const label = createLabel(
+            name,
+            colour,
+            group === solarSystemGroup ? comparisonLabelOpacity : 1,
+        );
 
-        const label = new CSS2DObject(labelDiv);
         label.position.set(0, 0, 0);
         label.visible = simulationState.labelsShown;
+
+        // 'Anchors' the label to the top-left
+        label.center.set(0, 0);
+
         mesh.add(label);
         objectLabels.set(name, label);
     }
 
     mesh.position.set(position.x, position.y, position.z);
+}
+
+/**
+ * Creates a label. The font size and family, and the div's background colour
+ * are set as per the settings state.
+ * @param {string} name Object name
+ * @param {string} colour CSS colour string of label colour
+ * @param {Number} opacity Opacity of label in interval [0, 1]
+ * @returns {CSS2DObject} Created label div
+ */
+export function createLabel(name, colour, opacity) {
+    const labelDiv = document.createElement("div");
+
+    labelDiv.className = "planet-label";
+    labelDiv.textContent = name;
+
+    labelDiv.style.color = colour;
+    labelDiv.style.backgroundColor = getTheme().labelBackground;
+
+    labelDiv.style.opacity = opacity;
+
+    labelDiv.style.fontSize = getFontSize(settings.textSize);
+    labelDiv.style.fontFamily = getFontFamily(settings.font);
+    labelDiv.style.fontWeight = "bold";
+
+    labelDiv.style.padding = "1px 5px";
+    labelDiv.style.borderRadius = "4px";
+    labelDiv.style.whiteSpace = "nowrap";
+
+    const label = new CSS2DObject(labelDiv);
+
+    return label;
+}
+
+export function updateObjectLabelOffsets() {
+    for (const group of [currentSystemGroup, solarSystemGroup]) {
+        for (const mesh of group.children) {
+            const label = mesh.children.find(
+                (child) => child instanceof CSS2DObject,
+            );
+
+            if (!label) {
+                continue;
+            }
+
+            const pixelLength = getObjectApparentPixelRadius(mesh);
+
+            label.element.style.marginTop = `${pixelLength}px`;
+            label.element.style.marginLeft = `${pixelLength}px`;
+        }
+    }
+}
+
+/**
+ * @param {THREE.Object3D} object ThreeJS mesh of object
+ * @returns How many pixels the object's radius is on a screen
+ */
+function getObjectApparentPixelRadius(object) {
+    /**
+     * The 'up' direction in world space.
+     */
+    const worldUp = new THREE.Vector3(0, 1, 0);
+
+    /**
+     * The 'up' direction in camera space.
+     */
+    const cameraWorldUp = worldUp.applyQuaternion(
+        camera.getWorldQuaternion(new THREE.Quaternion()),
+    );
+
+    /**
+     * Vector to center of object in world coordinates.
+     */
+    const objectCenter = new THREE.Vector3();
+    object.getWorldPosition(objectCenter);
+
+    /**
+     * Vector to edge of object in world coordinates.
+     */
+    const objectEdge = new THREE.Vector3();
+    objectEdge.copy(objectCenter).addScaledVector(
+        // Scale the camera 'up' direction vector by the object mesh's scale
+        cameraWorldUp,
+        objectSize * object.scale.y,
+    );
+
+    // Project vectors to NDC space (coordinates in interval [-1, 1])
+    objectCenter.project(camera);
+    objectEdge.project(camera);
+
+    // Get scalars in screen pixel coordinate space
+    const centerY = ndcScalarToScreenScalar(objectCenter.y);
+    const edgeY = ndcScalarToScreenScalar(objectEdge.y);
+
+    // Calculate object radius in screen pixels
+    const pixelLength = Math.abs(edgeY - centerY);
+
+    return pixelLength;
+}
+
+/**
+ * Converts a scalar in NDC space to a scalar in screen pixel space.
+ *
+ * i.e. a mapping from NDC space in interval [-1, 1] to screen pixel space
+ * in interval [0, screen height].
+ *
+ * @param {Number} ndcDimension Single dimension of normalised device coordinate
+ * system (i.e a scalar in NDC space) (in interval [-1, 1])
+ * @returns Single dimension of `ndcDimension` scalar in screen pixel
+ * coorindates
+ */
+function ndcScalarToScreenScalar(ndcDimension) {
+    /**
+     * The client height of the renderer.
+     */
+    const clientHeight = renderer.domElement.clientHeight;
+
+    return ((ndcDimension + 1) / 2) * clientHeight;
 }
 
 /**
@@ -723,13 +837,30 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
 
     // Create or update the position attribute and widen the line at the object
     line.geometry.setPoints(points, (progress) => {
+        /**
+         * setPoints takes a callback which has a `progress` parameter which defines
+         * the progress across the line (as a proportion, in [0, 1]), and returns
+         * the PROPORTION of the original line width as defined for the material
+         * to define the line width at that point (`progress`) along the line.
+         */
+
+        const FULL_WIDTH_PROPORTION = 1;
+
+        if (settings.orbitLines == "Solid") {
+            return FULL_WIDTH_PROPORTION;
+        }
+
         const distance = calculateProgressDistance(
             progress,
             objectProgress,
             isElliptical,
         );
 
-        return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        if (settings.orbitLines === "Tapered") {
+            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
+        } else {
+            return FULL_WIDTH_PROPORTION;
+        }
     });
 
     // Rotate the line to match the orbital parameters
@@ -784,12 +915,16 @@ function createOpaqueOrbitAlphaTexture() {
 }
 
 /**
- * Updates the given alpha `texture` map based on the new value of
- * `objectProgress` (i.e. the new position of the object). Used so that as the
- * object moves around its orbit, the opacity of the orbit updates correctly
- * so that it is most opaque at the object and gets fainter (or as defined
- * by the opacity modulation function).
- * @param {THREE.DataTexture} texture
+ * Updates the given alpha texture map based on the new value of
+ * `objectProgress` (i.e. the new position of the object).
+ *
+ * Used so that as the object moves around its orbit, the opacity of the orbit
+ * updates correctly so that it is most opaque at the object and gets fainter
+ * (or as defined by the opacity modulation function).
+ *
+ * @param {THREE.Texture} texture An alpha texture map as a 1 x N byte array in
+ * RGBA format, where each 4 bytes represents an RGBA value for that point in
+ * the texture.
  * @param {Number} objectProgress Proportion of a full revolution the object is
  * from its starting point/angle (in interval [0, 1])
  * @param {boolean} [isElliptical=true] Whether the orbit is elliptical
@@ -802,23 +937,10 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
      * of the texture.
      */
 
-    const { data, width } = texture.image;
+    const { data: textureArray, width: textureArraySize } = texture.image;
 
     // Iterate over the raw texture byte array
-    for (let i = 0; i < width; i++) {
-        /**
-         * Proportion of array traversed (in interval [0, 1])
-         */
-        const progress = i / (width - 1);
-
-        const distance = calculateProgressDistance(
-            progress,
-            objectProgress,
-            isElliptical,
-        );
-
-        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
-
+    for (let i = 0; i < textureArraySize; i++) {
         /**
          * Offset of red channel/byte
          */
@@ -833,11 +955,35 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
          */
         const alphaOffset = offset + 3;
 
-        data[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
+        if (settings.orbitLines === "Solid") {
+            textureArray[alphaOffset] = RGBA_MAX_VALUE;
+            continue;
+        }
+
+        /**
+         * Proportion of array traversed (in interval [0, 1]). Max value of `i`
+         * is `textureArraySize - 1`, hence `(textureArraySize - 1)`.
+         */
+        const progress = i / (textureArraySize - 1);
+
+        const distance = calculateProgressDistance(
+            progress,
+            objectProgress,
+            isElliptical,
+        );
+
+        const opacity = ORBIT_LINE_OPACITY_MODULATION_FUNCTION(distance);
+
+        textureArray[alphaOffset] = Math.round(opacity * RGBA_MAX_VALUE);
     }
 
     texture.needsUpdate = true;
 }
+
+bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
+    // Update simulation to redraw orbit lines with new width/opacity profile
+    updateSimulation();
+});
 
 /**
  * Create a reference grid in the XY plane.
@@ -985,6 +1131,9 @@ async function updateSimulation(forceCalendarUpdate = true) {
             );
         }
     }
+
+    // Update the meshes' scales (which are used to calculate label offets)
+    updateScreenSpaceScales();
 }
 
 /**
@@ -1041,6 +1190,7 @@ function createControlsChangeHandler(viewRadius) {
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
         updateReferenceGridScale(camera.position, controls.target);
+        flipHabitableZoneTexture(camera.position);
     };
 }
 
@@ -1417,6 +1567,7 @@ export function setFontFamily(chosenFont) {
     for (const label of objectLabels.values()) {
         label.element.style.fontFamily = fontFamily;
     }
+    updateHabitableZoneTexture(getTheme(), fontFamily);
 }
 
 export function toggleSimulationDarkMode(isDarkMode) {
@@ -1477,6 +1628,8 @@ export function toggleSimulationDarkMode(isDarkMode) {
                 : getCurrentSystemColour(name, isDarkMode),
         );
     }
+
+    updateHabitableZoneTexture(theme, getFontFamily(settings.font));
 }
 
 /**
@@ -1654,6 +1807,8 @@ async function renderFrame(timestamp) {
     animateCamera();
 
     updateScreenSpaceScales();
+
+    updateObjectLabelOffsets();
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
