@@ -1,4 +1,8 @@
 import { getSystemInfo } from "../services/simulationServices.js";
+import {
+    isObjectHidden,
+    isObjectHiddenByDefault,
+} from "../shared/simulationState.js";
 
 const allReferenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
@@ -25,4 +29,24 @@ export async function getReferenceSystemData(system) {
         setReferenceSystemData(system, systemInfo["reference"]);
     }
     return allReferenceSystemData.get(system);
+}
+
+/**
+ * Get the orbital data values for all objects in the given system that are not hidden.
+ *
+ * @param {string} system The name of the system
+ * @param {Object} orbitalData Map of object name to orbital data
+ * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
+ * @returns {Object[]} Orbital data values for visible objects only
+ */
+export function getVisibleOrbitalDataValues(
+    system,
+    orbitalData,
+    useDefault = false,
+) {
+    const isHidden = useDefault ? isObjectHiddenByDefault : isObjectHidden;
+
+    return Object.keys(orbitalData)
+        .filter((name) => !isHidden(system, name))
+        .map((name) => orbitalData[name]);
 }

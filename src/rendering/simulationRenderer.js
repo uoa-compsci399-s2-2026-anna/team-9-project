@@ -50,6 +50,7 @@ import {
 import {
     getReferenceSystemData,
     setReferenceSystemData,
+    getVisibleOrbitalDataValues,
 } from "./referenceSystemData.js";
 import {
     habitableZone,
@@ -314,22 +315,6 @@ function getObjectNameAt(clientX, clientY, canvas) {
     }
 
     return null;
-}
-
-/**
- * Get the orbital data values for all objects in the given system that are not hidden.
- *
- * @param {string} system The name of the system
- * @param {Object} orbitalData Map of object name to orbital data
- * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
- * @returns {Object[]} Orbital data values for visible objects only
- */
-function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
-    const isHidden = useDefault ? isObjectHiddenByDefault : isObjectHidden;
-
-    return Object.keys(orbitalData)
-        .filter((name) => !isHidden(system, name))
-        .map((name) => orbitalData[name]);
 }
 
 /**
