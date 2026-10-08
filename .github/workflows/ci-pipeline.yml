@@ -1,0 +1,45 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  # Checks with prettier if the project's files are correctly formatted. If not,
+  # then prettier runs, formats the files, and commits.
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.20.0"
+
+      - name: Install npm packages
+        run: npm ci
+
+      - name: Check formatting
+        id: prettier_check
+        run: npx prettier --check .
+        continue-on-error: true
+
+      - name: Run prettier
+        if: steps.prettier_check.outcome == 'failure'
+        run: npx prettier --write .
+
+      - name: Commit and push formatting changes
+        if: steps.prettier_check.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Format with prettier"
+          git push
