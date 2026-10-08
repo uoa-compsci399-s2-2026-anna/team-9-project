@@ -14,7 +14,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from systems import Simulations, jd_tdb_to_unix
+from systems import Simulations, sim_to_unix_time
 from utility import (
     begin_integrating,
     check_sim_was_stopped,
@@ -265,7 +265,7 @@ async def get_system_data_at_time(
     return {
         "positions": positions,
         "orbital_data": orbital_data,
-        "time": jd_tdb_to_unix(sim.t),
+        "time": sim_to_unix_time(system_name, sim.t),
     }
 
 
