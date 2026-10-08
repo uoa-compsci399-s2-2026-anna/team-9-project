@@ -35,7 +35,6 @@ npm run dev
 
 ## Useful Links
 
-- [node version manager](https://www.nvmnode.com/)
 - [`electron` Reference Docs](https://www.electronjs.org/docs/latest/)
 
 # Running the Python Web-server
