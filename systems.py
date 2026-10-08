@@ -148,6 +148,7 @@ def unix_to_sim_time(system_name: str, t: float) -> float:
     """
     return unix_to_jd_tdb(t) - sim_initial_jd_tdb[system_name]
 
+
 def sim_to_unix_time(system_name: str, t: float) -> float:
     """
     Convert a simulation time in days to a unix timestamp in milliseconds
