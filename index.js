@@ -83,6 +83,12 @@ function getWindowBackgroundColour() {
         : WINDOW_BACKGROUND_COLOUR.light;
 }
 
+/**
+ * Applies the given theme by updating the native theme and updating the background
+ * colour for the main window.
+ *
+ * @param {boolean} isDark Whether the theme is dark or not (light)
+ */
 async function applyTheme(isDark) {
     const theme = isDark ? "dark" : "light";
     const background = isDark ? "black" : "white";
@@ -94,7 +100,11 @@ async function applyTheme(isDark) {
 
         nativeTheme.themeSource = theme;
 
-        // Wait for Electron to acknowledge the native theme change
+        /**
+         * Wait for Electron to acknowledge the native theme change before updating
+         * the window background colour. This minimises any apparent delay between
+         * updating the native theme and the title bar
+         */
         await nativeThemeUpdated;
     }
 
