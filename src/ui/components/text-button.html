@@ -4,6 +4,7 @@
     button_id=None,
     on_click_events=[],
     button_styling=None,
+    short_button_text=None,
     repeat_event_on_hold=false,
     repeat_period_ms=50,
     repeat_delay_ms=300
@@ -22,7 +23,12 @@
       class="{{ button_styling }} control bordered clickable px-2"
       data-button
     >
-      {{ button_text }}
+    {% if short_button_text %} 
+      <span class="short:hidden">{{ button_text }} </span>
+      <span class="hidden short:inline">{{ short_button_text }}</span>
+      {% else %}
+        {{ button_text }}
+      {% endif %}
     </button>
   </div>
 {% endmacro %}
