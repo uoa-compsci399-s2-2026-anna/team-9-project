@@ -1087,6 +1087,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
     const currentSystemData = allSystemData[currentSystem];
     updateCalendar(currentSystemData.time, forceCalendarUpdate);
+    currentSimulationTime = currentSystemData.time;
 
     for (const [name, position] of Object.entries(
         currentSystemData.positions,
