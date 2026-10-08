@@ -29,7 +29,15 @@ const FlatpickrInstance = flatpickr(calendarInput, {
     enableTime: true,
     dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
     allowInput: false,
-    onChange: (_selectedDates, dateStr, instance) => {
+    onChange: (selectedDates, dateStr, instance) => {
+        if (selectedDates.length === 0) {
+            // Restore the current simulation time
+            if (lastSimulationTime !== null) {
+                updateCalendar(lastSimulationTime, true);
+            }
+            return;
+        }
+
         // Stop auto-selection of hour after picking a date
         requestAnimationFrame(() => {
             instance.hourElement?.blur();
@@ -41,6 +49,18 @@ const FlatpickrInstance = flatpickr(calendarInput, {
         });
     },
 });
+
+// Stop backspace/delete from clearing the calendar input
+calendarInput.addEventListener(
+    "keydown",
+    (event) => {
+        if (event.key === "Backspace" || event.key === "Delete") {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    },
+    { capture: true },
+);
 
 // Set Flatpickr theme
 const flatpickrLightTheme = document.getElementById("flatpickr-light-theme");
@@ -100,7 +120,6 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
         `${newTimeZone}`;
 
     // Refresh the calendar with the last simulation time to reflect the new time zone
-    updateCalendar(lastSimulationTime, true);
 });
 
 /**
