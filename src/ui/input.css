@@ -175,6 +175,16 @@
     @apply p-1 shadow-2xl/50 shadow-black/50 dark:shadow-purple-300/30;
   }
 
+  :where(:root:not([data-theme="dark"])) {
+    .flatpickr-day:not(.selected):hover,
+    .flatpickr-day:not(.selected):focus,
+    .flatpickr-day.today:not(.selected):hover,
+    .flatpickr-day.today:not(.selected):focus {
+      background-color: var(--color-zinc-200) !important;
+      border-color: var(--color-zinc-200) !important;
+    }
+  }
+
   :where([data-theme="dark"]) {
     .flatpickr-calendar {
       background-color: var(--color-zinc-900) !important;
@@ -200,9 +210,12 @@
       background-color: var(--color-zinc-800) !important;
     }
 
-    .flatpickr-day:hover {
-      background-color: var(--color-zinc-800) !important;
-      border-color: var(--color-zinc-800) !important;
+    .flatpickr-day:not(.selected):hover,
+    .flatpickr-day:not(.selected):focus,
+    .flatpickr-day.today:not(.selected):hover,
+    .flatpickr-day.today:not(.selected):focus {
+      background-color: var(--color-zinc-700) !important;
+      border-color: var(--color-zinc-700) !important;
     }
   }
 
