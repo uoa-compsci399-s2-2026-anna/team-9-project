@@ -20,7 +20,7 @@
   >
     <!-- Settings menu itself -->
     <div
-      class="ui-zoom shadowed bordered-light {{ width_class }} flex w-full flex-col rounded-2xl bg-white p-10 dark:bg-zinc-950"
+      class="ui-zoom shadowed bordered-light {{ width_class }} flex max-h-full w-full flex-col rounded-2xl bg-white p-10 dark:bg-zinc-950"
     >
       <!-- 'Settings' heading and close button -->
       <div class="mb-6 flex shrink-0 items-start">
@@ -37,9 +37,7 @@
       </div>
 
       <!-- Actual settings -->
-      <div
-        class="-m-1 flex min-h-0 flex-col gap-7 overflow-y-auto p-1"
-      >
+      <div class="-m-1 flex min-h-0 flex-col gap-7 overflow-y-auto p-1">
         {{ caller() }}
       </div>
     </div>
