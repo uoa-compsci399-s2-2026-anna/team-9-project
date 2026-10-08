@@ -7,6 +7,7 @@ import rebound
 is_integrating = asyncio.Lock()
 # Whether we are killing an integration by request currently (empty lock)
 killing_integration = asyncio.Lock()
+
 # Whether heartbeat should stop
 abort_integration = asyncio.Event()
 # Whether the sim aborted
