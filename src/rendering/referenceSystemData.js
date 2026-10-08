@@ -1,9 +1,9 @@
 import { getSystemInfo } from "../services/simulationServices.js";
 
-const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
+const allReferenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 export function setReferenceSystemData(system, data) {
-    referenceSystemData.set(system, data);
+    allReferenceSystemData.set(system, data);
 }
 
 /**
@@ -14,9 +14,9 @@ export function setReferenceSystemData(system, data) {
  * @returns {Promise<Object>} The reference system data
  */
 export async function getReferenceSystemData(system) {
-    if (!referenceSystemData.has(system)) {
+    if (!allReferenceSystemData.has(system)) {
         const systemInfo = await getSystemInfo(system);
-        referenceSystemData.set(system, systemInfo["reference"]);
+        setReferenceSystemData(system, systemInfo["reference"]);
     }
-    return referenceSystemData.get(system);
+    return allReferenceSystemData.get(system);
 }
