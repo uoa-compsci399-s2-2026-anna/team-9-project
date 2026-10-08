@@ -49,7 +49,7 @@ import {
 } from "./simulationCameraAndControls.js";
 import {
     getReferenceSystemData,
-    referenceSystemData,
+    setReferenceSystemData,
 } from "./referenceSystemData.js";
 import {
     habitableZone,
@@ -1298,11 +1298,7 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-    referenceSystemData.set(
-        // Add this system's reference data to cache
-        currentSystem,
-        systemInfo["reference"],
-    );
+    setReferenceSystemData(currentSystem, systemInfo["reference"]);
 
     await updateViewRadius(
         false, // Not comparing to the Solar System
