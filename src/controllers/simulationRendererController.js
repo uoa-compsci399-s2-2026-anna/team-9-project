@@ -18,9 +18,8 @@ import {
     setFontFamily,
     toggleSimulationDarkMode,
     syncCalendar,
-    zoomIn,
-    zoomOut,
 } from "../rendering/simulationRenderer.js";
+import { zoomIn, zoomOut } from "../rendering/simulationCameraAndControls.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
