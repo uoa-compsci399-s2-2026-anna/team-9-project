@@ -8,7 +8,7 @@ const unit_to_ms = {
     week: 604800000, // 7 * 24 * 60 * 60 * 1000
     month: 2629800000, // (365.25 / 12) * 24 * 60 * 60 * 1000 (Julian month)
     year: 31557600000, // 365.25 * 24 * 60 * 60 * 1000 (Julian year)
-}
+};
 
 /**
  * Converts a given amount of time (time + unit) into milliseconds.
@@ -60,7 +60,6 @@ export function convertToEpoch(dateString, timeZone) {
     return DateTime.fromISO(dateString, { zone: formattedTimeZone }).toMillis();
 }
 
-
 /**
  * @param {Date} date A `Date` object
  * @returns Formatted date/time string in the format taken by
@@ -83,8 +82,6 @@ export function formatDate(date) {
         .format(date)
         .replace(" ", "T"); // Replace the ' ' with a 'T' to conform to format
 }
-
-
 
 /**
  * @param {Date} date A `Date` object

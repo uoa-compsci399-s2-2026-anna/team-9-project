@@ -1,10 +1,15 @@
 {% from "components/container.html" import container %}
 
-<div id="loader" class="invisible fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+<div
+  id="loader"
+  class="pointer-events-none invisible fixed inset-0 z-50 flex items-center justify-center"
+>
   {% call container() %}
-    <div class="p-8 flex flex-col items-center justify-center gap-6 aspect-square">
+    <div
+      class="flex aspect-square flex-col items-center justify-center gap-6 p-8"
+    >
       <svg
-        class="size-16 fill-primary"
+        class="fill-primary size-16"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -21,12 +26,9 @@
         </path>
       </svg>
       <div>
-        <p id="loader-text">
-          Loading undefined
-        </p>
-        <p id="loader-subtext" class="text-secondary">
-        </p>
+        <p id="loader-text">Loading undefined</p>
+        <p id="loader-subtext" class="text-secondary"></p>
       </div>
-  </div>
+    </div>
   {% endcall %}
 </div>

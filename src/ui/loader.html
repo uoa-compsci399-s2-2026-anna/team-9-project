@@ -9,12 +9,12 @@
     <script>
       const query = window.location.search;
       const urlParams = new URLSearchParams(query);
-      const darkModeQuery = urlParams.get('darkmode');
+      const darkModeQuery = urlParams.get("darkmode");
 
-      if (darkModeQuery === 'true') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      } else if (darkModeQuery === 'false') {
-        document.documentElement.setAttribute('data-theme', 'light');
+      if (darkModeQuery === "true") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else if (darkModeQuery === "false") {
+        document.documentElement.setAttribute("data-theme", "light");
       }
     </script>
   </head>
