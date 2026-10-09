@@ -24,7 +24,8 @@ const CAMERA_ANIMATION_PROGRESS_THRESHOLD = 0.9999; // Animation is complete onc
 // So, we solve for n in the equation: (1 - CAMERA_ANIMATION_SPEED)^n = 1 - CAMERA_ANIMATION_PROGRESS_THRESHOLD
 // to get the number of steps needed for the remaining proportion of total distance to reach 1 - CAMERA_ANIMATION_PROGRESS_THRESHOLD.
 const TOTAL_CAMERA_ANIMATION_STEPS = Math.ceil(
-    Math.log(1 - CAMERA_ANIMATION_PROGRESS_THRESHOLD) / Math.log(1 - CAMERA_ANIMATION_SPEED)
+    Math.log(1 - CAMERA_ANIMATION_PROGRESS_THRESHOLD) /
+        Math.log(1 - CAMERA_ANIMATION_SPEED),
 );
 
 export const cameraDefaults = {
@@ -61,7 +62,7 @@ export function calculateCameraAndControlsSettings(viewRadius, objectSize) {
     const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
     const cameraDistance = Math.max(
         calculateCameraDistance(FOV, viewRadius),
-        controlsMinDistance + epsilon
+        controlsMinDistance + epsilon,
     );
 
     // Controls max distance must be at least camera distance * max multiplier,
@@ -91,7 +92,10 @@ export function calculateCameraAndControlsSettings(viewRadius, objectSize) {
  * @param {number} cameraSettings.cameraNear The near plane of the camera
  * @param {number} cameraSettings.cameraFar The far plane of the camera
  */
-export function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraFar }) {
+export function initOrUpdateCamera(
+    canvas,
+    { cameraDistance, cameraNear, cameraFar },
+) {
     cameraDefaults.position = calculateDefaultCameraPosition(
         cameraDefaults.up,
         cameraDistance,
@@ -125,7 +129,7 @@ export function initOrUpdateCamera(canvas, { cameraDistance, cameraNear, cameraF
 export function initOrUpdateControls(
     canvas,
     { controlsMinDistance, controlsMaxDistance },
-    controlsChangeHandler
+    controlsChangeHandler,
 ) {
     if (!controls) {
         controls = new OrbitControls(camera, canvas);
@@ -157,11 +161,16 @@ export function animateCamera() {
             cameraAnimationState.isAnimating = false;
             camera.position.copy(cameraAnimationState.position);
             controls.target.copy(cameraAnimationState.target);
-
         } else {
             // Interpolate towards the desired position and target
-            camera.position.lerp(cameraAnimationState.position, CAMERA_ANIMATION_SPEED);
-            controls.target.lerp(cameraAnimationState.target, CAMERA_ANIMATION_SPEED);
+            camera.position.lerp(
+                cameraAnimationState.position,
+                CAMERA_ANIMATION_SPEED,
+            );
+            controls.target.lerp(
+                cameraAnimationState.target,
+                CAMERA_ANIMATION_SPEED,
+            );
             cameraAnimationState.currentStep++;
         }
 

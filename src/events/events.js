@@ -74,5 +74,5 @@ export const EVENTS = {
          * Show/hiding the loader available always.
          */
         SET_LOADER_VISIBLE: "shared:set_loader_visible",
-    }
+    },
 };

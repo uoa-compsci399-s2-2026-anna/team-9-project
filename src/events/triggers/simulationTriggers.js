@@ -28,7 +28,7 @@ const DECREASE_SPEED_STEP = -1;
 /**
  * Return whether or not the given speed (value + unit) is within the minimum
  * and maximum simulation speed.
- * 
+ *
  * @param {number} value The simulation speed (e.g., 10)
  * @param {string} unit The unit for the simulation speed (e.g., days)
  * @returns Whether or not the given speed is within the simulation speed limits
@@ -45,7 +45,7 @@ function isSpeedWithinLimits(value, unit) {
  * if the maximum is 100 years, and the value given is 200 years, then 100 years will
  * be returned. Similarly, if the minimum is 0 years, and the value given is -10 years,
  * then 0 years will be returned.
- * 
+ *
  * @param {number} value The simulation speed (e.g., 10)
  * @param {string} unit The unit for the simulation speed (e.g., days)
  * @returns The clamped simulation speed in the given unit
@@ -135,7 +135,10 @@ speedAdjuster.addEventListener("input", (event) => {
 
 function adjustSpeedBy(delta) {
     const currentSpeed = parseSpeedValue(speedAdjuster.value);
-    const updatedSpeed = clampSpeedToLimits(currentSpeed + delta, speedUnitSelector.value);
+    const updatedSpeed = clampSpeedToLimits(
+        currentSpeed + delta,
+        speedUnitSelector.value,
+    );
 
     speedAdjuster.value = updatedSpeed;
     publishSimulationSpeed(updatedSpeed);
@@ -146,13 +149,16 @@ attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
 
 speedUnitSelector.addEventListener("change", (event) => {
     const unit = event.target.value;
-    const clampedSpeed = clampSpeedToLimits(parseSpeedValue(speedAdjuster.value), unit);
+    const clampedSpeed = clampSpeedToLimits(
+        parseSpeedValue(speedAdjuster.value),
+        unit,
+    );
 
     speedAdjuster.value = clampedSpeed;
 
-    bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, { 
+    bus.publish(EVENTS.SIM.ADJUST_SPEED_UNIT, {
         system: currentSystem,
-        unit: unit 
+        unit: unit,
     });
 
     publishSimulationSpeed(clampedSpeed);

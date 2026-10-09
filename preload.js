@@ -2,24 +2,27 @@
  * Safely expose APIs for communication between the main process and renderer processes
  */
 
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('applicationAPI', {
-    refresh: () => ipcRenderer.send('app:refresh'),
+contextBridge.exposeInMainWorld("applicationAPI", {
+    refresh: () => ipcRenderer.send("app:refresh"),
 });
 
-contextBridge.exposeInMainWorld('settingsAPI', {
-    get: () => ipcRenderer.invoke('settings:get'),
-    set: (settings) => ipcRenderer.invoke('settings:set', settings),
-    getDefaults: () => ipcRenderer.invoke('settings:getDefaults'),
+contextBridge.exposeInMainWorld("settingsAPI", {
+    get: () => ipcRenderer.invoke("settings:get"),
+    set: (settings) => ipcRenderer.invoke("settings:set", settings),
+    getDefaults: () => ipcRenderer.invoke("settings:getDefaults"),
 });
 
-contextBridge.exposeInMainWorld('simulationStateAPI', {
-    set: (state) => ipcRenderer.send('simulationState:set', state),
-    getDefaults: () => ipcRenderer.invoke('simulationState:getDefaults'),
+contextBridge.exposeInMainWorld("simulationStateAPI", {
+    set: (state) => ipcRenderer.send("simulationState:set", state),
+    getDefaults: () => ipcRenderer.invoke("simulationState:getDefaults"),
 });
 
-contextBridge.exposeInMainWorld('fullscreenAPI', {
-    toggle: () => ipcRenderer.send('fullscreen:toggle'),
-    onChange: (callback) => ipcRenderer.on('fullscreen:changed', (_event, value) => callback(value)),
+contextBridge.exposeInMainWorld("fullscreenAPI", {
+    toggle: () => ipcRenderer.send("fullscreen:toggle"),
+    onChange: (callback) =>
+        ipcRenderer.on("fullscreen:changed", (_event, value) =>
+            callback(value),
+        ),
 });
