@@ -2,7 +2,10 @@ import { DateTime } from "luxon";
 import { settings } from "../shared/settingsState.js";
 
 // Unit conversions into milliseconds
-const unit_to_ms = {
+const UNIT_TO_MS = {
+    millisecond: 1,
+    second: 1000,
+    minute: 60000, // 60 * 1000
     hour: 3600000, // 60 * 60 * 1000
     day: 86400000, // 24 * 60 * 60 * 1000
     week: 604800000, // 7 * 24 * 60 * 60 * 1000
@@ -10,34 +13,58 @@ const unit_to_ms = {
     year: 31557600000, // 365.25 * 24 * 60 * 60 * 1000 (Julian year)
 };
 
+function assertValidUnit(unit) {
+    if (!(unit in UNIT_TO_MS)) {
+        throw new Error(`Invalid time unit: ${unit}`);
+    }
+}
+
+/**
+ * @typedef {"millisecond"|"second"|"minute"|"hour"|"day"|"week"|"month"|"year"} TimeUnit
+ */
+
 /**
  * Converts a given amount of time (time + unit) into milliseconds.
  *
  * @param {number} time - The amount of time to convert
- * @param {string} unit The time unit: "hour", "day", "week", "month", or "year"
+ * @param {TimeUnit} unit The time unit to convert from
  * @returns {number} The equivalent amount of time in milliseconds
+ * @throws {Error} If `unit` is not a valid time unit
  */
 export function timeToMilliseconds(time, unit) {
-    if (!(unit in unit_to_ms)) {
-        throw new Error(`Invalid time unit: ${unit}`);
-    }
+    assertValidUnit(unit);
 
-    return time * unit_to_ms[unit];
+    return time * UNIT_TO_MS[unit];
 }
 
 /**
  * Converts a given amount of time in milliseconds into the given time unit.
  *
  * @param {number} ms The amount of time to convert, in milliseconds
- * @param {string} unit The time unit to convert into: "hour", "day", "week", "month", or "year"
+ * @param {TimeUnit} unit The time unit to convert into
  * @returns {number} The equivalent amount of time in the given unit
+ * @throws {Error} If `unit` is not a valid time unit
  */
 export function millisecondsToTime(ms, unit) {
-    if (!(unit in unit_to_ms)) {
-        throw new Error(`Invalid time unit: ${unit}`);
-    }
+    assertValidUnit(unit);
 
-    return ms / unit_to_ms[unit];
+    return ms / UNIT_TO_MS[unit];
+}
+
+/**
+ * Converts an amount of time from one unit to another.
+ *
+ * @param {number} time The amount of time to convert, in `fromUnit`
+ * @param {TimeUnit} fromUnit The unit that `time` is currently in
+ * @param {TimeUnit} toUnit The unit to convert into
+ * @returns {number} The equivalent amount of time in `toUnit`
+ * @throws {Error} If `fromUnit` or `toUnit` is not a valid time unit
+ */
+export function convertTime(time, fromUnit, toUnit) {
+    const timeInMs = timeToMilliseconds(time, fromUnit);
+    const timeInNewUnit = millisecondsToTime(timeInMs, toUnit);
+
+    return timeInNewUnit;
 }
 
 /**
