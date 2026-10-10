@@ -22,6 +22,7 @@ import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
     getMultipleSystemsData,
+    abortCurrentIntegration,
 } from "../services/simulationServices.js";
 import {
     TWO_PI,
@@ -405,12 +406,6 @@ function onCanvasClick(event, canvas) {
     if (!name) {
         return;
     }
-
-    // Stop the further propagation of this click event (fired when the object
-    // is clicked) so that the same event isn't intercepted by the event
-    // listener which closes the Object information panel when the user clicks
-    // off the panel.
-    event.stopPropagation();
 
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
 }
@@ -1056,9 +1051,14 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
  *
- * @param {boolean} [forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
+ * @param params The function's parameters object (used for optional named parameters)
+ * @param {boolean} [params.forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
+ * @param {boolean} [params.priorityUpdate=false] Whether or not to force this update by stopping integration
  */
-async function updateSimulation(forceCalendarUpdate = true) {
+async function updateSimulation({
+    forceCalendarUpdate = true,
+    priorityUpdate = false,
+} = {}) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
@@ -1070,10 +1070,14 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
     let allSystemData;
 
-    if (gettingSystemData && lastSystemData) {
+    if (!priorityUpdate && gettingSystemData && lastSystemData) {
         // Use the last fetched data if a request is already in progress
         allSystemData = lastSystemData;
     } else {
+        if (priorityUpdate) {
+            await abortCurrentIntegration();
+        }
+
         gettingSystemData = true;
         lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
@@ -1411,14 +1415,24 @@ export function stepBack() {
     updateSimulation();
 }
 
+/*
+ * Resets the simulation to the current time with priority.
+ */
 export function resetSimulationTimeToNow() {
     currentSimulationTime = Date.now();
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
+/*
+ * Resets the simulation to the specified time with priority.
+ */
 export function setSimulationTimeToTime(time) {
     currentSimulationTime = clampSimulationTime(time);
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
 export async function resetView(topDown = true) {
@@ -1809,7 +1823,9 @@ async function renderFrame(timestamp) {
             getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         // Update the simulation but do not bypass the calendar update throttle
-        updateSimulation(false);
+        updateSimulation({
+            forceCalendarUpdate: false,
+        });
     }
 
     animateCamera();

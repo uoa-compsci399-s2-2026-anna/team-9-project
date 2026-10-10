@@ -2,13 +2,12 @@ import { bus } from "/src/events/eventBus.js";
 import { EVENTS } from "/src/events/events.js";
 import { convertTime } from "/src/utils/utils.js";
 
-const objectInfoPanel = document.getElementById("object-information-panel");
+const panel = document.getElementById("object-information-panel");
 
 /**
  * The container containing the object information panel.
  */
-export const objectInfoPanelContainer =
-    objectInfoPanel.closest("[data-container]");
+const container = panel.closest("[data-container]");
 
 // Update object information panel when an object is clicked.
 bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
@@ -16,8 +15,8 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
 
     toggleContainer(true);
 
-    const currentSystem = JSON.parse(objectInfoPanel.dataset.currentSystem);
-    const allSystems = JSON.parse(objectInfoPanel.dataset.systems);
+    const currentSystem = JSON.parse(panel.dataset.currentSystem);
+    const allSystems = JSON.parse(panel.dataset.systems);
 
     const solarSystem = allSystems.find(
         (system) => system.name === "Solar System",
@@ -29,10 +28,10 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
         ? solarSystem.objects[objectName]
         : currentSystem.objects[objectName];
 
-    objectInfoPanel.querySelector("[data-object-name]").textContent =
-        objectName;
-    objectInfoPanel.querySelector("[data-object-type]").textContent =
-        capitalised(object.type);
+    panel.querySelector("[data-object-name]").textContent = objectName;
+    panel.querySelector("[data-object-type]").textContent = capitalised(
+        object.type,
+    );
     updateDataField("[data-object-mass]", object.mass.value);
     updateDataField("[data-object-radius]", object.radius.value);
     updateDataField("[data-object-average-temperature]", object.temp.value);
@@ -61,8 +60,8 @@ bus.subscribe(EVENTS.SIM.CLOSE_OBJECT_INFO, () => toggleContainer(false));
  * @param {boolean} doShow Should the container be shown.
  */
 function toggleContainer(doShow) {
-    objectInfoPanelContainer.classList.toggle("hidden", !doShow);
-    objectInfoPanelContainer.classList.toggle("inline-flex", doShow);
+    container.classList.toggle("hidden", !doShow);
+    container.classList.toggle("inline-flex", doShow);
 }
 
 /**
@@ -84,7 +83,7 @@ function capitalised(text) {
  * the field is not shown at all.
  */
 function updateDataField(selector, value) {
-    const field = objectInfoPanel.querySelector(selector);
+    const field = panel.querySelector(selector);
     const fieldContainer = field.closest("[data-field]");
 
     fieldContainer.classList.toggle("hidden", value === null);
