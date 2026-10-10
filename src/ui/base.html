@@ -47,6 +47,11 @@
     <!--
     Import map for Three.js generated with JSPM Generator. See https://threejs.org/manual/#en/installation
     Edit here: https://generator.jspm.io/#U2VhYGBkDM0rySzJSU1hKMkoSk11MNAztDDVMwQALPhzdxwA
+
+    three.meshline was fetched from here: https://cdn.jsdelivr.net/npm/meshline@3.3.1/dist/index.js
+    We chose to vendor the library because it has a bug that causes line thickness to scale 
+    inconsistently with the screen's width and height. Additionally, this library is no longer 
+    maintained (see https://github.com/pmndrs/meshline).
   	-->
     <script type="importmap">
       {
@@ -54,7 +59,7 @@
           "three": "https://ga.jspm.io/npm:three@0.185.1/build/three.module.js",
           "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/",
           "luxon": "https://cdn.jsdelivr.net/npm/luxon@3.5.0/build/es6/luxon.js",
-          "three.meshline": "https://ga.jspm.io/npm:meshline@3.3.1/dist/index.js"
+          "three.meshline": "/src/vendor/meshline.js"
         }
       }
     </script>
