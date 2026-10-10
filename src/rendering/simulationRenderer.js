@@ -1419,6 +1419,11 @@ export function setSimulationTimeToTime(time) {
     updateSimulation();
 }
 
+export function setSimulationTimeToLastFetched() {
+    currentSimulationTime = lastFetchedSimulationTime;
+    // No need to update the simulation as it is already at the last fetched time
+}
+
 export async function resetView(topDown = true) {
     const canvas = renderer.domElement;
 
