@@ -1,10 +1,10 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import signal
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Annotated
 from zoneinfo import ZoneInfo
@@ -14,14 +14,14 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from systems import Simulations
+from systems import Simulations, sim_to_unix_time
 from utility import (
+    begin_integrating,
     check_sim_was_stopped,
+    done_integrating,
     end_integrating,
     get_osculating_orbit,
     get_position_dict,
-    begin_integrating,
-    done_integrating,
 )
 
 # Prevent internal server errors when adding objects to the simulation
@@ -262,7 +262,11 @@ async def get_system_data_at_time(
         objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
     }
 
-    return {"positions": positions, "orbital_data": orbital_data}
+    return {
+        "positions": positions,
+        "orbital_data": orbital_data,
+        "time": sim_to_unix_time(system_name, sim.t),
+    }
 
 
 @app.get("/system")
