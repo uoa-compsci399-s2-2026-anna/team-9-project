@@ -1,3 +1,5 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import signal
@@ -13,7 +15,14 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
-from utility import get_osculating_orbit, get_position_dict
+from utility import (
+    check_sim_was_stopped,
+    end_integrating,
+    get_osculating_orbit,
+    get_position_dict,
+    begin_integrating,
+    done_integrating,
+)
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
@@ -44,11 +53,15 @@ with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")
     sim_state_schema = json.load(f)
 
 # Load the keyboard shortcuts
-with open(os.path.join(base_path, "src", "shared", "shortcuts.json"), encoding="utf-8") as f:
+with open(
+    os.path.join(base_path, "src", "shared", "shortcuts.json"), encoding="utf-8"
+) as f:
     shortcuts = json.load(f)
 
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
+
+thread_pool = ThreadPoolExecutor()
 
 
 def get_system_with_name(name: str):
@@ -69,6 +82,7 @@ TIMEZONE_MAP = {
     "NZT": "Pacific/Auckland",
     "UTC": "UTC",
 }
+
 
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
     """Formats a simulation time as a "yyyy-MM-ddTHH:mm" string, in the given time zone."""
@@ -209,7 +223,9 @@ async def get_system_info(system_name: str = "") -> dict:
     }
 
 
-def get_system_data_at_time(system_name: str, t: float) -> dict:
+async def get_system_data_at_time(
+    system_name: str, t: float, should_integrate: bool = True
+) -> dict:
     """
     Gets a system at a specific unix time.
     Returns simulation data.
@@ -230,8 +246,13 @@ def get_system_data_at_time(system_name: str, t: float) -> dict:
     if sim is None or objects is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    # Integrate to given time
-    sim = sims.quick_integrate(t, system_data)
+    # Only integrate if we should be integrating
+    if should_integrate:
+        # Integrate to given time using a process pool to keep interactivity
+        loop = asyncio.get_running_loop()
+        sim = await loop.run_in_executor(
+            thread_pool, Simulations.quick_integrate, sims, t, system_data
+        )
 
     # Gather positions
     positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
@@ -258,7 +279,32 @@ async def get_system_data(
 
     systems = {}
 
-    for system_name in system_names:
-        systems[system_name] = get_system_data_at_time(system_name, t)
+    # If any sim was preempted during integration at any point
+    aborted = False
+
+    try:
+        await begin_integrating()
+        for system_name in system_names:
+            # Get system_data at a specific time unless a sim has been stopped
+            # Then just get the system's data at it's current time
+            systems[system_name] = await get_system_data_at_time(
+                system_name, t, should_integrate=(not aborted)
+            )
+
+            # If the sim was preempted during integration do not integrate the other
+            # systems but still get the data (at the time it was at)
+            aborted = True if aborted else check_sim_was_stopped()
+    finally:
+        done_integrating()
 
     return systems
+
+
+@app.delete("/current_integration")
+async def stop_currently_integrating_sim():
+    """
+    Endpoint for priority actions to stop rebound from integrating early.
+    I.e. if a user is integrating, reset to now should stop it and get to
+    integrate instead.
+    """
+    await end_integrating()
