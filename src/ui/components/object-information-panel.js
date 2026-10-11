@@ -1,5 +1,6 @@
 import { bus } from "/src/events/eventBus.js";
 import { EVENTS } from "/src/events/events.js";
+import { convertTime } from "/src/utils/utils.js";
 
 const objectInfoPanel = document.getElementById("object-information-panel");
 
@@ -36,14 +37,17 @@ bus.subscribe(EVENTS.SIM.OBJECT_CLICK, (e) => {
     updateDataField("[data-object-radius]", object.radius.value);
     updateDataField("[data-object-average-temperature]", object.temp.value);
 
-    const SECONDS_IN_DAY = 86400;
-
     const heliocentricPeriod = object.period.heliocentric;
 
     if (heliocentricPeriod) {
+        const heliocentricPeriodDays = convertTime(
+            heliocentricPeriod,
+            "second",
+            "day",
+        );
         updateDataField(
             "[data-object-period]",
-            Math.round(heliocentricPeriod / SECONDS_IN_DAY),
+            Math.round(heliocentricPeriodDays),
         );
     } else {
         updateDataField("[data-object-period]", null);
