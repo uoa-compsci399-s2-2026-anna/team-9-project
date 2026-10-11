@@ -42,7 +42,6 @@
   "dependencies": {
     "electron-log": "^5.4.4",
     "electron-squirrel-startup": "^1.0.1",
-    "electron-store": "^8.2.0",
-    "three.meshline": "^1.4.0"
+    "electron-store": "^8.2.0"
   }
 }
