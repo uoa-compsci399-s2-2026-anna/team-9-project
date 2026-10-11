@@ -534,23 +534,24 @@ function setUpAutoUpdates() {
         if (!canAutoInstall) {
             const { response } = await dialog.showMessageBox(mainWindow, {
                 type: "info",
-                buttons: ["Open download page", "Later"],
-                message: `OPIS ${info.version} is available.`,
+                buttons: ["Open download page", "Not now"],
+                defaultId: 0,
+                cancelId: 1,
+                message: `A new version of OPIS (${info.version}) is available.`,
+                detail: "Download the new version from our releases page and install it over your current one.",
             });
-
-            if (response === 0) {
-                shell.openExternal(RELEASES_URL);
-            }
-
+            if (response === 0) shell.openExternal(RELEASES_URL);
             return;
         }
 
         const { response } = await dialog.showMessageBox(mainWindow, {
             type: "info",
-            buttons: ["Download", "Later"],
-            message: `OPIS ${info.version} is available. Download it now?`,
+            buttons: ["Download update", "Not now"],
+            defaultId: 0,
+            cancelId: 1,
+            message: `A new version of OPIS (${info.version}) is available.`,
+            detail: "You can keep using OPIS while it downloads. You'll be asked before anything is installed.",
         });
-
         if (response === 0) {
             autoUpdater.downloadUpdate();
         }
@@ -562,14 +563,15 @@ function setUpAutoUpdates() {
     });
 
     autoUpdater.on("update-downloaded", async (info) => {
-        mainWindow?.setProgressBar(-1); // Clear the progress bar
+        mainWindow?.setProgressBar(-1);
         const { response } = await dialog.showMessageBox(mainWindow, {
             type: "info",
-            buttons: ["Restart now", "Later"],
-            message: `OPIS ${info.version} is ready to install.`,
-            detail: "Any running simulation will be closed.",
+            buttons: ["Restart and update", "Later"],
+            defaultId: 0,
+            cancelId: 1,
+            message: `OPIS ${info.version} has finished downloading.`,
+            detail: "OPIS needs to restart to finish updating. Any running simulation will be closed.",
         });
-
         if (response === 0) {
             stopPythonProcess(); // Release the file locks before the installer runs
             autoUpdater.quitAndInstall();
