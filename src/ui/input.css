@@ -41,7 +41,7 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-@custom-variant short (@media (max-height: 700px));
+@custom-variant short (@media (max-height: 700px), (max-width: 1010px));
 
 @layer theme {
   :root,
@@ -58,7 +58,7 @@
   }
 }
 
-@media (max-height: 700px) {
+@media (max-height: 700px), (max-width: 1010px) {
   /* Default font, default size */
   :root {
     --ui-zoom: 0.8;
@@ -84,7 +84,7 @@
   The calendar is sized in pixels, so the 110% "Larger" text size doesn't
   enlarge it. Multiplying by --text-scale keeps it in step with the controls.
 */
-@media (max-height: 700px) {
+@media (max-height: 700px), (max-width: 1010px) {
   .flatpickr-calendar {
     scale: calc(var(--ui-zoom, 1) * var(--text-scale, 1));
     transform-origin: top left;
