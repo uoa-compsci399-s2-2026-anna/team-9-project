@@ -4,7 +4,7 @@ import { running } from "../shared/simulationState.js";
 
 /**
  * Fetches the backend for star system information
- * 
+ *
  * @param {string} name Star system name
  */
 export async function getSystemInfo(name) {
@@ -22,7 +22,7 @@ export async function getSystemInfo(name) {
 
 /**
  * Fetches the backend for multiple star systems' data at a specified time
- * 
+ *
  * @param {Array.<string>} names Star system names
  * @param {number} t Timestamp in milliseconds since epoch
  */
@@ -32,7 +32,7 @@ export async function getMultipleSystemsData(names, t) {
     });
 
     // Add each member of the list to the parameters
-    names.forEach(name => params.append('system_names', name))
+    names.forEach((name) => params.append("system_names", name));
 
     // Show the loader after 1 second while running else 500 milisecond
     const waitTimeMs = running ? 1000 : 500;

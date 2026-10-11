@@ -1,14 +1,14 @@
 {
-    "sim:toggle": {
-        "key": " ",
-        "label": "Space"
-    },
-    "sim:step_forward": {
-        "key": "ArrowRight",
-        "label": "→"
-    },
-    "sim:step_back": {
-        "key": "ArrowLeft",
-        "label": "←"
-    }
+  "sim:toggle": {
+    "key": " ",
+    "label": "Space"
+  },
+  "sim:step_forward": {
+    "key": "ArrowRight",
+    "label": "→"
+  },
+  "sim:step_back": {
+    "key": "ArrowLeft",
+    "label": "←"
+  }
 }

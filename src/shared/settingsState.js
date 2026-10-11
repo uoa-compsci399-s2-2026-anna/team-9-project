@@ -1,7 +1,7 @@
 /**
  * Loads the current settings state (keys/values) from electron-store, which is
  * managed by the main process. Settings state is persisted between application runs.
- * 
+ *
  * @returns The settings state
  */
 async function loadState() {
@@ -14,8 +14,8 @@ async function loadState() {
 
 /**
  * Load the default settings state for the application. This is managed by the main process.
- * 
- * @returns The default settings state 
+ *
+ * @returns The default settings state
  */
 async function loadDefaults() {
     if (!window.settingsAPI) {
@@ -33,7 +33,10 @@ function persist() {
     });
 }
 
-const [initialSettings, defaultSettings] = await Promise.all([loadState(), loadDefaults()]);;
+const [initialSettings, defaultSettings] = await Promise.all([
+    loadState(),
+    loadDefaults(),
+]);
 
 export const settings = { ...initialSettings };
 

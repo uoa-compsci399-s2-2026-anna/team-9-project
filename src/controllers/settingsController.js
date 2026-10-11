@@ -35,4 +35,4 @@ bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
 // Reset settings
 bus.subscribe(EVENTS.SETTINGS.RESET_ALL_SETTINGS, () => {
     resetSettingsState();
-})
+});

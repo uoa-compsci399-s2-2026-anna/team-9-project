@@ -2,20 +2,22 @@ import { updateCalendar } from "../ui/simulationCalendar.js";
 import { timeToMilliseconds } from "../utils/utils.js";
 import simulationStateSchema from "./simulationStateSchema.json" with { type: "json" };
 
-/** 
+/**
  * Loads the current simulation state from the simulation-state script element
  * in simulation.html. The state is provided by the simulation route in app.py,
- * which receives it from index.js where the current simulation state is stored 
+ * which receives it from index.js where the current simulation state is stored
  * in memory.
- * 
- * The simulation state is only persisted for the lifetime of the application 
+ *
+ * The simulation state is only persisted for the lifetime of the application
  * and is not preserved between application loads.
- * 
+ *
  * @returns {Object} The current simulation state.
  * */
 function loadState() {
     const simulationStateElement = document.getElementById("simulation-state");
-    return simulationStateElement ? JSON.parse(simulationStateElement.textContent) : {};
+    return simulationStateElement
+        ? JSON.parse(simulationStateElement.textContent)
+        : {};
 }
 
 async function getDefaultState() {
@@ -46,7 +48,7 @@ function persist() {
 
 /**
  * Updates a value in the simulation state and persists the change.
- * 
+ *
  * @param {string} key The name of the simulation state property to update
  * @param {*} value The new value for the property
  * @throws {Error} If the specified state property does not exist
@@ -62,13 +64,13 @@ export function setSimulationState(key, value) {
 
 /**
  * Gets the simulation speed per second for the given system converted to milliseconds.
- * 
+ *
  * @returns {number} The simulation speed per second in milliseconds
  */
 export function getSimulationSpeedMilliseconds(system) {
     return timeToMilliseconds(
-        simulationState.simulationSpeed[system], 
-        simulationState.simulationSpeedUnit[system]
+        simulationState.simulationSpeed[system],
+        simulationState.simulationSpeedUnit[system],
     );
 }
 
@@ -122,32 +124,31 @@ export function setSimulationTime(system, time) {
 
 /**
  * Persists the formatted simulation date for the given system
- * 
+ *
  * @param {string} system Name of the system
  * @param {string} formattedDate The formatted simulation date string to persist
  */
 export function setFormattedSimulationDate(system, formattedDate) {
-    simulationState.formattedSimulationDates ??= {}; 
+    simulationState.formattedSimulationDates ??= {};
     simulationState.formattedSimulationDates[system] = formattedDate;
     persist();
 }
 
 /**
  * Persists the elapsed days text for the given system
- * 
+ *
  * @param {string} system Name of the system
  * @param {string} elapsedDaysText The elapsed days text to persist
  */
 export function setElapsedText(system, elapsedDaysText) {
     simulationState.elapsedDaysTexts ??= {};
     simulationState.elapsedDaysTexts[system] = elapsedDaysText;
-    persist(); 
+    persist();
 }
-
 
 /**
  * Gets the array of hidden object names for the given system
- * 
+ *
  * @param {string} system The system to get hidden objects for
  * @returns {string[]} The array of hidden object names for the system
  */
@@ -164,8 +165,8 @@ function getHiddenObjects(system) {
 
 /**
  * Shows or hides an object in the simulation.
- * 
- * @param {string} system The system that the object belongs to 
+ *
+ * @param {string} system The system that the object belongs to
  * @param {string} object The name of the object to show or hide
  * @param {boolean} showObject Whether to show the object. If false, the object is hidden.
  */
@@ -174,7 +175,9 @@ export function toggleObject(system, object, showObject) {
 
     if (showObject) {
         // Unhide the object
-        simulationState.hiddenObjects[system] = hidden.filter(o => o !== object);
+        simulationState.hiddenObjects[system] = hidden.filter(
+            (o) => o !== object,
+        );
     } else if (!simulationState.hiddenObjects[system].includes(object)) {
         hidden.push(object);
     }
@@ -197,17 +200,17 @@ export function getObjectVisibilityChanges(system) {
     for (const name of previouslyHidden) {
         // Object was hidden, but it should now be shown
         if (!defaultHidden.includes(name)) {
-            changes.push({ 
-                objectName: name, 
-                isShown: true, 
+            changes.push({
+                objectName: name,
+                isShown: true,
             });
         }
     }
     for (const name of defaultHidden) {
         // Object was shown, but it should be now hidden
         if (!previouslyHidden.includes(name)) {
-            changes.push({ 
-                objectName: name, 
+            changes.push({
+                objectName: name,
                 isShown: false,
             });
         }
@@ -218,7 +221,7 @@ export function getObjectVisibilityChanges(system) {
 
 /**
  * Returns whether an object is hidden in the specified system.
- * 
+ *
  * @param {string} system The name of the system to check
  * @param {string} object The name of the object
  * @returns {boolean} `true` if the object is hidden; `false` otherwise
@@ -230,7 +233,7 @@ export function isObjectHidden(system, object) {
 /**
  * For the given system, check whether or not the given object is hidden by default
  * (based on the default simulation state).
- * 
+ *
  * @param {string} system The system to check
  * @param {string} objectName The name of the object to check
  * @returns Whether or not the object is hidden by default

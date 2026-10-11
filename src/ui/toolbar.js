@@ -73,7 +73,6 @@ bus.subscribe(EVENTS.SETTINGS.FONT_SELECT, (event) => {
     }
 });
 
-
 // Font size select
 
 bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {

@@ -1,13 +1,13 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { 
+import {
     setSimulationState,
     setSimulationSpeed,
     setSimulationSpeedUnit,
     toggleObject,
-    setRunning, 
+    setRunning,
     setFrozen,
-    setComparingToSolarSystem
+    setComparingToSolarSystem,
 } from "../shared/simulationState.js";
 
 // Speed adjuster
@@ -55,11 +55,11 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
 
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, () => {
     setFrozen(true);
-})
+});
 
 bus.subscribe(EVENTS.SETTINGS.CLOSE_SETTINGS_MENU, () => {
     setFrozen(false);
-})
+});
 
 bus.subscribe(EVENTS.SIM.COMPARE_TO_SOLAR_SYSTEM, (event) => {
     setComparingToSolarSystem(event.detail.compare);
