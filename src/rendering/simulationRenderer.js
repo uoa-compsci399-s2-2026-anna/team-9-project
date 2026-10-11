@@ -1,9 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import {
-    CSS2DRenderer,
-    CSS2DObject,
-} from "three/addons/renderers/CSS2DRenderer.js";
+import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { MeshLineGeometry, MeshLineMaterial } from "three.meshline";
 import {
     simulationState,
@@ -32,6 +29,12 @@ import {
     calculatePeriapsis,
     calculateAverageNormal,
 } from "./simulationCalculations.js";
+import {
+    renderer,
+    labelRenderer,
+    initRenderer,
+    initLabelRenderer,
+} from "./renderers.js";
 import {
     cameraDefaults,
     cameraAnimationState,
@@ -90,9 +93,6 @@ let objectTypes;
 
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
-
-let renderer;
-let labelRenderer;
 
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
@@ -1115,20 +1115,6 @@ function updateHoverCursor(canvas) {
 }
 
 /**
- * Initialise the label renderer for the simulation renderer.
- * @param {HTMLCanvasElement} canvas The canvas element to render on
- */
-function initLabelRenderer(canvas) {
-    labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    labelRenderer.domElement.style.position = "fixed";
-    labelRenderer.domElement.style.top = "0px";
-    labelRenderer.domElement.style.left = "0px";
-    labelRenderer.domElement.style.pointerEvents = "none";
-    canvas.parentElement.appendChild(labelRenderer.domElement);
-}
-
-/**
  * Initialise the timer for the simulation renderer.
  */
 function initTimer() {
@@ -1163,7 +1149,7 @@ export async function init(name) {
     );
 
     const canvas = document.getElementById("simulation-canvas");
-    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    initRenderer(canvas);
 
     setReferenceSystemData(currentSystem, systemInfo["reference"]);
 
