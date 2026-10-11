@@ -67,7 +67,6 @@ export async function updateViewRadius(
  * Set the default view radii for the current system and the Solar System.
  *
  * @param {string} currentSystem The name of the current system
- * @returns {Promise<void>}
  */
 export async function setDefaultViewRadii(currentSystem) {
     currentSystemDefaultViewRadius = await getViewRadiusForSystem(
