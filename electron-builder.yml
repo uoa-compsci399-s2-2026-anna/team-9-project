@@ -48,4 +48,5 @@ linux:
   icon: src/assets/app-icon/opis.png
   executableName: opis
   category: Education
+  maintainer: "Team 9 JEDEJ"
   artifactName: "${productName}-${version}-linux.${ext}"
