@@ -29,8 +29,6 @@ import {
     isAngleBetween,
     calculateProgressDistance,
     calculateOrbitRotationMatrix,
-    calculateMaxApoapsis,
-    calculateMaxPeriapsis,
     calculatePeriapsis,
     calculateAverageNormal,
     calculateCameraDistanceToTargetProjection,
@@ -47,6 +45,13 @@ import {
     initOrUpdateControls,
     animateCamera,
 } from "./simulationCameraAndControls.js";
+import {
+    viewRadius,
+    currentSystemDefaultViewRadius,
+    solarSystemDefaultViewRadius,
+    updateViewRadius,
+    setDefaultViewRadii,
+} from "./viewRadius.js";
 import {
     getReferenceSystemData,
     setReferenceSystemData,
@@ -89,7 +94,6 @@ let labelRenderer;
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
 
-const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
 
@@ -102,12 +106,6 @@ solarSystemGroup.visible = false; // Initially hidden until the user requests a 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
 const objectLabels = new Map();
-
-let viewRadius;
-
-// The view radius when all objects are set to default visibility
-let currentSystemDefaultViewRadius;
-let solarSystemDefaultViewRadius;
 
 // Default size and colour of all the objects
 let objectSize;
@@ -315,50 +313,6 @@ function getObjectNameAt(clientX, clientY, canvas) {
     }
 
     return null;
-}
-
-/**
- * Get the view radius for a given system based on the maximum apoapsis of all visible objects.
- *
- * @param {string} system The name of the system
- * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
- * @returns {Promise<number>} The view radius for the system
- */
-async function getViewRadiusForSystem(system, useDefault = false) {
-    const orbitalDataValues = await getVisibleReferenceOrbitalDataValues(
-        system,
-        useDefault,
-    );
-    const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
-    const maxPeriapsis = calculateMaxPeriapsis(orbitalDataValues); // To account for hyperbolic orbits
-    return Math.max(maxApoapsis, maxPeriapsis) * viewRadiusMultiplier;
-}
-
-/**
- * Update the view radius based on the current system, whether the habitable zone is shown, and whether
- * the Solar System is being compared. The view radius is set to the maximum of the current system's view radius,
- * the Solar System's view radius (if comparing), and the habitable zone's end radius (if shown).
- *
- * @param {boolean} comparingToSolarSystem Whether the Solar System is being compared
- * @param {boolean} habitableZoneShown Whether the habitable zone is shown
- */
-async function updateViewRadius(comparingToSolarSystem, habitableZoneShown) {
-    const viewRadiusForCurrentSystem =
-        await getViewRadiusForSystem(currentSystem);
-
-    let newViewRadius = viewRadiusForCurrentSystem;
-
-    if (comparingToSolarSystem) {
-        newViewRadius = Math.max(newViewRadius, solarSystemDefaultViewRadius);
-    }
-
-    if (habitableZoneShown && habitableZone) {
-        const viewRadiusForHabitableZone =
-            habitableZone.end * viewRadiusMultiplier;
-        newViewRadius = Math.max(newViewRadius, viewRadiusForHabitableZone);
-    }
-
-    viewRadius = newViewRadius;
 }
 
 /**
@@ -1288,18 +1242,11 @@ export async function init(name) {
     setReferenceSystemData(currentSystem, systemInfo["reference"]);
 
     await updateViewRadius(
+        currentSystem,
         false, // Not comparing to the Solar System
         simulationState.habitableZoneShown,
     );
-
-    currentSystemDefaultViewRadius = await getViewRadiusForSystem(
-        currentSystem,
-        true,
-    );
-    solarSystemDefaultViewRadius = await getViewRadiusForSystem(
-        "Solar System",
-        true,
-    );
+    await setDefaultViewRadii(currentSystem);
 
     objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
     hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
@@ -1386,7 +1333,11 @@ export function setSimulationTimeToTime(time) {
 export async function resetView(topDown = true) {
     const canvas = renderer.domElement;
 
-    await updateViewRadius(comparingToSolarSystem, habitableZoneMesh?.visible);
+    await updateViewRadius(
+        currentSystem,
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible,
+    );
 
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
@@ -1432,8 +1383,7 @@ export async function resetView(topDown = true) {
 export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
-    await updateViewRadius(true, habitableZoneMesh?.visible);
-
+    await updateViewRadius(currentSystem, true, habitableZoneMesh?.visible);
     await updateInnermostPeriapsis(true);
 
     // Align the solar system's average normal with the up vector (Z-axis)
@@ -1461,7 +1411,7 @@ export async function hideSolarSystem() {
     // Update the camera and controls to fit the current system again
 
     const canvas = renderer.domElement;
-    await updateViewRadius(false, habitableZoneMesh?.visible);
+    await updateViewRadius(currentSystem, false, habitableZoneMesh?.visible);
     await updateInnermostPeriapsis(false);
     solarSystemGroup.visible = false;
 
