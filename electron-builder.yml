@@ -44,7 +44,7 @@ mac:
   artifactName: "${productName}-${version}-mac-${arch}.${ext}"
 
 linux:
-  target: AppImage
+  target: [AppImage, deb, rpm]
   icon: src/assets/app-icon/opis.png
   executableName: opis
   category: Education

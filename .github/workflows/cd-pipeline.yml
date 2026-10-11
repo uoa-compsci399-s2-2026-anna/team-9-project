@@ -20,6 +20,8 @@ jobs:
             platform: linux
             installer_glob: |
               out/*.AppImage
+              out/*.deb
+              out/*.rpm
               out/latest-linux.yml
           - os: windows-latest
             platform: windows
