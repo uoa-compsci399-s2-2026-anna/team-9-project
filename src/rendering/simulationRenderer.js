@@ -48,6 +48,11 @@ import {
     animateCamera,
 } from "./simulationCameraAndControls.js";
 import {
+    getReferenceSystemData,
+    setReferenceSystemData,
+    getVisibleReferenceOrbitalDataValues,
+} from "./referenceSystemData.js";
+import {
     habitableZone,
     habitableZoneMesh,
     createHabitableZoneMesh,
@@ -83,8 +88,6 @@ let labelRenderer;
 
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
-
-const referenceSystemData = new Map(); // Cache for orbital data at the reference timestamp
 
 const viewRadiusMultiplier = 1.3;
 const objectSizeMultiplier = 0.002;
@@ -202,21 +205,6 @@ const MIN_SIMULATION_TIME = (() => {
 })();
 
 /**
- * Get the reference system data for a given system.
- * If the data is not in the cache, it will be fetched and stored.
- *
- * @param {string} system The name of the system
- * @returns {Promise<Object>} The reference system data
- */
-async function getReferenceSystemData(system) {
-    if (!referenceSystemData.has(system)) {
-        const systemInfo = await getSystemInfo(system);
-        referenceSystemData.set(system, systemInfo["reference"]);
-    }
-    return referenceSystemData.get(system);
-}
-
-/**
  * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
  * NDC range from -1 to 1 on both axes.
  *
@@ -330,22 +318,6 @@ function getObjectNameAt(clientX, clientY, canvas) {
 }
 
 /**
- * Get the orbital data values for all objects in the given system that are not hidden.
- *
- * @param {string} system The name of the system
- * @param {Object} orbitalData Map of object name to orbital data
- * @param {boolean} [useDefault=false] Whether to check default visibility instead of current visibility
- * @returns {Object[]} Orbital data values for visible objects only
- */
-function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
-    const isHidden = useDefault ? isObjectHiddenByDefault : isObjectHidden;
-
-    return Object.keys(orbitalData)
-        .filter((name) => !isHidden(system, name))
-        .map((name) => orbitalData[name]);
-}
-
-/**
  * Get the view radius for a given system based on the maximum apoapsis of all visible objects.
  *
  * @param {string} system The name of the system
@@ -353,10 +325,8 @@ function getVisibleOrbitalDataValues(system, orbitalData, useDefault = false) {
  * @returns {Promise<number>} The view radius for the system
  */
 async function getViewRadiusForSystem(system, useDefault = false) {
-    const referenceSystemData = await getReferenceSystemData(system);
-    const orbitalDataValues = getVisibleOrbitalDataValues(
+    const orbitalDataValues = await getVisibleReferenceOrbitalDataValues(
         system,
-        referenceSystemData.orbital_data,
         useDefault,
     );
     const maxApoapsis = calculateMaxApoapsis(orbitalDataValues);
@@ -1165,10 +1135,8 @@ async function alignSystemToCameraUp(group, useDefault = false) {
         system = "Solar System";
     }
 
-    const referenceSystemData = await getReferenceSystemData(system);
-    const orbitalDataValues = getVisibleOrbitalDataValues(
+    const orbitalDataValues = await getVisibleReferenceOrbitalDataValues(
         system,
-        referenceSystemData.orbital_data,
         useDefault,
     );
     const averageNormal = calculateAverageNormal(orbitalDataValues);
@@ -1317,11 +1285,7 @@ export async function init(name) {
     const canvas = document.getElementById("simulation-canvas");
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
-    referenceSystemData.set(
-        // Add this system's reference data to cache
-        currentSystem,
-        systemInfo["reference"],
-    );
+    setReferenceSystemData(currentSystem, systemInfo["reference"]);
 
     await updateViewRadius(
         false, // Not comparing to the Solar System
