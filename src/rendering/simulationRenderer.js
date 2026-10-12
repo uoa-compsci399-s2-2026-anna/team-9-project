@@ -981,9 +981,13 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
  * Update the calendar to display the current simulation time.
  *
  * @param params The function's parameters object (optional named parameters)
+ * @param {boolean} [params.priorityUpdate=false] Whether or not the update should force itself
  * @param {boolean} [params.forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
  */
-async function updateSimulation({ forceCalendarUpdate = true } = {}) {
+async function updateSimulation({
+    priorityUpdate = false,
+    forceCalendarUpdate = true,
+} = {}) {
     // Take comparingToSolarSystem at beginning of function call to prevent mid-function changes
     const isComparingToSolarSystem = comparingToSolarSystem;
     const isDarkMode = settings.darkMode;
@@ -995,10 +999,14 @@ async function updateSimulation({ forceCalendarUpdate = true } = {}) {
 
     let allSystemData;
 
-    if (gettingSystemData && lastSystemData) {
+    if (!priorityUpdate && gettingSystemData && lastSystemData) {
         // Use the last fetched data if a request is already in progress
         allSystemData = lastSystemData;
     } else {
+        if (priorityUpdate) {
+            // TODO: Use endpoint
+        }
+
         gettingSystemData = true;
         lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
