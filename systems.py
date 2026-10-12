@@ -16,6 +16,11 @@ sim_initial_jd_tdb: dict[str, float] = {
 }
 
 
+def _reached_target(sim: rebound.Simulation, target: float) -> bool:
+    """Whether an integration ran all the way to the target time (rather than being aborted mid way)"""
+    return abs(sim.t - target) < 1e-6
+
+
 class SimulationData:
     """
     Class that wraps the simulation data (named tuple)
@@ -118,14 +123,32 @@ class Simulations:
         initial_temporal_distance: float = abs(jd_tdb_time - initial_timestamp)
 
         if initial_temporal_distance < current_temporal_distance:
-            # If the difference is smaller to reinitialise do so
+            # Reinitialising the sim from its initial state is closer than integrating
+            # the existing one. Store the existing sim in case the reinitialisation is aborted.
+            last_completed = self.__sims[system_name]
             self.reinitialise_sim(system_data, system_name, jd_tdb_time)
-            # get_sim cannot return None so we cast
-            return cast(rebound.Simulation, self.get_sim(system_name))
+            reinitialised = self.__sims[system_name]
+
+            if not _reached_target(reinitialised.sim, jd_tdb_time - initial_timestamp):
+                # The reinitialisation was aborted, so use the last completed sim state
+                self.__sims[system_name] = last_completed
+                return cast(rebound.Simulation, last_completed.sim)
+
+            return cast(rebound.Simulation, reinitialised.sim)
         else:
-            # If the difference is greater, integrate normally
-            sim.integrate(sim_time)
-            return sim
+            # Perform the integration on a copy of the current simulation. This means that
+            # the existing simulation is preserved (in case it is aborted).
+            candidate = sim.copy()
+            candidate.heartbeat = heartbeat
+            candidate.integrate(sim_time)
+
+            if not _reached_target(candidate, sim_time):
+                # The integration was aborted, so keep the existing simulation
+                return sim
+
+            # The integration finished, so the copy becomes the current simulation
+            self.__sims[system_name].sim = candidate
+            return candidate
 
 
 def unix_to_jd_tdb(t: float) -> float:

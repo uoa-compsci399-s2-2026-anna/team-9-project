@@ -977,6 +977,8 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
     bus.publish(EVENTS.SIM.UPDATE_GRID_SCALE, { value: scaleFactor });
 }
 
+let lastPriorityId = 0;
+
 /**
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
@@ -1005,18 +1007,35 @@ async function updateSimulation({
         allSystemData = lastSystemData;
     } else {
         if (priorityUpdate) {
+            lastPriorityId++;
+        }
+        const myPriorityId = lastPriorityId;
+        const requestedTime = currentSimulationTime;
+
+        gettingSystemData = true;
+        if (priorityUpdate) {
             await abortCurrentIntegration();
         }
 
-        gettingSystemData = true;
-        lastFetchedSimulationTime = currentSimulationTime;
-        allSystemData = await getMultipleSystemsData(
-            systems,
-            lastFetchedSimulationTime,
-        );
-        updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
-        gettingSystemData = false;
-        lastSystemData = allSystemData;
+        let data;
+        try {
+            data = await getMultipleSystemsData(systems, requestedTime);
+        } finally {
+            if (myPriorityId === lastPriorityId) {
+                gettingSystemData = false;
+            }
+        }
+
+        // A newer priority update superseded this
+        if (myPriorityId !== lastPriorityId) {
+            return;
+        }
+
+        lastFetchedSimulationTime = requestedTime;
+        allSystemData = data;
+        lastSystemData = data;
+        currentSimulationTime = data[currentSystem].time;
+        updateCalendar(currentSimulationTime, forceCalendarUpdate);
     }
 
     const currentSystemData = allSystemData[currentSystem];
@@ -1294,6 +1313,7 @@ export async function init(name) {
      * before the simulation is exited
      */
     window.addEventListener("pagehide", () => {
+        abortCurrentIntegration();
         setSimulationTime(currentSystem, lastFetchedSimulationTime);
 
         const formattedSimulationDate = formatSimulationDate(
@@ -1322,14 +1342,18 @@ function clampSimulationTime(time) {
 
 export function stepForward() {
     currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
 export function stepBack() {
     currentSimulationTime = clampSimulationTime(
         currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
     );
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
 /*

@@ -17,7 +17,7 @@ from fastapi.templating import Jinja2Templates
 from systems import Simulations, sim_to_unix_time
 from utility import (
     begin_integrating,
-    check_sim_was_stopped,
+    get_abort_count,
     done_integrating,
     end_integrating,
     get_osculating_orbit,
@@ -283,21 +283,15 @@ async def get_system_data(
 
     systems = {}
 
-    # If any sim was preempted during integration at any point
-    aborted = False
+    arrival_count = get_abort_count()
 
+    await begin_integrating()
     try:
-        await begin_integrating()
         for system_name in system_names:
-            # Get system_data at a specific time unless a sim has been stopped
-            # Then just get the system's data at it's current time
+            stale = get_abort_count() != arrival_count
             systems[system_name] = await get_system_data_at_time(
-                system_name, t, should_integrate=(not aborted)
+                system_name, t, should_integrate=(not stale)
             )
-
-            # If the sim was preempted during integration do not integrate the other
-            # systems but still get the data (at the time it was at)
-            aborted = True if aborted else check_sim_was_stopped()
     finally:
         done_integrating()
 

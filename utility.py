@@ -5,29 +5,26 @@ import rebound
 
 # Whether we are integrating a simulation currently (empty lock)
 is_integrating = asyncio.Lock()
-# Whether we are killing an integration by request currently (empty lock)
-killing_integration = asyncio.Lock()
 
 # Whether heartbeat should stop
 abort_integration = asyncio.Event()
-# Whether the sim aborted
-last_sim_was_aborted = asyncio.Event()
 
+_abort_count = 0
 
-def check_sim_was_stopped() -> bool:
-    """
-    Check's if the sim that just ran was stopped during integration.
-    """
-    return last_sim_was_aborted.is_set()
+def get_abort_count() -> int:
+    return _abort_count
 
 
 async def begin_integrating():
-    """
-    Stops all other running simulations to let this sim run.
-    Also aquires necessary mutexes
-    """
-    # Declare that we are integrating right now
     await is_integrating.acquire()
+    abort_integration.clear()
+
+
+async def end_integrating():
+    global _abort_count
+    _abort_count += 1
+    if is_integrating.locked():
+        abort_integration.set()
 
 
 def done_integrating():
@@ -40,23 +37,6 @@ def done_integrating():
 
     # Clear relevant events
     abort_integration.clear()
-    last_sim_was_aborted.clear()
-
-
-async def end_integrating():
-    """
-    Stop the currently integrating simulation if one is doing so currently.
-    """
-    # If the integration has already been aborted, do not abort again
-    if abort_integration.is_set():
-        return
-
-    # Only 1 request gets to stop integration at a time which prevents
-    # being left in a faulty state (i.e. abort integration when no integration)
-    async with killing_integration:
-        # If we are current integrating, stop (via heartbeat callback)
-        if is_integrating.locked():
-            abort_integration.set()
 
 
 def heartbeat(sim_ptr):
@@ -71,8 +51,6 @@ def heartbeat(sim_ptr):
         sim = cast(rebound.Simulation, sim_ptr.contents)
         # Stop the simulation
         sim.stop()
-        # State that this sim aborted
-        last_sim_was_aborted.set()
 
 
 def get_position_dict(particle: rebound.Particle) -> dict:
