@@ -1340,20 +1340,40 @@ function clampSimulationTime(time) {
     return Math.max(time, MIN_SIMULATION_TIME);
 }
 
-export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
-    updateSimulation({
-        priorityUpdate: true,
-    });
+let stepForwardInFlight = false;
+let stepBackInFlight = false;
+
+export async function stepForward() {
+    if (stepForwardInFlight) {
+        return;
+    }
+
+    stepForwardInFlight = true;
+
+    try {
+        currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
+        await updateSimulation({ priorityUpdate: true });
+    } finally {
+        stepForwardInFlight = false;
+    }
 }
 
-export function stepBack() {
-    currentSimulationTime = clampSimulationTime(
-        currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
-    );
-    updateSimulation({
-        priorityUpdate: true,
-    });
+export async function stepBack() {
+    if (stepBackInFlight) {
+        return;
+    }
+
+    stepBackInFlight = true;
+
+    try {
+        currentSimulationTime = clampSimulationTime(
+            currentSimulationTime -
+                getSimulationSpeedMilliseconds(currentSystem),
+        );
+        await updateSimulation({ priorityUpdate: true });
+    } finally {
+        stepBackInFlight = false;
+    }
 }
 
 let resetInFlight = false;
