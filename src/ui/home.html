@@ -8,7 +8,9 @@
   <div class="absolute h-full w-full">
     <!-- TEMPORARY POSITIONING -->
     <div class="ui-zoom absolute top-0 right-0">
-      {% include "components/toolbar.html" %}
+      {% with hide_home_button = true %}
+        {% include "components/toolbar.html" %}
+      {% endwith %}
     </div>
 
     <!-- Center content div -->
