@@ -392,6 +392,16 @@ function createGlowTexture(colour) {
  * @param {string} colour CSS colour string used for this object's label
  */
 function createOrUpdateObjectMesh(name, position, group, colour) {
+    // Don't create object mesh in the comparison overlay
+    // for objects that are hidden by default in the Solar System
+    if (
+        comparingToSolarSystem &&
+        group === solarSystemGroup &&
+        isObjectHiddenByDefault("Solar System", name)
+    ) {
+        return;
+    }
+
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -657,6 +667,16 @@ function getOrbitLineWidth(isComparison) {
  * @param {string} colour CSS colour string used for this orbit's line
  */
 function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
+    // Don't create orbital line in the comparison overlay
+    // for objects that are hidden by default in the Solar System
+    if (
+        comparingToSolarSystem &&
+        group === solarSystemGroup &&
+        isObjectHiddenByDefault("Solar System", name)
+    ) {
+        return;
+    }
+
     const { a, e, inc, Omega, omega, f } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
