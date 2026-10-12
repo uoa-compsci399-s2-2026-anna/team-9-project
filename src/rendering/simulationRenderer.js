@@ -428,8 +428,8 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
             mesh.add(glowSprite);
         }
 
-        if (comparingToSolarSystem && group === solarSystemGroup) {
-            mesh.visible = !isObjectHiddenByDefault("Solar System", name);
+        if (group === solarSystemGroup) {
+            mesh.visible = comparingToSolarSystem;
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
@@ -599,21 +599,15 @@ function ndcScalarToScreenScalar(ndcDimension) {
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object is visible
- * @param {boolean} [options.useDefault=false] Whether to check the object's default visibility
- * instead of its current visibility
  * @returns {boolean} Whether the orbit should be visible
  */
 function shouldShowOrbit(
     objectName,
     system = currentSystem,
-    { orbitsVisible, objectVisible, useDefault = false } = {},
+    { orbitsVisible, objectVisible } = {},
 ) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown =
-        objectVisible ??
-        (useDefault
-            ? !isObjectHiddenByDefault(system, objectName)
-            : !isObjectHidden(system, objectName));
+    const isObjectShown = objectVisible ?? !isObjectHidden(system, objectName);
 
     return areOrbitsShown && isObjectShown;
 }
@@ -722,10 +716,8 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         // Render above habitable zone to prevent z fighting
         line.renderOrder = 1;
 
-        if (comparingToSolarSystem && group === solarSystemGroup) {
-            line.visible = shouldShowOrbit(name, "Solar System", {
-                useDefault: true,
-            });
+        if (group === solarSystemGroup) {
+            line.visible = comparingToSolarSystem;
         } else {
             line.visible = shouldShowOrbit(name, currentSystem);
         }
