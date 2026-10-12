@@ -1,0 +1,26 @@
+import { simulationState } from "../../shared/simulationState.js";
+import { bus } from "../../events/eventBus.js";
+import { EVENTS } from "../../events/events.js";
+
+const stepBackButtonTooltip = document.getElementById(
+    "step-back-button-tooltip",
+);
+const stepForwardButtonTooltip = document.getElementById(
+    "step-forward-button-tooltip",
+);
+const canvas = document.getElementById("simulation-canvas");
+const currentSystem = canvas.dataset.currentSystem;
+
+bus.subscribe(EVENTS.SIM.ADJUST_SPEED, updateStepButtonTooltips);
+bus.subscribe(EVENTS.SIM.ADJUST_SPEED_UNIT, updateStepButtonTooltips);
+
+updateStepButtonTooltips();
+
+function updateStepButtonTooltips() {
+    const simulationSpeed = simulationState.simulationSpeed[currentSystem];
+    const simulationSpeedUnit =
+        simulationState.simulationSpeedUnit[currentSystem];
+
+    stepBackButtonTooltip.innerText = `−${simulationSpeed} ${simulationSpeedUnit}`;
+    stepForwardButtonTooltip.innerText = `+${simulationSpeed} ${simulationSpeedUnit}`;
+}
