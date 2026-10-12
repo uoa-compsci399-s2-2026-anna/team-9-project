@@ -1005,7 +1005,7 @@ async function updateSimulation({
         allSystemData = lastSystemData;
     } else {
         if (priorityUpdate) {
-            abortCurrentIntegration();
+            await abortCurrentIntegration();
         }
 
         gettingSystemData = true;
