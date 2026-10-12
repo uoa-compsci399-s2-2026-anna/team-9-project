@@ -22,6 +22,7 @@ import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
     getMultipleSystemsData,
+    abortCurrentIntegration,
 } from "../services/simulationServices.js";
 import {
     TWO_PI,
@@ -1004,7 +1005,7 @@ async function updateSimulation({
         allSystemData = lastSystemData;
     } else {
         if (priorityUpdate) {
-            // TODO: Use endpoint
+            abortCurrentIntegration();
         }
 
         gettingSystemData = true;
