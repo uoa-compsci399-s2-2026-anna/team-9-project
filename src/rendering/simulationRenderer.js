@@ -127,7 +127,7 @@ const comparisonOverlayColour = {
     light: "#7d5c12",
 };
 const comparisonOrbitOpacity = 0.8;
-const comparisonLabelOpacity = 1;
+const comparisonLabelOpacity = 0.8;
 
 /**
  * Get the configured colour for an object in the current system, appropriate for the
