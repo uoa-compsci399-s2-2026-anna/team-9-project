@@ -31,8 +31,6 @@ import {
     calculateOrbitRotationMatrix,
     calculatePeriapsis,
     calculateAverageNormal,
-    calculateCameraDistanceToTargetProjection,
-    calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import {
     FOV,
@@ -43,6 +41,7 @@ import {
     calculateCameraAndControlsSettings,
     initOrUpdateCamera,
     initOrUpdateControls,
+    handleCameraResize,
     animateCamera,
 } from "./simulationCameraAndControls.js";
 import {
@@ -113,10 +112,20 @@ let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
-// Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height)
+// Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height).
+// These were tuned for the old perspective camera, so they are converted by
+// LEGACY_PIXEL_WIDTH_RATIO to keep the same on screen thickness.
 const ORBIT_LINE_WIDTH_PROPORTION = 0.02;
 const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.01;
 const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
+
+// three.meshline multiplies lineWidth by this constant in its vertex shader
+const MESHLINE_WIDTH_SCALE = 1.8;
+
+// With the old perspective camera and sizeAttenuation: false, a lineWidth of L
+// produced an on screen width of (0.9 * tan(FOV / 2) * L) pixels.
+const LEGACY_PIXEL_WIDTH_RATIO =
+    0.9 * Math.tan(THREE.MathUtils.degToRad(FOV / 2));
 
 /**
  * Colour used for every object and orbit belonging to the Solar System when it's shown
@@ -150,9 +159,10 @@ const referenceGridSize = 1000;
 
 const referenceGridDivisions = 1000;
 const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
-const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
+const divisionsInView = 10; // Number of divisions visible vertically
 const referenceGridOpacity = 0.5;
 let referenceGrid;
+let lastReferenceGridScale = null; // Used to avoid republishing an unchanged grid scale
 
 // Star glow texture constants
 
@@ -232,7 +242,7 @@ function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
  */
 function getLabelNameAt(clientX, clientY) {
     let closestName = null;
-    let closestDistanceSquared = Infinity;
+    let closestDepth = Infinity;
     const labelWorldPosition = new THREE.Vector3();
 
     for (const [name, label] of objectLabels) {
@@ -254,12 +264,15 @@ function getLabelNameAt(clientX, clientY) {
             continue;
         }
 
+        // With an orthographic camera, "closest to the camera" means the smallest depth
+        // along the view direction (not the distance to the camera's position)
         label.getWorldPosition(labelWorldPosition);
-        const labelDistanceSquared =
-            camera.position.distanceToSquared(labelWorldPosition);
+        const labelDepth = -labelWorldPosition.applyMatrix4(
+            camera.matrixWorldInverse,
+        ).z;
 
-        if (labelDistanceSquared < closestDistanceSquared) {
-            closestDistanceSquared = labelDistanceSquared;
+        if (labelDepth < closestDepth) {
+            closestDepth = labelDepth;
             closestName = name;
         }
     }
@@ -630,8 +643,14 @@ function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
  * The orbital line width is different for normal orbits and the Solar System orbits when
  * comparing to the Solar System.
  *
+ * The orbit materials use sizeAttenuation: true, because three.meshline's "constant pixel
+ * size" mode (sizeAttenuation: false) assumes a perspective projection and produces huge
+ * lines with an orthographic camera. With an orthographic camera, sizeAttenuation: true
+ * gives a constant on screen width anyway, since there is no perspective. In this mode,
+ * the on screen width is (MESHLINE_WIDTH_SCALE * lineWidth * canvasHeight / 2) pixels.
+ *
  * @param {boolean} isComparison Whether to get the width for a comparison orbit or a normal orbit
- * @returns The line width for orbits
+ * @returns The line width for orbits (in three.meshline units)
  */
 function getOrbitLineWidth(isComparison) {
     const canvas = renderer.domElement;
@@ -642,7 +661,12 @@ function getOrbitLineWidth(isComparison) {
         ? COMPARISON_ORBIT_LINE_WIDTH_PROPORTION
         : ORBIT_LINE_WIDTH_PROPORTION;
 
-    return Math.max(ORBIT_LINE_MIN_PIXEL_WIDTH, canvasSize * proportion);
+    const pixelWidth = Math.max(
+        ORBIT_LINE_MIN_PIXEL_WIDTH,
+        canvasSize * proportion * LEGACY_PIXEL_WIDTH_RATIO,
+    );
+
+    return (2 * pixelWidth) / (MESHLINE_WIDTH_SCALE * canvas.clientHeight);
 }
 
 /**
@@ -670,8 +694,10 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         const geometry = new MeshLineGeometry();
 
         const material = new MeshLineMaterial({
-            // Remain constant size (do not grow in size as user zooms in)
-            sizeAttenuation: false,
+            // With an orthographic camera, lines are already a constant size on screen as
+            // the user zooms. Do NOT use sizeAttenuation: false here, as that mode assumes
+            // a perspective projection (see getOrbitLineWidth).
+            sizeAttenuation: true,
             transparent: true,
             resolution: new THREE.Vector2(
                 window.innerWidth,
@@ -931,30 +957,23 @@ function createReferenceGrid() {
     referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
     referenceGrid.visible = simulationState.referenceGridShown;
 
-    updateReferenceGridScale(cameraDefaults.position, cameraDefaults.target);
+    updateReferenceGridScale();
 }
 
 /**
- * Update the scale of the reference grid based on the camera's distance to the target.
+ * Update the scale of the reference grid based on the camera's current view.
  *
- * The grid is scaled so that a fixed number of divisions are visible to the camera when looking at it
- * perpendicularly.
+ * The grid is scaled so that a fixed number of divisions are visible vertically. With an
+ * orthographic camera, the visible height depends on the camera's frustum and zoom
+ * (not on the camera's distance to the target).
  *
- * @param {THREE.Vector3} cameraPosition The position of the camera
- * @param {THREE.Vector3} targetPosition The position of the camera's target
+ * This is called every frame, since zooming an orthographic camera does not necessarily
+ * move the camera, so it can't rely on the controls change event alone.
  */
-function updateReferenceGridScale(cameraPosition, targetPosition) {
-    const cameraDistanceToTargetProjection =
-        calculateCameraDistanceToTargetProjection(
-            cameraPosition,
-            targetPosition,
-        );
+function updateReferenceGridScale() {
+    const visibleHeight = (camera.top - camera.bottom) / camera.zoom;
 
-    const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
-        FOV,
-        cameraDistanceToTargetProjection,
-        divisionsInView,
-    );
+    const desiredReferenceGridDivisionSize = visibleHeight / divisionsInView;
 
     const coveredRange =
         desiredReferenceGridDivisionSize * referenceGridDivisions;
@@ -971,6 +990,10 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
 
     const scaleFactor =
         desiredReferenceGridDivisionSize / referenceGridDivisionSize;
+
+    if (scaleFactor === lastReferenceGridScale) return; // Nothing changed
+    lastReferenceGridScale = scaleFactor;
+
     referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
     bus.publish(EVENTS.SIM.UPDATE_GRID_SCALE, { value: scaleFactor });
@@ -1117,7 +1140,6 @@ function createControlsChangeHandler(viewRadius) {
         controls.target.clampLength(minLength, maxLength);
 
         camera.position.copy(controls.target.clone().add(cameraOffset));
-        updateReferenceGridScale(camera.position, controls.target);
         flipHabitableZoneTexture(camera.position);
     };
 }
@@ -1354,6 +1376,9 @@ export async function resetView(topDown = true) {
     // Animate to the default controls target
     cameraAnimationState.target.copy(cameraDefaults.target);
 
+    // Animate to the default zoom (which frames the whole view radius)
+    cameraAnimationState.zoom = cameraDefaults.zoom;
+
     if (topDown) {
         // Animate to the default camera position
         cameraAnimationState.position.copy(cameraDefaults.position);
@@ -1565,8 +1590,7 @@ function resizeRendererToDisplaySize() {
     if (needResize) {
         renderer.setSize(width, height, false);
         labelRenderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
+        handleCameraResize(width / height);
 
         for (const line of orbitalLines.values()) {
             line.material.resolution.set(width, height);
@@ -1621,11 +1645,10 @@ async function updateInnermostPeriapsis(comparing) {
 }
 
 /**
-/**
  * The largest scale an object may have so that its on screen radius stays
  * within a fraction of the innermost periapsis.
- * 
- * @param {boolean} isStar Whether the object is a star or not 
+ *
+ * @param {boolean} isStar Whether the object is a star or not
  * @returns The cap on the scale for an object
  */
 function getOrbitScaleCap(isStar) {
@@ -1639,10 +1662,13 @@ function getOrbitScaleCap(isStar) {
 
 /**
  * Computes a scale factor so the mesh's apparent size on screen stays roughly
- * constant regardless of camera distance.
+ * constant regardless of the camera zoom.
  *
- * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
- * @param {THREE.PerspectiveCamera} camera The active camera
+ * With an orthographic camera, the number of world units per pixel is the same for every
+ * object (it doesn't depend on the distance to the camera), and is determined by the
+ * frustum height and the camera zoom.
+ *
+ * @param {THREE.OrthographicCamera} camera The active camera
  * @param {number} canvasHeight The renderer's canvas height in pixels
  * @param {number} desiredPixelSize The target on screen diameter in pixels
  * @param {number} minScale The minimum allowed scale factor
@@ -1650,21 +1676,14 @@ function getOrbitScaleCap(isStar) {
  * @returns {number} The scale factor to apply to the mesh
  */
 function calculateScreenSpaceScale(
-    mesh,
     camera,
     canvasHeight,
     desiredPixelSize,
     minScale,
     maxScale,
 ) {
-    const meshWorldPosition = new THREE.Vector3();
-    mesh.getWorldPosition(meshWorldPosition);
-    const distance = camera.position.distanceTo(meshWorldPosition);
-
-    const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
-    const worldHeightAtDistance =
-        2 * Math.tan(verticalFovRadians / 2) * distance;
-    const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
+    const worldHeight = (camera.top - camera.bottom) / camera.zoom;
+    const pixelToWorldRatio = worldHeight / canvasHeight;
 
     const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
     const scale = desiredWorldDiameter / (2 * objectSize);
@@ -1693,7 +1712,6 @@ function updateScreenSpaceScales() {
         const maxScale = Math.max(getOrbitScaleCap(isStar), minScale);
 
         const scale = calculateScreenSpaceScale(
-            mesh,
             camera,
             canvasHeight,
             desiredPixelSize,
@@ -1725,6 +1743,8 @@ async function renderFrame(timestamp) {
     }
 
     animateCamera();
+
+    updateReferenceGridScale();
 
     updateScreenSpaceScales();
 
