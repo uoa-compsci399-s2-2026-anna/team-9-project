@@ -1356,14 +1356,24 @@ export function stepBack() {
     });
 }
 
+let resetInFlight = false;
+
 /*
  * Resets the simulation to the current time with priority.
  */
-export function resetSimulationTimeToNow() {
-    currentSimulationTime = Date.now();
-    updateSimulation({
-        priorityUpdate: true,
-    });
+export async function resetSimulationTimeToNow() {
+    if (resetInFlight) {
+        return;
+    }
+
+    resetInFlight = true;
+
+    try {
+        currentSimulationTime = Date.now();
+        await updateSimulation({ priorityUpdate: true });
+    } finally {
+        resetInFlight = false;
+    }
 }
 
 /*
