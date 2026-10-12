@@ -913,7 +913,7 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
 
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
     // Update simulation to redraw orbit lines with new width/opacity profile
-    updateSimulation();
+    await updateSimulation();
 });
 
 /**
@@ -1306,7 +1306,7 @@ export async function init(name) {
     });
 
     // Start rendering frames and updating the simulation
-    updateSimulation();
+    await updateSimulation();
     renderFrame();
 }
 
@@ -1322,14 +1322,14 @@ function clampSimulationTime(time) {
 
 export function stepForward() {
     currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
-    updateSimulation();
+    await updateSimulation();
 }
 
 export function stepBack() {
     currentSimulationTime = clampSimulationTime(
         currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
     );
-    updateSimulation();
+    await updateSimulation();
 }
 
 /*
@@ -1337,7 +1337,7 @@ export function stepBack() {
  */
 export function resetSimulationTimeToNow() {
     currentSimulationTime = Date.now();
-    updateSimulation({
+    await updateSimulation({
         priorityUpdate: true,
     });
 }
@@ -1347,7 +1347,7 @@ export function resetSimulationTimeToNow() {
  */
 export function setSimulationTimeToTime(time) {
     currentSimulationTime = clampSimulationTime(time);
-    updateSimulation({
+    await updateSimulation({
         priorityUpdate: true,
     });
 }
@@ -1426,7 +1426,7 @@ export async function compareToSolarSystem() {
 
     resetView();
 
-    updateSimulation();
+    await updateSimulation();
 }
 
 export async function hideSolarSystem() {
@@ -1450,7 +1450,7 @@ export async function hideSolarSystem() {
 
     resetView();
 
-    updateSimulation();
+    await updateSimulation();
 }
 
 export function setHabitableZoneVisibility(value) {
@@ -1743,7 +1743,7 @@ async function renderFrame(timestamp) {
             getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
 
         // Update the simulation but do not bypass the calendar update throttle
-        updateSimulation({
+        await updateSimulation({
             forceCalendarUpdate: false,
         });
     }
