@@ -33,6 +33,9 @@ export const EVENTS = {
          * When the grid scale updates.
          */
         UPDATE_GRID_SCALE: "sim:update_grid_scale",
+
+        ZOOM_IN: "sim:zoom_in",
+        ZOOM_OUT: "sim:zoom_out",
     },
     TOOLBAR: {
         FULLSCREEN_BUTTON_TOGGLE: "toolbar:fullscreen_button_toggle",
