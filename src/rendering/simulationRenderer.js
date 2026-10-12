@@ -1332,14 +1332,24 @@ export function stepBack() {
     updateSimulation();
 }
 
+/*
+ * Resets the simulation to the current time with priority.
+ */
 export function resetSimulationTimeToNow() {
     currentSimulationTime = Date.now();
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
+/*
+ * Resets the simulation to the specified time with priority.
+ */
 export function setSimulationTimeToTime(time) {
     currentSimulationTime = clampSimulationTime(time);
-    updateSimulation();
+    updateSimulation({
+        priorityUpdate: true,
+    });
 }
 
 export async function resetView(topDown = true) {
