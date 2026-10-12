@@ -56,6 +56,8 @@ const WINDOW_BACKGROUND_COLOUR = {
     light: "white",
 };
 
+const SYSTEM_PREFERS_DARK = nativeTheme.shouldUseDarkColors;
+
 /**
  * Decide whether dark mode should be used based on the persisted settings state.
  * Fallback to the system default if no valid preference has been persisted.
@@ -81,20 +83,40 @@ function getWindowBackgroundColour() {
         : WINDOW_BACKGROUND_COLOUR.light;
 }
 
-function updateWindowBackgroundColour() {
-    if (!mainWindow) {
-        return;
+/**
+ * Applies the given theme by updating the native theme and updating the background
+ * colour for the main window.
+ *
+ * @param {boolean} isDark Whether the theme is dark or not (light)
+ */
+async function applyTheme(isDark) {
+    const theme = isDark ? "dark" : "light";
+    const background = isDark ? "black" : "white";
+
+    if (nativeTheme.themeSource !== theme) {
+        const nativeThemeUpdated = new Promise((resolve) => {
+            nativeTheme.once("updated", resolve);
+        });
+
+        nativeTheme.themeSource = theme;
+
+        /**
+         * Wait for Electron to acknowledge the native theme change before updating
+         * the window background colour. This minimises any apparent delay between
+         * updating the native theme and the title bar
+         */
+        await nativeThemeUpdated;
     }
 
-    const backgroundColour = getWindowBackgroundColour();
-    mainWindow.setBackgroundColor(backgroundColour);
+    // Now update Chromium's native window background
+    mainWindow.setBackgroundColor(background);
 }
 
 function getDefaultSettings() {
     return {
         ...DEFAULT_SETTINGS,
         // By default, whether dark mode is used depends on the theme of the user's device
-        darkMode: nativeTheme.shouldUseDarkColors,
+        darkMode: SYSTEM_PREFERS_DARK,
     };
 }
 
@@ -104,6 +126,9 @@ store.set("settings", {
     ...getDefaultSettings(),
     ...existingSettings,
 });
+
+// Apply the saved theme to the native frame
+nativeTheme.themeSource = resolveDarkMode() ? "dark" : "light";
 
 // Initialise the simulation state to the default simulation state
 let simulationState = { ...DEFAULT_SIMULATION_STATE };
@@ -117,10 +142,15 @@ ipcMain.handle("settings:getDefaults", () => {
     return getDefaultSettings();
 });
 
-ipcMain.handle("settings:set", (_event, newSettings) => {
-    const mergedSettings = { ...store.get("settings"), ...newSettings };
+ipcMain.handle("settings:set", async (_event, newSettings) => {
+    const mergedSettings = {
+        ...store.get("settings"),
+        ...newSettings,
+    };
+
     store.set("settings", mergedSettings);
-    updateWindowBackgroundColour();
+
+    await applyTheme(mergedSettings.darkMode);
 });
 
 // Refresh the current web page
@@ -351,7 +381,7 @@ async function createWindow(python_url) {
         },
 
         // Load icon (required for Linux; see https://www.electronforge.io/guides/create-and-add-icons#linux)
-        icon: "src/assets/opis.png"
+        icon: "src/assets/opis.png",
     });
 
     // Hide dev tools if we are running an executable

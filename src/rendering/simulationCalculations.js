@@ -10,7 +10,7 @@ export const TWO_PI = 2 * Math.PI;
  * @returns {Object} The x and y coordinates of the object's position in its orbit
  */
 export function calculateOrbitalPosition(a, e, theta) {
-    const r = (a * (1 - e**2)) / (1 + e*Math.cos(theta));
+    const r = (a * (1 - e ** 2)) / (1 + e * Math.cos(theta));
     const x = r * Math.cos(theta);
     const y = r * Math.sin(theta);
     return { x, y };
@@ -68,7 +68,11 @@ function calculateCircularProgressDistance(progressA, progressB) {
  * @param {boolean} useCircularDistance Whether to use circular distance (default: true)
  * @returns {number} The distance from progressA to progressB
  */
-export function calculateProgressDistance(progressA, progressB, useCircularDistance = true) {
+export function calculateProgressDistance(
+    progressA,
+    progressB,
+    useCircularDistance = true,
+) {
     if (useCircularDistance) {
         return calculateCircularProgressDistance(progressA, progressB);
     }
@@ -124,10 +128,8 @@ export function calculatePeriapsis(a, e) {
  */
 export function calculateMaxApoapsis(orbitalDataValues) {
     return Math.max(
-        ...orbitalDataValues.map(
-            ({ a, e }) => calculateApoapsis(a, e)
-        ),
-        0 // Ensure the result is non-negative
+        ...orbitalDataValues.map(({ a, e }) => calculateApoapsis(a, e)),
+        0, // Ensure the result is non-negative
     );
 }
 
@@ -138,17 +140,15 @@ export function calculateMaxApoapsis(orbitalDataValues) {
  */
 export function calculateMaxPeriapsis(orbitalDataValues) {
     return Math.max(
-        ...orbitalDataValues.map(
-            ({ a, e }) => calculatePeriapsis(a, e)
-        ),
-        0 // Ensure the result is non-negative
+        ...orbitalDataValues.map(({ a, e }) => calculatePeriapsis(a, e)),
+        0, // Ensure the result is non-negative
     );
 }
 
 /**
  * Calculate the distance of the camera from the target based on the view radius.
  * The camera distance is calculated to ensure that the entire view radius fits within the camera's field of view.
- * 
+ *
  * @param {number} fov The field of view of the camera in degrees
  * @param {number} viewRadius The radius of the view to fit within the camera's field of view
  * @returns {number} The calculated camera distance
@@ -160,7 +160,7 @@ export function calculateCameraDistance(fov, viewRadius) {
 
 /**
  * Calculate the average normal vector of the orbital planes of all objects in the system.
- * 
+ *
  * @param {Array} orbitalDataValues Array of orbital data values for all objects
  * @returns {THREE.Vector3} The calculated average normal
  */
@@ -169,10 +169,11 @@ export function calculateAverageNormal(orbitalDataValues) {
     let reference = null;
 
     for (const { inc, Omega } of orbitalDataValues) {
-        const normal = new THREE.Vector3( // Normal vector of the orbital plane
+        const normal = new THREE.Vector3(
+            // Normal vector of the orbital plane
             Math.sin(inc) * Math.sin(Omega),
             -Math.sin(inc) * Math.cos(Omega),
-            Math.cos(inc)
+            Math.cos(inc),
         );
 
         // Use the first normal vector as a reference.
@@ -199,8 +200,7 @@ export function calculateAverageNormal(orbitalDataValues) {
  * @returns {boolean} True if the vectors are parallel, false otherwise
  */
 function areParallel(vectorA, vectorB, tolerance = 1e-10) {
-    const crossProduct = new THREE.Vector3()
-        .crossVectors(vectorA, vectorB);
+    const crossProduct = new THREE.Vector3().crossVectors(vectorA, vectorB);
 
     return crossProduct.length() < tolerance;
 }
@@ -209,7 +209,7 @@ function areParallel(vectorA, vectorB, tolerance = 1e-10) {
  * Calculate the default camera position, at 1 degree from the up vector.
  * This ensures the camera direction is not parallel to the up vector.
  * Otherwise, camera orientation would not be uniquely determined by the position.
- * 
+ *
  * @param {THREE.Vector3} upVector The up vector for the camera
  * @param {number} cameraDistance The distance of the camera from the target
  * @returns {THREE.Vector3} The calculated default camera position
@@ -237,9 +237,7 @@ export function calculateDefaultCameraPosition(upVector, cameraDistance) {
     const towardPerpendicular = perpendicularVector
         .clone()
         .multiplyScalar(Math.sin(angleFromUp));
-    const cameraDirection = towardUpVector
-        .add(towardPerpendicular)
-        .normalize();
+    const cameraDirection = towardUpVector.add(towardPerpendicular).normalize();
 
     return cameraDirection.multiplyScalar(cameraDistance);
 }
@@ -250,8 +248,15 @@ export function calculateDefaultCameraPosition(upVector, cameraDistance) {
  * @param {THREE.Vector3} targetPosition The position of the target
  * @returns {number} The calculated distance
  */
-export function calculateCameraDistanceToTargetProjection(cameraPosition, targetPosition) {
-    const targetProjection = new THREE.Vector3(targetPosition.x, targetPosition.y, 0);
+export function calculateCameraDistanceToTargetProjection(
+    cameraPosition,
+    targetPosition,
+) {
+    const targetProjection = new THREE.Vector3(
+        targetPosition.x,
+        targetPosition.y,
+        0,
+    );
     return cameraPosition.distanceTo(targetProjection);
 }
 
@@ -294,10 +299,10 @@ function roundToNiceNumber(x) {
 export function calculateReferenceGridDivisionSize(
     fov,
     cameraDistanceToTargetProjection,
-    divisionsInView
+    divisionsInView,
 ) {
     const fovRad = fov * (Math.PI / 180);
     const viewRadius = cameraDistanceToTargetProjection * Math.tan(fovRad / 2);
-    const divisionSize = 2*viewRadius / divisionsInView;
+    const divisionSize = (2 * viewRadius) / divisionsInView;
     return roundToNiceNumber(divisionSize);
 }
