@@ -19,6 +19,7 @@ import {
     toggleSimulationDarkMode,
     syncCalendar,
 } from "../rendering/simulationRenderer.js";
+import { zoomIn, zoomOut } from "../rendering/simulationCameraAndControls.js";
 
 const canvas = document.getElementById("simulation-canvas");
 const currentSystem = canvas.dataset.currentSystem;
@@ -111,3 +112,6 @@ bus.subscribe(EVENTS.SIM.TOGGLE, (event) => {
         syncCalendar();
     }
 });
+
+bus.subscribe(EVENTS.SIM.ZOOM_IN, zoomIn);
+bus.subscribe(EVENTS.SIM.ZOOM_OUT, zoomOut);
