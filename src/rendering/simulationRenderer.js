@@ -31,6 +31,7 @@ import {
     calculateOrbitRotationMatrix,
     calculatePeriapsis,
     calculateAverageNormal,
+    calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import {
     FOV,
@@ -155,14 +156,29 @@ function getCurrentSystemColour(name, isDarkMode) {
 
 // Size of the reference grid in AU when scale = 1.
 // This will be scaled when the camera zoom changes.
-const referenceGridSize = 1000;
+// The grid is drawn by a shader on a single plane, so making it very large costs nothing.
+// It should always be far larger than anything the camera can see.
+const referenceGridSize = 100000;
 
-const referenceGridDivisions = 1000;
+const referenceGridDivisions = 100000;
 const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
 const divisionsInView = 10; // Number of divisions visible vertically
 const referenceGridOpacity = 0.5;
 let referenceGrid;
 let lastReferenceGridScale = null; // Used to avoid republishing an unchanged grid scale
+
+// The grid fades out with distance from the camera's target, rather than ending with a hard
+// edge where the camera's depth range clips it. This only matters when the view is nearly
+// edge on, where an orthographic camera sees the grid plane stretch far into the distance.
+// The fade is measured as fractions of the camera's far distance, which is much larger than
+// anything visible in a normal view, so the grid always fills the whole screen otherwise.
+const REFERENCE_GRID_FADE_START_FRACTION = 0.4;
+const REFERENCE_GRID_FADE_END_FRACTION = 0.9;
+const referenceGridFade = {
+    start: { value: 1 },
+    end: { value: 2 },
+    centre: { value: new THREE.Vector3() }, // Replaced with the controls' target once created
+};
 
 // Star glow texture constants
 
@@ -941,23 +957,119 @@ bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
     updateSimulation();
 });
 
+const REFERENCE_GRID_VERTEX_SHADER = `
+    varying vec3 vLocalPosition;
+    varying vec3 vWorldPosition;
+
+    void main() {
+        vLocalPosition = position;
+        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+        vWorldPosition = worldPosition.xyz;
+        gl_Position = projectionMatrix * viewMatrix * worldPosition;
+    }
+`;
+
+/**
+ * The grid lines are drawn in the fragment shader (instead of with line geometry) so that:
+ * 1. Lines are anti-aliased and always about 1 pixel wide.
+ * 2. Lines fade out smoothly wherever they would be packed closer together than a few
+ *    pixels. This is what removes the dense, noisy moire pattern when an orthographic
+ *    camera views the grid at a shallow angle.
+ * 3. The whole grid fades out with distance from the origin (see updateReferenceGridFade).
+ */
+const REFERENCE_GRID_FRAGMENT_SHADER = `
+    uniform vec3 gridColor;
+    uniform float gridOpacity;
+    uniform float gridCellSize;
+    uniform float gridFadeStart;
+    uniform float gridFadeEnd;
+    uniform vec3 gridFadeCentre;
+
+    varying vec3 vLocalPosition;
+    varying vec3 vWorldPosition;
+
+    // Fade out lines once the gap between them is smaller than this many pixels
+    const float FULL_DENSITY = 0.2;   // Cell spans 5 pixels: lines fully visible
+    const float ZERO_DENSITY = 0.5;   // Cell spans 2 pixels: lines fully faded
+
+    void main() {
+        // Position measured in grid cells. A line lies on every integer value.
+        vec2 coord = vLocalPosition.xy / gridCellSize;
+
+        // How many cells one pixel covers along each axis
+        vec2 cellsPerPixel = fwidth(coord);
+
+        // Distance (in pixels) to the nearest line along each axis
+        vec2 pixelsToLine = abs(fract(coord - 0.5) - 0.5) / cellsPerPixel;
+
+        // Anti-aliased line coverage, faded out when that axis' lines are too dense
+        vec2 coverage = 1.0 - min(pixelsToLine, 1.0);
+        vec2 densityFade = 1.0 - smoothstep(FULL_DENSITY, ZERO_DENSITY, cellsPerPixel);
+        float alpha = max(coverage.x * densityFade.x, coverage.y * densityFade.y);
+
+        // Fade out with distance from the origin
+        float distanceFade = 1.0 - smoothstep(gridFadeStart, gridFadeEnd, length(vWorldPosition - gridFadeCentre));
+
+        alpha *= gridOpacity * distanceFade;
+
+        if (alpha < 0.003) {
+            discard;
+        }
+
+        gl_FragColor = vec4(gridColor, alpha);
+
+        #include <colorspace_fragment>
+    }
+`;
+
 /**
  * Create a reference grid in the XY plane.
  */
 function createReferenceGrid() {
-    const referenceGridColor = getTheme().referenceGrid;
-    referenceGrid = new THREE.GridHelper(
-        referenceGridSize,
-        referenceGridDivisions,
+    // The colour is shared between the material and the shader uniform, so updating
+    // referenceGrid.material.color (e.g. when the theme changes) updates the shader too
+    const gridColor = new THREE.Color(getTheme().referenceGrid);
+
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            gridColor: { value: gridColor },
+            gridOpacity: { value: referenceGridOpacity },
+            gridCellSize: { value: referenceGridDivisionSize },
+            gridFadeStart: referenceGridFade.start,
+            gridFadeEnd: referenceGridFade.end,
+            gridFadeCentre: referenceGridFade.centre,
+        },
+        vertexShader: REFERENCE_GRID_VERTEX_SHADER,
+        fragmentShader: REFERENCE_GRID_FRAGMENT_SHADER,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+    });
+    material.color = gridColor;
+
+    // PlaneGeometry already lies in the XY plane
+    referenceGrid = new THREE.Mesh(
+        new THREE.PlaneGeometry(referenceGridSize, referenceGridSize),
+        material,
     );
-    referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
-    referenceGrid.material.color.set(referenceGridColor);
-    referenceGrid.material.transparent = true;
-    referenceGrid.material.opacity = referenceGridOpacity;
-    referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
     referenceGrid.visible = simulationState.referenceGridShown;
 
+    // Fade relative to the point the camera is looking at
+    referenceGridFade.centre.value = controls.target;
+
+    updateReferenceGridFade();
     updateReferenceGridScale();
+}
+
+/**
+ * Update the distances over which the reference grid fades out. These are based on the
+ * camera's far distance, so that the grid is fully opaque across the whole visible area
+ * in all but the most extreme (almost edge on) views.
+ */
+function updateReferenceGridFade() {
+    referenceGridFade.start.value =
+        camera.far * REFERENCE_GRID_FADE_START_FRACTION;
+    referenceGridFade.end.value = camera.far * REFERENCE_GRID_FADE_END_FRACTION;
 }
 
 /**
@@ -973,7 +1085,17 @@ function createReferenceGrid() {
 function updateReferenceGridScale() {
     const visibleHeight = (camera.top - camera.bottom) / camera.zoom;
 
-    const desiredReferenceGridDivisionSize = visibleHeight / divisionsInView;
+    // The distance a perspective camera with the old FOV would need to be at to see the
+    // same visible height. This lets us keep using calculateReferenceGridDivisionSize,
+    // which snaps the division size to a clean value (so the "AU/square" label is tidy).
+    const equivalentDistance =
+        visibleHeight / (2 * Math.tan(THREE.MathUtils.degToRad(FOV / 2)));
+
+    const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
+        FOV,
+        equivalentDistance,
+        divisionsInView,
+    );
 
     const coveredRange =
         desiredReferenceGridDivisionSize * referenceGridDivisions;
@@ -1745,6 +1867,7 @@ async function renderFrame(timestamp) {
     animateCamera();
 
     updateReferenceGridScale();
+    updateReferenceGridFade();
 
     updateScreenSpaceScales();
 
