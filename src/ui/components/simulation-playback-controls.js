@@ -21,6 +21,8 @@ function updateStepButtonTooltips() {
     const simulationSpeedUnit =
         simulationState.simulationSpeedUnit[currentSystem];
 
-    stepBackButtonTooltip.innerText = `−${simulationSpeed} ${simulationSpeedUnit}`;
-    stepForwardButtonTooltip.innerText = `+${simulationSpeed} ${simulationSpeedUnit}`;
+    const suffix = simulationSpeed === 1 ? "" : "s";
+
+    stepBackButtonTooltip.innerText = `−${simulationSpeed} ${simulationSpeedUnit}${suffix}`;
+    stepForwardButtonTooltip.innerText = `+${simulationSpeed} ${simulationSpeedUnit}${suffix}`;
 }
