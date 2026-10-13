@@ -192,7 +192,7 @@ function updateElapsedDaysText(simulationTime, timeZone) {
 }
 
 /**
- * Updates all calendars to show the given simulation time in each calendar's time zone,
+ * Updates the calendar to show the given simulation time in the given time zone,
  * and sets the minimum and maximum of the calendar to +/- `CALENDAR_RANGE_YEARS`.
  *
  * Updates are throttled to at most one per `CALENDAR_UPDATE_INTERVAL`.
