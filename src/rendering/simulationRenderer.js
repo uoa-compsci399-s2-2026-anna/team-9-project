@@ -1312,7 +1312,7 @@ export async function init(name) {
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    const clampedTime = MathUtils.clamp(
+    const clampedTime = THREE.MathUtils.clamp(
         time,
         MIN_SIMULATION_TIME,
         MAX_SIMULATION_TIME,
