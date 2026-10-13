@@ -30,6 +30,10 @@ const FlatpickrInstance = flatpickr(calendarInput, {
     enableTime: true,
     dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
     allowInput: false,
+    onReady: (_selectedDates, _dateStr, instance) => {
+        // Stop the year being typed over or deleted
+        instance.currentYearElement.readOnly = true;
+    },
     onChange: (selectedDates, dateStr, instance) => {
         // If the calender has no date selected, restore the current
         // simulation time rather than publishing an empty date
