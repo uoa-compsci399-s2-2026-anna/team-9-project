@@ -1318,7 +1318,7 @@ function clampSimulationTime(time) {
         MAX_SIMULATION_TIME,
     );
 
-    if (clampedTime != time) {
+    if (clampedTime !== time) {
         bus.publish(EVENTS.SIM.LIMIT_REACHED);
     }
     return clampedTime;
