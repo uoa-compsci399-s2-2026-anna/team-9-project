@@ -998,13 +998,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
         updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
         gettingSystemData = false;
         lastSystemData = allSystemData;
-
-        // If the simulation paused at a different time while this request was loading,
-        // fetch again so the display shows the exact final time
-        if (!running && lastFetchedSimulationTime !== currentSimulationTime) {
-            updateSimulation();
-            return;
-        }
     }
 
     const currentSystemData = allSystemData[currentSystem];
@@ -1069,14 +1062,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
  */
 export function syncCalendar() {
     if (lastFetchedSimulationTime === null) {
-        return;
-    }
-
-    if (
-        lastFetchedSimulationTime !== currentSimulationTime &&
-        !gettingSystemData
-    ) {
-        updateSimulation();
         return;
     }
 
