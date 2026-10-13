@@ -74,6 +74,9 @@ export const TIMEZONE_MAP = {
     NZT: "Pacific/Auckland",
 };
 
+// Fallback time zone
+export const FALLBACK_TIME_ZONE = "UTC";
+
 // Earliest simulation time allowed is 1 January of year 1 (UTC)
 export const MIN_SIMULATION_TIME = (() => {
     const date = new Date(0);
@@ -98,7 +101,7 @@ export const MAX_SIMULATION_TIME = (() => {
  * @returns {number} Epoch time in milliseconds
  */
 export function convertToEpoch(dateString, timeZone) {
-    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
     return DateTime.fromFormat(dateString, "dd-MM-yyyy hh:mm a", {
         zone: formattedTimeZone,
     }).toMillis();
@@ -112,7 +115,7 @@ export function convertToEpoch(dateString, timeZone) {
  * @returns {string} The formatted date string as "dd-MM-yyyy hh:mm a"
  */
 export function formatInTimeZone(epochMs, timeZone) {
-    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
     return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat(
         "dd-MM-yyyy hh:mm a",
     );
@@ -126,11 +129,11 @@ export function formatInTimeZone(epochMs, timeZone) {
  * zone setting.
  */
 export function formatDate(date, timeZone) {
-    var timeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
 
     // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
     return new Intl.DateTimeFormat("sv", {
-        timeZone: timeZone,
+        timeZone: formattedTimeZone,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -148,10 +151,10 @@ export function formatDate(date, timeZone) {
  * @returns The date portion (yyyy-MM-dd) of `date`, in the given time zone
  */
 export function dateOnly(date, timeZone) {
-    var timeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
 
     return new Intl.DateTimeFormat("sv", {
-        timeZone: timeZone,
+        timeZone: formattedTimeZone,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
