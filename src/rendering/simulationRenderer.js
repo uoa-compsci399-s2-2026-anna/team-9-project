@@ -113,8 +113,8 @@ let hitboxPadding;
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 // Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height)
-const ORBIT_LINE_WIDTH_PROPORTION = 0.02;
-const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.01;
+const ORBIT_LINE_WIDTH_PROPORTION = 0.025;
+const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.02;
 const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 
 /**
@@ -125,7 +125,7 @@ const comparisonOverlayColour = {
     dark: "#c3911c",
     light: "#7d5c12",
 };
-const comparisonOrbitOpacity = 0.5;
+const comparisonOrbitOpacity = 0.8;
 const comparisonLabelOpacity = 0.8;
 
 /**
@@ -803,7 +803,7 @@ const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_WIDTH, Math.cos((Math.PI * distance) / 2));
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
