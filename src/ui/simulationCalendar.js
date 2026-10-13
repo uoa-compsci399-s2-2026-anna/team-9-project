@@ -136,7 +136,7 @@ export function getElapsedDaysText(
     simulationTime,
     timeZone = calendarInput.dataset.timezone,
 ) {
-    const zone = TIMEZONE_MAP[timeZone] ?? "UTC;";
+    const zone = TIMEZONE_MAP[timeZone] ?? "UTC";
     const simLocal = DateTime.fromMillis(simulationTime, { zone });
     const nowLocal = DateTime.now().setZone(zone);
 
