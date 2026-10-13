@@ -31,8 +31,9 @@ const FlatpickrInstance = flatpickr(calendarInput, {
     dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
     allowInput: false,
     onChange: (selectedDates, dateStr, instance) => {
+        // If the calender has no date selected, restore the current
+        // simulation time rather than publishing an empty date
         if (selectedDates.length === 0) {
-            // Restore the current simulation time
             if (lastSimulationTime !== null) {
                 updateCalendar(lastSimulationTime, true);
             }
