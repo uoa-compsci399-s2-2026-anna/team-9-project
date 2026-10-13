@@ -43,6 +43,7 @@ import {
     initOrUpdateCamera,
     initOrUpdateControls,
     animateCamera,
+    animateCameraToFitRadius,
 } from "./simulationCameraAndControls.js";
 import {
     viewRadius,
@@ -1450,6 +1451,27 @@ export async function hideSolarSystem() {
     updateSimulation();
 }
 
+/**
+ * Animate the camera so that the given object's orbit fills the view. Only
+ * elliptical orbits can be framed.
+ *
+ * @param {string} name Name of the object whose orbit to frame
+ * @returns {boolean} Whether the orbit could be framed
+ */
+function fitViewToObjectOrbit(name) {
+    const orbitalData = lastSystemData?.[currentSystem]?.orbital_data?.[name];
+
+    if (!orbitalData || orbitalData.e >= 1) {
+        return false;
+    }
+
+    // TODO: naming
+    const apoapsis = orbitalData.a * (1 + orbitalData.e);
+    animateCameraToFitRadius(apoapsis, objectSize);
+
+    return true;
+}
+
 export function setHabitableZoneVisibility(value) {
     if (habitableZoneMesh) {
         habitableZoneMesh.visible = value;
@@ -1478,6 +1500,19 @@ export function setReferenceGridVisibility(value) {
     }
 }
 
+/**
+ * Show or hide an object and its orbit.
+ * 
+ * On showing an object, its orbit is framed in the view. If the object cannot be
+ * framed (orbit is non-elliptical), then the entire view is reset.
+ * TODO: fix wording
+ * 
+ * The camera view does not change on hiding an object.
+ * 
+ * @param {string} name Name of the object
+ * @param {boolean} value Whether the object should be visible
+ * @returns 
+ */
 export function setObjectVisibility(name, value) {
     const mesh = objectMeshes.get(name);
     if (mesh) {
@@ -1491,7 +1526,15 @@ export function setObjectVisibility(name, value) {
         });
     }
 
-    resetView(false);
+    // Don't reset the view when hiding an object
+    if (!value) {
+        return;
+    }
+
+    // Object cannot be framed, so reset the view normally
+    if (!fitViewToObjectOrbit(name)) {
+        resetView(false);
+    }
 }
 
 export function setFontSize(size) {

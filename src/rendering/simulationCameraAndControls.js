@@ -67,6 +67,7 @@ function calculateControlsMinDistance(objectSize) {
  * @param {number} objectSize The size of the object
  * @returns {number} The camera distance
  */
+// TODO: consider doing a multiplier for the fit distance... I am just concerned this will break existing logic
 export function calculateFitDistance(viewRadius, objectSize) {
     // Ensure the camera distance is slightly greater than controls min distance
     const epsilon = 1e-10;
