@@ -206,4 +206,19 @@
       background-color: var(--color-zinc-800) !important;
     }
   }
+
+  .flatpickr-current-month input.cur-year::selection,
+  .calendar::selection {
+    background: transparent;
+  }
+
+  .flatpickr-current-month input.cur-year,
+  .calendar {
+    caret-color: transparent;
+  }
+
+  .flatpickr-current-month input.cur-year {
+    pointer-events: none;
+    user-select: none;
+  }
 }

@@ -15,7 +15,6 @@ import {
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
-    setFormattedSimulationDate,
     setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
@@ -66,12 +65,12 @@ import {
 } from "./habitableZone.js";
 import {
     updateCalendar,
-    formatSimulationDate,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
 import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
 
 let timer;
 
@@ -193,14 +192,6 @@ let innermostPeriapsis = Infinity;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
-
-// Earliest simulation time allowed is 1 January of year 1 (UTC)
-const MIN_SIMULATION_TIME = (() => {
-    const date = new Date(0);
-    date.setUTCFullYear(1, 0, 1);
-    date.setUTCHours(0, 0, 0, 0);
-    return date.getTime();
-})();
 
 /**
  * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
@@ -1217,7 +1208,7 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
-    currentSimulationTime = getSimulationTime(name);
+    currentSimulationTime = clampSimulationTime(getSimulationTime(name));
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone.start = systemInfo["habitable zone"].start;
@@ -1299,17 +1290,29 @@ export async function init(name) {
 }
 
 /**
- * Clamp a simulation time so it never goes before the minimum simulation time.
+ * Clamp a simulation time so it stays between the minimum and maximum simulation times.
+ * Publishes LIMIT_REACHED if the time had to be clamped
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    return Math.max(time, MIN_SIMULATION_TIME);
+    const clampedTime = THREE.MathUtils.clamp(
+        time,
+        MIN_SIMULATION_TIME,
+        MAX_SIMULATION_TIME,
+    );
+
+    if (clampedTime !== time) {
+        bus.publish(EVENTS.SIM.LIMIT_REACHED);
+    }
+    return clampedTime;
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
+    currentSimulationTime = clampSimulationTime(
+        currentSimulationTime + getSimulationSpeedMilliseconds(currentSystem),
+    );
     updateSimulation();
 }
 
@@ -1717,8 +1720,10 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime +=
-            getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
+        currentSimulationTime = clampSimulationTime(
+            currentSimulationTime +
+                getSimulationSpeedMilliseconds(currentSystem) * deltaTime,
+        );
 
         // Update the simulation but do not bypass the calendar update throttle
         updateSimulation(false);
