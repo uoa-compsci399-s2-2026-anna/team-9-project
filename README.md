@@ -2,79 +2,52 @@
 
 COMPSCI 399 project repository for Team 9 - JEDEJ
 
-# Running Electron
+## Install and setup
 
-## Packages and Dependencies
+### Releases
 
-`node.js` version `>=22.0.0` is required to be able to run this and higher
-versions are recommended.
+For pre-built installers for Windows, macOS, and Linux, see the OPIS [releases](https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/releases).
 
-- See [node version manager](https://www.nvmnode.com/) on updating or installing node
+### Installing locally
 
-To install packages run:
+#### Packages and Dependencies
+
+It is recommended to use node.js version `24.20.0`.
+
+node.js version `>=22.0.0` is required to be able to run OPIS. See [Node Version Manager](https://www.nvmnode.com/) on installing or updating node.
+
+To install all required packages using [npm](https://www.npmjs.com) and [uv](https://docs.astral.sh/uv/), run:
 
 ```sh
 npm install
+uv sync
 ```
 
-## Running electron
+### Building and running
 
-To run the program use:
+#### Running OPIS
+
+To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 
 ```sh
 npm run dev
 ```
 
-## Useful Links
+#### Running Tailwind
 
-- [node version manager](https://www.nvmnode.com/)
-- [`electron` Reference Docs](https://www.electronjs.org/docs/latest/)
-
-# Running the Python Web-server
-
-## Installing the Packages
+To automatically run [Tailwind](https://tailwindcss.com) on file changes:
 
 ```sh
-uv sync
+npm run watch
 ```
 
-Will install all dependencies (not this is unecessary if using `uv` to run the
-program).
+## Packaging
 
-## Development Mode
+The final executable lives in the `./out/team-9-project-OS-ARCH/` folder, **not** the `./dist/` folder.
 
-```sh
-uv run main.py
-```
+Tested with node.js version `v24.20.0`. Certain later versions of node.js may not work.
 
-## Python Only (with URL Override)
-
-Windows
-
-```sh
-.venv\Scripts\activate
-python3 main.py
-```
-
-Linux/MacOS
-
-```sh
-source .venv/bin/activate
-python3 main.py
-```
-
-## Useful Links
-
-- [`uv` Python Package Manager](https://github.com/astral-sh/uv)
-- [`fastapi` Reference Docs](https://fastapi.tiangolo.com/)
-
-# Building Everything
-
-The final executable lives in the `./out/team-9-project-OS-ARCH/` folder **not** the `./dist/` folder.
-
-## Linux/MacOS
-
-Tested with `node.js` version `v24.20.0`
+### Linux/macOS
 
 ```sh
 rm -rf build dist out
@@ -93,9 +66,7 @@ Composer asset (found in `/src/assets/app-icon/opis.icon`). See the
 [Electron Forge documentation](https://www.electronforge.io/guides/create-and-add-icons#macos)
 for more information.
 
-## Windows
-
-Tested with `node.js` version `v24.20.0`
+### Windows
 
 ```sh
 rd /s /q build dist out
@@ -108,23 +79,7 @@ npm run make
 
 Example output executable path: `./out/team-9-project-win32-x64/team-9-project.exe`
 
-# Building the Frontend
-
-Install required packages from `package.json`
-
-```
-npm install
-```
-
-Run Tailwind CLI to build CSS files
-
-```
-npm run watch
-```
-
-This runs `npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch`
-
-# Logging
+## Logging
 
 Log files are written to:
 
