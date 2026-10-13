@@ -40,9 +40,6 @@ const FlatpickrInstance = flatpickr(calendarInput, {
             return;
         }
 
-        // Stop the year being typed over or deleted
-        instance.currentYearElement.readOnly = true;
-
         // Stop auto-selection of hour after picking a date
         requestAnimationFrame(() => {
             instance.hourElement?.blur();
