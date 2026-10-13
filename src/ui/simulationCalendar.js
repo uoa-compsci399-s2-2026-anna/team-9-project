@@ -6,6 +6,7 @@ import {
     convertToEpoch,
     formatInTimeZone,
     TIMEZONE_MAP,
+    FALLBACK_TIME_ZONE,
     MIN_SIMULATION_TIME,
     MAX_SIMULATION_TIME,
 } from "../utils/utils.js";
@@ -136,7 +137,7 @@ export function getElapsedDaysText(
     simulationTime,
     timeZone = calendarInput.dataset.timezone,
 ) {
-    const zone = TIMEZONE_MAP[timeZone] ?? "UTC";
+    const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
     const simLocal = DateTime.fromMillis(simulationTime, { zone });
     const nowLocal = DateTime.now().setZone(zone);
 
