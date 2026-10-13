@@ -216,4 +216,9 @@
   .calendar {
     caret-color: transparent;
   }
+
+  .flatpickr-current-month input.cur-year {
+    pointer-events: none;
+    user-select: none;
+  }
 }
