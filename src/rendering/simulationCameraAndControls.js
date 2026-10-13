@@ -174,6 +174,25 @@ export function initOrUpdateControls(
     controls.addEventListener("change", controlsChangeHandler);
 }
 
+/**
+ * Animate the camera so that the given radius fits in view.
+ *
+ * @param {number} radius The radius around the target to fit in view
+ * @param {number} objectSize The size of the object
+ */
+export function animateCameraToFitRadius(radius, objectSize) {
+    const distance = calculateFitDistance(radius, objectSize);
+
+    const direction = camera.position.clone().sub(controls.target).normalize();
+
+    cameraAnimationState.target.copy(cameraDefaults.target);
+    cameraAnimationState.position.copy(
+        cameraDefaults.target.clone().add(direction.multiplyScalar(distance)),
+    );
+    cameraAnimationState.currentStep = 0;
+    cameraAnimationState.isAnimating = true;
+}
+
 export function animateCamera() {
     if (cameraAnimationState.isAnimating) {
         // Animate the camera and controls for TOTAL_CAMERA_ANIMATION_STEPS steps.
