@@ -3,7 +3,6 @@ import { EVENTS } from "../events/events.js";
 import { settings } from "../shared/settingsState.js";
 import {
     timeToMilliseconds,
-    dateOnly,
     convertToEpoch,
     formatInTimeZone,
     TIMEZONE_MAP,
@@ -11,9 +10,6 @@ import {
     MAX_SIMULATION_TIME,
 } from "../utils/utils.js";
 import { DateTime } from "luxon";
-
-// The number of milliseconds in a day
-const MS_PER_DAY = timeToMilliseconds(1, "day");
 
 // Date range for calender
 const CALENDAR_RANGE_YEARS = 10;
