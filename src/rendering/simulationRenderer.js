@@ -1312,10 +1312,12 @@ export async function init(name) {
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    const clampedTime = Math.min(
-        Math.max(time, MIN_SIMULATION_TIME),
+    const clampedTime = MathUtils.clamp(
+        time,
+        MIN_SIMULATION_TIME,
         MAX_SIMULATION_TIME,
     );
+
     if (clampedTime != time) {
         bus.publish(EVENTS.SIM.LIMIT_REACHED);
     }
