@@ -226,9 +226,6 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
     FlatpickrInstance.set("minDate", formatInTimeZone(minTime, timeZone));
     FlatpickrInstance.set("maxDate", formatInTimeZone(maxTime, timeZone));
 
-    FlatpickrInstance.setDate(
-        formatInTimeZone(simulationTime, timeZone),
-        false,
-    );
+    FlatpickrInstance.setDate(formatInTimeZone(simulationTime, timeZone));
     updateElapsedDaysText(simulationTime, timeZone);
 }
