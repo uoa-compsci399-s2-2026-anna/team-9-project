@@ -133,7 +133,7 @@ bus.subscribe(EVENTS.SETTINGS.TIME_ZONE_SELECT, (event) => {
 
 /**
  * Gets the elapsed days text which describes how far the simulation time is from today,
- * in the given time zone (e.g., "Today", "3 days from today", "5 days ago").
+ * in the given time zone (e.g., "Today", "3 days from today", "2 years 3 days ago").
  * @param {number} simulationTime Simulation time as milliseconds since the Unix epoch
  * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns The elapsed days text
