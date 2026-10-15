@@ -46,6 +46,8 @@ export const EVENTS = {
 
         /** When the home button is clicked. */
         HOME: "toolbar:home",
+
+        HELP_BUTTON_CLICK: "toolbar:help_button_click",
     },
     SETTINGS: {
         TIME_ZONE_SELECT: "settings:time_zone_select",
