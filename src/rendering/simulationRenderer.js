@@ -1363,6 +1363,7 @@ async function updateCameraAndControlsToViewRadius() {
         habitableZoneMesh?.visible,
     );
 
+    // Update the camera and controls for the new view radius
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
         viewRadius,
         objectSize,
