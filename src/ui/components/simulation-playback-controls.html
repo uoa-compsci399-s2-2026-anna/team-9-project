@@ -3,6 +3,7 @@
 {% from "components/input-with-tooltip.html" import input_with_tooltip %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 
 <div class="z-10 flex flex-col bg-transparent">
   <div class="grid w-full grid-cols-3 items-stretch">
@@ -93,6 +94,11 @@
             on_click_events=["sim:step_forward"]
           )
         }}
+      {% endcall %}
+
+      {% call help_tooltip() %}
+        <strong>Playback controls.</strong> Use these to play/pause the
+        simulation, and step forward/back in time.
       {% endcall %}
     </div>
 
