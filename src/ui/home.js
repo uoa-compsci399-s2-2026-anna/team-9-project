@@ -89,23 +89,29 @@ function setTooltipPosition(tooltip) {
         return;
     }
 
+    /**
+     * Updates the position of this tooltip.
+     */
     function updatePosition() {
+        // Compute the position of the tooltip using floating-ui
         computePosition(target, tooltip, {
             placement: "bottom",
             middleware: [
-                offset(remToPx(0.5)),
-                flip(),
-                shift({ padding: remToPx(1) }),
-                arrow({ element: arrowOutline }),
-                arrow({ element: arrowFill }),
+                offset(remToPx(0.5)), // Offset tooltip from target
+                flip(), // Flip tooltip if out of bounds
+                shift({ padding: remToPx(1) }), // Shift tooltip if out of bounds
+                arrow({ element: arrowOutline }), // Add arrow pointing to target
+                arrow({ element: arrowFill }), // Add arrow pointing to target
             ],
         }).then(({ x, y, placement, middlewareData }) => {
+            // Place the tooltip in the correct position w.r.t. the target.
             Object.assign(tooltip.style, {
                 position: "absolute",
                 left: `${x}px`,
                 top: `${y}px`,
             });
 
+            // Set arrow positioning.
             const { x: arrowX, y: arrowY } = middlewareData.arrow;
             const staticSide = {
                 top: "bottom",
@@ -127,6 +133,8 @@ function setTooltipPosition(tooltip) {
         });
     }
 
+    // Automatically update tooltip position on screen resize, etc.; `cleanup`
+    // stores a cleanup function for once the tooltip is no longer displayed.
     const cleanup = autoUpdate(target, tooltip, updatePosition);
     cleanups.set(tooltip, cleanup);
 }
