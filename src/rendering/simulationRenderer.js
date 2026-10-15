@@ -1480,12 +1480,36 @@ function fitViewToObjectOrbit(name) {
     return true;
 }
 
+/**
+ * Animate the camera so that the habitable zone fits in view.
+ */
+function fitViewToHabitableZone() {
+    // The radius the camera needs to fit in view
+    const effectiveRadius = habitableZone.end * VIEW_RADIUS_MULTIPLIER;
+
+    animateCameraToFitRadius(effectiveRadius, objectSize);
+}
+
+/**
+ * Show or hide the habitable zone. Showing it zooms the camera so that the habitable zone fits in view.
+ *
+ * The camera does not move when theh habitable zone is hidden.
+ *
+ * @param {boolean} value Whether the habitable zone should be visible
+ */
 export function setHabitableZoneVisibility(value) {
     if (habitableZoneMesh) {
         habitableZoneMesh.visible = value;
     }
 
-    resetView(false);
+    // Don't move the camera when hiding the habitable zone
+    if (!value) {
+        return;
+    }
+
+    updateCameraAndControlsToViewRadius();
+
+    fitViewToHabitableZone();
 }
 
 export function setLabelsVisibility(value) {
