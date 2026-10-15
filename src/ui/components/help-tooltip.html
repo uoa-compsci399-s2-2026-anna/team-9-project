@@ -2,12 +2,12 @@
   <div
     role="tooltip"
     data-help-tooltip
-    class="text-secondary bordered-light pointer-events-none absolute top-0 left-0 z-20 container hidden max-w-80 p-2"
+    class="text-secondary bordered-light control pointer-events-none absolute top-0 left-0 z-20 hidden max-w-80 p-2"
   >
     {{ caller() }}
     <div
       data-tooltip-arrow
-      class="bordered-light bg-accent absolute z-10 size-3 rotate-45 rounded-none"
+      class="bordered-light control absolute z-10 size-3 min-h-0 rotate-45 rounded-none"
     ></div>
   </div>
 {% endmacro %}
