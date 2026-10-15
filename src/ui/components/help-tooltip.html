@@ -1,0 +1,13 @@
+{% macro help_tooltip() %}
+  <div
+    role="tooltip"
+    data-help-tooltip
+    class="text-secondary bordered-light pointer-events-none absolute top-0 left-0 z-20 container hidden max-w-80 p-2"
+  >
+    {{ caller() }}
+    <div
+      data-tooltip-arrow
+      class="bordered-light bg-accent absolute z-10 size-3 rotate-45 rounded-none"
+    ></div>
+  </div>
+{% endmacro %}

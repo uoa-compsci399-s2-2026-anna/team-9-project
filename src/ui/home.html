@@ -1,4 +1,5 @@
 {% from "components/logo.html" import logo %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 {% extends "base.html" %}
 
 <!-- Page title -->
@@ -34,7 +35,17 @@
                 {{ system.name }}
               </a>
             {% endfor %}
+
+            {% call help_tooltip() %}
+              <p>
+                <strong>This is the home menu.</strong> Here, you can select the
+                simulation which you want to investigate.
+              </p>
+            {% endcall %}
           </div>
+
+          <button id="show-tooltips" class="mt-5">Show tooltip</button>
+          <button id="hide-tooltips" class="mt-5">Hide tooltips</button>
         </div>
       </div>
     </div>
@@ -59,4 +70,5 @@
     defer
   ></script>
   <script type="module" src="/src/ui/toolbar.js" defer></script>
+  <script type="module" src="/src/ui/home.js" defer></script>
 {% endblock %}
