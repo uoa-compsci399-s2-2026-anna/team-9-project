@@ -12,16 +12,34 @@ import { EVENTS } from "../events/events.js";
 let cleanups = new Map();
 
 let isShowingHelp = false;
+let helpTooltipsToShow = [];
+let shownTooltip = null;
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, showHelp);
 document.addEventListener("click", hideHelp);
 
 function showHelp() {
+    if (helpTooltipsToShow.length != 0) {
+        return;
+    }
+
     document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-        tooltip.classList.remove("hidden");
+        helpTooltipsToShow.push(tooltip);
     });
 
+    showTop();
+}
+
+function showTop() {
+    if (helpTooltipsToShow.length == 0) {
+        isShowingHelp = false;
+        return;
+    }
+
     isShowingHelp = true;
+
+    shownTooltip = helpTooltipsToShow.pop();
+    shownTooltip.classList.remove("hidden");
 }
 
 function hideHelp() {
@@ -31,10 +49,11 @@ function hideHelp() {
 
     console.log(cleanups);
 
-    for (const [tooltip, cleanup] of cleanups) {
-        tooltip.classList.add("hidden");
-        cleanup();
-    }
+    const cleanup = cleanups.get(shownTooltip);
+    cleanup();
+    shownTooltip.classList.add("hidden");
+
+    showTop();
 }
 
 document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
