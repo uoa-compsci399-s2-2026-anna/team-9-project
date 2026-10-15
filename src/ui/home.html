@@ -12,6 +12,12 @@
       {% with hide_home_button = true %}
         {% include "components/toolbar.html" %}
       {% endwith %}
+
+      {% call help_tooltip() %}
+        <strong>This is the toolbar.</strong> Here, you can show this help
+        walkthrough, set light/dark mode, open settings, and go into fullscreen
+        mode.
+      {% endcall %}
     </div>
 
     <!-- Center content div -->
