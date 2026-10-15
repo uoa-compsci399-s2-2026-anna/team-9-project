@@ -9,7 +9,7 @@ import {
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
-let cleanups = [];
+let cleanups = new Map();
 
 let isShowingHelp = false;
 
@@ -25,13 +25,15 @@ function showHelp() {
 }
 
 function hideHelp() {
-    if (isShowingHelp) {
-        console.log(cleanups);
-        cleanups.forEach((c) => c());
-        document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-            tooltip.classList.add("hidden");
-        });
-        console.log(cleanups);
+    if (!isShowingHelp) {
+        return;
+    }
+
+    console.log(cleanups);
+
+    for (const [tooltip, cleanup] of cleanups) {
+        tooltip.classList.add("hidden");
+        cleanup();
     }
 }
 
@@ -92,7 +94,7 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
     }
 
     const cleanup = autoUpdate(target, tooltip, updatePosition);
-    cleanups.push(cleanup);
+    cleanups.set(tooltip, cleanup);
 });
 
 function remToPx(rem) {
