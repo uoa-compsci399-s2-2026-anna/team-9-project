@@ -588,14 +588,14 @@ function ndcScalarToScreenScalar(ndcDimension) {
 }
 
 /**
- * Determines whether an object's orbit should be visible. An orbit should be visible if the
- * orbit lines are visible and the object is visible.
+ * Determines whether an object's orbit should be visible. An orbit should be visible if
+ * orbit lines are set as visible and the object has not been hidden in the current system.
  *
  * Given visibility values take precedence over saved simulation state (since this state
  * may not have been synced yet).
  *
  * @param {string} objectName Name of the object associated with the orbit
- * @param {string} [system=currentSystem] The system associated with the object
+ * @param {string} currentSystem The current system being rendered
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object is visible
@@ -603,11 +603,15 @@ function ndcScalarToScreenScalar(ndcDimension) {
  */
 function shouldShowOrbit(
     objectName,
-    system = currentSystem,
+    currentSystem,
     { orbitsVisible, objectVisible } = {},
 ) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown = objectVisible ?? !isObjectHidden(system, objectName);
+    const isObjectHiddenInCurrentSystem = isObjectHidden(
+        currentSystem,
+        objectName,
+    );
+    const isObjectShown = objectVisible ?? !isObjectHiddenInCurrentSystem;
 
     return areOrbitsShown && isObjectShown;
 }
