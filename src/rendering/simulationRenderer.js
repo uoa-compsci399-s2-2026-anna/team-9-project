@@ -28,6 +28,7 @@ import {
     isAngleBetween,
     calculateProgressDistance,
     calculateOrbitRotationMatrix,
+    calculateApoapsis,
     calculatePeriapsis,
     calculateAverageNormal,
     calculateCameraDistanceToTargetProjection,
@@ -187,6 +188,9 @@ const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
 
 // Fraction of the innermost periapsis that an object's on screen radius may occupy
 const MAX_EXTENT_ORBIT_FRACTION = 0.5;
+
+// The proportion of the screen an object's orbit should take up when the camera zooms to it
+const ORBIT_VIEW_PROPORTION = 0.75;
 
 // Periapsis of the innermost default visible orbit
 let innermostPeriapsis = Infinity;
@@ -1465,9 +1469,12 @@ function fitViewToObjectOrbit(name) {
         return false;
     }
 
-    // TODO: naming
-    const apoapsis = orbitalData.a * (1 + orbitalData.e);
-    animateCameraToFitRadius(apoapsis, objectSize);
+    const apoapsis = calculateApoapsis(orbitalData.a, orbitalData.e);
+
+    // The radius the camera needs to fit in view so that the orbit takes up ORBIT_VIEW_PROPORTION of the screen
+    const effectiveRadius = apoapsis / ORBIT_VIEW_PROPORTION;
+
+    animateCameraToFitRadius(effectiveRadius, objectSize);
 
     return true;
 }
