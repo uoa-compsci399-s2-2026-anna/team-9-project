@@ -47,6 +47,7 @@ linux:
   target: [AppImage, deb, rpm]
   icon: src/assets/app-icon/opis.png
   executableName: opis
+  syncDesktopName: true
   category: Education
   maintainer: "Team 9 JEDEJ"
   artifactName: "${productName}-${version}-linux.${ext}"

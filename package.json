@@ -5,7 +5,8 @@
   "description": "COMPSCI 399 project repository for Team 9 - JEDEJ",
   "main": "index.js",
   "author": "Team 9 JEDEJ",
-  "license": "ISC",
+  "desktopName": "opis.desktop",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^43.3.0",
     "electron-builder": "^26.15.3",
