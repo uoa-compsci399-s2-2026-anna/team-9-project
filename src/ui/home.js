@@ -16,7 +16,7 @@ let helpTooltipsToShow = [];
 let shownTooltip = null;
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, showHelp);
-document.addEventListener("click", hideHelp);
+document.addEventListener("click", showNextHelpOrStopWalkthrough);
 
 function showHelp() {
     if (helpTooltipsToShow.length != 0) {
@@ -42,7 +42,7 @@ function showTop() {
     shownTooltip.classList.remove("hidden");
 }
 
-function hideHelp() {
+function showNextHelpOrStopWalkthrough() {
     if (!isShowingHelp) {
         return;
     }
