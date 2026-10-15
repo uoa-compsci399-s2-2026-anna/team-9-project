@@ -21,7 +21,6 @@ import { settings } from "../shared/settingsState.js";
 import {
     getSystemInfo,
     getMultipleSystemsData,
-    abortCurrentIntegration,
 } from "../services/simulationServices.js";
 import {
     TWO_PI,
@@ -72,6 +71,7 @@ import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
+import { doSimulationUpdate } from "./simulationUpdater.js";
 
 let timer;
 
@@ -904,7 +904,7 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
 
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
     // Update simulation to redraw orbit lines with new width/opacity profile
-    updateSimulation();
+    doSimulationUpdate();
 });
 
 /**
@@ -976,7 +976,7 @@ function updateReferenceGridScale(cameraPosition, targetPosition) {
  * @param {boolean} [params.priorityUpdate=false] Whether or not the update should force itself
  * @param {boolean} [params.forceCalendarUpdate=true] Whether or not to force an update to the calendar (bypasses the throttle)
  */
-async function updateSimulation({
+export async function updateSimulation({
     priorityUpdate = false,
     forceCalendarUpdate = true,
 } = {}) {
@@ -995,10 +995,6 @@ async function updateSimulation({
         // Use the last fetched data if a request is already in progress
         allSystemData = lastSystemData;
     } else {
-        if (priorityUpdate) {
-            await abortCurrentIntegration();
-        }
-
         gettingSystemData = true;
         lastFetchedSimulationTime = currentSimulationTime;
         allSystemData = await getMultipleSystemsData(
@@ -1297,7 +1293,7 @@ export async function init(name) {
     });
 
     // Start rendering frames and updating the simulation
-    updateSimulation();
+    doSimulationUpdate();
     renderFrame();
 }
 
@@ -1322,26 +1318,36 @@ function clampSimulationTime(time) {
 }
 
 export function stepForward() {
-    currentSimulationTime = clampSimulationTime(
-        currentSimulationTime + getSimulationSpeedMilliseconds(currentSystem),
-    );
-    updateSimulation();
+    doSimulationUpdate({
+        preUpdateFunction: function () {
+            currentSimulationTime = clampSimulationTime(
+                currentSimulationTime +
+                    getSimulationSpeedMilliseconds(currentSystem),
+            );
+        },
+    });
 }
 
 export function stepBack() {
-    currentSimulationTime = clampSimulationTime(
-        currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
-    );
-    updateSimulation();
+    doSimulationUpdate({
+        preUpdateFunction: function () {
+            currentSimulationTime = clampSimulationTime(
+                currentSimulationTime -
+                    getSimulationSpeedMilliseconds(currentSystem),
+            );
+        },
+    });
 }
 
 /*
  * Resets the simulation to the current time with priority.
  */
 export function resetSimulationTimeToNow() {
-    currentSimulationTime = Date.now();
-    updateSimulation({
+    doSimulationUpdate({
         priorityUpdate: true,
+        preUpdateFunction: function () {
+            currentSimulationTime = Date.now();
+        },
     });
 }
 
@@ -1349,9 +1355,11 @@ export function resetSimulationTimeToNow() {
  * Resets the simulation to the specified time with priority.
  */
 export function setSimulationTimeToTime(time) {
-    currentSimulationTime = clampSimulationTime(time);
-    updateSimulation({
+    doSimulationUpdate({
         priorityUpdate: true,
+        preUpdateFunction: function () {
+            currentSimulationTime = clampSimulationTime(time);
+        },
     });
 }
 
@@ -1429,7 +1437,7 @@ export async function compareToSolarSystem() {
 
     resetView();
 
-    updateSimulation();
+    doSimulationUpdate();
 }
 
 export async function hideSolarSystem() {
@@ -1453,7 +1461,7 @@ export async function hideSolarSystem() {
 
     resetView();
 
-    updateSimulation();
+    doSimulationUpdate();
 }
 
 export function setHabitableZoneVisibility(value) {
@@ -1748,7 +1756,7 @@ async function renderFrame(timestamp) {
         );
 
         // Update the simulation but do not bypass the calendar update throttle
-        updateSimulation({
+        doSimulationUpdate({
             forceCalendarUpdate: false,
         });
     }
