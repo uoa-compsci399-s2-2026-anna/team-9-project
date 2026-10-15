@@ -1357,12 +1357,6 @@ export function setSimulationTimeToTime(time) {
 async function updateCameraAndControlsToViewRadius() {
     const canvas = renderer.domElement;
 
-    await updateViewRadius(
-        currentSystem,
-        comparingToSolarSystem,
-        habitableZoneMesh?.visible,
-    );
-
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
         viewRadius,
@@ -1377,6 +1371,11 @@ async function updateCameraAndControlsToViewRadius() {
 }
 
 export async function resetView(topDown = true) {
+    await updateViewRadius(
+        currentSystem,
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible,
+    );
     updateCameraAndControlsToViewRadius();
 
     // Animate to the default controls target
@@ -1522,7 +1521,7 @@ export function setReferenceGridVisibility(value) {
  * @param {string} name Name of the object
  * @param {boolean} value Whether the object should be visible
  */
-export function setObjectVisibility(name, value) {
+export async function setObjectVisibility(name, value) {
     const mesh = objectMeshes.get(name);
     if (mesh) {
         mesh.visible = value;
@@ -1540,6 +1539,11 @@ export function setObjectVisibility(name, value) {
         return;
     }
 
+    await updateViewRadius(
+        currentSystem,
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible,
+    );
     updateCameraAndControlsToViewRadius();
 
     // Object's orbit cannot fit in view, so reset the view normally
