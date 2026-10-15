@@ -11,20 +11,29 @@ import { EVENTS } from "../events/events.js";
 
 let cleanups = [];
 
-bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
+let isShowingHelp = false;
+
+bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, showHelp);
+document.addEventListener("click", hideHelp);
+
+function showHelp() {
     document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
         tooltip.classList.remove("hidden");
     });
-});
 
-document.getElementById("hide-tooltips").addEventListener("click", () => {
-    console.log(cleanups);
-    cleanups.forEach((c) => c());
-    document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-        tooltip.classList.add("hidden");
-    });
-    console.log(cleanups);
-});
+    isShowingHelp = true;
+}
+
+function hideHelp() {
+    if (isShowingHelp) {
+        console.log(cleanups);
+        cleanups.forEach((c) => c());
+        document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+            tooltip.classList.add("hidden");
+        });
+        console.log(cleanups);
+    }
+}
 
 document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
     let target = tooltip.previousElementSibling;
