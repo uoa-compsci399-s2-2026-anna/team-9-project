@@ -70,6 +70,14 @@ function setTooltipPosition(tooltip) {
     let arrowOutline = tooltip.querySelector("[data-tooltip-arrow-outline]");
     let arrowFill = tooltip.querySelector("[data-tooltip-arrow-fill]");
 
+    const siblingCount = tooltip.parentElement.children.length - 1;
+
+    if (siblingCount > 1) {
+        console.warn(
+            "This tooltip has more than one sibling! Tooltips should only have one sibling element (the target element).",
+        );
+    }
+
     if (!target) {
         target = tooltip.nextElementSibling;
     }
