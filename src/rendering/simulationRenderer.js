@@ -383,6 +383,16 @@ function createGlowTexture(colour) {
  * @param {string} colour CSS colour string used for this object's label
  */
 function createOrUpdateObjectMesh(name, position, group, colour) {
+    // Don't create object mesh in the comparison overlay
+    // for objects that are hidden by default in the Solar System
+    if (
+        comparingToSolarSystem &&
+        group === solarSystemGroup &&
+        isObjectHiddenByDefault("Solar System", name)
+    ) {
+        return;
+    }
+
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -409,8 +419,8 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
             mesh.add(glowSprite);
         }
 
-        if (comparingToSolarSystem && group === solarSystemGroup) {
-            mesh.visible = !isObjectHiddenByDefault("Solar System", name);
+        if (group === solarSystemGroup) {
+            mesh.visible = comparingToSolarSystem;
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
@@ -569,32 +579,30 @@ function ndcScalarToScreenScalar(ndcDimension) {
 }
 
 /**
- * Determines whether an object's orbit should be visible. An orbit should be visible if the
- * orbit lines are visible and the object is visible.
+ * Determines whether an object's orbit should be visible. An orbit should be visible if
+ * orbit lines are set as visible and the object has not been hidden in the current system.
  *
  * Given visibility values take precedence over saved simulation state (since this state
  * may not have been synced yet).
  *
  * @param {string} objectName Name of the object associated with the orbit
- * @param {string} [system=currentSystem] The system associated with the object
+ * @param {string} currentSystem The current system being rendered
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object is visible
- * @param {boolean} [options.useDefault=false] Whether to check the object's default visibility
- * instead of its current visibility
  * @returns {boolean} Whether the orbit should be visible
  */
 function shouldShowOrbit(
     objectName,
-    system = currentSystem,
-    { orbitsVisible, objectVisible, useDefault = false } = {},
+    currentSystem,
+    { orbitsVisible, objectVisible } = {},
 ) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown =
-        objectVisible ??
-        (useDefault
-            ? !isObjectHiddenByDefault(system, objectName)
-            : !isObjectHidden(system, objectName));
+    const isObjectHiddenInCurrentSystem = isObjectHidden(
+        currentSystem,
+        objectName,
+    );
+    const isObjectShown = objectVisible ?? !isObjectHiddenInCurrentSystem;
 
     return areOrbitsShown && isObjectShown;
 }
@@ -648,6 +656,16 @@ function getOrbitLineWidth(isComparison) {
  * @param {string} colour CSS colour string used for this orbit's line
  */
 function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
+    // Don't create orbital line in the comparison overlay
+    // for objects that are hidden by default in the Solar System
+    if (
+        comparingToSolarSystem &&
+        group === solarSystemGroup &&
+        isObjectHiddenByDefault("Solar System", name)
+    ) {
+        return;
+    }
+
     const { a, e, inc, Omega, omega, f } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
@@ -693,10 +711,8 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         // Render above habitable zone to prevent z fighting
         line.renderOrder = 1;
 
-        if (comparingToSolarSystem && group === solarSystemGroup) {
-            line.visible = shouldShowOrbit(name, "Solar System", {
-                useDefault: true,
-            });
+        if (group === solarSystemGroup) {
+            line.visible = comparingToSolarSystem;
         } else {
             line.visible = shouldShowOrbit(name, currentSystem);
         }
