@@ -380,8 +380,11 @@ async function createWindow(python_url) {
             preload: path.join(__dirname, "preload.js"),
         },
         icon: app.isPackaged
-            ? path.join(process.resourcesPath, "src/assets/app-icon/opis.png")
-            : path.join(__dirname, "src/assets/app-icon/opis.png"),
+            ? path.join(
+                  process.resourcesPath,
+                  "src/assets/app-icon/linux/256x256.png",
+              )
+            : path.join(__dirname, "src/assets/app-icon/linux/256x256.png"),
     });
 
     // Hide dev tools if we are running an executable
