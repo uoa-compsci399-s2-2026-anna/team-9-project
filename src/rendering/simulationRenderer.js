@@ -1453,10 +1453,10 @@ export async function hideSolarSystem() {
 
 /**
  * Animate the camera so that the given object's orbit fills the view. Only
- * elliptical orbits can be framed.
+ * elliptical orbits can be fit in view.
  *
  * @param {string} name Name of the object whose orbit to frame
- * @returns {boolean} Whether the orbit could be framed
+ * @returns {boolean} Whether the orbit could be fit in view
  */
 function fitViewToObjectOrbit(name) {
     const orbitalData = lastSystemData?.[currentSystem]?.orbital_data?.[name];
@@ -1502,16 +1502,14 @@ export function setReferenceGridVisibility(value) {
 
 /**
  * Show or hide an object and its orbit.
- * 
- * On showing an object, its orbit is framed in the view. If the object cannot be
- * framed (orbit is non-elliptical), then the entire view is reset.
- * TODO: fix wording
- * 
+ *
+ * On showing an object, its orbit is fit in view. If the object cannot be
+ * fit in view (orbit is non-elliptical), then the entire view is reset.
+ *
  * The camera view does not change on hiding an object.
- * 
+ *
  * @param {string} name Name of the object
  * @param {boolean} value Whether the object should be visible
- * @returns 
  */
 export function setObjectVisibility(name, value) {
     const mesh = objectMeshes.get(name);
@@ -1531,7 +1529,7 @@ export function setObjectVisibility(name, value) {
         return;
     }
 
-    // Object cannot be framed, so reset the view normally
+    // Object's orbit cannot fit in view, so reset the view normally
     if (!fitViewToObjectOrbit(name)) {
         resetView(false);
     }
