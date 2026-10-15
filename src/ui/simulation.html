@@ -1,4 +1,5 @@
 {% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 {% from "components/side-panel.html" import side_panel %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
@@ -59,7 +60,13 @@
       <!-- Zoom control -->
       <div class="pointer-events-auto mb-auto">
         {% include "templates/zoom-control.html" %}
+
+        {% call help_tooltip() %}
+          <strong>Zoom controls.</strong> Click to zoom in and out of the
+          simulation. You can also scroll to zoom.
+        {% endcall %}
       </div>
+
       <!-- Grid scale indicator -->
       <p id="grid-scale-text" class="text-secondary pr-2 text-sm">AU/square</p>
 
