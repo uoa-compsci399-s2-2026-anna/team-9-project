@@ -65,6 +65,11 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
     showNextHelpTooltip();
 }
 
+/**
+ * Sets `tooltip`'s position using floating-ui, and automatically updates its 
+ * position on screen size changes, etc.
+ * @param {HTMLElement} tooltip The tooltip element's position to set.
+ */
 function setTooltipPosition(tooltip) {
     let target = tooltip.previousElementSibling;
     let arrowOutline = tooltip.querySelector("[data-tooltip-arrow-outline]");
