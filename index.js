@@ -380,8 +380,8 @@ async function createWindow(python_url) {
             preload: path.join(__dirname, "preload.js"),
         },
 
-        // Load icon (required for Linux; see https://www.electronforge.io/guides/create-and-add-icons#linux)
-        icon: "src/assets/opis.png",
+        // Load icon (required for Linux. See https://www.electronforge.io/guides/create-and-add-icons#linux)
+        icon: path.join(__dirname, "src/assets/app-icon/opis.png"),
     });
 
     // Hide dev tools if we are running an executable
