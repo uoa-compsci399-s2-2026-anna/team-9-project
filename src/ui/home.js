@@ -68,20 +68,16 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
                 left: "right",
             }[placement.split("-")[0]];
 
-            Object.assign(arrowElement.style, {
+            const arrowStyle = {
                 left: arrowX != null ? `${arrowX}px` : "",
                 top: arrowY != null ? `${arrowY}px` : "",
                 right: "",
                 bottom: "",
                 [staticSide]: "-4px",
-            });
-            Object.assign(arrowElement2.style, {
-                left: arrowX != null ? `${arrowX}px` : "",
-                top: arrowY != null ? `${arrowY}px` : "",
-                right: "",
-                bottom: "",
-                [staticSide]: "-4px",
-            });
+            };
+
+            Object.assign(arrowElement.style, arrowStyle);
+            Object.assign(arrowElement2.style, arrowStyle);
         });
     }
 
