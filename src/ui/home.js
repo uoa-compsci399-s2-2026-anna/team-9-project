@@ -84,7 +84,7 @@ function setTooltipPosition(tooltip) {
 
     if (!target) {
         console.error(
-            `tooltip ${tooltip} has no target! the target should be a sibling element.`,
+            `Tooltip ${tooltip} has no target! The target should be a sibling element.`,
         );
         return;
     }
