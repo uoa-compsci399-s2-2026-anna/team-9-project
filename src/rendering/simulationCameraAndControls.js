@@ -12,7 +12,7 @@ const CAMERA_NEAR_MULTIPLIER = 1;
 const CAMERA_FAR_MULTIPLIER = 100;
 
 const CONTROLS_MIN_MULTIPLIER = 10;
-const CONTROLS_MAX_MULTIPLIER = 2;
+const CONTROLS_MAX_MULTIPLIER = 1.5;
 const CONTROLS_ZOOM_SPEED = 2.5;
 const CONTROLS_MIN_ZOOM_FACTOR = 2; // The minimum factor that the controls should be able to zoom
 

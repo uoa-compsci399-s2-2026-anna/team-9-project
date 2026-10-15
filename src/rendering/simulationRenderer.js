@@ -1354,7 +1354,7 @@ export function setSimulationTimeToTime(time) {
     updateSimulation();
 }
 
-export async function resetView(topDown = true) {
+async function updateCameraAndControlsToViewRadius() {
     const canvas = renderer.domElement;
 
     await updateViewRadius(
@@ -1363,7 +1363,6 @@ export async function resetView(topDown = true) {
         habitableZoneMesh?.visible,
     );
 
-    // Update the camera and controls for the new view radius
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
         viewRadius,
         objectSize,
@@ -1374,6 +1373,10 @@ export async function resetView(topDown = true) {
         cameraAndControlsSettings,
         createControlsChangeHandler(viewRadius),
     );
+}
+
+export async function resetView(topDown = true) {
+    updateCameraAndControlsToViewRadius();
 
     // Animate to the default controls target
     cameraAnimationState.target.copy(cameraDefaults.target);
@@ -1535,6 +1538,8 @@ export function setObjectVisibility(name, value) {
     if (!value) {
         return;
     }
+
+    updateCameraAndControlsToViewRadius();
 
     // Object's orbit cannot fit in view, so reset the view normally
     if (!fitViewToObjectOrbit(name)) {
