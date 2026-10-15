@@ -28,6 +28,7 @@ document.getElementById("hide-tooltips").addEventListener("click", () => {
 document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
     let target = tooltip.previousElementSibling;
     let arrowElement = tooltip.querySelector("[data-tooltip-arrow]");
+    let arrowElement2 = tooltip.querySelector("[data-tooltip-arrow-2]");
 
     if (!target) {
         target = tooltip.nextElementSibling;
@@ -50,6 +51,7 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
                 flip(),
                 shift({ padding: remToPx(1) }),
                 arrow({ element: arrowElement }),
+                arrow({ element: arrowElement2 }),
             ],
         }).then(({ x, y, placement, middlewareData }) => {
             Object.assign(tooltip.style, {
@@ -67,6 +69,13 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
             }[placement.split("-")[0]];
 
             Object.assign(arrowElement.style, {
+                left: arrowX != null ? `${arrowX}px` : "",
+                top: arrowY != null ? `${arrowY}px` : "",
+                right: "",
+                bottom: "",
+                [staticSide]: "-4px",
+            });
+            Object.assign(arrowElement2.style, {
                 left: arrowX != null ? `${arrowX}px` : "",
                 top: arrowY != null ? `${arrowY}px` : "",
                 right: "",

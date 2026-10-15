@@ -2,12 +2,30 @@
   <div
     role="tooltip"
     data-help-tooltip
-    class="text-secondary bordered-light control pointer-events-none absolute top-0 left-0 z-20 hidden max-w-80 p-2"
+    class="pointer-events-none absolute top-0 left-0 isolate z-10 hidden max-w-80"
   >
-    {{ caller() }}
+    <!-- Arrow (for outline); z-0 -->
     <div
       data-tooltip-arrow
-      class="bordered-light control absolute z-10 size-3 min-h-0 rotate-45 rounded-none"
+      class="outlined-light control absolute z-0 size-5 min-h-0 rotate-45 rounded-none"
     ></div>
+
+    <!-- Arrow (for fill colour); z-20 -->
+    <div
+      data-tooltip-arrow-2
+      class="control absolute z-20 size-5 min-h-0 rotate-45 rounded-none"
+    ></div>
+
+    <!-- Container (for background); z-10 -->
+    <div class="control bordered-light relative z-10 max-w-80 p-2">
+      <div class="invisible">{{ caller() }}</div>
+    </div>
+
+    <!-- Text; z-30 -->
+    <div
+      class="text-secondary control absolute top-0 left-0 z-30 max-w-80 border-none bg-transparent p-2"
+    >
+      <div class="z-50">{{ caller() }}</div>
+    </div>
   </div>
 {% endmacro %}
