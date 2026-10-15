@@ -17,6 +17,7 @@ let shownTooltip = null;
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, startHelpWalkthrough);
 document.addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
+document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
 
 /**
  * Begins the help walkthrough.
@@ -144,7 +145,6 @@ function setTooltipPosition(tooltip) {
     cleanups.set(tooltip, cleanup);
 }
 
-document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
 
 function remToPx(rem) {
     return (
