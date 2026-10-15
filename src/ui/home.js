@@ -65,7 +65,7 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
     showNextHelpTooltip();
 }
 
-document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+function setTooltipPosition(tooltip) {
     let target = tooltip.previousElementSibling;
     let arrowOutline = tooltip.querySelector("[data-tooltip-arrow-outline]");
     let arrowFill = tooltip.querySelector("[data-tooltip-arrow-fill]");
@@ -121,7 +121,9 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
 
     const cleanup = autoUpdate(target, tooltip, updatePosition);
     cleanups.set(tooltip, cleanup);
-});
+}
+
+document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
 
 function remToPx(rem) {
     return (
