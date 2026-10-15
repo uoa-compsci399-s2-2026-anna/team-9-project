@@ -35,18 +35,15 @@
                 {{ system.name }}
               </a>
             {% endfor %}
-
-            {% call help_tooltip() %}
-              <p>
-                <strong>This is the home menu.</strong> Here, you can select the
-                simulation which you want to investigate.
-              </p>
-            {% endcall %}
           </div>
 
-          <button id="show-tooltips" class="mt-5">Show tooltip</button>
-          <button id="hide-tooltips" class="mt-5">Hide tooltips</button>
+          {% call help_tooltip() %}
+            <strong>This is the home menu.</strong> Here, you can select the
+            simulation which you want to investigate.
+          {% endcall %}
         </div>
+        <button id="show-tooltips" class="mt-5">Show tooltip</button>
+        <button id="hide-tooltips" class="mt-5">Hide tooltips</button>
       </div>
     </div>
   </div>
