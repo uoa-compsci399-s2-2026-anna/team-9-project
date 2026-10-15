@@ -16,7 +16,7 @@ let helpTooltipsToShow = [];
 let shownTooltip = null;
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, startHelpWalkthrough);
-document.addEventListener("click", showNextHelpOrStopWalkthrough);
+document.addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
 
 function startHelpWalkthrough() {
     if (helpTooltipsToShow.length != 0) {
@@ -27,10 +27,10 @@ function startHelpWalkthrough() {
         helpTooltipsToShow.push(tooltip);
     });
 
-    showTop();
+    showNextHelpTooltip();
 }
 
-function showTop() {
+function showNextHelpTooltip() {
     if (helpTooltipsToShow.length == 0) {
         isShowingHelp = false;
         return;
@@ -42,7 +42,7 @@ function showTop() {
     shownTooltip.classList.remove("hidden");
 }
 
-function showNextHelpOrStopWalkthrough() {
+function showNextHelpTooltipOrStopHelpWalkthrough() {
     if (!isShowingHelp) {
         return;
     }
@@ -51,7 +51,7 @@ function showNextHelpOrStopWalkthrough() {
     cleanup();
     shownTooltip.classList.add("hidden");
 
-    showTop();
+    showNextHelpTooltip();
 }
 
 document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
