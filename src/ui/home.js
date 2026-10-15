@@ -6,11 +6,12 @@ import {
     offset,
     arrow,
 } from "@floating-ui/dom";
+import { bus } from "../events/eventBus.js";
+import { EVENTS } from "../events/events.js";
 
 let cleanups = [];
 
-document.getElementById("show-tooltips").addEventListener("click", () => {
-    console.log("show tooltips clicked");
+bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
         tooltip.classList.remove("hidden");
     });
