@@ -15,10 +15,10 @@ let isShowingHelp = false;
 let helpTooltipsToShow = [];
 let shownTooltip = null;
 
-bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, showHelp);
+bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, startHelpWalkthrough);
 document.addEventListener("click", showNextHelpOrStopWalkthrough);
 
-function showHelp() {
+function startHelpWalkthrough() {
     if (helpTooltipsToShow.length != 0) {
         return;
     }
