@@ -15,7 +15,6 @@ import {
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
-    setFormattedSimulationDate,
     setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
@@ -67,12 +66,12 @@ import {
 } from "./habitableZone.js";
 import {
     updateCalendar,
-    formatSimulationDate,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
 import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
 
 let timer;
 
@@ -115,8 +114,8 @@ let hitboxPadding;
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 // Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height)
-const ORBIT_LINE_WIDTH_PROPORTION = 0.02;
-const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.01;
+const ORBIT_LINE_WIDTH_PROPORTION = 0.025;
+const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.02;
 const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 
 /**
@@ -127,7 +126,7 @@ const comparisonOverlayColour = {
     dark: "#c3911c",
     light: "#7d5c12",
 };
-const comparisonOrbitOpacity = 0.5;
+const comparisonOrbitOpacity = 0.8;
 const comparisonLabelOpacity = 0.8;
 
 /**
@@ -194,14 +193,6 @@ let innermostPeriapsis = Infinity;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
-
-// Earliest simulation time allowed is 1 January of year 1 (UTC)
-const MIN_SIMULATION_TIME = (() => {
-    const date = new Date(0);
-    date.setUTCFullYear(1, 0, 1);
-    date.setUTCHours(0, 0, 0, 0);
-    return date.getTime();
-})();
 
 /**
  * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
@@ -813,7 +804,7 @@ const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_WIDTH, Math.cos((Math.PI * distance) / 2));
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -1229,7 +1220,7 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
-    currentSimulationTime = getSimulationTime(name);
+    currentSimulationTime = clampSimulationTime(getSimulationTime(name));
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone.start = systemInfo["habitable zone"].start;
@@ -1311,17 +1302,29 @@ export async function init(name) {
 }
 
 /**
- * Clamp a simulation time so it never goes before the minimum simulation time.
+ * Clamp a simulation time so it stays between the minimum and maximum simulation times.
+ * Publishes LIMIT_REACHED if the time had to be clamped
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    return Math.max(time, MIN_SIMULATION_TIME);
+    const clampedTime = THREE.MathUtils.clamp(
+        time,
+        MIN_SIMULATION_TIME,
+        MAX_SIMULATION_TIME,
+    );
+
+    if (clampedTime !== time) {
+        bus.publish(EVENTS.SIM.LIMIT_REACHED);
+    }
+    return clampedTime;
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
+    currentSimulationTime = clampSimulationTime(
+        currentSimulationTime + getSimulationSpeedMilliseconds(currentSystem),
+    );
     updateSimulation();
 }
 
@@ -1739,8 +1742,10 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime +=
-            getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
+        currentSimulationTime = clampSimulationTime(
+            currentSimulationTime +
+                getSimulationSpeedMilliseconds(currentSystem) * deltaTime,
+        );
 
         // Update the simulation but do not bypass the calendar update throttle
         updateSimulation({

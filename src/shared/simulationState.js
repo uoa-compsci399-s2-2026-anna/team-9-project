@@ -1,4 +1,3 @@
-import { updateCalendar } from "../ui/simulationCalendar.js";
 import { timeToMilliseconds } from "../utils/utils.js";
 import simulationStateSchema from "./simulationStateSchema.json" with { type: "json" };
 

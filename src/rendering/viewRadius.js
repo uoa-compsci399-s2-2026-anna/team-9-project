@@ -3,6 +3,7 @@ import {
     calculateMaxApoapsis,
     calculateMaxPeriapsis,
 } from "./simulationCalculations.js";
+import { habitableZone } from "./habitableZone.js";
 
 const VIEW_RADIUS_MULTIPLIER = 1.3;
 
