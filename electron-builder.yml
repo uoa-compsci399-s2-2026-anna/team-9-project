@@ -45,7 +45,7 @@ mac:
 
 linux:
   target: [AppImage, deb, rpm]
-  icon: src/assets/app-icon/opis.png
+  icon: build/icons
   executableName: opis
   syncDesktopName: true
   category: Education
