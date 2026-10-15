@@ -365,6 +365,14 @@ function hidePageContent(hideScript) {
  * @param {Promise} url - A promise to the entry url to bind the application to
  */
 async function createWindow(python_url) {
+    const iconFile =
+        process.platform === "win32" ? "opis.ico" : "png-sizes/128x128.png";
+    const iconPath = path.join(
+        app.isPackaged ? process.resourcesPath : __dirname,
+        "src/assets/app-icon",
+        iconFile,
+    );
+
     // Create the browser window with specified preferences
     mainWindow = new BrowserWindow({
         width: 800,
@@ -379,12 +387,7 @@ async function createWindow(python_url) {
             contextIsolation: true,
             preload: path.join(__dirname, "preload.js"),
         },
-        icon: app.isPackaged
-            ? path.join(
-                  process.resourcesPath,
-                  "src/assets/app-icon/linux/256x256.png",
-              )
-            : path.join(__dirname, "src/assets/app-icon/linux/256x256.png"),
+        icon: iconPath,
     });
 
     // Hide dev tools if we are running an executable
