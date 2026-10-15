@@ -141,6 +141,10 @@
     @apply border border-black/10 dark:border-white/10;
   }
 
+  .outlined-light {
+    @apply outline outline-black/10 dark:outline-white/10;
+  }
+
   .clickable {
     @apply hover:bg-zinc-100 active:bg-zinc-100 active:inset-shadow-sm dark:hover:bg-zinc-900 dark:active:bg-zinc-700;
   }
