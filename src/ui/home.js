@@ -47,7 +47,7 @@ function showNextHelpTooltip() {
     isShowingHelp = true;
 
     shownTooltip = helpTooltipsToShow.pop();
-    shownTooltip.classList.remove("hidden");
+    shownTooltip.classList.remove("invisible");
 }
 
 /**
@@ -61,13 +61,13 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
 
     const cleanup = cleanups.get(shownTooltip);
     cleanup();
-    shownTooltip.classList.add("hidden");
+    shownTooltip.classList.add("invisible");
 
     showNextHelpTooltip();
 }
 
 /**
- * Sets `tooltip`'s position using floating-ui, and automatically updates its 
+ * Sets `tooltip`'s position using floating-ui, and automatically updates its
  * position on screen size changes, etc.
  * @param {HTMLElement} tooltip The tooltip element's position to set.
  */
@@ -144,7 +144,6 @@ function setTooltipPosition(tooltip) {
     const cleanup = autoUpdate(target, tooltip, updatePosition);
     cleanups.set(tooltip, cleanup);
 }
-
 
 function remToPx(rem) {
     return (
