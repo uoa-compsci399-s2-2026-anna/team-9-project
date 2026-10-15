@@ -47,8 +47,6 @@ function hideHelp() {
         return;
     }
 
-    console.log(cleanups);
-
     const cleanup = cleanups.get(shownTooltip);
     cleanup();
     shownTooltip.classList.add("hidden");
@@ -71,8 +69,6 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
         );
         return;
     }
-
-    console.log(`target: ${target}`);
 
     function updatePosition() {
         computePosition(target, tooltip, {
