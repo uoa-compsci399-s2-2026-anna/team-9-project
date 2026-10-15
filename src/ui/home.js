@@ -27,8 +27,8 @@ document.getElementById("hide-tooltips").addEventListener("click", () => {
 
 document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
     let target = tooltip.previousElementSibling;
-    let arrowElement = tooltip.querySelector("[data-tooltip-arrow]");
-    let arrowElement2 = tooltip.querySelector("[data-tooltip-arrow-2]");
+    let arrowElement = tooltip.querySelector("[data-tooltip-arrow-outline]");
+    let arrowElement2 = tooltip.querySelector("[data-tooltip-arrow-fill]");
 
     if (!target) {
         target = tooltip.nextElementSibling;
