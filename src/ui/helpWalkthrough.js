@@ -95,6 +95,8 @@ function setTooltipPosition(tooltip) {
         return;
     }
 
+    document.body.append(tooltip);
+
     /**
      * Updates the position of this tooltip.
      */
@@ -102,6 +104,7 @@ function setTooltipPosition(tooltip) {
         // Compute the position of the tooltip using floating-ui
         computePosition(target, tooltip, {
             placement: "bottom",
+            strategy: "fixed",
             middleware: [
                 offset(remToPx(0.5)), // Offset tooltip from target
                 flip(), // Flip tooltip if out of bounds
@@ -112,7 +115,7 @@ function setTooltipPosition(tooltip) {
         }).then(({ x, y, placement, middlewareData }) => {
             // Place the tooltip in the correct position w.r.t. the target.
             Object.assign(tooltip.style, {
-                position: "absolute",
+                position: "fixed",
                 left: `${x}px`,
                 top: `${y}px`,
             });
