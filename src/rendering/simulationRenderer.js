@@ -1460,6 +1460,17 @@ export async function hideSolarSystem() {
 }
 
 /**
+ * Resets the view if the camera is zoomed out further than the current maximum camera distance.
+ */
+function resetViewIfBeyondMaxDistance() {
+    const cameraDistance = camera.position.distanceTo(controls.target);
+
+    if (cameraDistance > controls.maxDistance) {
+        resetView(false);
+    }
+}
+
+/**
  * Animate the camera so that the given object's orbit fills the view. Only
  * elliptical orbits can be fit in view.
  *
@@ -1483,12 +1494,38 @@ function fitViewToObjectOrbit(name) {
     return true;
 }
 
-export function setHabitableZoneVisibility(value) {
+/**
+ * Animate the camera so that the habitable zone fits in view.
+ */
+function fitViewToHabitableZone() {
+    // The radius the camera needs to fit in view
+    const effectiveRadius = habitableZone.end * VIEW_RADIUS_MULTIPLIER;
+
+    animateCameraToFitRadius(effectiveRadius, objectSize);
+}
+
+/**
+ * Show or hide the habitable zone. Showing it zooms the camera so that the habitable zone fits in view.
+ *
+ * The camera does not move when the habitable zone is hidden.
+ *
+ * @param {boolean} value Whether the habitable zone should be visible
+ */
+export async function setHabitableZoneVisibility(value) {
     if (habitableZoneMesh) {
         habitableZoneMesh.visible = value;
     }
 
-    resetView(false);
+    await updateViewRadius(currentSystem, comparingToSolarSystem, value);
+    updateCameraAndControlsToViewRadius();
+
+    // When hiding the habitable zone, only reset the view if the camera is zoomed out further than the new max distance
+    if (!value) {
+        resetViewIfBeyondMaxDistance();
+        return;
+    }
+
+    fitViewToHabitableZone();
 }
 
 export function setLabelsVisibility(value) {
@@ -1544,12 +1581,7 @@ export async function setObjectVisibility(name, value) {
 
     // When hiding an object, only reset the view if the camera is zoomed out further than the new max distance
     if (!value) {
-        const cameraDistance = camera.position.distanceTo(controls.target);
-
-        if (cameraDistance > controls.maxDistance) {
-            resetView(false);
-        }
-
+        resetViewIfBeyondMaxDistance();
         return;
     }
 
