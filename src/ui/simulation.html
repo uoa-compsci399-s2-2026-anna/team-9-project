@@ -35,7 +35,13 @@
     <!-- Empty div which acts as the tooltip target. Needs w-fit otherwise target is not registered. -->
     <div class="pointer-events-none w-fit"></div>
 
-    {% call help_tooltip(auto_placement=false, placement="top") %}
+    {%
+      call help_tooltip(
+        auto_placement=false,
+        placement="top",
+        prioritise_order=true
+      )
+    %}
       <strong>Simulation.</strong> This is the main simulation of OPIS. Click
       and drag to rotate around. Shift click and drag to pan. Click on an object
       to view information about it.
