@@ -223,7 +223,12 @@ document.querySelectorAll("[data-button-type]").forEach((buttonType) => {
         if (allowRepeat) {
             attachHoldRepeat(button, publish);
         } else {
-            button.addEventListener("click", publish);
+            button.addEventListener("click", (clickEvent) => {
+                bus.publish(event, {
+                    ...getEventDetail(event),
+                    clickEvent: clickEvent,
+                });
+            });
         }
     }
 });
