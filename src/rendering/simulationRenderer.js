@@ -1606,7 +1606,7 @@ function resizeRendererToDisplaySize() {
 
 /**
  * For the given orbital data, get the name of the star with the smallest periapsis.
- * 
+ *
  * @param {Object} orbitalData Map of object name to orbital data
  * @returns The name of the star with the smallest periapsis
  */
@@ -1631,7 +1631,7 @@ function findSmallestPeriapsisStarName(orbitalData) {
 }
 
 /**
- * Finds the smallest periapsis (closest point to the centre) across all orbits whose 
+ * Finds the smallest periapsis (closest point to the centre) across all orbits whose
  * corresponding object is visible by default, excluding the innermost star and the
  * Sun (if the Solar System is being compared to).
  *
