@@ -160,6 +160,14 @@ function getShownTooltip() {
     return helpTooltips.at(shownTooltipIndex);
 }
 
+function hideCurrentHelpTooltip() {
+    // Clean up and hide currently-shown tooltip
+    const cleanup = cleanups.get(getShownTooltip());
+    cleanup?.();
+    cleanups.delete(getShownTooltip());
+    getShownTooltip().classList.add("invisible");
+}
+
 /**
  * Shows the next help tooltip in the help walkthrough, or stops the walkthrough
  * if there remain no more tooltips to show.
@@ -169,11 +177,7 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
         return;
     }
 
-    // Clean up and hide currently-shown tooltip
-    const cleanup = cleanups.get(getShownTooltip());
-    cleanup?.();
-    cleanups.delete(getShownTooltip());
-    getShownTooltip().classList.add("invisible");
+    hideCurrentHelpTooltip();
 
     // Show next tooltip
     showNextHelpTooltip();
