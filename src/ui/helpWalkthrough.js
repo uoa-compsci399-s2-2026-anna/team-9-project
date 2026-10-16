@@ -19,12 +19,25 @@ let isShowingHelp = false;
 let helpTooltipsToShow = [];
 let shownTooltip = null;
 
+/**
+ * Minimum number of pixels mouse must have moved for it to count as a drag
+ * (instead of a click).
+ */
+const DRAG_THRESHOLD_PX = 5;
+
+let mouseDownStartX = 0;
+let mouseDownStartY = 0;
+
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     if (isShowingHelp) {
         stopHelpWalkthrough();
     } else {
         startHelpWalkthrough();
     }
+});
+document.addEventListener("mousedown", (event) => {
+    mouseDownStartX = event.clientX;
+    mouseDownStartY = event.clientY;
 });
 document.addEventListener("click", (event) => {
     const availableSystemsButtons = document.getElementById(
@@ -50,7 +63,19 @@ bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
 const canvas = document.getElementById("simulation-canvas");
 
 if (canvas) {
-    canvas.addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
+    canvas.addEventListener("click", (event) => {
+        const deltaX = Math.abs(event.clientX - mouseDownStartX);
+        const deltaY = Math.abs(event.clientY - mouseDownStartY);
+
+        if (deltaX > DRAG_THRESHOLD_PX || deltaY > DRAG_THRESHOLD_PX) {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log("HERE");
+            return;
+        }
+
+        showNextHelpTooltipOrStopHelpWalkthrough();
+    });
 }
 
 /**
