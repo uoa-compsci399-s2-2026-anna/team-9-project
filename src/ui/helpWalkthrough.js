@@ -14,6 +14,7 @@ const cleanups = new Map();
 const tooltipTargets = new Map();
 
 const helpButtonTooltip = document.getElementById("help-button-tooltip");
+const canvas = document.getElementById("simulation-canvas");
 
 let isShowingHelp = false;
 let helpTooltipsToShow = [];
@@ -35,6 +36,8 @@ bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
         startHelpWalkthrough();
     }
 });
+bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
+
 document.addEventListener("mousedown", setMouseDownStartPositionVariables);
 document.addEventListener("click", (event) => {
     const availableSystemsButtons = document.getElementById(
@@ -55,9 +58,6 @@ document.addEventListener("click", (event) => {
 
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
-bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
-
-const canvas = document.getElementById("simulation-canvas");
 
 if (canvas) {
     canvas.addEventListener("click", (event) => {
