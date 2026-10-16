@@ -51,6 +51,12 @@ import {
     setDefaultViewRadii,
 } from "./viewRadius.js";
 import {
+    scene,
+    currentSystemGroup,
+    solarSystemGroup,
+    initScene,
+} from "./scene.js";
+import {
     getReferenceSystemData,
     setReferenceSystemData,
     getVisibleReferenceOrbitalDataValues,
@@ -58,15 +64,10 @@ import {
 import {
     habitableZone,
     habitableZoneMesh,
-    createHabitableZoneMesh,
     updateHabitableZoneTexture,
     flipHabitableZoneTexture,
 } from "./habitableZone.js";
-import {
-    referenceGrid,
-    createReferenceGrid,
-    updateReferenceGridScale,
-} from "./referenceGrid.js";
+import { referenceGrid, updateReferenceGridScale } from "./referenceGrid.js";
 import {
     updateCalendar,
     getElapsedDaysText,
@@ -90,7 +91,6 @@ let objectTypes;
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
 
-let scene;
 let renderer;
 let labelRenderer;
 
@@ -101,10 +101,6 @@ const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
 
 const raycaster = new THREE.Raycaster();
-
-const currentSystemGroup = new THREE.Group();
-const solarSystemGroup = new THREE.Group();
-solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
@@ -1116,22 +1112,6 @@ function updateHoverCursor(canvas) {
 
     // `name` is null if there is no object at the current pointer position
     canvas.style.cursor = name ? "pointer" : "default";
-}
-
-/**
- * Initialise the scene for the simulation renderer.
- */
-function initScene() {
-    createHabitableZoneMesh();
-    createReferenceGrid();
-
-    scene = new THREE.Scene();
-    scene.background = getTheme().background;
-    scene.add(new THREE.AmbientLight(0xffffff, 1));
-    scene.add(currentSystemGroup);
-    scene.add(solarSystemGroup);
-    scene.add(habitableZoneMesh);
-    scene.add(referenceGrid);
 }
 
 /**
