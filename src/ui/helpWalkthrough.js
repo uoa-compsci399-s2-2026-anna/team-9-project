@@ -159,7 +159,7 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
         return;
     }
 
-    // Show next tooltip
+    // Update index; hide current tooltip if necessary
     if (shownTooltipIndex === null) {
         shownTooltipIndex = 0;
     } else {
@@ -167,11 +167,13 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
         shownTooltipIndex++;
     }
 
+    // Stop walkthrough if at end
     if (shownTooltipIndex === helpTooltips.length) {
         stopHelpWalkthrough();
         return;
     }
 
+    // Show help tooltip
     getShownTooltip().classList.remove("invisible");
 }
 
