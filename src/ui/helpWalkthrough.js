@@ -37,6 +37,9 @@ document.addEventListener("click", (event) => {
 });
 document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
+document
+    .getElementById("simulation-canvas")
+    .addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
 
 /**
  * Begins the help walkthrough.
