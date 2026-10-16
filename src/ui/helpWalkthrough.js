@@ -1,10 +1,10 @@
 import {
     computePosition,
-    flip,
     autoUpdate,
     shift,
     offset,
     arrow,
+    autoPlacement,
 } from "@floating-ui/dom";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
@@ -142,7 +142,7 @@ function setTooltipPosition(tooltip) {
             strategy: "fixed",
             middleware: [
                 offset(remToPx(0.5)), // Offset tooltip from target
-                flip(), // Flip tooltip if out of bounds
+                autoPlacement(), // Flip tooltip if out of bounds
                 shift({ padding: remToPx(1) }), // Shift tooltip if out of bounds
                 arrow({ element: arrowOutline }), // Add arrow pointing to target
                 arrow({ element: arrowFill }), // Add arrow pointing to target
