@@ -24,6 +24,9 @@ bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
  * Begins the help walkthrough.
  */
 function startHelpWalkthrough() {
+    if (isShowingHelp) {
+        return;
+    }
     if (helpTooltipsToShow.length != 0) {
         return;
     }
