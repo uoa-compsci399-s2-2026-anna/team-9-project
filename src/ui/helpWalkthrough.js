@@ -9,7 +9,8 @@ import {
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
-let cleanups = new Map();
+const cleanups = new Map();
+const tooltipTargets = new Map();
 
 let isShowingHelp = false;
 let helpTooltipsToShow = [];
@@ -35,7 +36,6 @@ document.addEventListener("click", (event) => {
 
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
-document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
 
 /**
@@ -49,6 +49,10 @@ function startHelpWalkthrough() {
         return;
     }
 
+    document
+        .querySelectorAll("[data-help-tooltip]")
+        .forEach(setTooltipPosition);
+
     // Push all tooltips to list.
     document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
         helpTooltipsToShow.push(tooltip);
@@ -60,14 +64,18 @@ function startHelpWalkthrough() {
 function stopHelpWalkthrough() {
     helpTooltipsToShow = [];
     isShowingHelp = false;
-    shownTooltip.classList.add("invisible");
-    shownTooltip = null;
 
-    for (const [_, cleanup] of cleanups) {
-        cleanup();
+    if (shownTooltip) {
+        shownTooltip.classList.add("invisible");
+        shownTooltip = null;
     }
 
-    showNextHelpTooltip();
+    for (const cleanup of cleanups.values()) {
+        cleanup();
+    }
+    cleanups.clear();
+
+    // showNextHelpTooltip();
 }
 
 /**
@@ -95,7 +103,8 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
     }
 
     const cleanup = cleanups.get(shownTooltip);
-    cleanup();
+    cleanup?.();
+    cleanups.delete(shownTooltip);
     shownTooltip.classList.add("invisible");
 
     showNextHelpTooltip();
@@ -107,20 +116,12 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
  * @param {HTMLElement} tooltip The tooltip element's position to set.
  */
 function setTooltipPosition(tooltip) {
-    let target = tooltip.previousElementSibling;
+    let target = tooltipTargets.get(tooltip);
     let arrowOutline = tooltip.querySelector("[data-tooltip-arrow-outline]");
     let arrowFill = tooltip.querySelector("[data-tooltip-arrow-fill]");
 
-    const siblingCount = tooltip.parentElement.children.length - 1;
-
-    if (siblingCount > 1) {
-        console.warn(
-            "This tooltip has more than one sibling! Tooltips should only have one sibling element (the target element).",
-        );
-    }
-
     if (!target) {
-        target = tooltip.nextElementSibling;
+        target = tooltip.previousElementSibling ?? tooltip.nextElementSibling;
     }
 
     if (!target) {
@@ -130,7 +131,12 @@ function setTooltipPosition(tooltip) {
         return;
     }
 
-    document.body.append(tooltip);
+    tooltipTargets.set(tooltip, target);
+    if (tooltip.parentElement !== document.body) {
+        document.body.append(tooltip);
+    }
+
+    cleanups.get(tooltip)?.();
 
     /**
      * Updates the position of this tooltip.
