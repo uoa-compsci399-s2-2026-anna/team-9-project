@@ -15,10 +15,7 @@ let isShowingHelp = false;
 let helpTooltipsToShow = [];
 let shownTooltip = null;
 
-bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, (event) => {
-    event.detail.clickEvent.stopPropagation();
-    startHelpWalkthrough();
-});
+bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, startHelpWalkthrough);
 document.addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
 document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
 
