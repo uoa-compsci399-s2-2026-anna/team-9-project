@@ -112,7 +112,6 @@ function startHelpWalkthrough() {
         });
     }
 
-    // shownTooltipIndex = 0;
     isShowingHelp = true;
     showNextHelpTooltip();
 }
