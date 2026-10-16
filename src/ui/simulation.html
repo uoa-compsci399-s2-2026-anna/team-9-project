@@ -49,13 +49,7 @@
     <div
       class="ui-zoom flex h-full min-h-0 w-48 flex-col justify-end gap-2 in-[.font-accessible]:w-56"
     >
-      <div>
-        {% include "templates/objects-panel.html" %}
-        {% call help_tooltip() %}
-          <strong>Objects panel.</strong> Click here to see a list of the
-          objects in the simulation, and show or hide them.
-        {% endcall %}
-      </div>
+      {% include "templates/objects-panel.html" %}
 
       <div>
         {% include "templates/view-settings-panel.html" %}
