@@ -89,7 +89,7 @@ export const EVENTS = {
     },
     HELP_WALKTHROUGH: {
         NEXT: "help_walkthrough:next",
-        PREVIOUS: "help_walkthrough:preivous",
+        PREVIOUS: "help_walkthrough:previous",
         SKIP_ALL: "help_walkthrough:skip_all",
     },
 };
