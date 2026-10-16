@@ -74,9 +74,10 @@
     }}
   </div>
 
-  {% call help_tooltip() %}
-    <strong>This is the toolbar.</strong> Here, you can show this help
-    walkthrough, set light/dark mode, open settings, and go into fullscreen
-    mode.
-  {% endcall %}
+  {{
+    help_tooltip(
+      heading_text="This is the toolbar.",
+      body_text="Here, you can show this help walkthrough, set light/dark mode, open settings, and go into fullscreen mode."
+    )
+  }}
 {% endcall %}
