@@ -42,6 +42,7 @@ bus.subscribe(
     EVENTS.HELP_WALKTHROUGH.NEXT,
     showNextHelpTooltipOrStopHelpWalkthrough,
 );
+bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
 document.addEventListener("mousedown", setMouseDownStartPositionVariables);
@@ -148,6 +149,24 @@ function hideCurrentHelpTooltip() {
     getShownTooltip().classList.add("invisible");
 }
 
+function showPreviousHelpTooltip() {
+    if (
+        !isShowingHelp ||
+        shownTooltipIndex === 0 ||
+        shownTooltipIndex === null
+    ) {
+        return;
+    }
+
+    hideCurrentHelpTooltip();
+    shownTooltipIndex--;
+    showCurrentTooltip();
+}
+
+function showCurrentTooltip() {
+    getShownTooltip().classList.remove("invisible");
+}
+
 /**
  * Shows the next help tooltip in the help walkthrough, or stops the walkthrough
  * if there remain no more tooltips to show.
@@ -171,8 +190,7 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
         return;
     }
 
-    // Show help tooltip
-    getShownTooltip().classList.remove("invisible");
+    showCurrentTooltip();
 }
 
 /**
