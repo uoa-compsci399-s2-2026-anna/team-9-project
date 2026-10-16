@@ -31,11 +31,8 @@ import {
     calculateApoapsis,
     calculatePeriapsis,
     calculateAverageNormal,
-    calculateCameraDistanceToTargetProjection,
-    calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import {
-    FOV,
     cameraDefaults,
     cameraAnimationState,
     camera,
@@ -50,7 +47,6 @@ import {
     viewRadius,
     VIEW_RADIUS_MULTIPLIER,
     currentSystemDefaultViewRadius,
-    solarSystemDefaultViewRadius,
     updateViewRadius,
     setDefaultViewRadii,
 } from "./viewRadius.js";
@@ -66,6 +62,11 @@ import {
     updateHabitableZoneTexture,
     flipHabitableZoneTexture,
 } from "./habitableZone.js";
+import {
+    referenceGrid,
+    createReferenceGrid,
+    updateReferenceGridScale,
+} from "./referenceGrid.js";
 import {
     updateCalendar,
     getElapsedDaysText,
@@ -145,16 +146,6 @@ function getCurrentSystemColour(name, isDarkMode) {
     const fallbackColour = isDarkMode ? "white" : "black";
     return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
-
-// Size of the reference grid in AU when scale = 1.
-// This will be scaled when the camera zoom changes.
-const referenceGridSize = 1000;
-
-const referenceGridDivisions = 1000;
-const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
-const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
-const referenceGridOpacity = 0.5;
-let referenceGrid;
 
 // Star glow texture constants
 
@@ -929,67 +920,6 @@ bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
 });
 
 /**
- * Create a reference grid in the XY plane.
- */
-function createReferenceGrid() {
-    const referenceGridColor = getTheme().referenceGrid;
-    referenceGrid = new THREE.GridHelper(
-        referenceGridSize,
-        referenceGridDivisions,
-    );
-    referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
-    referenceGrid.material.color.set(referenceGridColor);
-    referenceGrid.material.transparent = true;
-    referenceGrid.material.opacity = referenceGridOpacity;
-    referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
-    referenceGrid.visible = simulationState.referenceGridShown;
-
-    updateReferenceGridScale(cameraDefaults.position, cameraDefaults.target);
-}
-
-/**
- * Update the scale of the reference grid based on the camera's distance to the target.
- *
- * The grid is scaled so that a fixed number of divisions are visible to the camera when looking at it
- * perpendicularly.
- *
- * @param {THREE.Vector3} cameraPosition The position of the camera
- * @param {THREE.Vector3} targetPosition The position of the camera's target
- */
-function updateReferenceGridScale(cameraPosition, targetPosition) {
-    const cameraDistanceToTargetProjection =
-        calculateCameraDistanceToTargetProjection(
-            cameraPosition,
-            targetPosition,
-        );
-
-    const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
-        FOV,
-        cameraDistanceToTargetProjection,
-        divisionsInView,
-    );
-
-    const coveredRange =
-        desiredReferenceGridDivisionSize * referenceGridDivisions;
-
-    let viewRadiusToCover = currentSystemDefaultViewRadius;
-    if (comparingToSolarSystem) {
-        viewRadiusToCover = Math.max(
-            viewRadiusToCover,
-            solarSystemDefaultViewRadius,
-        );
-    }
-
-    if (coveredRange < viewRadiusToCover * 2) return; // Don't scale if it doesn't cover the view radius
-
-    const scaleFactor =
-        desiredReferenceGridDivisionSize / referenceGridDivisionSize;
-    referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
-
-    bus.publish(EVENTS.SIM.UPDATE_GRID_SCALE, { value: scaleFactor });
-}
-
-/**
  * Update the positions of all objects in the current system.
  * Update the calendar to display the current simulation time.
  *
@@ -1192,6 +1122,9 @@ function updateHoverCursor(canvas) {
  * Initialise the scene for the simulation renderer.
  */
 function initScene() {
+    createHabitableZoneMesh();
+    createReferenceGrid();
+
     scene = new THREE.Scene();
     scene.background = getTheme().background;
     scene.add(new THREE.AmbientLight(0xffffff, 1));
@@ -1284,10 +1217,6 @@ export async function init(name) {
     initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
-
-    createHabitableZoneMesh();
-    createReferenceGrid();
-
     initScene();
 
     /**
