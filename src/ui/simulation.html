@@ -56,7 +56,15 @@
           objects in the simulation, and show or hide them.
         {% endcall %}
       </div>
-      {% include "templates/view-settings-panel.html" %}
+
+      <div>
+        {% include "templates/view-settings-panel.html" %}
+        {% call help_tooltip() %}
+          <strong>View settings panel.</strong> Click here to adjust the
+          simulation's view settings, including toggling the habitable zone, and
+          other simulation features.  
+        {% endcall %}
+      </div>
     </div>
 
     <!-- RHS controls -->
