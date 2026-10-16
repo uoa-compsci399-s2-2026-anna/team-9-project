@@ -113,7 +113,7 @@ function startHelpWalkthrough() {
     }
 
     isShowingHelp = true;
-    showNextHelpTooltip();
+    showNextHelpTooltipOrStopHelpWalkthrough();
 }
 
 function stopHelpWalkthrough() {
@@ -132,24 +132,6 @@ function stopHelpWalkthrough() {
     cleanups.clear();
 
     helpButtonTooltip.textContent = "Help";
-}
-
-/**
- * Shows the next help tooltip in the help walkthrough.
- */
-function showNextHelpTooltip() {
-    if (shownTooltipIndex === null) {
-        shownTooltipIndex = 0;
-    } else {
-        shownTooltipIndex++;
-    }
-
-    if (shownTooltipIndex === helpTooltips.length) {
-        stopHelpWalkthrough();
-        return;
-    }
-
-    getShownTooltip().classList.remove("invisible");
 }
 
 function getShownTooltip() {
@@ -177,10 +159,20 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
         return;
     }
 
-    hideCurrentHelpTooltip();
-
     // Show next tooltip
-    showNextHelpTooltip();
+    if (shownTooltipIndex === null) {
+        shownTooltipIndex = 0;
+    } else {
+        hideCurrentHelpTooltip();
+        shownTooltipIndex++;
+    }
+
+    if (shownTooltipIndex === helpTooltips.length) {
+        stopHelpWalkthrough();
+        return;
+    }
+
+    getShownTooltip().classList.remove("invisible");
 }
 
 /**
