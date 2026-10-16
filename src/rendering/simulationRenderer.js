@@ -1122,6 +1122,9 @@ function updateHoverCursor(canvas) {
  * Initialise the scene for the simulation renderer.
  */
 function initScene() {
+    createHabitableZoneMesh();
+    createReferenceGrid();
+
     scene = new THREE.Scene();
     scene.background = getTheme().background;
     scene.add(new THREE.AmbientLight(0xffffff, 1));
@@ -1214,10 +1217,6 @@ export async function init(name) {
     initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
-
-    createHabitableZoneMesh();
-    createReferenceGrid();
-
     initScene();
 
     /**
