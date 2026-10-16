@@ -1532,17 +1532,23 @@ export async function setObjectVisibility(name, value) {
         });
     }
 
-    // Don't reset the view when hiding an object
-    if (!value) {
-        return;
-    }
-
     await updateViewRadius(
         currentSystem,
         comparingToSolarSystem,
         habitableZoneMesh?.visible,
     );
     updateCameraAndControlsToViewRadius();
+
+    // When hiding an object, only reset the view if the camera is zoomed out further than the new max distance
+    if (!value) {
+        const cameraDistance = camera.position.distanceTo(controls.target);
+
+        if (cameraDistance > controls.maxDistance) {
+            resetView(false);
+        }
+
+        return;
+    }
 
     // Object's orbit cannot fit in view, so reset the view normally
     if (!fitViewToObjectOrbit(name)) {
