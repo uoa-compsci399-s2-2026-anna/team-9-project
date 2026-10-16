@@ -16,7 +16,13 @@ let isShowingHelp = false;
 let helpTooltipsToShow = [];
 let shownTooltip = null;
 
-bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, startHelpWalkthrough);
+bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
+    if (isShowingHelp) {
+        stopHelpWalkthrough();
+    } else {
+        startHelpWalkthrough();
+    }
+});
 document.addEventListener("click", (event) => {
     const availableSystemsButtons = document.getElementById(
         "available-systems-buttons",
