@@ -1,5 +1,6 @@
 {% from "components/button-with-tooltip.html" import button_with_tooltip %}
 {% from "components/container.html" import container %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 
 {% call container() %}
   <div class="flex gap-3">
@@ -71,4 +72,10 @@
       )
     }}
   </div>
+
+  {% call help_tooltip() %}
+    <strong>This is the toolbar.</strong> Here, you can show this help
+    walkthrough, set light/dark mode, open settings, and go into fullscreen
+    mode.
+  {% endcall %}
 {% endcall %}
