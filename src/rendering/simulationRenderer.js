@@ -1508,7 +1508,7 @@ function fitViewToHabitableZone() {
  *
  * @param {boolean} value Whether the habitable zone should be visible
  */
-export function setHabitableZoneVisibility(value) {
+export async function setHabitableZoneVisibility(value) {
     if (habitableZoneMesh) {
         habitableZoneMesh.visible = value;
     }
@@ -1519,6 +1519,7 @@ export function setHabitableZoneVisibility(value) {
         return;
     }
 
+    await updateViewRadius(currentSystem, comparingToSolarSystem, value);
     updateCameraAndControlsToViewRadius();
 
     fitViewToHabitableZone();
