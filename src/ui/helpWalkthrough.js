@@ -46,9 +46,12 @@ document.addEventListener("click", (event) => {
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
-document
-    .getElementById("simulation-canvas")
-    .addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
+
+const canvas = document.getElementById("simulation-canvas");
+
+if (canvas) {
+    canvas.addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
+}
 
 /**
  * Begins the help walkthrough.
