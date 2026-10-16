@@ -165,6 +165,7 @@ function showPreviousHelpTooltip() {
 
 function showCurrentTooltip() {
     getShownTooltip().classList.remove("invisible");
+    updateCurrentHelpTooltipProgressText();
 }
 
 /**
@@ -191,6 +192,11 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
     }
 
     showCurrentTooltip();
+}
+
+function updateCurrentHelpTooltipProgressText() {
+    getShownTooltip().querySelector("[data-progress-text]").textContent =
+        `${shownTooltipIndex + 1}/${helpTooltips.length}`;
 }
 
 /**
