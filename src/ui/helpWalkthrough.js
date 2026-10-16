@@ -66,7 +66,7 @@ function startHelpWalkthrough() {
 
     // Push all tooltips to list.
     document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-        const prioritiseOrder = tooltip.dataset.prioritiseOrder;
+        const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
 
         if (prioritiseOrder) {
             // Push to front (will be popped off first)
