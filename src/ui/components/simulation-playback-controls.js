@@ -13,8 +13,8 @@ const currentSystem = canvas.dataset.currentSystem;
 
 bus.subscribe(EVENTS.SIM.ADJUST_SPEED, updateStepButtonTooltips);
 bus.subscribe(EVENTS.SIM.ADJUST_SPEED_UNIT, updateStepButtonTooltips);
-bus.subscribe(EVENTS.SIM.INCREASE_SPEED, updateStepButtonTooltips)
-bus.subscribe(EVENTS.SIM.DECREASE_SPEED, updateStepButtonTooltips)
+bus.subscribe(EVENTS.SIM.INCREASE_SPEED, updateStepButtonTooltips);
+bus.subscribe(EVENTS.SIM.DECREASE_SPEED, updateStepButtonTooltips);
 
 updateStepButtonTooltips();
 
