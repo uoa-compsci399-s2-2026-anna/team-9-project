@@ -1457,7 +1457,7 @@ export async function hideSolarSystem() {
 }
 
 /**
- * Resets the view if the camera is zoomed out further than the current max distance.
+ * Resets the view if the camera is zoomed out further than the current maximum camera distance.
  */
 function resetViewIfBeyondMaxDistance() {
     const cameraDistance = camera.position.distanceTo(controls.target);
