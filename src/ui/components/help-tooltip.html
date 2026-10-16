@@ -1,7 +1,8 @@
 {%
   macro help_tooltip(
     auto_placement=true,
-    placement="top"
+    placement="top",
+    prioritise_order=false
   )
 %}
   <div
@@ -10,6 +11,7 @@
     class="pointer-events-none invisible absolute top-0 left-0 isolate z-50 w-80"
     data-placement="{{ placement }}"
     data-auto-placement="{{ auto_placement | tojson }}"
+    data-prioritise-order="{{ prioritise_order | tojson }}"
   >
     <!-- Arrow (for outline); z-0 -->
     <div

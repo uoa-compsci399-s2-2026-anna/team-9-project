@@ -66,7 +66,15 @@ function startHelpWalkthrough() {
 
     // Push all tooltips to list.
     document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-        helpTooltipsToShow.push(tooltip);
+        const prioritiseOrder = tooltip.dataset.prioritiseOrder;
+
+        if (prioritiseOrder) {
+            // Push to front (will be popped off first)
+            helpTooltipsToShow.unshift(tooltip);
+        } else {
+            // Push to back
+            helpTooltipsToShow.push(tooltip);
+        }
     });
 
     showNextHelpTooltip();
@@ -100,7 +108,8 @@ function showNextHelpTooltip() {
 
     isShowingHelp = true;
 
-    shownTooltip = helpTooltipsToShow.pop();
+    // Pop off first element
+    shownTooltip = helpTooltipsToShow.shift();
     shownTooltip.classList.remove("invisible");
 }
 
