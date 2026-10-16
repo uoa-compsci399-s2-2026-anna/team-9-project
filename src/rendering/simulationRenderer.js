@@ -318,6 +318,9 @@ function getObjectNameAt(clientX, clientY, canvas) {
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function onCanvasClick(event, canvas) {
+    // Close any open object information panel
+    bus.publish(EVENTS.SIM.CLOSE_OBJECT_INFO);
+
     const name = getObjectNameAt(event.clientX, event.clientY, canvas);
 
     if (!name) {
