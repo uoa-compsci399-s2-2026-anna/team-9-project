@@ -83,12 +83,19 @@
         {% endif %}
 
         <!-- Reset view button -->
-        {{
-          text_button(
-            "Reset view",
-            on_click_events=["sim:reset_view"]
-          )
-        }}
+        <div>
+          {{
+            text_button(
+              "Reset view",
+              on_click_events=["sim:reset_view"]
+            )
+          }}
+
+          {% call help_tooltip() %}
+            <strong>Reset view.</strong> Click here to reset the simulation to a
+            top-down view.
+          {% endcall %}
+        </div>
       {% endcall %}
     </div>
   </div>
