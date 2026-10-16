@@ -98,6 +98,23 @@ export function setSimulationSpeedUnit(system, unit) {
 }
 
 /**
+ * Increases/decreases simulation speed. Keeps existing units.
+ * @param {string} system Name of the system
+ * @param {Number} delta Amount to increase the simulation speed by
+ * @returns
+ */
+export function increaseSimulationSpeed(system, delta) {
+    const currentSpeed = simulationState.simulationSpeed[system];
+
+    if (currentSpeed === null) {
+        return;
+    }
+
+    simulationState.simulationSpeed[system] = currentSpeed + delta;
+    console.log(simulationState.simulationSpeed[system]);
+}
+
+/**
  * Gets the stored simulation time for a system.
  *
  * @param {string} system Name of the system
