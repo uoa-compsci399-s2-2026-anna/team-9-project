@@ -21,15 +21,16 @@ document.addEventListener("click", (event) => {
         "available-systems-buttons",
     );
 
-    // Stop help walkthrough if clicking the available systems buttons on the
-    // home screen. This prevents showing the next tooltip while the page 
-    // changes.
-    if (
-        availableSystemsButtons &&
-        availableSystemsButtons.contains(event.target)
-    ) {
-        stopHelpWalkthrough();
+    // Return if not on the home screen.
+    if (!availableSystemsButtons) {
         return;
+    }
+
+    // Stop help walkthrough if clicking the available systems buttons on the
+    // home screen. This prevents showing the next tooltip while the page
+    // changes.
+    if (availableSystemsButtons.contains(event.target)) {
+        stopHelpWalkthrough();
     }
 
     showNextHelpTooltipOrStopHelpWalkthrough();
