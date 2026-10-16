@@ -29,6 +29,19 @@
     class="pointer-events-auto fixed inset-0 z-0 h-screen w-screen"
   ></canvas>
 
+  <div
+    class="pointer-events-none fixed top-0 left-0 h-full w-full translate-x-1/2 translate-y-1/3"
+  >
+    <!-- Empty div which acts as the tooltip target. Needs w-fit otherwise target is not registered. -->
+    <div class="pointer-events-none w-fit"></div>
+
+    {% call help_tooltip(auto_placement=false, placement="top") %}
+      <strong>Simulation.</strong> This is the main simulation of OPIS. Click
+      and drag to rotate around. Shift click and drag to pan. Click on an object
+      to view information about it.
+    {% endcall %}
+  </div>
+
   <!-- Object information panel (absolute position) -->
   <div class="absolute top-1/2 right-0 z-10 -translate-y-1/2">
     <div class="ui-zoom">
