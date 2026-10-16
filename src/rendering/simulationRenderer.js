@@ -1504,7 +1504,7 @@ function fitViewToHabitableZone() {
 /**
  * Show or hide the habitable zone. Showing it zooms the camera so that the habitable zone fits in view.
  *
- * The camera does not move when theh habitable zone is hidden.
+ * The camera does not move when the habitable zone is hidden.
  *
  * @param {boolean} value Whether the habitable zone should be visible
  */
