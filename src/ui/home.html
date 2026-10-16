@@ -25,7 +25,10 @@
 
         <!-- Available systems -->
         <div class="mx-auto w-fit">
-          <div class="flex flex-wrap justify-items-center gap-6 max-lg:gap-4">
+          <div
+            class="flex flex-wrap justify-items-center gap-6 max-lg:gap-4"
+            id="available-systems-buttons"
+          >
             {% for system in systems %}
               <a
                 id="{{ system.name }}"

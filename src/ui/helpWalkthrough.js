@@ -16,7 +16,24 @@ let helpTooltipsToShow = [];
 let shownTooltip = null;
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, startHelpWalkthrough);
-document.addEventListener("click", showNextHelpTooltipOrStopHelpWalkthrough);
+document.addEventListener("click", (event) => {
+    const availableSystemsButtons = document.getElementById(
+        "available-systems-buttons",
+    );
+
+    // Stop help walkthrough if clicking the available systems buttons on the
+    // home screen. This prevents showing the next tooltip while the page 
+    // changes.
+    if (
+        availableSystemsButtons &&
+        availableSystemsButtons.contains(event.target)
+    ) {
+        stopHelpWalkthrough();
+        return;
+    }
+
+    showNextHelpTooltipOrStopHelpWalkthrough();
+});
 document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
 
