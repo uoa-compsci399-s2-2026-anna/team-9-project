@@ -1,8 +1,15 @@
-{% macro help_tooltip() %}
+{%
+  macro help_tooltip(
+    auto_placement=true,
+    placement="above"
+  )
+%}
   <div
     role="tooltip"
     data-help-tooltip
     class="pointer-events-none invisible absolute top-0 left-0 isolate z-50 w-80"
+    data-placement="{{ placement }}"
+    data-auto-placement="{{ auto_placement | tojson }}"
   >
     <!-- Arrow (for outline); z-0 -->
     <div
