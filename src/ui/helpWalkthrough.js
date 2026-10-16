@@ -12,6 +12,8 @@ import { EVENTS } from "../events/events.js";
 const cleanups = new Map();
 const tooltipTargets = new Map();
 
+const helpButtonTooltip = document.getElementById("help-button-tooltip");
+
 let isShowingHelp = false;
 let helpTooltipsToShow = [];
 let shownTooltip = null;
@@ -55,6 +57,8 @@ function startHelpWalkthrough() {
         return;
     }
 
+    helpButtonTooltip.textContent = "Skip walkthrough";
+
     document
         .querySelectorAll("[data-help-tooltip]")
         .forEach(setTooltipPosition);
@@ -81,7 +85,7 @@ function stopHelpWalkthrough() {
     }
     cleanups.clear();
 
-    // showNextHelpTooltip();
+    helpButtonTooltip.textContent = "Help";
 }
 
 /**
