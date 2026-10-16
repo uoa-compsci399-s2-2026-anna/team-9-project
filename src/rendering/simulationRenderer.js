@@ -49,7 +49,6 @@ import {
 import {
     viewRadius,
     VIEW_RADIUS_MULTIPLIER,
-    currentSystemDefaultViewRadius,
     updateViewRadius,
     setDefaultViewRadii,
 } from "./viewRadius.js";
@@ -64,6 +63,7 @@ import {
     setReferenceSystemData,
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
+import { objectSize, hitboxPadding, setObjectSize } from "./objects.js";
 import { createLabel } from "./objectLabels.js";
 import {
     habitableZone,
@@ -98,18 +98,11 @@ let lastSystemData = null;
 // Stores whether the user is currently dragging the camera
 let isDragging = false;
 
-const objectSizeMultiplier = 0.002;
-const hitboxPaddingMultiplier = 0.0005;
-
 const raycaster = new THREE.Raycaster();
 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
 const objectLabels = new Map();
-
-// Default size and colour of all the objects
-let objectSize;
-let hitboxPadding;
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
@@ -1128,10 +1121,7 @@ export async function init(name) {
         simulationState.habitableZoneShown,
     );
     await setDefaultViewRadii(currentSystem);
-
-    objectSize = currentSystemDefaultViewRadius * objectSizeMultiplier; // Set the object size
-    hitboxPadding = currentSystemDefaultViewRadius * hitboxPaddingMultiplier; // Set the hitbox padding size
-
+    setObjectSize();
     await updateInnermostPeriapsis(false);
 
     // Align the system's average normal with the up vector (Z-axis)
