@@ -41,6 +41,7 @@ bus.subscribe(
     EVENTS.HELP_WALKTHROUGH.NEXT,
     showNextHelpTooltipOrStopHelpWalkthrough,
 );
+bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
 document.addEventListener("mousedown", setMouseDownStartPositionVariables);
 document.addEventListener("click", (event) => {
