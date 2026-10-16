@@ -76,6 +76,18 @@ if (canvas) {
     });
 }
 
+document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+    const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
+
+    if (prioritiseOrder) {
+        // Push to front (will be popped off first)
+        helpTooltips.unshift(tooltip);
+    } else {
+        // Push to back
+        helpTooltips.push(tooltip);
+    }
+});
+
 function isClickEventDrag(event) {
     const deltaX = Math.abs(event.clientX - mouseDownStartX);
     const deltaY = Math.abs(event.clientY - mouseDownStartY);
@@ -93,24 +105,10 @@ function startHelpWalkthrough() {
 
     helpButtonTooltip.textContent = "Skip walkthrough";
 
+    // Register resize listeners to update tooltip positions
     document
         .querySelectorAll("[data-help-tooltip]")
         .forEach(setTooltipPosition);
-
-    if (helpTooltips.length === 0) {
-        // Push all tooltips to list.
-        document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-            const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
-
-            if (prioritiseOrder) {
-                // Push to front (will be popped off first)
-                helpTooltips.unshift(tooltip);
-            } else {
-                // Push to back
-                helpTooltips.push(tooltip);
-            }
-        });
-    }
 
     isShowingHelp = true;
     showNextHelpTooltipOrStopHelpWalkthrough();
