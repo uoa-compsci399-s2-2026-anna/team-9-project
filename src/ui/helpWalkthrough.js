@@ -37,6 +37,10 @@ bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     }
 });
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
+bus.subscribe(
+    EVENTS.HELP_WALKTHROUGH.NEXT,
+    showNextHelpTooltipOrStopHelpWalkthrough,
+);
 
 document.addEventListener("mousedown", setMouseDownStartPositionVariables);
 document.addEventListener("click", (event) => {
