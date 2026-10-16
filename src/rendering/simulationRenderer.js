@@ -1457,6 +1457,17 @@ export async function hideSolarSystem() {
 }
 
 /**
+ * Resets the view if the camera is zoomed out further than the current max distance.
+ */
+function resetViewIfBeyondMaxDistance() {
+    const cameraDistance = camera.position.distanceTo(controls.target);
+
+    if (cameraDistance > controls.maxDistance) {
+        resetView(false);
+    }
+}
+
+/**
  * Animate the camera so that the given object's orbit fills the view. Only
  * elliptical orbits can be fit in view.
  *
@@ -1502,8 +1513,9 @@ export function setHabitableZoneVisibility(value) {
         habitableZoneMesh.visible = value;
     }
 
-    // Don't move the camera when hiding the habitable zone
+    // When hiding the habitable zone, only reset the view if the camera is zoomed out further than the new max distance
     if (!value) {
+        resetViewIfBeyondMaxDistance();
         return;
     }
 
@@ -1565,12 +1577,7 @@ export async function setObjectVisibility(name, value) {
 
     // When hiding an object, only reset the view if the camera is zoomed out further than the new max distance
     if (!value) {
-        const cameraDistance = camera.position.distanceTo(controls.target);
-
-        if (cameraDistance > controls.maxDistance) {
-            resetView(false);
-        }
-
+        resetViewIfBeyondMaxDistance();
         return;
     }
 
