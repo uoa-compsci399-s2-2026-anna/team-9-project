@@ -50,15 +50,7 @@
       class="ui-zoom flex h-full min-h-0 w-48 flex-col justify-end gap-2 in-[.font-accessible]:w-56"
     >
       {% include "templates/objects-panel.html" %}
-
-      <div>
-        {% include "templates/view-settings-panel.html" %}
-        {% call help_tooltip() %}
-          <strong>View settings panel.</strong> Click here to adjust the
-          simulation's view settings, including toggling the habitable zone, and
-          other simulation features.
-        {% endcall %}
-      </div>
+      {% include "templates/view-settings-panel.html" %}
     </div>
 
     <!-- RHS controls -->
