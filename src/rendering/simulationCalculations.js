@@ -107,7 +107,7 @@ export function calculateOrbitRotationMatrix(Omega, inc, omega) {
  * @param {number} e Eccentricity of the orbit
  * @returns {number} The apoapsis distance
  */
-function calculateApoapsis(a, e) {
+export function calculateApoapsis(a, e) {
     return a * (1 + e);
 }
 
