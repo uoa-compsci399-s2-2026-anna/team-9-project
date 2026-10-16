@@ -35,10 +35,7 @@ bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
         startHelpWalkthrough();
     }
 });
-document.addEventListener("mousedown", (event) => {
-    mouseDownStartX = event.clientX;
-    mouseDownStartY = event.clientY;
-});
+document.addEventListener("mousedown", setMouseDownStartPositionVariables);
 document.addEventListener("click", (event) => {
     const availableSystemsButtons = document.getElementById(
         "available-systems-buttons",
@@ -69,8 +66,6 @@ if (canvas) {
 
         if (deltaX > DRAG_THRESHOLD_PX || deltaY > DRAG_THRESHOLD_PX) {
             event.preventDefault();
-            event.stopPropagation();
-            console.log("HERE");
             return;
         }
 
@@ -247,4 +242,9 @@ function remToPx(rem) {
     return (
         rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
     );
+}
+
+function setMouseDownStartPositionVariables(event) {
+    mouseDownStartX = event.clientX;
+    mouseDownStartY = event.clientY;
 }
