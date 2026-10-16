@@ -1513,14 +1513,14 @@ export async function setHabitableZoneVisibility(value) {
         habitableZoneMesh.visible = value;
     }
 
+    await updateViewRadius(currentSystem, comparingToSolarSystem, value);
+    updateCameraAndControlsToViewRadius();
+
     // When hiding the habitable zone, only reset the view if the camera is zoomed out further than the new max distance
     if (!value) {
         resetViewIfBeyondMaxDistance();
         return;
     }
-
-    await updateViewRadius(currentSystem, comparingToSolarSystem, value);
-    updateCameraAndControlsToViewRadius();
 
     fitViewToHabitableZone();
 }
