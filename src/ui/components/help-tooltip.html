@@ -1,5 +1,8 @@
 {%
   macro help_tooltip(
+    heading_text=none,
+    body_text=none,
+
     auto_placement=true,
     placement="top",
     prioritise_order=false
@@ -26,18 +29,38 @@
     ></div>
 
     <!-- Container (for background); z-10 -->
-    <div class="control bordered-light relative z-10 max-w-80 p-2">
-      <p class="invisible text-base">{{ caller() }}</p>
-      <br />
-      <p class="invisible text-sm italic">Click anywhere to continue...</p>
+    <div
+      class="control bordered-light bg-accent relative z-10 flex max-w-80 flex-col p-2"
+    >
+      {% if heading_text %}
+        <span class="invisible font-bold">{{ heading_text }}</span>
+      {% endif %}
+
+      {% if body_text %}
+        <span class="invisible text-sm">{{ body_text }}</span>
+      {% elif caller %}
+        <p class="invisible z-50">{{ caller() }}</p>
+      {% endif %}
+
+      <p class="text-secondary invisible text-sm italic">
+        Click to continue...
+      </p>
     </div>
 
     <!-- Text; z-30 -->
     <div
-      class="text-primary control absolute top-0 left-0 z-30 max-w-80 border-none bg-transparent p-2 text-base"
+      class="text-primary control absolute top-0 left-0 z-30 flex max-w-80 flex-col border-none bg-transparent p-2 text-base"
     >
-      <p class="z-50">{{ caller() }}</p>
-      <br />
+      {% if heading_text %}
+        <span class="font-bold">{{ heading_text }}</span>
+      {% endif %}
+
+      {% if body_text %}
+        <span class="text-sm">{{ body_text }}</span>
+      {% elif caller %}
+        <p class="z-50">{{ caller() }}</p>
+      {% endif %}
+
       <p class="text-secondary text-sm italic">Click to continue...</p>
     </div>
   </div>
