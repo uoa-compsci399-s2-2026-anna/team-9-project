@@ -13,10 +13,10 @@
   },
   "sim:increase_speed": {
     "key": "ArrowUp",
-    "label": "Up"
+    "label": "↑"
   },
   "sim:decrease_speed": {
     "key": "ArrowDown",
-    "label": "Down"
+    "label": "↓"
   }
 }
