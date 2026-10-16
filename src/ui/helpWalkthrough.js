@@ -138,7 +138,7 @@ function setTooltipPosition(tooltip) {
     function updatePosition() {
         // Compute the position of the tooltip using floating-ui
         computePosition(target, tooltip, {
-            placement: "bottom",
+            placement: "left",
             strategy: "fixed",
             middleware: [
                 offset(remToPx(0.5)), // Offset tooltip from target
