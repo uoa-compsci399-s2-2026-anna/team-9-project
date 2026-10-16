@@ -61,16 +61,20 @@ const canvas = document.getElementById("simulation-canvas");
 
 if (canvas) {
     canvas.addEventListener("click", (event) => {
-        const deltaX = Math.abs(event.clientX - mouseDownStartX);
-        const deltaY = Math.abs(event.clientY - mouseDownStartY);
-
-        if (deltaX > DRAG_THRESHOLD_PX || deltaY > DRAG_THRESHOLD_PX) {
+        if (isClickEventDrag(event)) {
             event.preventDefault();
             return;
         }
 
         showNextHelpTooltipOrStopHelpWalkthrough();
     });
+}
+
+function isClickEventDrag(event) {
+    const deltaX = Math.abs(event.clientX - mouseDownStartX);
+    const deltaY = Math.abs(event.clientY - mouseDownStartY);
+
+    return deltaX > DRAG_THRESHOLD_PX || deltaY > DRAG_THRESHOLD_PX;
 }
 
 /**
