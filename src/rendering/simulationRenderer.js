@@ -1605,17 +1605,45 @@ function resizeRendererToDisplaySize() {
 }
 
 /**
- * Finds the smallest periapsis (closest point to the centre) across all
- * non-star orbits that are visible by default.
+ * For the given orbital data, get the name of the star with the smallest periapsis.
+ *
+ * @param {Object} orbitalData Map of object name to orbital data
+ * @returns The name of the star with the smallest periapsis
+ */
+function findSmallestPeriapsisStarName(orbitalData) {
+    let starName = null;
+    let smallestPeriapsis = Infinity;
+
+    for (const [name, orbit] of Object.entries(orbitalData)) {
+        if (objectTypes[name] !== "star") {
+            continue;
+        }
+
+        const periapsis = calculatePeriapsis(orbit.a, orbit.e);
+
+        if (periapsis < smallestPeriapsis) {
+            smallestPeriapsis = periapsis;
+            starName = name;
+        }
+    }
+
+    return starName;
+}
+
+/**
+ * Finds the smallest periapsis (closest point to the centre) across all orbits whose
+ * corresponding object is visible by default, excluding the innermost star and the
+ * Sun (if the Solar System is being compared to).
  *
  * @param {boolean} comparing Whether the Solar System is being compared to or not
  */
 async function updateInnermostPeriapsis(comparing) {
-    // Don't check the periapsis of the stars in the current system
+    // Don't check the periapsis of the innermost star in the current system
     const systems = [
         {
             system: currentSystem,
-            isExcluded: (name) => objectTypes[name] === "star",
+            getExcludedName: (orbitalData) =>
+                findSmallestPeriapsisStarName(orbitalData),
         },
     ];
 
@@ -1623,17 +1651,21 @@ async function updateInnermostPeriapsis(comparing) {
         // Don't check the periapsis of the Sun
         systems.push({
             system: "Solar System",
-            isExcluded: (name) => name === "Sun",
+            getExcludedName: () => "Sun",
         });
     }
 
     let smallest = Infinity;
 
-    for (const { system, isExcluded } of systems) {
+    for (const { system, getExcludedName } of systems) {
         const data = await getReferenceSystemData(system);
+        const excludedName = getExcludedName(data.orbital_data);
 
         for (const [name, orbit] of Object.entries(data.orbital_data)) {
-            if (isObjectHiddenByDefault(system, name) || isExcluded(name)) {
+            if (
+                name === excludedName ||
+                isObjectHiddenByDefault(system, name)
+            ) {
                 continue;
             }
 
@@ -1646,11 +1678,10 @@ async function updateInnermostPeriapsis(comparing) {
 }
 
 /**
-/**
  * The largest scale an object may have so that its on screen radius stays
  * within a fraction of the innermost periapsis.
- * 
- * @param {boolean} isStar Whether the object is a star or not 
+ *
+ * @param {boolean} isStar Whether the object is a star or not
  * @returns The cap on the scale for an object
  */
 function getOrbitScaleCap(isStar) {
