@@ -1,8 +1,13 @@
 export const EVENTS = {
     SIM: {
         TOGGLE: "sim:toggle",
+
         ADJUST_SPEED: "sim:adjust_speed",
         ADJUST_SPEED_UNIT: "sim:adjust_speed_unit",
+
+        INCREASE_SPEED: "sim:increase_speed",
+        DECREASE_SPEED: "sim:decrease_speed",
+
         STEP_FORWARD: "sim:step_forward",
         STEP_BACK: "sim:step_back",
 

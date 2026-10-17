@@ -144,6 +144,9 @@ function adjustSpeedBy(delta) {
     publishSimulationSpeed(updatedSpeed);
 }
 
+bus.subscribe(EVENTS.SIM.INCREASE_SPEED, () => increaseSpeedButton.click());
+bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () => decreaseSpeedButton.click());
+
 attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(INCREASE_SPEED_STEP));
 attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
 

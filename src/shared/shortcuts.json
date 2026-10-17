@@ -10,5 +10,13 @@
   "sim:step_back": {
     "key": "ArrowLeft",
     "label": "←"
+  },
+  "sim:increase_speed": {
+    "key": "ArrowUp",
+    "label": "↑"
+  },
+  "sim:decrease_speed": {
+    "key": "ArrowDown",
+    "label": "↓"
   }
 }
