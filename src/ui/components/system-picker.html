@@ -16,9 +16,12 @@
       </a>
     </div>
 
-    {% call help_tooltip() %}
-      <strong>Home.</strong> Click here to return to the home page.
-    {% endcall %}
+    {{
+      help_tooltip(
+        heading_text="Home",
+        body_text="Click here to return to the home page."
+      )
+    }}
   {% endcall %}
 
   <!-- System selector -->
@@ -78,10 +81,12 @@
           </div>
         </div>
 
-        {% call help_tooltip() %}
-          <strong>System picker.</strong> Click here to switch between planetary
-          systems.
-        {% endcall %}
+        {{
+          help_tooltip(
+            heading_text="System picker",
+            body_text="Click here to switch between planetary systems."
+          )
+        }}
       </div>
     </div>
   {% endcall %}

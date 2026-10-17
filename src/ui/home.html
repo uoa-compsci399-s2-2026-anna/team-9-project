@@ -1,5 +1,5 @@
 {% from "components/logo.html" import logo %}
-{% from "components/help-tooltip.html" import help_tooltip %}
+{% from "components/help-tooltip.html" import help_tooltip with context %}
 {% extends "base.html" %}
 
 <!-- Page title -->
@@ -40,10 +40,12 @@
             {% endfor %}
           </div>
 
-          {% call help_tooltip() %}
-            <strong>This is the home menu.</strong> Here, you can select the
-            simulation which you want to investigate.
-          {% endcall %}
+          {{
+            help_tooltip(
+              heading_text="Home menu",
+              body_text="Here, you can select which simulation you wish to explore."
+            )
+          }}
         </div>
       </div>
     </div>

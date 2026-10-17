@@ -1,5 +1,5 @@
 {% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
-{% from "components/help-tooltip.html" import help_tooltip %}
+{% from "components/help-tooltip.html" import help_tooltip with context %}
 {% from "components/side-panel.html" import side_panel %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
@@ -35,18 +35,16 @@
     <!-- Empty div which acts as the tooltip target. Needs w-fit otherwise target is not registered. -->
     <div class="pointer-events-none w-fit"></div>
 
-    {%
-      call help_tooltip(
+    {{
+      help_tooltip(
+        heading_text="Simulation",
+        body_text="The simulation shows the stars, planets, and certain other objects of the current planetary system. Click and drag to rotate around. Shift click and drag to pan. Click on an object to learn more about it.",
+
         auto_placement=false,
         placement="top",
         prioritise_order=true
       )
-    %}
-      <strong>Simulation.</strong> This simulation shows the stars, planets, and
-      certain other objects of the current planetary system. Click and drag to
-      rotate around. Shift click and drag to pan. Click on an object to view
-      information about it.
-    {% endcall %}
+    }}
   </div>
 
   <!-- Object information panel (absolute position) -->
@@ -81,10 +79,12 @@
       <div class="pointer-events-auto mb-auto">
         {% include "templates/zoom-control.html" %}
 
-        {% call help_tooltip() %}
-          <strong>Zoom controls.</strong> Click to zoom in and out of the
-          simulation. You can also scroll to zoom.
-        {% endcall %}
+        {{
+          help_tooltip(
+            heading_text="Zoom controls",
+            body_text="Click to zoom in and out of the simulation. You can also scroll to zoom."
+          )
+        }}
       </div>
 
       <!-- Grid scale indicator -->
@@ -111,10 +111,12 @@
             )
           }}
 
-          {% call help_tooltip() %}
-            <strong>Reset view.</strong> Click here to reset the simulation to a
-            top-down view.
-          {% endcall %}
+          {{
+            help_tooltip(
+              heading_text="Reset view",
+              body_text="Click here to reset the simulation to a top-down view."
+            )
+          }}
         </div>
       {% endcall %}
     </div>

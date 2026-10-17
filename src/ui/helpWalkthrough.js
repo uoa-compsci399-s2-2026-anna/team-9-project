@@ -17,8 +17,9 @@ const helpButtonTooltip = document.getElementById("help-button-tooltip");
 const canvas = document.getElementById("simulation-canvas");
 
 let isShowingHelp = false;
-let helpTooltipsToShow = [];
-let shownTooltip = null;
+
+let helpTooltips = [];
+let shownTooltipIndex = null;
 
 /**
  * Minimum number of pixels mouse must have moved for it to count as a drag
@@ -37,6 +38,12 @@ bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     }
 });
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
+bus.subscribe(
+    EVENTS.HELP_WALKTHROUGH.NEXT,
+    showNextHelpTooltipOrStopHelpWalkthrough,
+);
+bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
+bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
 document.addEventListener("mousedown", setMouseDownStartPositionVariables);
 document.addEventListener("click", (event) => {
@@ -59,16 +66,17 @@ document.addEventListener("click", (event) => {
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
 
-if (canvas) {
-    canvas.addEventListener("click", (event) => {
-        if (isClickEventDrag(event)) {
-            event.preventDefault();
-            return;
-        }
+document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+    const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
 
-        showNextHelpTooltipOrStopHelpWalkthrough();
-    });
-}
+    if (prioritiseOrder) {
+        // Push to front (will be popped off first)
+        helpTooltips.unshift(tooltip);
+    } else {
+        // Push to back
+        helpTooltips.push(tooltip);
+    }
+});
 
 function isClickEventDrag(event) {
     const deltaX = Math.abs(event.clientX - mouseDownStartX);
@@ -84,41 +92,28 @@ function startHelpWalkthrough() {
     if (isShowingHelp) {
         return;
     }
-    if (helpTooltipsToShow.length != 0) {
-        return;
-    }
 
-    helpButtonTooltip.textContent = "Skip walkthrough";
+    helpButtonTooltip.textContent = "End walkthrough";
 
+    // Register resize listeners to update tooltip positions
     document
         .querySelectorAll("[data-help-tooltip]")
         .forEach(setTooltipPosition);
 
-    // Push all tooltips to list.
-    document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-        const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
-
-        if (prioritiseOrder) {
-            // Push to front (will be popped off first)
-            helpTooltipsToShow.unshift(tooltip);
-        } else {
-            // Push to back
-            helpTooltipsToShow.push(tooltip);
-        }
-    });
-
-    showNextHelpTooltip();
+    isShowingHelp = true;
+    showNextHelpTooltipOrStopHelpWalkthrough();
 }
 
 function stopHelpWalkthrough() {
-    helpTooltipsToShow = [];
     isShowingHelp = false;
+    shownTooltipIndex = null;
 
-    if (shownTooltip) {
-        shownTooltip.classList.add("invisible");
-        shownTooltip = null;
-    }
+    // Hide all tooltips
+    document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+        tooltip.classList.add("invisible");
+    });
 
+    // Clean up all tooltips (resize listeners)
     for (const cleanup of cleanups.values()) {
         cleanup();
     }
@@ -127,20 +122,39 @@ function stopHelpWalkthrough() {
     helpButtonTooltip.textContent = "Help";
 }
 
-/**
- * Shows the next help tooltip in the help walkthrough.
- */
-function showNextHelpTooltip() {
-    if (helpTooltipsToShow.length == 0) {
-        stopHelpWalkthrough();
+function getShownTooltip() {
+    if (shownTooltipIndex === null || !isShowingHelp) {
+        return null;
+    }
+
+    return helpTooltips.at(shownTooltipIndex);
+}
+
+function hideCurrentHelpTooltip() {
+    // Clean up and hide currently-shown tooltip
+    const cleanup = cleanups.get(getShownTooltip());
+    cleanup?.();
+    cleanups.delete(getShownTooltip());
+    getShownTooltip().classList.add("invisible");
+}
+
+function showPreviousHelpTooltip() {
+    if (
+        !isShowingHelp ||
+        shownTooltipIndex === 0 ||
+        shownTooltipIndex === null
+    ) {
         return;
     }
 
-    isShowingHelp = true;
+    hideCurrentHelpTooltip();
+    shownTooltipIndex--;
+    showCurrentTooltip();
+}
 
-    // Pop off first element
-    shownTooltip = helpTooltipsToShow.shift();
-    shownTooltip.classList.remove("invisible");
+function showCurrentTooltip() {
+    getShownTooltip().classList.remove("invisible");
+    updateCurrentHelpTooltipProgressText();
 }
 
 /**
@@ -152,12 +166,26 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
         return;
     }
 
-    const cleanup = cleanups.get(shownTooltip);
-    cleanup?.();
-    cleanups.delete(shownTooltip);
-    shownTooltip.classList.add("invisible");
+    // Update index; hide current tooltip if necessary
+    if (shownTooltipIndex === null) {
+        shownTooltipIndex = 0;
+    } else {
+        hideCurrentHelpTooltip();
+        shownTooltipIndex++;
+    }
 
-    showNextHelpTooltip();
+    // Stop walkthrough if at end
+    if (shownTooltipIndex === helpTooltips.length) {
+        stopHelpWalkthrough();
+        return;
+    }
+
+    showCurrentTooltip();
+}
+
+function updateCurrentHelpTooltipProgressText() {
+    getShownTooltip().querySelector("[data-progress-text]").textContent =
+        `${shownTooltipIndex + 1}/${helpTooltips.length}`;
 }
 
 /**
