@@ -45,7 +45,9 @@ bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
 document.addEventListener("mousedown", setMouseDownStartPositionVariables);
-document.addEventListener("click", (event) => {
+
+// mouseup to be consistent with behaviour in simulation screen
+document.addEventListener("mouseup", (event) => {
     const availableSystemsButtons = document.getElementById(
         "available-systems-buttons",
     );
