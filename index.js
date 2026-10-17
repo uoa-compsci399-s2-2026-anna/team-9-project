@@ -544,9 +544,14 @@ function setUpAutoUpdates() {
                 defaultId: 0,
                 cancelId: 1,
                 message: `A new version of OPIS (${info.version}) is available.`,
-                detail: "Download the new version from our releases page and install it over your current one.",
+                detail: `You have version ${app.getVersion()}. Download the new version from our releases page and install it over your current one.`,
             });
-            if (response === 0) shell.openExternal(RELEASES_URL);
+
+            // Check if the user chose to open the download page
+            if (response === 0) {
+                shell.openExternal(RELEASES_URL);
+            }
+
             return;
         }
 
@@ -556,8 +561,10 @@ function setUpAutoUpdates() {
             defaultId: 0,
             cancelId: 1,
             message: `A new version of OPIS (${info.version}) is available.`,
-            detail: "You can keep using OPIS while it downloads. You'll be asked before anything is installed.",
+            detail: `You have version ${app.getVersion()}. You can keep using OPIS while it downloads. You'll be asked before anything is installed.`,
         });
+
+        // Check if the user chose to download the update
         if (response === 0) {
             autoUpdater.downloadUpdate();
         }
@@ -572,12 +579,14 @@ function setUpAutoUpdates() {
         mainWindow?.setProgressBar(-1);
         const { response } = await dialog.showMessageBox(mainWindow, {
             type: "info",
-            buttons: ["Restart and update", "Later"],
+            buttons: ["Restart now", "Later"],
             defaultId: 0,
             cancelId: 1,
             message: `OPIS ${info.version} has finished downloading.`,
-            detail: "OPIS needs to restart to finish updating. Any running simulation will be closed.",
+            detail: "OPIS needs to restart to finish updating.",
         });
+
+        // Check if the user chose to restart OPIS
         if (response === 0) {
             stopPythonProcess(); // Release the file locks before the installer runs
             autoUpdater.quitAndInstall();
