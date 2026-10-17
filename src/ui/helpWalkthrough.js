@@ -66,17 +66,6 @@ document.addEventListener("click", (event) => {
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
 
-if (canvas) {
-    canvas.addEventListener("click", (event) => {
-        if (isClickEventDrag(event)) {
-            event.preventDefault();
-            return;
-        }
-
-        showNextHelpTooltipOrStopHelpWalkthrough();
-    });
-}
-
 document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
     const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
 
