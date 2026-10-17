@@ -104,7 +104,7 @@ function startHelpWalkthrough() {
         return;
     }
 
-    helpButtonTooltip.textContent = "Skip walkthrough";
+    helpButtonTooltip.textContent = "End walkthrough";
 
     // Register resize listeners to update tooltip positions
     document
