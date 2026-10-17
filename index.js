@@ -584,7 +584,23 @@ function setUpAutoUpdates() {
         }
     });
 
-    autoUpdater.checkForUpdates();
+    autoUpdater.checkForUpdates()
+        .then((result) => {
+            log.info(
+                `UPDATER: Check completed. Current version: ${app.getVersion()}`
+            );
+
+            if (result) {
+                log.info(
+                    `UPDATER: Latest version reported: ${
+                        result.updateInfo.version
+                    }`
+                );
+            }
+        })
+        .catch((err) => {
+            log.error(`UPDATER: Check failed: ${err.stack || err}`);
+        });
 }
 
 const url = new Promise(spawnPythonProcess);
