@@ -28,12 +28,12 @@ else:
 app = FastAPI()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
 
-# Load the config file
-with open(os.path.join(base_path, "config.json")) as f:
-    config = json.load(f)
+# Load the systems file
+with open(os.path.join(base_path, "systems.json")) as f:
+    loaded_systems = json.load(f)
 
-# Get the systems in the config
-all_systems = config["systems"]
+# Get the systems from the loaded file
+all_systems = loaded_systems["systems"]
 
 # Load the settings schema
 with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
