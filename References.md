@@ -1,4 +1,4 @@
-# `config.json` References
+# `systems.json` References
 
 ## Solar System
 
