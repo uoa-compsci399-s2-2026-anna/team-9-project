@@ -14,7 +14,6 @@ const cleanups = new Map();
 const tooltipTargets = new Map();
 
 const helpButtonTooltip = document.getElementById("help-button-tooltip");
-const canvas = document.getElementById("simulation-canvas");
 
 let isShowingHelp = false;
 
