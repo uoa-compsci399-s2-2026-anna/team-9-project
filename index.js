@@ -532,7 +532,7 @@ function setUpAutoUpdates() {
 
     autoUpdater.logger = log;
     autoUpdater.autoDownload = false; // Nothing downloads until the user agrees
-    autoUpdater.autoInstallOnAppQuit = false; // Nothing installs until the user clicks Restart
+    autoUpdater.autoInstallOnAppQuit = true;
 
     autoUpdater.on("error", (err) => log.error(`UPDATER: ${err}`));
 
