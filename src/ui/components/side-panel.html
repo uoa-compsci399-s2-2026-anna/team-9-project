@@ -7,7 +7,8 @@
     toggle_event,
     panel_button_id=None,
     min_h="min-h-0",
-    help_tooltip_content=None
+    help_tooltip_heading_text=none,
+    help_tooltip_body_text=none
   )
 %}
   <div
@@ -36,10 +37,13 @@
         <span class="flex-1 text-left">{{ panel_title_text }}</span>
       </button>
 
-      {% if help_tooltip_content %}
-        {% call help_tooltip() %}
-          {{ help_tooltip_content | safe }}
-        {% endcall %}
+      {% if help_tooltip_heading_text and help_tooltip_body_text %}
+        {{
+          help_tooltip(
+            heading_text=help_tooltip_heading_text,
+            body_text=help_tooltip_body_text
+          )
+        }}
       {% endif %}
     </div>
 
