@@ -20,15 +20,6 @@ let isShowingHelp = false;
 let helpTooltips = [];
 let shownTooltipIndex = null;
 
-/**
- * Minimum number of pixels mouse must have moved for it to count as a drag
- * (instead of a click).
- */
-const DRAG_THRESHOLD_PX = 5;
-
-let mouseDownStartX = 0;
-let mouseDownStartY = 0;
-
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     if (isShowingHelp) {
         stopHelpWalkthrough();
@@ -78,13 +69,6 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
         helpTooltips.push(tooltip);
     }
 });
-
-function isClickEventDrag(event) {
-    const deltaX = Math.abs(event.clientX - mouseDownStartX);
-    const deltaY = Math.abs(event.clientY - mouseDownStartY);
-
-    return deltaX > DRAG_THRESHOLD_PX || deltaY > DRAG_THRESHOLD_PX;
-}
 
 /**
  * Begins the help walkthrough.
