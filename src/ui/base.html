@@ -24,7 +24,7 @@
     <title>{% block title %}{% endblock %}</title>
   </head>
 
-  <body class="overflow-auto select-none">
+  <body class="overflow-hidden select-none">
     <div
       class="text-primary fill-primary flex h-screen min-h-[500px] min-w-[775px] flex-col bg-white p-5 dark:bg-black"
     >
@@ -59,7 +59,8 @@
           "three": "https://ga.jspm.io/npm:three@0.185.1/build/three.module.js",
           "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/",
           "luxon": "https://cdn.jsdelivr.net/npm/luxon@3.5.0/build/es6/luxon.js",
-          "three.meshline": "/src/vendor/meshline.js"
+          "three.meshline": "/src/vendor/meshline.js",
+          "@floating-ui/dom": "https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.8.0/+esm"
         }
       }
     </script>
