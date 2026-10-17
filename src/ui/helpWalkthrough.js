@@ -5,6 +5,7 @@ import {
     offset,
     arrow,
     autoPlacement,
+    flip,
 } from "@floating-ui/dom";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
@@ -65,7 +66,15 @@ function startHelpWalkthrough() {
 
     // Push all tooltips to list.
     document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-        helpTooltipsToShow.push(tooltip);
+        const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
+
+        if (prioritiseOrder) {
+            // Push to front (will be popped off first)
+            helpTooltipsToShow.unshift(tooltip);
+        } else {
+            // Push to back
+            helpTooltipsToShow.push(tooltip);
+        }
     });
 
     showNextHelpTooltip();
@@ -99,7 +108,8 @@ function showNextHelpTooltip() {
 
     isShowingHelp = true;
 
-    shownTooltip = helpTooltipsToShow.pop();
+    // Pop off first element
+    shownTooltip = helpTooltipsToShow.shift();
     shownTooltip.classList.remove("invisible");
 }
 
@@ -130,6 +140,9 @@ function setTooltipPosition(tooltip) {
     let arrowOutline = tooltip.querySelector("[data-tooltip-arrow-outline]");
     let arrowFill = tooltip.querySelector("[data-tooltip-arrow-fill]");
 
+    let placement = tooltip.dataset.placement;
+    let doUseAutoPlacement = JSON.parse(tooltip.dataset.autoPlacement);
+
     if (!target) {
         target = tooltip.previousElementSibling ?? tooltip.nextElementSibling;
     }
@@ -154,11 +167,11 @@ function setTooltipPosition(tooltip) {
     function updatePosition() {
         // Compute the position of the tooltip using floating-ui
         computePosition(target, tooltip, {
-            placement: "left",
+            placement: placement,
             strategy: "fixed",
             middleware: [
                 offset(remToPx(0.5)), // Offset tooltip from target
-                autoPlacement(), // Flip tooltip if out of bounds
+                doUseAutoPlacement ? autoPlacement() : flip(), // Flip tooltip if out of bounds
                 shift({ padding: remToPx(1) }), // Shift tooltip if out of bounds
                 arrow({ element: arrowOutline }), // Add arrow pointing to target
                 arrow({ element: arrowFill }), // Add arrow pointing to target
