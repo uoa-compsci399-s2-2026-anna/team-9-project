@@ -22,12 +22,20 @@ jobs:
               out/*.AppImage
               out/*.deb
               out/*.rpm
+              out/latest-linux.yml
           - os: windows-latest
             platform: windows
-            installer_glob: out/*.exe
+            installer_glob: |
+              out/*.exe
+              out/*.exe.blockmap
+              out/latest.yml
           - os: macos-latest
             platform: mac
-            installer_glob: out/*.dmg
+            installer_glob: |
+              out/*.dmg
+              out/*.zip
+              out/*.blockmap
+              out/latest-mac.yml
 
     runs-on: ${{ matrix.os }}
 
