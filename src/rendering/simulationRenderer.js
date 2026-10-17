@@ -15,7 +15,6 @@ import {
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
-    setFormattedSimulationDate,
     setElapsedText,
 } from "../shared/simulationState.js";
 import { settings } from "../shared/settingsState.js";
@@ -29,13 +28,11 @@ import {
     isAngleBetween,
     calculateProgressDistance,
     calculateOrbitRotationMatrix,
+    calculateApoapsis,
     calculatePeriapsis,
     calculateAverageNormal,
-    calculateCameraDistanceToTargetProjection,
-    calculateReferenceGridDivisionSize,
 } from "./simulationCalculations.js";
 import {
-    FOV,
     cameraDefaults,
     cameraAnimationState,
     camera,
@@ -44,14 +41,21 @@ import {
     initOrUpdateCamera,
     initOrUpdateControls,
     animateCamera,
+    animateCameraToFitRadius,
 } from "./simulationCameraAndControls.js";
 import {
     viewRadius,
+    VIEW_RADIUS_MULTIPLIER,
     currentSystemDefaultViewRadius,
-    solarSystemDefaultViewRadius,
     updateViewRadius,
     setDefaultViewRadii,
 } from "./viewRadius.js";
+import {
+    scene,
+    currentSystemGroup,
+    solarSystemGroup,
+    initScene,
+} from "./scene.js";
 import {
     getReferenceSystemData,
     setReferenceSystemData,
@@ -60,18 +64,18 @@ import {
 import {
     habitableZone,
     habitableZoneMesh,
-    createHabitableZoneMesh,
     updateHabitableZoneTexture,
     flipHabitableZoneTexture,
 } from "./habitableZone.js";
+import { referenceGrid, updateReferenceGridScale } from "./referenceGrid.js";
 import {
     updateCalendar,
-    formatSimulationDate,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
 import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
 
 let timer;
 
@@ -87,7 +91,6 @@ let objectTypes;
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
 
-let scene;
 let renderer;
 let labelRenderer;
 
@@ -98,10 +101,6 @@ const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
 
 const raycaster = new THREE.Raycaster();
-
-const currentSystemGroup = new THREE.Group();
-const solarSystemGroup = new THREE.Group();
-solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
 const objectMeshes = new Map();
 const orbitalLines = new Map();
@@ -114,8 +113,8 @@ let hitboxPadding;
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 // Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height)
-const ORBIT_LINE_WIDTH_PROPORTION = 0.02;
-const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.01;
+const ORBIT_LINE_WIDTH_PROPORTION = 0.025;
+const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.02;
 const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 
 /**
@@ -126,7 +125,7 @@ const comparisonOverlayColour = {
     dark: "#c3911c",
     light: "#7d5c12",
 };
-const comparisonOrbitOpacity = 0.5;
+const comparisonOrbitOpacity = 0.8;
 const comparisonLabelOpacity = 0.8;
 
 /**
@@ -143,16 +142,6 @@ function getCurrentSystemColour(name, isDarkMode) {
     const fallbackColour = isDarkMode ? "white" : "black";
     return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
 }
-
-// Size of the reference grid in AU when scale = 1.
-// This will be scaled when the camera zoom changes.
-const referenceGridSize = 1000;
-
-const referenceGridDivisions = 1000;
-const referenceGridDivisionSize = referenceGridSize / referenceGridDivisions;
-const divisionsInView = 10; // Number of divisions visible when viewing the grid perpendicularly
-const referenceGridOpacity = 0.5;
-let referenceGrid;
 
 // Star glow texture constants
 
@@ -193,14 +182,6 @@ let innermostPeriapsis = Infinity;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
-
-// Earliest simulation time allowed is 1 January of year 1 (UTC)
-const MIN_SIMULATION_TIME = (() => {
-    const date = new Date(0);
-    date.setUTCFullYear(1, 0, 1);
-    date.setUTCHours(0, 0, 0, 0);
-    return date.getTime();
-})();
 
 /**
  * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
@@ -324,6 +305,9 @@ function getObjectNameAt(clientX, clientY, canvas) {
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function onCanvasClick(event, canvas) {
+    // Close any open object information panel
+    bus.publish(EVENTS.SIM.CLOSE_OBJECT_INFO);
+
     const name = getObjectNameAt(event.clientX, event.clientY, canvas);
 
     if (!name) {
@@ -392,6 +376,16 @@ function createGlowTexture(colour) {
  * @param {string} colour CSS colour string used for this object's label
  */
 function createOrUpdateObjectMesh(name, position, group, colour) {
+    // Don't create object mesh in the comparison overlay
+    // for objects that are hidden by default in the Solar System
+    if (
+        comparingToSolarSystem &&
+        group === solarSystemGroup &&
+        isObjectHiddenByDefault("Solar System", name)
+    ) {
+        return;
+    }
+
     let mesh = objectMeshes.get(name);
 
     if (!mesh) {
@@ -418,8 +412,8 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
             mesh.add(glowSprite);
         }
 
-        if (comparingToSolarSystem && group === solarSystemGroup) {
-            mesh.visible = !isObjectHiddenByDefault("Solar System", name);
+        if (group === solarSystemGroup) {
+            mesh.visible = comparingToSolarSystem;
         } else {
             mesh.visible = !isObjectHidden(currentSystem, name);
         }
@@ -578,32 +572,30 @@ function ndcScalarToScreenScalar(ndcDimension) {
 }
 
 /**
- * Determines whether an object's orbit should be visible. An orbit should be visible if the
- * orbit lines are visible and the object is visible.
+ * Determines whether an object's orbit should be visible. An orbit should be visible if
+ * orbit lines are set as visible and the object has not been hidden in the current system.
  *
  * Given visibility values take precedence over saved simulation state (since this state
  * may not have been synced yet).
  *
  * @param {string} objectName Name of the object associated with the orbit
- * @param {string} [system=currentSystem] The system associated with the object
+ * @param {string} currentSystem The current system being rendered
  * @param {Object} [options] Visibility values
  * @param {boolean} [options.orbitsVisible] Whether orbits are visible
  * @param {boolean} [options.objectVisible] Whether the object is visible
- * @param {boolean} [options.useDefault=false] Whether to check the object's default visibility
- * instead of its current visibility
  * @returns {boolean} Whether the orbit should be visible
  */
 function shouldShowOrbit(
     objectName,
-    system = currentSystem,
-    { orbitsVisible, objectVisible, useDefault = false } = {},
+    currentSystem,
+    { orbitsVisible, objectVisible } = {},
 ) {
     const areOrbitsShown = orbitsVisible ?? simulationState.orbitsShown;
-    const isObjectShown =
-        objectVisible ??
-        (useDefault
-            ? !isObjectHiddenByDefault(system, objectName)
-            : !isObjectHidden(system, objectName));
+    const isObjectHiddenInCurrentSystem = isObjectHidden(
+        currentSystem,
+        objectName,
+    );
+    const isObjectShown = objectVisible ?? !isObjectHiddenInCurrentSystem;
 
     return areOrbitsShown && isObjectShown;
 }
@@ -657,6 +649,16 @@ function getOrbitLineWidth(isComparison) {
  * @param {string} colour CSS colour string used for this orbit's line
  */
 function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
+    // Don't create orbital line in the comparison overlay
+    // for objects that are hidden by default in the Solar System
+    if (
+        comparingToSolarSystem &&
+        group === solarSystemGroup &&
+        isObjectHiddenByDefault("Solar System", name)
+    ) {
+        return;
+    }
+
     const { a, e, inc, Omega, omega, f } = orbitalData;
 
     if (e === 1) return; // Parabolic orbits are not supported for now
@@ -702,10 +704,8 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
         // Render above habitable zone to prevent z fighting
         line.renderOrder = 1;
 
-        if (comparingToSolarSystem && group === solarSystemGroup) {
-            line.visible = shouldShowOrbit(name, "Solar System", {
-                useDefault: true,
-            });
+        if (group === solarSystemGroup) {
+            line.visible = comparingToSolarSystem;
         } else {
             line.visible = shouldShowOrbit(name, currentSystem);
         }
@@ -812,7 +812,7 @@ const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
     Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
 
 const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MIN_WIDTH, 1 - distance);
+    Math.max(ORBIT_LINE_MIN_WIDTH, Math.cos((Math.PI * distance) / 2));
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -914,67 +914,6 @@ bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
     // Update simulation to redraw orbit lines with new width/opacity profile
     updateSimulation();
 });
-
-/**
- * Create a reference grid in the XY plane.
- */
-function createReferenceGrid() {
-    const referenceGridColor = getTheme().referenceGrid;
-    referenceGrid = new THREE.GridHelper(
-        referenceGridSize,
-        referenceGridDivisions,
-    );
-    referenceGrid.geometry.rotateX(Math.PI / 2); // Rotate the grid to lie in the XY plane
-    referenceGrid.material.color.set(referenceGridColor);
-    referenceGrid.material.transparent = true;
-    referenceGrid.material.opacity = referenceGridOpacity;
-    referenceGrid.material.vertexColors = false; // Use a single colour for the grid lines
-    referenceGrid.visible = simulationState.referenceGridShown;
-
-    updateReferenceGridScale(cameraDefaults.position, cameraDefaults.target);
-}
-
-/**
- * Update the scale of the reference grid based on the camera's distance to the target.
- *
- * The grid is scaled so that a fixed number of divisions are visible to the camera when looking at it
- * perpendicularly.
- *
- * @param {THREE.Vector3} cameraPosition The position of the camera
- * @param {THREE.Vector3} targetPosition The position of the camera's target
- */
-function updateReferenceGridScale(cameraPosition, targetPosition) {
-    const cameraDistanceToTargetProjection =
-        calculateCameraDistanceToTargetProjection(
-            cameraPosition,
-            targetPosition,
-        );
-
-    const desiredReferenceGridDivisionSize = calculateReferenceGridDivisionSize(
-        FOV,
-        cameraDistanceToTargetProjection,
-        divisionsInView,
-    );
-
-    const coveredRange =
-        desiredReferenceGridDivisionSize * referenceGridDivisions;
-
-    let viewRadiusToCover = currentSystemDefaultViewRadius;
-    if (comparingToSolarSystem) {
-        viewRadiusToCover = Math.max(
-            viewRadiusToCover,
-            solarSystemDefaultViewRadius,
-        );
-    }
-
-    if (coveredRange < viewRadiusToCover * 2) return; // Don't scale if it doesn't cover the view radius
-
-    const scaleFactor =
-        desiredReferenceGridDivisionSize / referenceGridDivisionSize;
-    referenceGrid.scale.set(scaleFactor, scaleFactor, scaleFactor);
-
-    bus.publish(EVENTS.SIM.UPDATE_GRID_SCALE, { value: scaleFactor });
-}
 
 /**
  * Update the positions of all objects in the current system.
@@ -1176,19 +1115,6 @@ function updateHoverCursor(canvas) {
 }
 
 /**
- * Initialise the scene for the simulation renderer.
- */
-function initScene() {
-    scene = new THREE.Scene();
-    scene.background = getTheme().background;
-    scene.add(new THREE.AmbientLight(0xffffff, 1));
-    scene.add(currentSystemGroup);
-    scene.add(solarSystemGroup);
-    scene.add(habitableZoneMesh);
-    scene.add(referenceGrid);
-}
-
-/**
  * Initialise the label renderer for the simulation renderer.
  * @param {HTMLCanvasElement} canvas The canvas element to render on
  */
@@ -1217,7 +1143,7 @@ function initTimer() {
  */
 export async function init(name) {
     currentSystem = name;
-    currentSimulationTime = getSimulationTime(name);
+    currentSimulationTime = clampSimulationTime(getSimulationTime(name));
 
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone.start = systemInfo["habitable zone"].start;
@@ -1271,10 +1197,6 @@ export async function init(name) {
     initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
-
-    createHabitableZoneMesh();
-    createReferenceGrid();
-
     initScene();
 
     /**
@@ -1299,17 +1221,29 @@ export async function init(name) {
 }
 
 /**
- * Clamp a simulation time so it never goes before the minimum simulation time.
+ * Clamp a simulation time so it stays between the minimum and maximum simulation times.
+ * Publishes LIMIT_REACHED if the time had to be clamped
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    return Math.max(time, MIN_SIMULATION_TIME);
+    const clampedTime = THREE.MathUtils.clamp(
+        time,
+        MIN_SIMULATION_TIME,
+        MAX_SIMULATION_TIME,
+    );
+
+    if (clampedTime !== time) {
+        bus.publish(EVENTS.SIM.LIMIT_REACHED);
+    }
+    return clampedTime;
 }
 
 export function stepForward() {
-    currentSimulationTime += getSimulationSpeedMilliseconds(currentSystem);
+    currentSimulationTime = clampSimulationTime(
+        currentSimulationTime + getSimulationSpeedMilliseconds(currentSystem),
+    );
     updateSimulation();
 }
 
@@ -1330,14 +1264,8 @@ export function setSimulationTimeToTime(time) {
     updateSimulation();
 }
 
-export async function resetView(topDown = true) {
+async function updateCameraAndControlsToViewRadius() {
     const canvas = renderer.domElement;
-
-    await updateViewRadius(
-        currentSystem,
-        comparingToSolarSystem,
-        habitableZoneMesh?.visible,
-    );
 
     // Update the camera and controls for the new view radius
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
@@ -1350,6 +1278,15 @@ export async function resetView(topDown = true) {
         cameraAndControlsSettings,
         createControlsChangeHandler(viewRadius),
     );
+}
+
+export async function resetView(topDown = true) {
+    await updateViewRadius(
+        currentSystem,
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible,
+    );
+    updateCameraAndControlsToViewRadius();
 
     // Animate to the default controls target
     cameraAnimationState.target.copy(cameraDefaults.target);
@@ -1431,12 +1368,73 @@ export async function hideSolarSystem() {
     updateSimulation();
 }
 
-export function setHabitableZoneVisibility(value) {
+/**
+ * Resets the view if the camera is zoomed out further than the current maximum camera distance.
+ */
+function resetViewIfBeyondMaxDistance() {
+    const cameraDistance = camera.position.distanceTo(controls.target);
+
+    if (cameraDistance > controls.maxDistance) {
+        resetView(false);
+    }
+}
+
+/**
+ * Animate the camera so that the given object's orbit fills the view. Only
+ * elliptical orbits can be fit in view.
+ *
+ * @param {string} name Name of the object whose orbit to frame
+ * @returns {boolean} Whether the orbit could be fit in view
+ */
+function fitViewToObjectOrbit(name) {
+    const orbitalData = lastSystemData?.[currentSystem]?.orbital_data?.[name];
+
+    if (!orbitalData || orbitalData.e >= 1) {
+        return false;
+    }
+
+    const apoapsis = calculateApoapsis(orbitalData.a, orbitalData.e);
+
+    // The radius the camera needs to fit in view
+    const effectiveRadius = apoapsis * VIEW_RADIUS_MULTIPLIER;
+
+    animateCameraToFitRadius(effectiveRadius, objectSize);
+
+    return true;
+}
+
+/**
+ * Animate the camera so that the habitable zone fits in view.
+ */
+function fitViewToHabitableZone() {
+    // The radius the camera needs to fit in view
+    const effectiveRadius = habitableZone.end * VIEW_RADIUS_MULTIPLIER;
+
+    animateCameraToFitRadius(effectiveRadius, objectSize);
+}
+
+/**
+ * Show or hide the habitable zone. Showing it zooms the camera so that the habitable zone fits in view.
+ *
+ * The camera does not move when the habitable zone is hidden.
+ *
+ * @param {boolean} value Whether the habitable zone should be visible
+ */
+export async function setHabitableZoneVisibility(value) {
     if (habitableZoneMesh) {
         habitableZoneMesh.visible = value;
     }
 
-    resetView(false);
+    await updateViewRadius(currentSystem, comparingToSolarSystem, value);
+    updateCameraAndControlsToViewRadius();
+
+    // When hiding the habitable zone, only reset the view if the camera is zoomed out further than the new max distance
+    if (!value) {
+        resetViewIfBeyondMaxDistance();
+        return;
+    }
+
+    fitViewToHabitableZone();
 }
 
 export function setLabelsVisibility(value) {
@@ -1459,7 +1457,18 @@ export function setReferenceGridVisibility(value) {
     }
 }
 
-export function setObjectVisibility(name, value) {
+/**
+ * Show or hide an object and its orbit.
+ *
+ * On showing an object, its orbit is fit in view. If the object cannot be
+ * fit in view (orbit is non-elliptical), then the entire view is reset.
+ *
+ * The camera view does not change on hiding an object.
+ *
+ * @param {string} name Name of the object
+ * @param {boolean} value Whether the object should be visible
+ */
+export async function setObjectVisibility(name, value) {
     const mesh = objectMeshes.get(name);
     if (mesh) {
         mesh.visible = value;
@@ -1472,7 +1481,23 @@ export function setObjectVisibility(name, value) {
         });
     }
 
-    resetView(false);
+    await updateViewRadius(
+        currentSystem,
+        comparingToSolarSystem,
+        habitableZoneMesh?.visible,
+    );
+    updateCameraAndControlsToViewRadius();
+
+    // When hiding an object, only reset the view if the camera is zoomed out further than the new max distance
+    if (!value) {
+        resetViewIfBeyondMaxDistance();
+        return;
+    }
+
+    // Object's orbit cannot fit in view, so reset the view normally
+    if (!fitViewToObjectOrbit(name)) {
+        resetView(false);
+    }
 }
 
 export function setFontSize(size) {
@@ -1580,17 +1605,45 @@ function resizeRendererToDisplaySize() {
 }
 
 /**
- * Finds the smallest periapsis (closest point to the centre) across all
- * non-star orbits that are visible by default.
+ * For the given orbital data, get the name of the star with the smallest periapsis.
+ *
+ * @param {Object} orbitalData Map of object name to orbital data
+ * @returns The name of the star with the smallest periapsis
+ */
+function findSmallestPeriapsisStarName(orbitalData) {
+    let starName = null;
+    let smallestPeriapsis = Infinity;
+
+    for (const [name, orbit] of Object.entries(orbitalData)) {
+        if (objectTypes[name] !== "star") {
+            continue;
+        }
+
+        const periapsis = calculatePeriapsis(orbit.a, orbit.e);
+
+        if (periapsis < smallestPeriapsis) {
+            smallestPeriapsis = periapsis;
+            starName = name;
+        }
+    }
+
+    return starName;
+}
+
+/**
+ * Finds the smallest periapsis (closest point to the centre) across all orbits whose
+ * corresponding object is visible by default, excluding the innermost star and the
+ * Sun (if the Solar System is being compared to).
  *
  * @param {boolean} comparing Whether the Solar System is being compared to or not
  */
 async function updateInnermostPeriapsis(comparing) {
-    // Don't check the periapsis of the stars in the current system
+    // Don't check the periapsis of the innermost star in the current system
     const systems = [
         {
             system: currentSystem,
-            isExcluded: (name) => objectTypes[name] === "star",
+            getExcludedName: (orbitalData) =>
+                findSmallestPeriapsisStarName(orbitalData),
         },
     ];
 
@@ -1598,17 +1651,21 @@ async function updateInnermostPeriapsis(comparing) {
         // Don't check the periapsis of the Sun
         systems.push({
             system: "Solar System",
-            isExcluded: (name) => name === "Sun",
+            getExcludedName: () => "Sun",
         });
     }
 
     let smallest = Infinity;
 
-    for (const { system, isExcluded } of systems) {
+    for (const { system, getExcludedName } of systems) {
         const data = await getReferenceSystemData(system);
+        const excludedName = getExcludedName(data.orbital_data);
 
         for (const [name, orbit] of Object.entries(data.orbital_data)) {
-            if (isObjectHiddenByDefault(system, name) || isExcluded(name)) {
+            if (
+                name === excludedName ||
+                isObjectHiddenByDefault(system, name)
+            ) {
                 continue;
             }
 
@@ -1621,11 +1678,10 @@ async function updateInnermostPeriapsis(comparing) {
 }
 
 /**
-/**
  * The largest scale an object may have so that its on screen radius stays
  * within a fraction of the innermost periapsis.
- * 
- * @param {boolean} isStar Whether the object is a star or not 
+ *
+ * @param {boolean} isStar Whether the object is a star or not
  * @returns The cap on the scale for an object
  */
 function getOrbitScaleCap(isStar) {
@@ -1717,8 +1773,10 @@ async function renderFrame(timestamp) {
         // Measure the change in time in seconds since the last frame
         const deltaTime = timer.getDelta();
 
-        currentSimulationTime +=
-            getSimulationSpeedMilliseconds(currentSystem) * deltaTime;
+        currentSimulationTime = clampSimulationTime(
+            currentSimulationTime +
+                getSimulationSpeedMilliseconds(currentSystem) * deltaTime,
+        );
 
         // Update the simulation but do not bypass the calendar update throttle
         updateSimulation(false);

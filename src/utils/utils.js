@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { settings } from "../shared/settingsState.js";
 
 // Unit conversions into milliseconds
 const UNIT_TO_MS = {
@@ -75,30 +74,66 @@ export const TIMEZONE_MAP = {
     NZT: "Pacific/Auckland",
 };
 
+// Fallback time zone
+export const FALLBACK_TIME_ZONE = "UTC";
+
+// Earliest simulation time allowed is 1 January of year 1 (UTC)
+export const MIN_SIMULATION_TIME = (() => {
+    const date = new Date(0);
+    date.setUTCFullYear(1, 0, 1);
+    date.setUTCHours(0, 0, 0, 0);
+    return date.getTime();
+})();
+
+// Latest simulation time allowed is 31 December 9999 00:00 (UTC)
+export const MAX_SIMULATION_TIME = (() => {
+    const date = new Date(0);
+    date.setUTCFullYear(9999, 11, 31);
+    date.setUTCHours(0, 0, 0, 0);
+    return date.getTime();
+})();
+
 /**
- * Converts a datetime-local string into an epoch timestamp, using the given
+ * Converts a datetime string into an epoch timestamp, using the given
  * time zone to interpret it.
- * @param {string} dateString A date/time string in "yyyy-MM-ddTHH:mm" format
+ * @param {string} dateString A date/time string in "dd-MM-yyyy hh:mm a" format
  * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
  * @returns {number} Epoch time in milliseconds
  */
 export function convertToEpoch(dateString, timeZone) {
-    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? "UTC";
-    return DateTime.fromISO(dateString, { zone: formattedTimeZone }).toMillis();
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
+    return DateTime.fromFormat(dateString, "dd-MM-yyyy hh:mm a", {
+        zone: formattedTimeZone,
+    }).toMillis();
+}
+
+/**
+ * Formats an epoch timestamp as a string in the given time zone;
+ * the inverse of `convertToEpoch`.
+ * @param {number} epochMs Epoch time in milliseconds
+ * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
+ * @returns {string} The formatted date string as "dd-MM-yyyy hh:mm a"
+ */
+export function formatInTimeZone(epochMs, timeZone) {
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
+    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat(
+        "dd-MM-yyyy hh:mm a",
+    );
 }
 
 /**
  * @param {Date} date A `Date` object
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
  * @returns Formatted date/time string in the format taken by
  * `<input type="datetime-local">` (yyyy-MM-dd'T'HH:mm), respecting the time
  * zone setting.
  */
-export function formatDate(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function formatDate(date, timeZone) {
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
 
     // Use Sweden time format ("sv"), which is in yyyy-MM-dd HH:mm
     return new Intl.DateTimeFormat("sv", {
-        timeZone: timeZone,
+        timeZone: formattedTimeZone,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -112,13 +147,14 @@ export function formatDate(date) {
 
 /**
  * @param {Date} date A `Date` object
- * @returns The date portion (yyyy-MM-dd) of `date`, in the current time zone
+ * @param {string} timeZone The calendar's time zone setting (e.g., "UTC", "NZT")
+ * @returns The date portion (yyyy-MM-dd) of `date`, in the given time zone
  */
-export function dateOnly(date) {
-    var timeZone = TIMEZONE_MAP[settings.timeZone];
+export function dateOnly(date, timeZone) {
+    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
 
     return new Intl.DateTimeFormat("sv", {
-        timeZone: timeZone,
+        timeZone: formattedTimeZone,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",

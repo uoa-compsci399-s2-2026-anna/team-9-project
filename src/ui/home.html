@@ -1,4 +1,5 @@
 {% from "components/logo.html" import logo %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 {% extends "base.html" %}
 
 <!-- Page title -->
@@ -24,7 +25,10 @@
 
         <!-- Available systems -->
         <div class="mx-auto w-fit">
-          <div class="flex flex-wrap justify-items-center gap-6 max-lg:gap-4">
+          <div
+            class="flex flex-wrap justify-items-center gap-6 max-lg:gap-4"
+            id="available-systems-buttons"
+          >
             {% for system in systems %}
               <a
                 id="{{ system.name }}"
@@ -35,6 +39,11 @@
               </a>
             {% endfor %}
           </div>
+
+          {% call help_tooltip() %}
+            <strong>This is the home menu.</strong> Here, you can select the
+            simulation which you want to investigate.
+          {% endcall %}
         </div>
       </div>
     </div>
@@ -59,4 +68,5 @@
     defer
   ></script>
   <script type="module" src="/src/ui/toolbar.js" defer></script>
+  <script type="module" src="/src/ui/helpWalkthrough.js" defer></script>
 {% endblock %}

@@ -1,10 +1,16 @@
 export const EVENTS = {
     SIM: {
         TOGGLE: "sim:toggle",
+
         ADJUST_SPEED: "sim:adjust_speed",
         ADJUST_SPEED_UNIT: "sim:adjust_speed_unit",
+
+        INCREASE_SPEED: "sim:increase_speed",
+        DECREASE_SPEED: "sim:decrease_speed",
+
         STEP_FORWARD: "sim:step_forward",
         STEP_BACK: "sim:step_back",
+
         RESET_VIEW: "sim:reset_view",
         HABITABLE_ZONE_TOGGLE: "sim:habitable_zone_toggle",
         ORBITS_TOGGLE: "sim:orbits_toggle",
@@ -21,6 +27,8 @@ export const EVENTS = {
          * When the calendar is changed (i.e. when the user selects a new date-time).
          */
         CALENDAR_CHANGE: "sim:calendar_change",
+
+        LIMIT_REACHED: "sim:limit_reached",
 
         /**
          * When the 'Now' button is clicked.
@@ -43,6 +51,8 @@ export const EVENTS = {
 
         /** When the home button is clicked. */
         HOME: "toolbar:home",
+
+        HELP_BUTTON_CLICK: "toolbar:help_button_click",
     },
     SETTINGS: {
         TIME_ZONE_SELECT: "settings:time_zone_select",

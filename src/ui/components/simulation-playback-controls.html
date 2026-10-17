@@ -1,7 +1,9 @@
 {% from "components/button-with-tooltip.html" import button_with_tooltip with context %}
 {% from "components/input-with-tooltip.html" import input_with_tooltip %}
+{% from "components/input-with-tooltip.html" import input_with_tooltip %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 
 <div class="z-10 flex flex-col bg-transparent">
   <div class="grid w-full grid-cols-3 items-stretch">
@@ -21,11 +23,11 @@
 
           <!-- Simulation timestamp / date picker -->
           <div class="text-left">
-            <div class="flex items-center text-lg">
+            <div class="flex items-center">
               {% call input_with_tooltip(tooltip_text="Select a date and time") %}
                 <input
                   type="text"
-                  class="calendar w-50 rounded-md pl-1.5 text-left tabular-nums in-[.font-accessible]:w-52"
+                  class="calendar w-50 rounded-md pl-1.5 text-left text-lg tabular-nums in-[.font-accessible]:w-52"
                   name="calendar"
                   value="{{ sim_date }}"
                   data-timezone="{{ settings.timeZone }}"
@@ -45,6 +47,13 @@
             </p>
           </div>
         </div>
+      {% endcall %}
+
+      {% call help_tooltip() %}
+        <strong>Simulation time controls.</strong> This shows the simulation
+        timestamp. Click on the calendar to set the simulation to any point in
+        time, or click the 'Reset to now' button to reset the simulation to the
+        current time.
       {% endcall %}
     </div>
 
@@ -93,6 +102,11 @@
           )
         }}
       {% endcall %}
+
+      {% call help_tooltip() %}
+        <strong>Playback controls.</strong> Click these to play/pause the
+        simulation, and step forward/back in time.
+      {% endcall %}
     </div>
 
     <!-- Speed adjustment cluster -->
@@ -109,7 +123,10 @@
                 tooltip_text="Decrease speed",
                 svg_path="M18 12.998H6a1 1 0 0 1 0-2h12a1 1 0 0 1 0 2",
                 button_id="decrease-speed-button",
-                tooltip_position="above"
+                tooltip_position="above",
+
+                on_click_events=["sim:decrease_speed"],
+                repeat_event_on_hold=true
               )
             }}
 
@@ -128,7 +145,10 @@
                 tooltip_text="Increase speed",
                 svg_path="M18 12.998h-5v5a1 1 0 0 1-2 0v-5H6a1 1 0 0 1 0-2h5v-5a1 1 0 0 1 2 0v5h5a1 1 0 0 1 0 2",
                 button_id="increase-speed-button",
-                tooltip_position="above"
+                tooltip_position="above",
+
+                on_click_events=["sim:increase_speed"],
+                repeat_event_on_hold=true
               )
             }}
           </div>
@@ -145,6 +165,11 @@
 
           <p class="text-secondary">per second</p>
         </div>
+      {% endcall %}
+
+      {% call help_tooltip() %}
+        <strong>Simulation speed adjuster.</strong> Adjust how fast the
+        simulation plays by setting the speed and unit.
       {% endcall %}
     </div>
   </div>

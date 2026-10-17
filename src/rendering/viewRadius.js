@@ -5,7 +5,7 @@ import {
 } from "./simulationCalculations.js";
 import { habitableZone } from "./habitableZone.js";
 
-const VIEW_RADIUS_MULTIPLIER = 1.3;
+export const VIEW_RADIUS_MULTIPLIER = 1.3;
 
 export let viewRadius;
 

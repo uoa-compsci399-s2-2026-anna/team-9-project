@@ -1,4 +1,5 @@
 {% from "components/side-panel-checkbox.html" import side_panel_checkbox %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 {% from "components/side-panel.html" import side_panel %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
@@ -27,6 +28,26 @@
     data-current-system="{{ current_system.name }}"
     class="pointer-events-auto fixed inset-0 z-0 h-screen w-screen"
   ></canvas>
+
+  <div
+    class="pointer-events-none fixed top-0 left-0 h-full w-full translate-x-1/2 translate-y-1/3"
+  >
+    <!-- Empty div which acts as the tooltip target. Needs w-fit otherwise target is not registered. -->
+    <div class="pointer-events-none w-fit"></div>
+
+    {%
+      call help_tooltip(
+        auto_placement=false,
+        placement="top",
+        prioritise_order=true
+      )
+    %}
+      <strong>Simulation.</strong> This simulation shows the stars, planets, and
+      certain other objects of the current planetary system. Click and drag to
+      rotate around. Shift click and drag to pan. Click on an object to view
+      information about it.
+    {% endcall %}
+  </div>
 
   <!-- Object information panel (absolute position) -->
   <div class="absolute top-1/2 right-0 z-10 -translate-y-1/2">
@@ -59,7 +80,13 @@
       <!-- Zoom control -->
       <div class="pointer-events-auto mb-auto">
         {% include "templates/zoom-control.html" %}
+
+        {% call help_tooltip() %}
+          <strong>Zoom controls.</strong> Click to zoom in and out of the
+          simulation. You can also scroll to zoom.
+        {% endcall %}
       </div>
+
       <!-- Grid scale indicator -->
       <p id="grid-scale-text" class="text-secondary pr-2 text-sm">AU/square</p>
 
@@ -76,12 +103,19 @@
         {% endif %}
 
         <!-- Reset view button -->
-        {{
-          text_button(
-            "Reset view",
-            on_click_events=["sim:reset_view"]
-          )
-        }}
+        <div>
+          {{
+            text_button(
+              "Reset view",
+              on_click_events=["sim:reset_view"]
+            )
+          }}
+
+          {% call help_tooltip() %}
+            <strong>Reset view.</strong> Click here to reset the simulation to a
+            top-down view.
+          {% endcall %}
+        </div>
       {% endcall %}
     </div>
   </div>
@@ -137,11 +171,6 @@
     src="/src/ui/components/object-information-panel.js"
     defer
   ></script>
-  <script
-    type="module"
-    src="/src/events/triggers/object-information-panel-triggers.js"
-    defer
-  ></script>
   <script type="module" src="/src/ui/templates/objects-panel.js" defer></script>
   <script
     type="module"
@@ -158,4 +187,5 @@
     src="/src/ui/components/simulation-playback-controls.js"
     defer
   ></script>
+  <script type="module" src="/src/ui/helpWalkthrough.js" defer></script>
 {% endblock %}

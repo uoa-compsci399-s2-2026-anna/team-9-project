@@ -49,6 +49,35 @@ export let controls; // Will be initialized in initOrUpdateControls
 let lastControlsChangeHandler; // Store the controls change handler to remove when updating controls
 
 /**
+ * Calculate the minimum distance the controls allow between the camera and
+ * its target.
+ *
+ * @param {number} objectSize The size of the object
+ * @returns {number} The minimum distance for the controls
+ */
+function calculateControlsMinDistance(objectSize) {
+    return objectSize * CONTROLS_MIN_MULTIPLIER;
+}
+
+/**
+ * Calculate how far the camera must be from its target for the given radius to
+ * fit in view, without being closer than the controls allow.
+ *
+ * @param {number} viewRadius The radius of view to fit within the camera
+ * @param {number} objectSize The size of the object
+ * @returns {number} The camera distance
+ */
+export function calculateFitDistance(viewRadius, objectSize) {
+    // Ensure the camera distance is slightly greater than controls min distance
+    const epsilon = 1e-10;
+
+    return Math.max(
+        calculateCameraDistance(FOV, viewRadius),
+        calculateControlsMinDistance(objectSize) + epsilon,
+    );
+}
+
+/**
  * Calculate the camera and controls settings based on the view radius.
  *
  * @param {number} viewRadius The radius of view to fit within the camera
@@ -56,14 +85,8 @@ let lastControlsChangeHandler; // Store the controls change handler to remove wh
  * @returns {Object} The camera and controls settings
  */
 export function calculateCameraAndControlsSettings(viewRadius, objectSize) {
-    const controlsMinDistance = objectSize * CONTROLS_MIN_MULTIPLIER;
-
-    // Camera distance must be at least the minimum distance for the controls
-    const epsilon = 1e-10; // Ensure the camera distance is slightly greater than controls min distance
-    const cameraDistance = Math.max(
-        calculateCameraDistance(FOV, viewRadius),
-        controlsMinDistance + epsilon,
-    );
+    const controlsMinDistance = calculateControlsMinDistance(objectSize);
+    const cameraDistance = calculateFitDistance(viewRadius, objectSize);
 
     // Controls max distance must be at least camera distance * max multiplier,
     // and must be able to zoom by at least CONTROLS_MIN_ZOOM_FACTOR
@@ -149,6 +172,25 @@ export function initOrUpdateControls(
     }
     lastControlsChangeHandler = controlsChangeHandler;
     controls.addEventListener("change", controlsChangeHandler);
+}
+
+/**
+ * Animate the camera so that the given radius fits in view.
+ *
+ * @param {number} radius The radius around the target to fit in view
+ * @param {number} objectSize The size of the object
+ */
+export function animateCameraToFitRadius(radius, objectSize) {
+    const distance = calculateFitDistance(radius, objectSize);
+
+    const direction = camera.position.clone().sub(controls.target).normalize();
+
+    cameraAnimationState.target.copy(cameraDefaults.target);
+    cameraAnimationState.position.copy(
+        cameraDefaults.target.clone().add(direction.multiplyScalar(distance)),
+    );
+    cameraAnimationState.currentStep = 0;
+    cameraAnimationState.isAnimating = true;
 }
 
 export function animateCamera() {
