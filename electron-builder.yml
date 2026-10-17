@@ -31,9 +31,9 @@ electronFuses:
 win:
   target: nsis
   icon: src/assets/app-icon/opis.ico
+  artifactName: "${productName}-${version}-windows-${arch}.${ext}"
 nsis:
   oneClick: true
-  artifactName: "${productName}-Setup-${version}.${ext}"
 
 mac:
   target: [dmg, zip]
@@ -45,9 +45,9 @@ mac:
 
 linux:
   target: [AppImage, deb, rpm]
-  icon: src/assets/app-icon/linux
+  icon: src/assets/app-icon/png-sizes
   executableName: opis
   syncDesktopName: true
   category: Education
   maintainer: "Team 9 JEDEJ"
-  artifactName: "${productName}-${version}-linux.${ext}"
+  artifactName: "${productName}-${version}-linux-${arch}.${ext}"
