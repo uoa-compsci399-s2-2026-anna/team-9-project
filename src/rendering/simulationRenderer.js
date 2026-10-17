@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import {
     CSS2DRenderer,
     CSS2DObject,
@@ -94,8 +93,7 @@ let lastSystemData = null;
 let renderer;
 let labelRenderer;
 
-// Stores whether the user is currently dragging the camera
-let isDragging = false;
+const DRAG_THRESHOLD = 5;
 
 const objectSizeMultiplier = 0.002;
 const hitboxPaddingMultiplier = 0.0005;
@@ -303,6 +301,7 @@ function getObjectNameAt(clientX, clientY, canvas) {
  *
  * @param {MouseEvent} event The click event
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
+ * @return Whether or not an object was clicked
  */
 function onCanvasClick(event, canvas) {
     // Close any open object information panel
@@ -311,16 +310,11 @@ function onCanvasClick(event, canvas) {
     const name = getObjectNameAt(event.clientX, event.clientY, canvas);
 
     if (!name) {
-        return;
+        return false;
     }
 
-    // Stop the further propagation of this click event (fired when the object
-    // is clicked) so that the same event isn't intercepted by the event
-    // listener which closes the Object information panel when the user clicks
-    // off the panel.
-    event.stopPropagation();
-
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
+    return true;
 }
 
 /**
@@ -1066,24 +1060,65 @@ function createControlsChangeHandler(viewRadius) {
  * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
  * objects on the scene.
  *
+ * A threshold of DRAG_THRESHOLD px is used so that accidental minute drags don't register
+ * as a click.
+ *
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- * @param {OrbitControls} controls The orbit controls for the scene
  */
-function initRaycastingEvents(canvas, controls) {
-    controls.addEventListener("change", () => {
-        isDragging = true;
-    });
+function initRaycastingEvents(canvas) {
+    let pointerStart = null;
+    let hasDragged = false;
+    let objectWasClicked = false;
 
     // Detect when the user holds their mouse down on the canvas
-    canvas.addEventListener("pointerdown", () => {
-        isDragging = false;
+    canvas.addEventListener("pointerdown", (event) => {
+        pointerStart = {
+            x: event.clientX,
+            y: event.clientY,
+        };
+    });
+
+    canvas.addEventListener("pointermove", (event) => {
+        if (!pointerStart || hasDragged) {
+            return;
+        }
+
+        const dx = event.clientX - pointerStart.x;
+        const dy = event.clientY - pointerStart.y;
+
+        // The user has moved their mouse more than DRAG_THRESHOLD from where they initially held it down
+        if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+            hasDragged = true;
+        }
+    });
+
+    canvas.addEventListener("pointerup", (event) => {
+        if (!pointerStart) {
+            return;
+        }
+
+        if (!hasDragged) {
+            objectWasClicked = onCanvasClick(event, canvas);
+        }
+
+        pointerStart = null;
+        hasDragged = false;
     });
 
     canvas.addEventListener("click", (event) => {
-        // Handle the event as long as the user isn't dragging the camera
-        if (!isDragging) {
-            onCanvasClick(event, canvas);
+        if (objectWasClicked) {
+            // Stop the further propagation of this click event (fired when the object
+            // is clicked) so that the same event isn't intercepted by the event
+            // listener which closes the Object information panel when the user clicks
+            // off the panel.
+            event.stopPropagation();
+            objectWasClicked = false;
         }
+    });
+
+    canvas.addEventListener("pointercancel", () => {
+        pointerStart = null;
+        hasDragged = false;
     });
 }
 
@@ -1193,7 +1228,7 @@ export async function init(name) {
         createControlsChangeHandler(viewRadius),
     );
 
-    initRaycastingEvents(canvas, controls);
+    initRaycastingEvents(canvas);
     initHoverCursor(canvas);
     initLabelRenderer(canvas);
     initTimer();
