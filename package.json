@@ -1,22 +1,15 @@
 {
   "name": "opis",
   "productName": "OPIS",
-  "version": "1.0.0",
+  "version": "1.1.4",
   "description": "COMPSCI 399 project repository for Team 9 - JEDEJ",
   "main": "index.js",
   "author": "Team 9 JEDEJ",
-  "license": "ISC",
+  "desktopName": "opis.desktop",
+  "license": "MIT",
   "devDependencies": {
-    "@electron-forge/cli": "^7.11.2",
-    "@electron-forge/maker-deb": "^7.11.2",
-    "@electron-forge/maker-dmg": "^7.11.2",
-    "@electron-forge/maker-rpm": "^7.11.2",
-    "@electron-forge/maker-squirrel": "^7.11.2",
-    "@electron-forge/maker-zip": "^7.11.2",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.11.2",
-    "@electron-forge/plugin-fuses": "^7.11.2",
-    "@electron/fuses": "^1.8.0",
     "electron": "^43.3.0",
+    "electron-builder": "^26.15.3",
     "prettier": "^3.9.6",
     "prettier-plugin-jinja-template": "^2.2.0",
     "prettier-plugin-tailwindcss": "^0.8.1",
@@ -33,16 +26,14 @@
     "bin": "electron .",
     "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && touch ./dist/main.exe",
     "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && echo \"\" > .\\dist\\main",
-    "make": "electron-forge make",
+    "make": "electron-builder --publish never",
     "main": "uv run main.py"
-  },
-  "allowScripts": {
-    "electron-winstaller@5.4.4": true
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
     "electron-log": "^5.4.4",
     "electron-squirrel-startup": "^1.0.1",
-    "electron-store": "^8.2.0"
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.8.9"
   }
 }

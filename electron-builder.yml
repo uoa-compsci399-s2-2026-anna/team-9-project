@@ -1,0 +1,53 @@
+appId: com.jedej.opis
+productName: OPIS
+asar: true
+
+directories:
+  output: out
+
+files:
+  - "**/*"
+  - "!{dist,out,build,.venv,.git,.github,__pycache__}/**"
+  - "!{.gitignore,.prettierrc,.python-version,pyproject.toml,uv.lock}"
+
+extraResources:
+  - { from: dist, to: dist }
+  - { from: src, to: src }
+  - config.json
+
+publish:
+  provider: github
+  owner: uoa-compsci399-s2-2026-anna
+  repo: team-9-project
+
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+
+win:
+  target: nsis
+  icon: src/assets/app-icon/opis.ico
+  artifactName: "${productName}-${version}-windows-${arch}.${ext}"
+nsis:
+  oneClick: true
+
+mac:
+  target: [dmg, zip]
+  icon: src/assets/app-icon/opis.icns
+  identity: "-"
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  artifactName: "${productName}-${version}-mac-${arch}.${ext}"
+
+linux:
+  target: [AppImage, deb, rpm]
+  icon: src/assets/app-icon/png-sizes
+  executableName: opis
+  syncDesktopName: true
+  category: Education
+  maintainer: "Team 9 JEDEJ"
+  artifactName: "${productName}-${version}-linux-${arch}.${ext}"
