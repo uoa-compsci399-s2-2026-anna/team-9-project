@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 resolution-markers = [
     "python_full_version >= '3.14'",
@@ -690,28 +690,28 @@ wheels = [
 
 [[package]]
 name = "rebound"
-version = "5.1.1"
+version = "5.2.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7b/f1/e04ee8c67ecc1a2675e64c80c2e6c7f4d9d69a3b9eafc0797fe55f325648/rebound-5.1.1.tar.gz", hash = "sha256:dd97b95bfc050d8f4db51a3667b8894c261ae9d844622bbb7756428909f58a86", size = 384938, upload-time = "2026-07-22T18:49:55.648Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/5c/b0346f6e40cc459b4a0a47f8af222adca9a54c29298bccefcfa55a581d4e/rebound-5.2.2.tar.gz", hash = "sha256:cefb2bce433a134e0f6fa0cb68df01079b0a5c160fadd2a2c85b06f286735a5f", size = 386244, upload-time = "2026-10-05T13:10:50.1Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/26/1e/3cfa05a38b990952c900cd74af1b3e9cf0ab2c038ad22dcad24701aa7106/rebound-5.1.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:35d94a87d5b2f322fbca28bbd0bafc49e4fabb467584cde8df3ed77929810a25", size = 426646, upload-time = "2026-07-22T18:49:19.847Z" },
-    { url = "https://files.pythonhosted.org/packages/50/46/ebf185c539d9e378532dbf816ea3d0da992309f92948fefac98cad467fa6/rebound-5.1.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:612a93658880ad24955753c42b7bf7917e69d8bd27cab897b846ae08618a1d07", size = 389808, upload-time = "2026-07-22T18:49:21.409Z" },
-    { url = "https://files.pythonhosted.org/packages/c9/7a/1f84808da7383f7ecc55f9c4b158d6c79c38572d3d2f99f7088831e9aca4/rebound-5.1.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:fe0347c4ab3194891c797785663c925c02179534164b53dbf0644fe07fe6671f", size = 903974, upload-time = "2026-07-22T18:49:22.773Z" },
-    { url = "https://files.pythonhosted.org/packages/f2/c6/0ce11b27622a15fe76383d17736811eb909cc9199023c6a05e10abc4ddf6/rebound-5.1.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:7cdf8d8e20a399ba950559bcc9e9782ffe249c0d73ae4d51d64002b35f316f64", size = 907162, upload-time = "2026-07-22T18:49:24.169Z" },
-    { url = "https://files.pythonhosted.org/packages/8f/66/d3858624f7b36655f72c66f973ac7eb2e638ef0fc2199ad55a4710103c07/rebound-5.1.1-cp313-cp313-win32.whl", hash = "sha256:dc87b0bff134946d31ece7bdeb8698b3f807d2b507135daf6a33a93477c21206", size = 381638, upload-time = "2026-07-22T18:49:25.487Z" },
-    { url = "https://files.pythonhosted.org/packages/07/2a/3c3333aa3c78d79a009699aa1922ba0109de714baef016f390fc6a6b874d/rebound-5.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:2ba60fe9800d294312747bac7020e957fa1a1f0f85bb555b2843f7f6b5117221", size = 444310, upload-time = "2026-07-22T18:49:26.899Z" },
-    { url = "https://files.pythonhosted.org/packages/ad/97/3f8ef4abed5f217214d3bd6284f72e226ab703b1fb8fdc34602d2ec70099/rebound-5.1.1-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:d4d099298e6436949bc1b67c90f36cf7668f0d38683c543d717ea6e395ac7f93", size = 426798, upload-time = "2026-07-22T18:49:28.312Z" },
-    { url = "https://files.pythonhosted.org/packages/4b/3b/dac698b4c92d553f6141cc5081f05604831c15153e2cf2050f5f750f205e/rebound-5.1.1-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:f0adaddf57f708e3e4bf30f7ca41e942cd950bacee2e91141bc888a79f7caadd", size = 389803, upload-time = "2026-07-22T18:49:30.141Z" },
-    { url = "https://files.pythonhosted.org/packages/88/4d/05156081999a8a9312b70922ba9a1e91522738603667ae805ffa7e556d51/rebound-5.1.1-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:3dbef0d7cad0d70606c6c7abe87a059c154e55ee854bc3fa212b01a244dabd19", size = 903973, upload-time = "2026-07-22T18:49:31.694Z" },
-    { url = "https://files.pythonhosted.org/packages/d1/25/2d64f88a6e544cc842c48f7ec01b909eba7b90167fa56bf11d28fec29506/rebound-5.1.1-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:3a0b7c6962345bb16894407672f9ed79d6c3ed2ae4358245db398d0b7ab42ea1", size = 907161, upload-time = "2026-07-22T18:49:33.21Z" },
-    { url = "https://files.pythonhosted.org/packages/4b/e2/dee53d84de9e5b723cde1a923eb01a57ea9f22ef05b71352b5d6d50d2942/rebound-5.1.1-cp314-cp314-win32.whl", hash = "sha256:ce1db6dd5f437eece97a99d6c2c12e4184f4324bf55dc3c42c211c1c662cbff1", size = 384485, upload-time = "2026-07-22T18:49:34.641Z" },
-    { url = "https://files.pythonhosted.org/packages/a1/e6/043763dcf05c894ccfdff56da17ae2046d87dcf98355d20c9f72bd7131cc/rebound-5.1.1-cp314-cp314-win_amd64.whl", hash = "sha256:8674173ffdf842bedefaa2bcca5b276f566af3ea97a2126f115e8d6f2e666a54", size = 447695, upload-time = "2026-07-22T18:49:35.998Z" },
-    { url = "https://files.pythonhosted.org/packages/28/26/4c0365f715ca16805ce7a7c9ce02a8d276430f343429848f210288100ce1/rebound-5.1.1-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:eb2a8ade3a133b1edcf3dcb945c118a9f59a9b8b32af4dd39e6921a56cf09d83", size = 426795, upload-time = "2026-07-22T18:49:37.36Z" },
-    { url = "https://files.pythonhosted.org/packages/66/c4/fae5dc8dc99d9b38590eeeda8cf20636f6fad8178b4088a6bd5ea234d764/rebound-5.1.1-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:c168abc021c81d7b4fec2ced6185aeef7e667724feb0c330b3036960155531d1", size = 389820, upload-time = "2026-07-22T18:49:38.948Z" },
-    { url = "https://files.pythonhosted.org/packages/4f/7a/c7b8b08843c4242fd9ba6fe7049aec950882574dece4b56831bd81f0e10a/rebound-5.1.1-cp314-cp314t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5a2f2294c86e51fd988b204096ca253170261dcaace334d2e8585ab5c998dce7", size = 903981, upload-time = "2026-07-22T18:49:40.342Z" },
-    { url = "https://files.pythonhosted.org/packages/12/8a/2ee0b971d42d9cb65181d8cabdf62933dea7a6f4fc4df75b2afeb4cba340/rebound-5.1.1-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:21d63996ca0d1ff4ba17812fe6e4cb5489e5f4881fcecde4ce44287fb10c2883", size = 907165, upload-time = "2026-07-22T18:49:42.099Z" },
-    { url = "https://files.pythonhosted.org/packages/bd/48/31dfb6f946494a924dc828601404d059cd5cf322bb11b1edb2b43af1d58e/rebound-5.1.1-cp314-cp314t-win32.whl", hash = "sha256:e18295f4638642b9d2cd7f8ec3fd1690dbe678360ac6530e07e479cdac5938e3", size = 384493, upload-time = "2026-07-22T18:49:43.566Z" },
-    { url = "https://files.pythonhosted.org/packages/fb/d7/ce92e243f19c97cf1fb87c0390ddda0732544f5f0b1c3eca0db8d9753d95/rebound-5.1.1-cp314-cp314t-win_amd64.whl", hash = "sha256:a3c686fe6812134dc98f5a8ae6c33271f2eb80bcf505239e4281def6e23d0344", size = 447701, upload-time = "2026-07-22T18:49:45.048Z" },
+    { url = "https://files.pythonhosted.org/packages/db/9f/49c5261305fbb502c8653c346dbf3ad3165d4eaf87e8f3a10cdb3cb78ab9/rebound-5.2.2-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:65fedb59f5567373a23f91b9d24fa7ddbe89bf306c7fe8c90b77ef91db74938b", size = 427233, upload-time = "2026-10-05T13:10:15.935Z" },
+    { url = "https://files.pythonhosted.org/packages/59/f7/4deb9902944bd81db72c93007b3e5a0e2e1f2d94d3ca70f1fe3d82a811c9/rebound-5.2.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:cfe0123535aca78c646606d547010534a513ca74d4ddaac923a5be0947b4a225", size = 390080, upload-time = "2026-10-05T13:10:17.356Z" },
+    { url = "https://files.pythonhosted.org/packages/32/3e/0cd57ad903e1f3b7c13d3cc0436bb2c5e082fa236d1f59975cfe00c20705/rebound-5.2.2-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9f8bcfceb254412db92d00beddefc918a1a4a1c500872e17e9ca9651d4d60a45", size = 906883, upload-time = "2026-10-05T13:10:18.616Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/4c/a2b966f8064db5e570d030932e31269b3c5f693823f3d35136e1abd45989/rebound-5.2.2-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:57b8f568f8bb7af27a69f1b8439c69dda64479a0054737a579bd4809d876f881", size = 909292, upload-time = "2026-10-05T13:10:19.891Z" },
+    { url = "https://files.pythonhosted.org/packages/bd/a0/c14ecec73ef1270fc75ec5918c3bd879d0a46e251a55d546be9bee999244/rebound-5.2.2-cp313-cp313-win32.whl", hash = "sha256:8d611148d30536b1e3d1c5aa670e24f3bff7f125b8bfcc0cdfd0f78c50723eda", size = 382086, upload-time = "2026-10-05T13:10:21.289Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/bf/327a3de9cecbadf3d536fe53198139f205a9dd59958aad9d7c63e4e6a2bd/rebound-5.2.2-cp313-cp313-win_amd64.whl", hash = "sha256:acd1028491046d08f12bd238ab2a8a00fdfa76add6d9940722f81bf957b6da4a", size = 444011, upload-time = "2026-10-05T13:10:22.847Z" },
+    { url = "https://files.pythonhosted.org/packages/48/d2/1fedf8da30870572e455c5ef197d9676a6e745cd1e0ad7dc54214a106968/rebound-5.2.2-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:c994e9a1770e994c2e37f9f4a1685f07b7e65494a02061186ee9c97a8213fa8e", size = 427372, upload-time = "2026-10-05T13:10:24.282Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/0f/28ffae4f0e125042bc675f249b9f78adceb1e93d587bd98f1ba1dcb5108c/rebound-5.2.2-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:75a2c05747615f18250467c427e40d203a25165c3d37dc8760869f6453c26feb", size = 390084, upload-time = "2026-10-05T13:10:25.563Z" },
+    { url = "https://files.pythonhosted.org/packages/61/2a/50baa4814f06e135166014e26b50d2bf9e98076ee9ba4c93dc2cfbc45159/rebound-5.2.2-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6f971600864e7c2df3cc00df7df8c1d5a399e08d522789a6a9724d12358945b8", size = 906885, upload-time = "2026-10-05T13:10:26.88Z" },
+    { url = "https://files.pythonhosted.org/packages/c4/f5/9b6d80b0b0cdbcef90c7dcefc2be6f341d4ec2e58eeca5cd8af7c8fae2ae/rebound-5.2.2-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:5cea0bd74b3bd52a82be80be7c92c9ffb0d3e8d422a529c2eacef170d6281b47", size = 909291, upload-time = "2026-10-05T13:10:28.368Z" },
+    { url = "https://files.pythonhosted.org/packages/a5/37/8901e3860e6949d1e8f1b0c24401408b66d766612888bd374617fcb69997/rebound-5.2.2-cp314-cp314-win32.whl", hash = "sha256:a97fe1872671af60f22f23edae912cbdb80e23d38df0d42ae3121ed652c21e58", size = 384975, upload-time = "2026-10-05T13:10:29.652Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/b5/bcd20d47f56a6942e3f5253571ac5fcc51a3ca68c4cda0ac13e155f92035/rebound-5.2.2-cp314-cp314-win_amd64.whl", hash = "sha256:52aace4954adcfafbd958a67414d3e3b18cc1010e1830637e96a47085eafb486", size = 449630, upload-time = "2026-10-05T13:10:30.933Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/5f/0aee71c8f97a7714d2ffeb289e852b4b73447debd18ee93eb015fc540225/rebound-5.2.2-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:52852de91e2feb39035fd9500c2cd73d857f9209cf0f2781171633bceb9a01ec", size = 427374, upload-time = "2026-10-05T13:10:32.338Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/bf/f810148e6cf96279146845f9c0a8c13dd5adfc6dde3d2a90d4aaa1ce2c0a/rebound-5.2.2-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:c0751a5cc251bf808e2bfb119833eb3858d8bb378d96aab8c1b076fd2d0083be", size = 390093, upload-time = "2026-10-05T13:10:33.611Z" },
+    { url = "https://files.pythonhosted.org/packages/1f/66/3b1445716352fceccb97d44ee1ddc6f4c792e98630691927c3cd9714ccf2/rebound-5.2.2-cp314-cp314t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9b7f4fc260a675a85aa247c1aefc53b9e2e07874a38b073c20305bc125ec9bdc", size = 906890, upload-time = "2026-10-05T13:10:35.101Z" },
+    { url = "https://files.pythonhosted.org/packages/ea/16/2e49f704ec7c32e29a36219c38b24c07b31d3cc720512182b10474088687/rebound-5.2.2-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:4a9241524769dffa60bb1d2a9c30d471c00e8dd14ca981343349aeac1c08023f", size = 909296, upload-time = "2026-10-05T13:10:36.733Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/a1/1edd142729d8bdd575cce1e123da945b82528edd519acf8f03c25c102626/rebound-5.2.2-cp314-cp314t-win32.whl", hash = "sha256:d740c228fdd8f7f44890becf56799931062f1b03e7bfb10c677cdae23b740856", size = 384985, upload-time = "2026-10-05T13:10:38.392Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/4b/0f85794f98915789156d494116b0135bc81248deba4a1d170b1646a1e35e/rebound-5.2.2-cp314-cp314t-win_amd64.whl", hash = "sha256:d23f076c40dc2a6a73f4718f6fab8de6ede89207435ca3f7b79fc43d73953596", size = 449636, upload-time = "2026-10-05T13:10:39.809Z" },
 ]
 
 [[package]]
@@ -861,6 +861,25 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b5/b4/205b0d5241d934e8add0c38aa924c4f9fb7330834ff11e5444db964ec3f9/starlette-1.6.0.tar.gz", hash = "sha256:d4e3ac5e546444960c710297a3c9fc3f7ebae1b7e963f3d36173b49da535be9b", size = 2716969, upload-time = "2026-08-08T18:27:57.512Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c8/cb/6a6a47d5b464bd08695d254f3da6e7986cc70c9fa5d778eda57538edfe56/starlette-1.6.0-py3-none-any.whl", hash = "sha256:a86dd39d14bb45f85a3d18525215a9ef0cfd1f192ac793220e72598c90335f0c", size = 75969, upload-time = "2026-08-08T18:27:56.196Z" },
+]
+
+[[package]]
+name = "team-9-project"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "astropy" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "rebound" },
+    { name = "tzdata" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "astropy", specifier = ">=8.0.1" },
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.141.1" },
+    { name = "rebound", specifier = "==5.2.2" },
+    { name = "tzdata", specifier = ">=2026.3" },
 ]
 
 [[package]]
