@@ -35,8 +35,6 @@ bus.subscribe(
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
-document.addEventListener("mousedown", setMouseDownStartPositionVariables);
-
 // mouseup to be consistent with behaviour in simulation screen
 document.addEventListener("mouseup", (event) => {
     const availableSystemsButtons = document.getElementById(
@@ -259,9 +257,4 @@ function remToPx(rem) {
     return (
         rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
     );
-}
-
-function setMouseDownStartPositionVariables(event) {
-    mouseDownStartX = event.clientX;
-    mouseDownStartY = event.clientY;
 }
