@@ -3,6 +3,7 @@
 {% from "components/input-with-tooltip.html" import input_with_tooltip %}
 {% from "components/text-button.html" import text_button %}
 {% from "components/container.html" import container %}
+{% from "components/help-tooltip.html" import help_tooltip %}
 
 <div class="z-10 flex flex-col bg-transparent">
   <div class="grid w-full grid-cols-3 items-stretch">
@@ -46,6 +47,13 @@
             </p>
           </div>
         </div>
+      {% endcall %}
+
+      {% call help_tooltip() %}
+        <strong>Simulation time controls.</strong> This shows the simulation
+        timestamp. Click on the calendar to set the simulation to any point in
+        time, or click the 'Reset to now' button to reset the simulation to the
+        current time.
       {% endcall %}
     </div>
 
@@ -93,6 +101,11 @@
             on_click_events=["sim:step_forward"]
           )
         }}
+      {% endcall %}
+
+      {% call help_tooltip() %}
+        <strong>Playback controls.</strong> Click these to play/pause the
+        simulation, and step forward/back in time.
       {% endcall %}
     </div>
 
@@ -152,6 +165,11 @@
 
           <p class="text-secondary">per second</p>
         </div>
+      {% endcall %}
+
+      {% call help_tooltip() %}
+        <strong>Simulation speed adjuster.</strong> Adjust how fast the
+        simulation plays by setting the speed and unit.
       {% endcall %}
     </div>
   </div>

@@ -1,10 +1,13 @@
+{% from "components/help-tooltip.html" import help_tooltip %}
+
 {%
   macro side_panel(
     panel_title_text,
     reset_button_id,
     toggle_event,
     panel_button_id=None,
-    min_h="min-h-0"
+    min_h="min-h-0",
+    help_tooltip_content=None
   )
 %}
   <div
@@ -12,25 +15,33 @@
     data-panel
     data-toggle-event="{{ toggle_event }}"
   >
-    <!-- Panel button -->
-    <button
-      id="{{ panel_button_id }}"
-      class="flex w-full items-center p-3 font-bold"
-      data-panel-button
-    >
-      <!-- Show/hide icon -->
-      <svg
-        class="size-7 -translate-x-2 -rotate-90 transition-transform duration-300 ease-in-out"
-        viewBox="0 0 24 24"
-        data-panel-show-hide-icon
+    <div>
+      <!-- Panel button -->
+      <button
+        id="{{ panel_button_id }}"
+        class="flex w-full items-center p-3 font-bold"
+        data-panel-button
       >
-        <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
-        <path
-          d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
-        />
-      </svg>
-      <span class="flex-1 text-left">{{ panel_title_text }}</span>
-    </button>
+        <!-- Show/hide icon -->
+        <svg
+          class="size-7 -translate-x-2 -rotate-90 transition-transform duration-300 ease-in-out"
+          viewBox="0 0 24 24"
+          data-panel-show-hide-icon
+        >
+          <!-- Icon from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE -->
+          <path
+            d="M11.475 14.475L7.85 10.85q-.075-.075-.112-.162T7.7 10.5q0-.2.138-.35T8.2 10h7.6q.225 0 .363.15t.137.35q0 .05-.15.35l-3.625 3.625q-.125.125-.25.175T12 14.7t-.275-.05t-.25-.175"
+          />
+        </svg>
+        <span class="flex-1 text-left">{{ panel_title_text }}</span>
+      </button>
+
+      {% if help_tooltip_content %}
+        {% call help_tooltip() %}
+          {{ help_tooltip_content | safe }}
+        {% endcall %}
+      {% endif %}
+    </div>
 
     <!-- Hidden content (shown when expanded) -->
     <div

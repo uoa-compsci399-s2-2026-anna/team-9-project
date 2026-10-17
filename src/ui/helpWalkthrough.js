@@ -14,10 +14,20 @@ const cleanups = new Map();
 const tooltipTargets = new Map();
 
 const helpButtonTooltip = document.getElementById("help-button-tooltip");
+const canvas = document.getElementById("simulation-canvas");
 
 let isShowingHelp = false;
 let helpTooltipsToShow = [];
 let shownTooltip = null;
+
+/**
+ * Minimum number of pixels mouse must have moved for it to count as a drag
+ * (instead of a click).
+ */
+const DRAG_THRESHOLD_PX = 5;
+
+let mouseDownStartX = 0;
+let mouseDownStartY = 0;
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     if (isShowingHelp) {
@@ -26,6 +36,9 @@ bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
         startHelpWalkthrough();
     }
 });
+bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
+
+document.addEventListener("mousedown", setMouseDownStartPositionVariables);
 document.addEventListener("click", (event) => {
     const availableSystemsButtons = document.getElementById(
         "available-systems-buttons",
@@ -45,7 +58,24 @@ document.addEventListener("click", (event) => {
 
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
-bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
+
+if (canvas) {
+    canvas.addEventListener("click", (event) => {
+        if (isClickEventDrag(event)) {
+            event.preventDefault();
+            return;
+        }
+
+        showNextHelpTooltipOrStopHelpWalkthrough();
+    });
+}
+
+function isClickEventDrag(event) {
+    const deltaX = Math.abs(event.clientX - mouseDownStartX);
+    const deltaY = Math.abs(event.clientY - mouseDownStartY);
+
+    return deltaX > DRAG_THRESHOLD_PX || deltaY > DRAG_THRESHOLD_PX;
+}
 
 /**
  * Begins the help walkthrough.
@@ -216,4 +246,9 @@ function remToPx(rem) {
     return (
         rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
     );
+}
+
+function setMouseDownStartPositionVariables(event) {
+    mouseDownStartX = event.clientX;
+    mouseDownStartY = event.clientY;
 }
