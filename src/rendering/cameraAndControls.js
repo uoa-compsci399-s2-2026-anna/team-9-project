@@ -4,7 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import {
     calculateCameraDistance,
     calculateDefaultCameraPosition,
-} from "./simulationCalculations.js";
+} from "./calculations.js";
 
 export const FOV = 45; // Field of view in degrees
 
