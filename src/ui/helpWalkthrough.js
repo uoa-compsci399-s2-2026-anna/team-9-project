@@ -53,6 +53,14 @@ document.addEventListener("mouseup", (event) => {
         stopHelpWalkthrough();
     }
 
+    // TODO: Prevent double event
+    if (
+        event.target.closest(".container") ||
+        event.target.closest("[data-button-type]")
+    ) {
+        return;
+    }
+
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
 
@@ -66,6 +74,10 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
         // Push to back
         helpTooltips.push(tooltip);
     }
+
+    tooltip.addEventListener("mouseup", () =>
+        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT),
+    );
 });
 
 /**
