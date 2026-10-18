@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { camera } from "../cameraAndControls.js";
 import { objectSize } from "../objectProperties.js";
 
 // Star glow texture constants
@@ -64,7 +65,6 @@ export function createGlowTexture(colour) {
  * constant regardless of camera distance.
  *
  * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
- * @param {THREE.PerspectiveCamera} camera The active camera
  * @param {number} canvasHeight The renderer's canvas height in pixels
  * @param {number} desiredPixelSize The target on screen diameter in pixels
  * @param {number} minScale The minimum allowed scale factor
@@ -73,7 +73,6 @@ export function createGlowTexture(colour) {
  */
 export function calculateScreenSpaceScale(
     mesh,
-    camera,
     canvasHeight,
     desiredPixelSize,
     minScale,

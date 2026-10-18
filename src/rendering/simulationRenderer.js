@@ -1503,7 +1503,6 @@ function updateScreenSpaceScales() {
 
         const scale = calculateScreenSpaceScale(
             mesh,
-            camera,
             canvasHeight,
             desiredPixelSize,
             minScale,
