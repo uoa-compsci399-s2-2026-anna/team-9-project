@@ -22,11 +22,7 @@ let isShowingHelp = false;
 let helpTooltips = [];
 let shownTooltipIndex = null;
 
-// MARK: TRIGGERS
-
 document.addEventListener("mouseup", handleMouseUpOnDocument);
-
-// MARK: EVENT SUBSCRIPTIONS
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     if (isShowingHelp) {
@@ -42,8 +38,6 @@ bus.subscribe(
 );
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
-
-// MARK: EXECUTED CODE
 
 document
     .querySelectorAll("[data-help-tooltip]")
