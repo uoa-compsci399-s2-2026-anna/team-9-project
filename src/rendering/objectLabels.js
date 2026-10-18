@@ -3,6 +3,7 @@ import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { settings } from "../shared/settingsState.js";
 import { renderer } from "./renderers.js";
 import { camera } from "./simulationCameraAndControls.js";
+import { currentSystemGroup, solarSystemGroup } from "./scene.js";
 import { objectSize } from "./objects.js";
 import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 
@@ -30,7 +31,7 @@ function ndcScalarToScreenScalar(ndcDimension) {
  * @param {THREE.Object3D} object ThreeJS mesh of object
  * @returns How many pixels the object's radius is on a screen
  */
-export function getObjectApparentPixelRadius(object) {
+function getObjectApparentPixelRadius(object) {
     /**
      * The 'up' direction in world space.
      */
@@ -103,4 +104,23 @@ export function createLabel(name, colour, opacity) {
     const label = new CSS2DObject(labelDiv);
 
     return label;
+}
+
+export function updateObjectLabelOffsets() {
+    for (const group of [currentSystemGroup, solarSystemGroup]) {
+        for (const mesh of group.children) {
+            const label = mesh.children.find(
+                (child) => child instanceof CSS2DObject,
+            );
+
+            if (!label) {
+                continue;
+            }
+
+            const pixelLength = getObjectApparentPixelRadius(mesh);
+
+            label.element.style.marginTop = `${pixelLength}px`;
+            label.element.style.marginLeft = `${pixelLength}px`;
+        }
+    }
 }

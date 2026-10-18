@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { MeshLineGeometry, MeshLineMaterial } from "three.meshline";
 import {
     simulationState,
@@ -64,7 +63,7 @@ import {
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
 import { objectSize, hitboxPadding, setObjectSize } from "./objects.js";
-import { createLabel, getObjectApparentPixelRadius } from "./objectLabels.js";
+import { createLabel, updateObjectLabelOffsets } from "./objectLabels.js";
 import {
     habitableZone,
     habitableZoneMesh,
@@ -445,25 +444,6 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
     }
 
     mesh.position.set(position.x, position.y, position.z);
-}
-
-export function updateObjectLabelOffsets() {
-    for (const group of [currentSystemGroup, solarSystemGroup]) {
-        for (const mesh of group.children) {
-            const label = mesh.children.find(
-                (child) => child instanceof CSS2DObject,
-            );
-
-            if (!label) {
-                continue;
-            }
-
-            const pixelLength = getObjectApparentPixelRadius(mesh);
-
-            label.element.style.marginTop = `${pixelLength}px`;
-            label.element.style.marginLeft = `${pixelLength}px`;
-        }
-    }
 }
 
 /**
