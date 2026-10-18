@@ -25,7 +25,6 @@ import {
     calculateProgressDistance,
     calculateOrbitRotationMatrix,
     calculateApoapsis,
-    calculatePeriapsis,
     calculateAverageNormal,
 } from "./calculations.js";
 import {
@@ -55,18 +54,30 @@ import {
     scene,
     currentSystemGroup,
     solarSystemGroup,
+    objectMeshes,
+    orbitalLines,
+    objectLabels,
     initScene,
 } from "./scene/scene.js";
 import {
-    getReferenceSystemData,
     setReferenceSystemData,
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
-import { objectSize, hitboxPadding, setObjectSize } from "./objectSize.js";
 import {
-    createObjectLabel,
-    updateObjectLabelOffsets,
-} from "./scene/objectLabels.js";
+    objectSize,
+    objectTypes,
+    setObjectSize,
+    getCurrentSystemColour,
+    setCurrentSystemColours,
+    setObjectTypes,
+    updateInnermostPeriapsis,
+} from "./objectProperties.js";
+import {
+    createGlowTexture,
+    updateScreenSpaceScales,
+    createOrUpdateObjectMesh,
+} from "./scene/objects.js";
+import { updateObjectLabelOffsets } from "./scene/objectLabels.js";
 import {
     habitableZone,
     habitableZoneMesh,
@@ -90,12 +101,9 @@ let timer;
 
 // The current simulation time in milliseconds since Unix epoch
 let currentSimulationTime;
-
 let lastFetchedSimulationTime = null; // The simulation time for which the last system data was fetched
 
 let currentSystem;
-let currentSystemColours;
-let objectTypes;
 
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
@@ -104,10 +112,6 @@ let lastSystemData = null;
 let isDragging = false;
 
 const raycaster = new THREE.Raycaster();
-
-const objectMeshes = new Map();
-const orbitalLines = new Map();
-const objectLabels = new Map();
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
@@ -125,59 +129,6 @@ const comparisonOverlayColour = {
     light: "#7d5c12",
 };
 const comparisonOrbitOpacity = 0.8;
-const comparisonLabelOpacity = 0.8;
-
-/**
- * Get the configured colour for an object in the current system, appropriate for the
- * current light/dark theme. Falls back to black in light mode and white in dark mode if the
- * object has no configured colour, or if currentSystemColours hasn't been populated yet.
- *
- * @param {string} name Name of the object
- * @param {boolean} isDarkMode Whether to use the dark mode variant
- * @returns {string} CSS colour string
- */
-function getCurrentSystemColour(name, isDarkMode) {
-    const variant = isDarkMode ? "dark" : "light";
-    const fallbackColour = isDarkMode ? "white" : "black";
-    return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
-}
-
-// Star glow texture constants
-
-const TEXTURE_SIZE = 64;
-const CENTRE = TEXTURE_SIZE / 2;
-const OUTER_RADIUS = CENTRE;
-const INNER_RADIUS = 0;
-
-// Gradient stop positions, each a fraction (0 to 1) of the distance from the centre to the outer edge
-const CORE_STOP = 0;
-const COLOUR_STOP = 0.2;
-const EDGE_STOP = 1;
-
-// Colour of the core of the star
-const CORE_COLOUR = "rgba(255, 255, 255, 1)";
-
-const GLOW_SIZE_MULTIPLIER = 3.5;
-const SPRITE_Z_SCALE = 1.0;
-
-// Screen space object sizing
-const DESIRED_OBJECT_PIXEL_SIZE = 12;
-const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
-const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects
-
-// How much larger stars are compared to other objects
-const STAR_SIZE_RATIO = DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE;
-
-const minScreenSpaceScale = 0.5;
-
-// Keeps stars proportionally larger than other objects at the minimum scale
-const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
-
-// Fraction of the innermost periapsis that an object's on screen radius may occupy
-const MAX_EXTENT_ORBIT_FRACTION = 0.5;
-
-// Periapsis of the innermost default visible orbit
-let innermostPeriapsis = Infinity;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
@@ -320,136 +271,6 @@ function onCanvasClick(event, canvas) {
     event.stopPropagation();
 
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
-}
-
-/**
- * Creates a radial glow texture for use as a sprite map (e.g., for rendering stars).
- * The texture has a white core that fades into the given colour, then fades to
- * transparent at the edge.
- *
- * @param {string} colour CSS colour string which the glow fades into
- * @returns {THREE.CanvasTexture} Texture for a sprite/point material map
- */
-function createGlowTexture(colour) {
-    const canvas = document.createElement("canvas");
-    canvas.width = TEXTURE_SIZE;
-    canvas.height = TEXTURE_SIZE;
-    const ctx = canvas.getContext("2d");
-
-    const gradient = ctx.createRadialGradient(
-        CENTRE,
-        CENTRE,
-        INNER_RADIUS,
-        CENTRE,
-        CENTRE,
-        OUTER_RADIUS,
-    );
-
-    // White core in the inner 20% of the radius, and the star's colour for the remaining 80%
-    gradient.addColorStop(CORE_STOP, CORE_COLOUR);
-    gradient.addColorStop(COLOUR_STOP, colour);
-
-    // Fade from the star's colour to transparent over the remaining 80%
-    const rgb = new THREE.Color(colour);
-    const r = Math.round(rgb.r * 255);
-    const g = Math.round(rgb.g * 255);
-    const b = Math.round(rgb.b * 255);
-    const transparentColour = `rgba(${r}, ${g}, ${b}, 0)`;
-
-    gradient.addColorStop(EDGE_STOP, transparentColour);
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, TEXTURE_SIZE, TEXTURE_SIZE);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    return texture;
-}
-
-/**
- * If the target object does not exist, then its mesh is created at the given position.
- * If the target object does exist, then its position is updated.
- *
- * @param {string} name Name of the object
- * @param {Object} position Position of the object
- * @param {THREE.Group} group The group to add the object to
- * @param {string} colour CSS colour string used for this object's label
- */
-function createOrUpdateObjectMesh(name, position, group, colour) {
-    // Don't create object mesh in the comparison overlay
-    // for objects that are hidden by default in the Solar System
-    if (
-        comparingToSolarSystem &&
-        group === solarSystemGroup &&
-        isObjectHiddenByDefault("Solar System", name)
-    ) {
-        return;
-    }
-
-    let mesh = objectMeshes.get(name);
-
-    if (!mesh) {
-        const geometry = new THREE.SphereGeometry(objectSize);
-        const material = new THREE.MeshBasicMaterial({ color: colour });
-
-        mesh = new THREE.Mesh(geometry, material);
-
-        const objectType = objectTypes[name];
-        if (objectType === "star") {
-            const glowTexture = createGlowTexture(colour);
-
-            const spriteMaterial = new THREE.SpriteMaterial({
-                map: glowTexture,
-                transparent: true,
-                depthWrite: false,
-            });
-
-            const glowSprite = new THREE.Sprite(spriteMaterial);
-
-            const glowSize = objectSize * GLOW_SIZE_MULTIPLIER;
-            glowSprite.scale.set(glowSize, glowSize, SPRITE_Z_SCALE);
-
-            mesh.add(glowSprite);
-        }
-
-        if (group === solarSystemGroup) {
-            mesh.visible = comparingToSolarSystem;
-        } else {
-            mesh.visible = !isObjectHidden(currentSystem, name);
-        }
-
-        // Give the mesh a name to identify the mesh with raycasting
-        mesh.userData.name = name;
-
-        // Create a larger invisible sphere for click detection
-        const hitboxSize = objectSize + hitboxPadding;
-        const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
-        const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
-
-        const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
-
-        // Add the hitbox as a child of the mesh
-        mesh.add(hitbox);
-
-        group.add(mesh);
-        objectMeshes.set(name, mesh);
-
-        const label = createObjectLabel(
-            name,
-            colour,
-            group === solarSystemGroup ? comparisonLabelOpacity : 1,
-        );
-
-        label.position.set(0, 0, 0);
-        label.visible = simulationState.labelsShown;
-
-        // 'Anchors' the label to the top-left
-        label.center.set(0, 0);
-
-        mesh.add(label);
-        objectLabels.set(name, label);
-    }
-
-    mesh.position.set(position.x, position.y, position.z);
 }
 
 /**
@@ -835,6 +656,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
         currentSystemData.positions,
     )) {
         createOrUpdateObjectMesh(
+            currentSystem,
             name,
             position,
             currentSystemGroup,
@@ -863,6 +685,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
         )) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateObjectMesh(
+                currentSystem,
                 name,
                 position,
                 solarSystemGroup,
@@ -881,9 +704,6 @@ async function updateSimulation(forceCalendarUpdate = true) {
             );
         }
     }
-
-    // Update the meshes' scales (which are used to calculate label offets)
-    updateScreenSpaceScales();
 }
 
 /**
@@ -1015,19 +835,8 @@ export async function init(name) {
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone.start = systemInfo["habitable zone"].start;
     habitableZone.end = systemInfo["habitable zone"].end;
-    currentSystemColours = Object.fromEntries(
-        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
-            name,
-            data.colour,
-        ]),
-    );
-
-    objectTypes = Object.fromEntries(
-        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
-            name,
-            data.type,
-        ]),
-    );
+    setCurrentSystemColours(systemInfo.objects);
+    setObjectTypes(systemInfo.objects);
 
     const canvas = document.getElementById("simulation-canvas");
     initRenderer(canvas);
@@ -1041,7 +850,7 @@ export async function init(name) {
     );
     await setDefaultViewRadii(currentSystem);
     setObjectSize();
-    await updateInnermostPeriapsis(false);
+    await updateInnermostPeriapsis(currentSystem, false);
 
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
@@ -1185,7 +994,7 @@ export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
     await updateViewRadius(currentSystem, true, habitableZoneMesh?.visible);
-    await updateInnermostPeriapsis(true);
+    await updateInnermostPeriapsis(currentSystem, true);
 
     // Align the solar system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(solarSystemGroup, true);
@@ -1213,7 +1022,7 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
     await updateViewRadius(currentSystem, false, habitableZoneMesh?.visible);
-    await updateInnermostPeriapsis(false);
+    await updateInnermostPeriapsis(currentSystem, false);
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
@@ -1469,163 +1278,6 @@ function resizeRendererToDisplaySize() {
 }
 
 /**
- * For the given orbital data, get the name of the star with the smallest periapsis.
- *
- * @param {Object} orbitalData Map of object name to orbital data
- * @returns The name of the star with the smallest periapsis
- */
-function findSmallestPeriapsisStarName(orbitalData) {
-    let starName = null;
-    let smallestPeriapsis = Infinity;
-
-    for (const [name, orbit] of Object.entries(orbitalData)) {
-        if (objectTypes[name] !== "star") {
-            continue;
-        }
-
-        const periapsis = calculatePeriapsis(orbit.a, orbit.e);
-
-        if (periapsis < smallestPeriapsis) {
-            smallestPeriapsis = periapsis;
-            starName = name;
-        }
-    }
-
-    return starName;
-}
-
-/**
- * Finds the smallest periapsis (closest point to the centre) across all orbits whose
- * corresponding object is visible by default, excluding the innermost star and the
- * Sun (if the Solar System is being compared to).
- *
- * @param {boolean} comparing Whether the Solar System is being compared to or not
- */
-async function updateInnermostPeriapsis(comparing) {
-    // Don't check the periapsis of the innermost star in the current system
-    const systems = [
-        {
-            system: currentSystem,
-            getExcludedName: (orbitalData) =>
-                findSmallestPeriapsisStarName(orbitalData),
-        },
-    ];
-
-    if (comparing) {
-        // Don't check the periapsis of the Sun
-        systems.push({
-            system: "Solar System",
-            getExcludedName: () => "Sun",
-        });
-    }
-
-    let smallest = Infinity;
-
-    for (const { system, getExcludedName } of systems) {
-        const data = await getReferenceSystemData(system);
-        const excludedName = getExcludedName(data.orbital_data);
-
-        for (const [name, orbit] of Object.entries(data.orbital_data)) {
-            if (
-                name === excludedName ||
-                isObjectHiddenByDefault(system, name)
-            ) {
-                continue;
-            }
-
-            const periapsis = calculatePeriapsis(orbit.a, orbit.e);
-            smallest = Math.min(smallest, periapsis);
-        }
-    }
-
-    innermostPeriapsis = smallest;
-}
-
-/**
- * The largest scale an object may have so that its on screen radius stays
- * within a fraction of the innermost periapsis.
- *
- * @param {boolean} isStar Whether the object is a star or not
- * @returns The cap on the scale for an object
- */
-function getOrbitScaleCap(isStar) {
-    // The maximum size for a star
-    const starSizeCap =
-        (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize;
-
-    // Objects should always be STAR_SIZE_RATIO smaller than stars
-    return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
-}
-
-/**
- * Computes a scale factor so the mesh's apparent size on screen stays roughly
- * constant regardless of camera distance.
- *
- * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
- * @param {THREE.PerspectiveCamera} camera The active camera
- * @param {number} canvasHeight The renderer's canvas height in pixels
- * @param {number} desiredPixelSize The target on screen diameter in pixels
- * @param {number} minScale The minimum allowed scale factor
- * @param {number} maxScale The maximum allowed scale factor
- * @returns {number} The scale factor to apply to the mesh
- */
-function calculateScreenSpaceScale(
-    mesh,
-    camera,
-    canvasHeight,
-    desiredPixelSize,
-    minScale,
-    maxScale,
-) {
-    const meshWorldPosition = new THREE.Vector3();
-    mesh.getWorldPosition(meshWorldPosition);
-    const distance = camera.position.distanceTo(meshWorldPosition);
-
-    const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
-    const worldHeightAtDistance =
-        2 * Math.tan(verticalFovRadians / 2) * distance;
-    const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
-
-    const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
-    const scale = desiredWorldDiameter / (2 * objectSize);
-
-    return THREE.MathUtils.clamp(scale, minScale, maxScale);
-}
-
-function updateScreenSpaceScales() {
-    const canvasHeight = renderer.domElement.clientHeight;
-
-    for (const mesh of objectMeshes.values()) {
-        if (!mesh.visible) continue;
-
-        const isComparisonOverlay = mesh.parent === solarSystemGroup;
-        const isStar = objectTypes[mesh.userData.name] === "star";
-
-        let desiredPixelSize = DESIRED_OBJECT_PIXEL_SIZE;
-        if (isStar) {
-            desiredPixelSize = DESIRED_STAR_PIXEL_SIZE;
-        } else if (isComparisonOverlay) {
-            desiredPixelSize = DESIRED_COMPARISON_PIXEL_SIZE;
-        }
-
-        const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
-        // Ensure the max scale is at least the min scale
-        const maxScale = Math.max(getOrbitScaleCap(isStar), minScale);
-
-        const scale = calculateScreenSpaceScale(
-            mesh,
-            camera,
-            canvasHeight,
-            desiredPixelSize,
-            minScale,
-            maxScale,
-        );
-
-        mesh.scale.set(scale, scale, scale);
-    }
-}
-
-/**
  * Render the meshes and objects on every animation frame.
  */
 async function renderFrame(timestamp) {
@@ -1649,7 +1301,6 @@ async function renderFrame(timestamp) {
     animateCamera();
 
     updateScreenSpaceScales();
-
     updateObjectLabelOffsets();
 
     renderer.render(scene, camera);
