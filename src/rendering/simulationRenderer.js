@@ -68,7 +68,11 @@ import {
 import {
     objectSize,
     hitboxPadding,
+    currentSystemColours,
+    objectTypes,
     setObjectSize,
+    setCurrentSystemColours,
+    setObjectTypes,
 } from "./objectProperties.js";
 import { createGlowTexture } from "./scene/objects.js";
 import {
@@ -98,12 +102,9 @@ let timer;
 
 // The current simulation time in milliseconds since Unix epoch
 let currentSimulationTime;
-
 let lastFetchedSimulationTime = null; // The simulation time for which the last system data was fetched
 
 let currentSystem;
-let currentSystemColours;
-let objectTypes;
 
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
@@ -961,19 +962,8 @@ export async function init(name) {
     const systemInfo = await getSystemInfo(currentSystem);
     habitableZone.start = systemInfo["habitable zone"].start;
     habitableZone.end = systemInfo["habitable zone"].end;
-    currentSystemColours = Object.fromEntries(
-        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
-            name,
-            data.colour,
-        ]),
-    );
-
-    objectTypes = Object.fromEntries(
-        Object.entries(systemInfo.objects ?? {}).map(([name, data]) => [
-            name,
-            data.type,
-        ]),
-    );
+    setCurrentSystemColours(systemInfo.objects);
+    setObjectTypes(systemInfo.objects);
 
     const canvas = document.getElementById("simulation-canvas");
     initRenderer(canvas);
