@@ -33,10 +33,10 @@ export function getTheme(isDarkMode = settings.darkMode) {
     return isDarkMode ? themes.dark : themes.light;
 }
 
-export function getFontSize(size) {
+export function getFontSize(size = settings.textSize) {
     return fontSizes[size] ?? fontSizes.Default;
 }
 
-export function getFontFamily(chosenFont) {
+export function getFontFamily(chosenFont = settings.font) {
     return fontFamilies[chosenFont] ?? fontFamilies.Default;
 }

@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 import { createHabitableZoneMesh, habitableZoneMesh } from "./habitableZone.js";
 import { createReferenceGrid, referenceGrid } from "./referenceGrid.js";
-import { getTheme } from "./themes.js";
+import { getTheme } from "../themes.js";
 
 const AMBIENT_LIGHT_COLOR = 0xffffff;
 const AMBIENT_LIGHT_INTENSITY = 1;
