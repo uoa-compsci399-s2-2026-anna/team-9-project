@@ -656,6 +656,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
         currentSystemData.positions,
     )) {
         createOrUpdateObjectMesh(
+            currentSystem,
             name,
             position,
             currentSystemGroup,
@@ -684,6 +685,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
         )) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateObjectMesh(
+                currentSystem,
                 name,
                 position,
                 solarSystemGroup,

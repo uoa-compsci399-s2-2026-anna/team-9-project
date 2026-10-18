@@ -180,12 +180,19 @@ export function updateScreenSpaceScales() {
  * If the target object does not exist, then its mesh is created at the given position.
  * If the target object does exist, then its position is updated.
  *
+ * @param {string} currentSystem Name of the current system
  * @param {string} name Name of the object
  * @param {Object} position Position of the object
  * @param {THREE.Group} group The group to add the object to
  * @param {string} colour CSS colour string used for this object's label
  */
-export function createOrUpdateObjectMesh(name, position, group, colour) {
+export function createOrUpdateObjectMesh(
+    currentSystem,
+    name,
+    position,
+    group,
+    colour,
+) {
     // Don't create object mesh in the comparison overlay
     // for objects that are hidden by default in the Solar System
     if (
