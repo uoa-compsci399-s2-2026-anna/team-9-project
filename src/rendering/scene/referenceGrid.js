@@ -7,7 +7,7 @@ import {
     comparingToSolarSystem,
 } from "../../shared/simulationState.js";
 
-import { FOV, cameraDefaults } from "../simulationCameraAndControls.js";
+import { FOV, cameraDefaults } from "../cameraAndControls.js";
 import {
     currentSystemDefaultViewRadius,
     solarSystemDefaultViewRadius,

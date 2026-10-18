@@ -44,7 +44,7 @@ import {
     initOrUpdateControls,
     animateCamera,
     animateCameraToFitRadius,
-} from "./simulationCameraAndControls.js";
+} from "./cameraAndControls.js";
 import {
     viewRadius,
     VIEW_RADIUS_MULTIPLIER,
