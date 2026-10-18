@@ -18,6 +18,21 @@ export function setObjectSize() {
 }
 
 /**
+ * Get the configured colour for an object in the current system, appropriate for the
+ * current light/dark theme. Falls back to black in light mode and white in dark mode if the
+ * object has no configured colour, or if currentSystemColours hasn't been populated yet.
+ *
+ * @param {string} name Name of the object
+ * @param {boolean} isDarkMode Whether to use the dark mode variant
+ * @returns {string} CSS colour string
+ */
+export function getCurrentSystemColour(name, isDarkMode) {
+    const variant = isDarkMode ? "dark" : "light";
+    const fallbackColour = isDarkMode ? "white" : "black";
+    return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
+}
+
+/**
  * Set the colours of objects in the current system based on the provided object data.
  * @param {Object} objectData The object data containing colour information
  */

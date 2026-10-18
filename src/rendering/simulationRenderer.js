@@ -68,9 +68,9 @@ import {
 import {
     objectSize,
     hitboxPadding,
-    currentSystemColours,
     objectTypes,
     setObjectSize,
+    getCurrentSystemColour,
     setCurrentSystemColours,
     setObjectTypes,
 } from "./objectProperties.js";
@@ -131,21 +131,6 @@ const comparisonOverlayColour = {
 };
 const comparisonOrbitOpacity = 0.8;
 const comparisonLabelOpacity = 0.8;
-
-/**
- * Get the configured colour for an object in the current system, appropriate for the
- * current light/dark theme. Falls back to black in light mode and white in dark mode if the
- * object has no configured colour, or if currentSystemColours hasn't been populated yet.
- *
- * @param {string} name Name of the object
- * @param {boolean} isDarkMode Whether to use the dark mode variant
- * @returns {string} CSS colour string
- */
-function getCurrentSystemColour(name, isDarkMode) {
-    const variant = isDarkMode ? "dark" : "light";
-    const fallbackColour = isDarkMode ? "white" : "black";
-    return currentSystemColours?.[name]?.[variant] ?? fallbackColour;
-}
 
 const GLOW_SIZE_MULTIPLIER = 3.5;
 const SPRITE_Z_SCALE = 1.0;
