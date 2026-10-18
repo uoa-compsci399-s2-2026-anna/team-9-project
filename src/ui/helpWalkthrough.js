@@ -10,6 +10,8 @@ import {
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
+// MARK: VARIABLES
+
 const cleanups = new Map();
 const tooltipTargets = new Map();
 
@@ -19,6 +21,12 @@ let isShowingHelp = false;
 
 let helpTooltips = [];
 let shownTooltipIndex = null;
+
+// MARK: TRIGGERS
+
+document.addEventListener("mouseup", handleMouseUpOnDocument);
+
+// MARK: EVENT SUBSCRIPTIONS
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     if (isShowingHelp) {
@@ -35,16 +43,17 @@ bus.subscribe(
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
-// mouseup to be consistent with behaviour in simulation screen
-document.addEventListener("mouseup", handleMouseUpOnDocument);
+// MARK: EXECUTED CODE
 
 document
     .querySelectorAll("[data-help-tooltip]")
     .forEach(addTooltipToHelpTooltipsArray);
 
+// MARK: FUNCTIONS
+
 /**
- * Tries to show the next help tooltip or stop walkthrough. Does nothing if 
- * mouse up on a `.container`, `#simulation-canvas`, `.flatpickr-calendar`, 
+ * Tries to show the next help tooltip or stop walkthrough. Does nothing if
+ * mouse up on a `.container`, `#simulation-canvas`, `.flatpickr-calendar`,
  * or `[data-button-type]`. If mouseup on the available systems button in the
  * home page, stops the walkthrough.
  * @param {Event} event The mouseup event
