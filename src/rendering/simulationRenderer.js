@@ -873,16 +873,10 @@ export async function init(name) {
     initScene();
 
     /**
-     * Persist the last fetched simulation time, formatted simulation date, and days elapsed text
-     * before the simulation is exited
+     * Persist the last fetched simulation time and elapsed days text before the simulation is exited.
      */
     window.addEventListener("pagehide", () => {
         setSimulationTime(currentSystem, lastFetchedSimulationTime);
-
-        const formattedSimulationDate = formatSimulationDate(
-            lastFetchedSimulationTime,
-        );
-        setFormattedSimulationDate(currentSystem, formattedSimulationDate);
 
         const elapsedDaysText = getElapsedDaysText(lastFetchedSimulationTime);
         setElapsedText(currentSystem, elapsedDaysText);
