@@ -43,6 +43,9 @@ document
     .querySelectorAll("[data-help-tooltip]")
     .forEach(addTooltipToHelpTooltipsArray);
 
+// Register resize listeners to update tooltip positions
+document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
+
 // MARK: FUNCTIONS
 
 /**
@@ -104,11 +107,6 @@ function startHelpWalkthrough() {
     }
 
     helpButtonTooltip.textContent = "End walkthrough";
-
-    // Register resize listeners to update tooltip positions
-    document
-        .querySelectorAll("[data-help-tooltip]")
-        .forEach(setTooltipPosition);
 
     isShowingHelp = true;
     showNextHelpTooltipOrStopHelpWalkthrough();
