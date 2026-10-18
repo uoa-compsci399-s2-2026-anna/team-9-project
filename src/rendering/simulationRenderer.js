@@ -64,7 +64,7 @@ import {
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
 import { objectSize, hitboxPadding, setObjectSize } from "./objects.js";
-import { createLabel } from "./objectLabels.js";
+import { createLabel, getObjectApparentPixelRadius } from "./objectLabels.js";
 import {
     habitableZone,
     habitableZoneMesh,
@@ -464,73 +464,6 @@ export function updateObjectLabelOffsets() {
             label.element.style.marginLeft = `${pixelLength}px`;
         }
     }
-}
-
-/**
- * @param {THREE.Object3D} object ThreeJS mesh of object
- * @returns How many pixels the object's radius is on a screen
- */
-function getObjectApparentPixelRadius(object) {
-    /**
-     * The 'up' direction in world space.
-     */
-    const worldUp = new THREE.Vector3(0, 1, 0);
-
-    /**
-     * The 'up' direction in camera space.
-     */
-    const cameraWorldUp = worldUp.applyQuaternion(
-        camera.getWorldQuaternion(new THREE.Quaternion()),
-    );
-
-    /**
-     * Vector to center of object in world coordinates.
-     */
-    const objectCenter = new THREE.Vector3();
-    object.getWorldPosition(objectCenter);
-
-    /**
-     * Vector to edge of object in world coordinates.
-     */
-    const objectEdge = new THREE.Vector3();
-    objectEdge.copy(objectCenter).addScaledVector(
-        // Scale the camera 'up' direction vector by the object mesh's scale
-        cameraWorldUp,
-        objectSize * object.scale.y,
-    );
-
-    // Project vectors to NDC space (coordinates in interval [-1, 1])
-    objectCenter.project(camera);
-    objectEdge.project(camera);
-
-    // Get scalars in screen pixel coordinate space
-    const centerY = ndcScalarToScreenScalar(objectCenter.y);
-    const edgeY = ndcScalarToScreenScalar(objectEdge.y);
-
-    // Calculate object radius in screen pixels
-    const pixelLength = Math.abs(edgeY - centerY);
-
-    return pixelLength;
-}
-
-/**
- * Converts a scalar in NDC space to a scalar in screen pixel space.
- *
- * i.e. a mapping from NDC space in interval [-1, 1] to screen pixel space
- * in interval [0, screen height].
- *
- * @param {Number} ndcDimension Single dimension of normalised device coordinate
- * system (i.e a scalar in NDC space) (in interval [-1, 1])
- * @returns Single dimension of `ndcDimension` scalar in screen pixel
- * coorindates
- */
-function ndcScalarToScreenScalar(ndcDimension) {
-    /**
-     * The client height of the renderer.
-     */
-    const clientHeight = renderer.domElement.clientHeight;
-
-    return ((ndcDimension + 1) / 2) * clientHeight;
 }
 
 /**
