@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { settings } from "../../shared/settingsState.js";
 import { renderer } from "../renderers.js";
 import { camera } from "../cameraAndControls.js";
 import { currentSystemGroup, solarSystemGroup } from "./scene.js";
@@ -93,8 +92,8 @@ export function createObjectLabel(name, colour, opacity) {
 
     labelDiv.style.opacity = opacity;
 
-    labelDiv.style.fontSize = getFontSize(settings.textSize);
-    labelDiv.style.fontFamily = getFontFamily(settings.font);
+    labelDiv.style.fontSize = getFontSize();
+    labelDiv.style.fontFamily = getFontFamily();
     labelDiv.style.fontWeight = "bold";
 
     labelDiv.style.padding = "1px 5px";
