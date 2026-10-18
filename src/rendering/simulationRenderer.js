@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { MeshLineGeometry, MeshLineMaterial } from "three.meshline";
 import {
     simulationState,
@@ -99,9 +98,6 @@ let objectTypes;
 
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
-
-let renderer;
-let labelRenderer;
 
 const DRAG_THRESHOLD = 5;
 
