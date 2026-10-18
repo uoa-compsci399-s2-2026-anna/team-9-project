@@ -1,22 +1,22 @@
 import * as THREE from "three";
 
-import { bus } from "../events/eventBus.js";
-import { EVENTS } from "../events/events.js";
+import { bus } from "../../events/eventBus.js";
+import { EVENTS } from "../../events/events.js";
 import {
     simulationState,
     comparingToSolarSystem,
-} from "../shared/simulationState.js";
+} from "../../shared/simulationState.js";
 
-import { FOV, cameraDefaults } from "./simulationCameraAndControls.js";
+import { FOV, cameraDefaults } from "../cameraAndControls.js";
 import {
     currentSystemDefaultViewRadius,
     solarSystemDefaultViewRadius,
-} from "./viewRadius.js";
+} from "../viewRadius.js";
 import {
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
-} from "./simulationCalculations.js";
-import { getTheme } from "./themes.js";
+} from "../calculations.js";
+import { getTheme } from "../themes.js";
 
 // Size of the reference grid in AU when scale = 1.
 // This will be scaled when the camera zoom changes.
