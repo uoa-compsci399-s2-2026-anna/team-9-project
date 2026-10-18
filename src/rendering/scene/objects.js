@@ -1,12 +1,20 @@
 import * as THREE from "three";
+import {
+    simulationState,
+    comparingToSolarSystem,
+    isObjectHidden,
+    isObjectHiddenByDefault,
+} from "../../shared/simulationState.js";
 import { renderer } from "../renderers.js";
 import { camera } from "../cameraAndControls.js";
 import {
     objectSize,
+    hitboxPadding,
     objectTypes,
     innermostPeriapsis,
 } from "../objectProperties.js";
-import { objectMeshes, solarSystemGroup } from "./scene.js";
+import { objectMeshes, objectLabels, solarSystemGroup } from "./scene.js";
+import { createObjectLabel } from "./objectLabels.js";
 
 // Star glow texture constants
 
@@ -23,6 +31,9 @@ const EDGE_STOP = 1;
 // Colour of the core of the star
 const CORE_COLOUR = "rgba(255, 255, 255, 1)";
 
+const GLOW_SIZE_MULTIPLIER = 3.5;
+const SPRITE_Z_SCALE = 1.0;
+
 // Screen space object sizing
 const DESIRED_OBJECT_PIXEL_SIZE = 12;
 const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
@@ -38,6 +49,8 @@ const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
 
 // Fraction of the innermost periapsis that an object's on screen radius may occupy
 const MAX_EXTENT_ORBIT_FRACTION = 0.5;
+
+const comparisonLabelOpacity = 0.8;
 
 /**
  * Creates a radial glow texture for use as a sprite map (e.g., for rendering stars).
@@ -161,4 +174,91 @@ export function updateScreenSpaceScales() {
 
         mesh.scale.set(scale, scale, scale);
     }
+}
+
+/**
+ * If the target object does not exist, then its mesh is created at the given position.
+ * If the target object does exist, then its position is updated.
+ *
+ * @param {string} name Name of the object
+ * @param {Object} position Position of the object
+ * @param {THREE.Group} group The group to add the object to
+ * @param {string} colour CSS colour string used for this object's label
+ */
+export function createOrUpdateObjectMesh(name, position, group, colour) {
+    // Don't create object mesh in the comparison overlay
+    // for objects that are hidden by default in the Solar System
+    if (
+        comparingToSolarSystem &&
+        group === solarSystemGroup &&
+        isObjectHiddenByDefault("Solar System", name)
+    ) {
+        return;
+    }
+
+    let mesh = objectMeshes.get(name);
+
+    if (!mesh) {
+        const geometry = new THREE.SphereGeometry(objectSize);
+        const material = new THREE.MeshBasicMaterial({ color: colour });
+
+        mesh = new THREE.Mesh(geometry, material);
+
+        const objectType = objectTypes[name];
+        if (objectType === "star") {
+            const glowTexture = createGlowTexture(colour);
+
+            const spriteMaterial = new THREE.SpriteMaterial({
+                map: glowTexture,
+                transparent: true,
+                depthWrite: false,
+            });
+
+            const glowSprite = new THREE.Sprite(spriteMaterial);
+
+            const glowSize = objectSize * GLOW_SIZE_MULTIPLIER;
+            glowSprite.scale.set(glowSize, glowSize, SPRITE_Z_SCALE);
+
+            mesh.add(glowSprite);
+        }
+
+        if (group === solarSystemGroup) {
+            mesh.visible = comparingToSolarSystem;
+        } else {
+            mesh.visible = !isObjectHidden(currentSystem, name);
+        }
+
+        // Give the mesh a name to identify the mesh with raycasting
+        mesh.userData.name = name;
+
+        // Create a larger invisible sphere for click detection
+        const hitboxSize = objectSize + hitboxPadding;
+        const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
+        const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
+
+        const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
+
+        // Add the hitbox as a child of the mesh
+        mesh.add(hitbox);
+
+        group.add(mesh);
+        objectMeshes.set(name, mesh);
+
+        const label = createObjectLabel(
+            name,
+            colour,
+            group === solarSystemGroup ? comparisonLabelOpacity : 1,
+        );
+
+        label.position.set(0, 0, 0);
+        label.visible = simulationState.labelsShown;
+
+        // 'Anchors' the label to the top-left
+        label.center.set(0, 0);
+
+        mesh.add(label);
+        objectLabels.set(name, label);
+    }
+
+    mesh.position.set(position.x, position.y, position.z);
 }

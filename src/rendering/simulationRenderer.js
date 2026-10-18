@@ -65,7 +65,6 @@ import {
 } from "./referenceSystemData.js";
 import {
     objectSize,
-    hitboxPadding,
     objectTypes,
     setObjectSize,
     getCurrentSystemColour,
@@ -73,11 +72,12 @@ import {
     setObjectTypes,
     updateInnermostPeriapsis,
 } from "./objectProperties.js";
-import { createGlowTexture, updateScreenSpaceScales } from "./scene/objects.js";
 import {
-    createObjectLabel,
-    updateObjectLabelOffsets,
-} from "./scene/objectLabels.js";
+    createGlowTexture,
+    updateScreenSpaceScales,
+    createOrUpdateObjectMesh,
+} from "./scene/objects.js";
+import { updateObjectLabelOffsets } from "./scene/objectLabels.js";
 import {
     habitableZone,
     habitableZoneMesh,
@@ -129,10 +129,6 @@ const comparisonOverlayColour = {
     light: "#7d5c12",
 };
 const comparisonOrbitOpacity = 0.8;
-const comparisonLabelOpacity = 0.8;
-
-const GLOW_SIZE_MULTIPLIER = 3.5;
-const SPRITE_Z_SCALE = 1.0;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
@@ -275,93 +271,6 @@ function onCanvasClick(event, canvas) {
     event.stopPropagation();
 
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
-}
-
-/**
- * If the target object does not exist, then its mesh is created at the given position.
- * If the target object does exist, then its position is updated.
- *
- * @param {string} name Name of the object
- * @param {Object} position Position of the object
- * @param {THREE.Group} group The group to add the object to
- * @param {string} colour CSS colour string used for this object's label
- */
-function createOrUpdateObjectMesh(name, position, group, colour) {
-    // Don't create object mesh in the comparison overlay
-    // for objects that are hidden by default in the Solar System
-    if (
-        comparingToSolarSystem &&
-        group === solarSystemGroup &&
-        isObjectHiddenByDefault("Solar System", name)
-    ) {
-        return;
-    }
-
-    let mesh = objectMeshes.get(name);
-
-    if (!mesh) {
-        const geometry = new THREE.SphereGeometry(objectSize);
-        const material = new THREE.MeshBasicMaterial({ color: colour });
-
-        mesh = new THREE.Mesh(geometry, material);
-
-        const objectType = objectTypes[name];
-        if (objectType === "star") {
-            const glowTexture = createGlowTexture(colour);
-
-            const spriteMaterial = new THREE.SpriteMaterial({
-                map: glowTexture,
-                transparent: true,
-                depthWrite: false,
-            });
-
-            const glowSprite = new THREE.Sprite(spriteMaterial);
-
-            const glowSize = objectSize * GLOW_SIZE_MULTIPLIER;
-            glowSprite.scale.set(glowSize, glowSize, SPRITE_Z_SCALE);
-
-            mesh.add(glowSprite);
-        }
-
-        if (group === solarSystemGroup) {
-            mesh.visible = comparingToSolarSystem;
-        } else {
-            mesh.visible = !isObjectHidden(currentSystem, name);
-        }
-
-        // Give the mesh a name to identify the mesh with raycasting
-        mesh.userData.name = name;
-
-        // Create a larger invisible sphere for click detection
-        const hitboxSize = objectSize + hitboxPadding;
-        const hitboxGeometry = new THREE.SphereGeometry(hitboxSize);
-        const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
-
-        const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
-
-        // Add the hitbox as a child of the mesh
-        mesh.add(hitbox);
-
-        group.add(mesh);
-        objectMeshes.set(name, mesh);
-
-        const label = createObjectLabel(
-            name,
-            colour,
-            group === solarSystemGroup ? comparisonLabelOpacity : 1,
-        );
-
-        label.position.set(0, 0, 0);
-        label.visible = simulationState.labelsShown;
-
-        // 'Anchors' the label to the top-left
-        label.center.set(0, 0);
-
-        mesh.add(label);
-        objectLabels.set(name, label);
-    }
-
-    mesh.position.set(position.x, position.y, position.z);
 }
 
 /**
