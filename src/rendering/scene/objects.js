@@ -1,6 +1,12 @@
 import * as THREE from "three";
+import { renderer } from "../renderers.js";
 import { camera } from "../cameraAndControls.js";
-import { objectSize } from "../objectProperties.js";
+import {
+    objectSize,
+    objectTypes,
+    innermostPeriapsis,
+} from "../objectProperties.js";
+import { objectMeshes, solarSystemGroup } from "./scene.js";
 
 // Star glow texture constants
 
@@ -16,6 +22,22 @@ const EDGE_STOP = 1;
 
 // Colour of the core of the star
 const CORE_COLOUR = "rgba(255, 255, 255, 1)";
+
+// Screen space object sizing
+const DESIRED_OBJECT_PIXEL_SIZE = 12;
+const DESIRED_STAR_PIXEL_SIZE = 24; // Stars are bigger
+const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objects
+
+// How much larger stars are compared to other objects
+const STAR_SIZE_RATIO = DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE;
+
+const minScreenSpaceScale = 0.5;
+
+// Keeps stars proportionally larger than other objects at the minimum scale
+const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
+
+// Fraction of the innermost periapsis that an object's on screen radius may occupy
+const MAX_EXTENT_ORBIT_FRACTION = 0.5;
 
 /**
  * Creates a radial glow texture for use as a sprite map (e.g., for rendering stars).
@@ -61,6 +83,22 @@ export function createGlowTexture(colour) {
 }
 
 /**
+ * The largest scale an object may have so that its on screen radius stays
+ * within a fraction of the innermost periapsis.
+ *
+ * @param {boolean} isStar Whether the object is a star or not
+ * @returns The cap on the scale for an object
+ */
+function getOrbitScaleCap(isStar) {
+    // The maximum size for a star
+    const starSizeCap =
+        (innermostPeriapsis * MAX_EXTENT_ORBIT_FRACTION) / objectSize;
+
+    // Objects should always be STAR_SIZE_RATIO smaller than stars
+    return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
+}
+
+/**
  * Computes a scale factor so the mesh's apparent size on screen stays roughly
  * constant regardless of camera distance.
  *
@@ -71,7 +109,7 @@ export function createGlowTexture(colour) {
  * @param {number} maxScale The maximum allowed scale factor
  * @returns {number} The scale factor to apply to the mesh
  */
-export function calculateScreenSpaceScale(
+function calculateScreenSpaceScale(
     mesh,
     canvasHeight,
     desiredPixelSize,
@@ -91,4 +129,36 @@ export function calculateScreenSpaceScale(
     const scale = desiredWorldDiameter / (2 * objectSize);
 
     return THREE.MathUtils.clamp(scale, minScale, maxScale);
+}
+
+export function updateScreenSpaceScales() {
+    const canvasHeight = renderer.domElement.clientHeight;
+
+    for (const mesh of objectMeshes.values()) {
+        if (!mesh.visible) continue;
+
+        const isComparisonOverlay = mesh.parent === solarSystemGroup;
+        const isStar = objectTypes[mesh.userData.name] === "star";
+
+        let desiredPixelSize = DESIRED_OBJECT_PIXEL_SIZE;
+        if (isStar) {
+            desiredPixelSize = DESIRED_STAR_PIXEL_SIZE;
+        } else if (isComparisonOverlay) {
+            desiredPixelSize = DESIRED_COMPARISON_PIXEL_SIZE;
+        }
+
+        const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
+        // Ensure the max scale is at least the min scale
+        const maxScale = Math.max(getOrbitScaleCap(isStar), minScale);
+
+        const scale = calculateScreenSpaceScale(
+            mesh,
+            canvasHeight,
+            desiredPixelSize,
+            minScale,
+            maxScale,
+        );
+
+        mesh.scale.set(scale, scale, scale);
+    }
 }
