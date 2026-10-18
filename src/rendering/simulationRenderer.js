@@ -65,7 +65,11 @@ import {
     setReferenceSystemData,
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
-import { objectSize, hitboxPadding, setObjectSize } from "./objectSize.js";
+import {
+    objectSize,
+    hitboxPadding,
+    setObjectSize,
+} from "./objectProperties.js";
 import { createGlowTexture } from "./scene/objects.js";
 import {
     createObjectLabel,

@@ -3,7 +3,7 @@ import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { renderer } from "../renderers.js";
 import { camera } from "../cameraAndControls.js";
 import { currentSystemGroup, solarSystemGroup } from "./scene.js";
-import { objectSize } from "../objectSize.js";
+import { objectSize } from "../objectProperties.js";
 import { getTheme, getFontSize, getFontFamily } from "../themes.js";
 
 /**
