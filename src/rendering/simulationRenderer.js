@@ -62,7 +62,7 @@ import {
     setReferenceSystemData,
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
-import { objectSize, hitboxPadding, setObjectSize } from "./objects.js";
+import { objectSize, hitboxPadding, setObjectSize } from "./objectSize.js";
 import {
     createObjectLabel,
     updateObjectLabelOffsets,
