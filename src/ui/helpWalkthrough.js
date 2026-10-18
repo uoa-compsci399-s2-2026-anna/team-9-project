@@ -53,7 +53,7 @@ document
 
 /**
  * Tries to show the next help tooltip or stop walkthrough. Does nothing if
- * mouse up on a `.container`, `#simulation-canvas`, `.flatpickr-calendar`,
+ * mouse up on a `.container`, `.flatpickr-calendar`,
  * or `[data-button-type]`. If mouseup on the available systems button in the
  * home page, stops the walkthrough.
  * @param {Event} event The mouseup event
@@ -75,7 +75,6 @@ function handleMouseUpOnDocument(event) {
 
     if (
         event.target.closest(".container") ||
-        event.target.closest("#simulation-canvas") ||
         event.target.closest(".flatpickr-calendar") ||
         event.target.closest("[data-button-type]")
     ) {
@@ -100,10 +99,6 @@ function addTooltipToHelpTooltipsArray(tooltip) {
         // Push to back
         helpTooltips.push(tooltip);
     }
-
-    tooltip.addEventListener("mouseup", () =>
-        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT),
-    );
 }
 
 /**
