@@ -13,6 +13,10 @@ export const currentSystemGroup = new THREE.Group();
 export const solarSystemGroup = new THREE.Group();
 solarSystemGroup.visible = false; // Initially hidden until the user requests a comparison
 
+export const objectMeshes = new Map();
+export const orbitalLines = new Map();
+export const objectLabels = new Map();
+
 /**
  * Initialise the scene for the simulation renderer.
  */

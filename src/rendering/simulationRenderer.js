@@ -55,6 +55,9 @@ import {
     scene,
     currentSystemGroup,
     solarSystemGroup,
+    objectMeshes,
+    orbitalLines,
+    objectLabels,
     initScene,
 } from "./scene/scene.js";
 import {
@@ -104,10 +107,6 @@ let lastSystemData = null;
 let isDragging = false;
 
 const raycaster = new THREE.Raycaster();
-
-const objectMeshes = new Map();
-const orbitalLines = new Map();
-const objectLabels = new Map();
 
 const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
