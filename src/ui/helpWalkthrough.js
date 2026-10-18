@@ -192,8 +192,51 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
 }
 
 function updateCurrentHelpTooltipProgressText() {
-    getShownTooltip().querySelector("[data-progress-text]").textContent =
-        `${shownTooltipIndex + 1}/${helpTooltips.length}`;
+    // Query selector all required as we duplicate the tooltip to add the border
+    // and background colour.
+    getShownTooltip()
+        .querySelectorAll("[data-progress-text]")
+        .forEach((text) => {
+            text.textContent = `${shownTooltipIndex + 1}/${helpTooltips.length}`;
+        });
+}
+
+/**
+ * Adds the background and outline to `tooltip` by duplicating the element
+ * and updating the style accordingly.
+ * @param {HTMLElement} tooltip The tooltip
+ */
+function addTooltipBackgroundAndOutline(tooltip) {
+    const tooltipContent = tooltip.querySelector("[data-tooltip-content]");
+
+    const tooltipBackgroundAndOutline = tooltipContent.cloneNode(true);
+    tooltipBackgroundAndOutline.classList.forEach((className) => {
+        const Z_INDEX_CLASS = /^z-[0-9]+$/;
+        const BORDER_CLASS = /^border-[A-Za-z0-9]+$/;
+        const BACKGROUND_COLOUR_CLASS = /^bg-[A-Za-z0-9]+$/;
+        const ABSOLUTE_CLASS = /^absolute$/;
+
+        if (
+            Z_INDEX_CLASS.test(className) ||
+            BORDER_CLASS.test(className) ||
+            BACKGROUND_COLOUR_CLASS.test(className) ||
+            ABSOLUTE_CLASS.test(className)
+        ) {
+            tooltipBackgroundAndOutline.classList.remove(className);
+        }
+    });
+
+    tooltipBackgroundAndOutline.classList.add("z-10");
+    tooltipBackgroundAndOutline.classList.add("bordered-light");
+    tooltipBackgroundAndOutline.classList.add("relative");
+    tooltipBackgroundAndOutline.classList.add("bg-white");
+    tooltipBackgroundAndOutline.classList.add("dark:bg-zinc-950");
+
+    Array.from(tooltipBackgroundAndOutline.children).forEach((child) => {
+        child.classList.add("invisible");
+    });
+
+    tooltipContent.before(tooltipBackgroundAndOutline);
 }
 
 /**
@@ -219,6 +262,8 @@ function setTooltipPosition(tooltip) {
         );
         return;
     }
+
+    addTooltipBackgroundAndOutline(tooltip);
 
     tooltipTargets.set(tooltip, target);
     if (tooltip.parentElement !== document.body) {
