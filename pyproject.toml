@@ -1,6 +1,6 @@
 [project]
 name = "opis"
-version = "1.1.4"
+version = "1.1.8"
 description = "OPIS: Orbital Planetary Interactive Simulator—A project for the ASTRO 100/G Lab"
 readme = "README.md"
 requires-python = ">=3.13"
