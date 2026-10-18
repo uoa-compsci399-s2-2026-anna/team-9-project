@@ -64,7 +64,16 @@ document.addEventListener("mouseup", (event) => {
     showNextHelpTooltipOrStopHelpWalkthrough();
 });
 
-document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+document
+    .querySelectorAll("[data-help-tooltip]")
+    .forEach(addTooltipToHelpTooltipsArray);
+
+/**
+ * Adds `tooltip` to the `helpTooltips` array, taking into account any priority
+ * it may had (i.e. whether it should be displayed first).
+ * @param {HTMLElement} tooltip The tooltip to add
+ */
+function addTooltipToHelpTooltipsArray(tooltip) {
     const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
 
     if (prioritiseOrder) {
@@ -78,7 +87,7 @@ document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
     tooltip.addEventListener("mouseup", () =>
         bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT),
     );
-});
+}
 
 /**
  * Begins the help walkthrough.
