@@ -39,12 +39,7 @@ bus.subscribe(
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
-document
-    .querySelectorAll("[data-help-tooltip]")
-    .forEach(addTooltipToHelpTooltipsArray);
-
-// Register resize listeners to update tooltip positions
-document.querySelectorAll("[data-help-tooltip]").forEach(setTooltipPosition);
+document.querySelectorAll("[data-help-tooltip]").forEach(initialiseTooltip);
 
 // MARK: FUNCTIONS
 
@@ -239,6 +234,12 @@ function addTooltipBackgroundAndOutline(tooltip) {
     tooltipContent.before(tooltipBackgroundAndOutline);
 }
 
+function initialiseTooltip(tooltip) {
+    addTooltipToHelpTooltipsArray(tooltip);
+    addTooltipBackgroundAndOutline(tooltip);
+    setTooltipPosition(tooltip);
+}
+
 /**
  * Sets `tooltip`'s position using floating-ui, and automatically updates its
  * position on screen size changes, etc.
@@ -262,8 +263,6 @@ function setTooltipPosition(tooltip) {
         );
         return;
     }
-
-    addTooltipBackgroundAndOutline(tooltip);
 
     tooltipTargets.set(tooltip, target);
     if (tooltip.parentElement !== document.body) {
