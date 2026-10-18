@@ -42,15 +42,15 @@ const DESIRED_COMPARISON_PIXEL_SIZE = 10; // Smaller size for solar system objec
 // How much larger stars are compared to other objects
 const STAR_SIZE_RATIO = DESIRED_STAR_PIXEL_SIZE / DESIRED_OBJECT_PIXEL_SIZE;
 
-const minScreenSpaceScale = 0.5;
+const MIN_SCREEN_SPACE_SCALE = 0.5;
 
 // Keeps stars proportionally larger than other objects at the minimum scale
-const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
+const MIN_STAR_SCREEN_SPACE_SCALE = MIN_SCREEN_SPACE_SCALE * STAR_SIZE_RATIO;
 
 // Fraction of the innermost periapsis that an object's on screen radius may occupy
 const MAX_EXTENT_ORBIT_FRACTION = 0.5;
 
-const comparisonLabelOpacity = 0.8;
+const COMPARISON_LABEL_OPACITY = 0.8;
 
 /**
  * Creates a radial glow texture for use as a sprite map (e.g., for rendering stars).
@@ -160,7 +160,9 @@ export function updateScreenSpaceScales() {
             desiredPixelSize = DESIRED_COMPARISON_PIXEL_SIZE;
         }
 
-        const minScale = isStar ? minStarScreenSpaceScale : minScreenSpaceScale;
+        const minScale = isStar
+            ? MIN_STAR_SCREEN_SPACE_SCALE
+            : MIN_SCREEN_SPACE_SCALE;
         // Ensure the max scale is at least the min scale
         const maxScale = Math.max(getOrbitScaleCap(isStar), minScale);
 
@@ -254,7 +256,7 @@ export function createOrUpdateObjectMesh(
         const label = createObjectLabel(
             name,
             colour,
-            group === solarSystemGroup ? comparisonLabelOpacity : 1,
+            group === solarSystemGroup ? COMPARISON_LABEL_OPACITY : 1,
         );
 
         label.position.set(0, 0, 0);
