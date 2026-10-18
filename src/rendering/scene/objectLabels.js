@@ -105,6 +105,11 @@ export function createObjectLabel(name, colour, opacity) {
     return label;
 }
 
+/**
+ * Update the offsets of object labels based on their apparent pixel radius.
+ * This ensures that labels remain a fixed pixel distance
+ * from the edge of their corresponding objects.
+ */
 export function updateObjectLabelOffsets() {
     for (const group of [currentSystemGroup, solarSystemGroup]) {
         for (const mesh of group.children) {
