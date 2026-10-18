@@ -1,8 +1,5 @@
 import { getVisibleReferenceOrbitalDataValues } from "./referenceSystemData.js";
-import {
-    calculateMaxApoapsis,
-    calculateMaxPeriapsis,
-} from "./simulationCalculations.js";
+import { calculateMaxApoapsis, calculateMaxPeriapsis } from "./calculations.js";
 import { habitableZone } from "./scene/habitableZone.js";
 
 export const VIEW_RADIUS_MULTIPLIER = 1.3;

@@ -27,7 +27,7 @@ import {
     calculateApoapsis,
     calculatePeriapsis,
     calculateAverageNormal,
-} from "./simulationCalculations.js";
+} from "./calculations.js";
 import {
     renderer,
     labelRenderer,

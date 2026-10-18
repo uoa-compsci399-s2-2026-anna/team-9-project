@@ -15,7 +15,7 @@ import {
 import {
     calculateCameraDistanceToTargetProjection,
     calculateReferenceGridDivisionSize,
-} from "../simulationCalculations.js";
+} from "../calculations.js";
 import { getTheme } from "../themes.js";
 
 // Size of the reference grid in AU when scale = 1.
