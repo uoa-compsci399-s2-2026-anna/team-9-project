@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { simulationState } from "../shared/simulationState.js";
-import { settings } from "../shared/settingsState.js";
-import { getTheme, getFontFamily } from "./themes.js";
+import { simulationState } from "../../shared/simulationState.js";
+import { settings } from "../../shared/settingsState.js";
+import { getTheme, getFontFamily } from "../themes.js";
 
 // Ensure required fonts are loaded before creating the habitable zone texture.
 // Otherwise, the text may not render correctly on the texture.

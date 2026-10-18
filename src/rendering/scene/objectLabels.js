@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { settings } from "../shared/settingsState.js";
-import { renderer } from "./renderers.js";
-import { camera } from "./simulationCameraAndControls.js";
+import { settings } from "../../shared/settingsState.js";
+import { renderer } from "../renderers.js";
+import { camera } from "../simulationCameraAndControls.js";
 import { currentSystemGroup, solarSystemGroup } from "./scene.js";
-import { objectSize } from "./objects.js";
-import { getTheme, getFontSize, getFontFamily } from "./themes.js";
+import { objectSize } from "../objects.js";
+import { getTheme, getFontSize, getFontFamily } from "../themes.js";
 
 /**
  * Converts a scalar in NDC space to a scalar in screen pixel space.

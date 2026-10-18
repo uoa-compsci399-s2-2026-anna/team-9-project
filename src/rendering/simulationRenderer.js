@@ -56,21 +56,27 @@ import {
     currentSystemGroup,
     solarSystemGroup,
     initScene,
-} from "./scene.js";
+} from "./scene/scene.js";
 import {
     getReferenceSystemData,
     setReferenceSystemData,
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
 import { objectSize, hitboxPadding, setObjectSize } from "./objects.js";
-import { createObjectLabel, updateObjectLabelOffsets } from "./objectLabels.js";
+import {
+    createObjectLabel,
+    updateObjectLabelOffsets,
+} from "./scene/objectLabels.js";
 import {
     habitableZone,
     habitableZoneMesh,
     updateHabitableZoneTexture,
     flipHabitableZoneTexture,
-} from "./habitableZone.js";
-import { referenceGrid, updateReferenceGridScale } from "./referenceGrid.js";
+} from "./scene/habitableZone.js";
+import {
+    referenceGrid,
+    updateReferenceGridScale,
+} from "./scene/referenceGrid.js";
 import {
     updateCalendar,
     getElapsedDaysText,
