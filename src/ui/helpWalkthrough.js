@@ -68,7 +68,9 @@ function handleMouseUpOnDocument(event) {
     if (
         event.target.closest(".container") ||
         event.target.closest(".flatpickr-calendar") ||
-        event.target.closest("[data-button-type]")
+        event.target.closest("[data-button-type]") ||
+        // Ignore simulation canvas clicks (this is handled in function onCanvasClick in simulationRenderer.js)
+        event.target.closest("#simulation-canvas")
     ) {
         return;
     }

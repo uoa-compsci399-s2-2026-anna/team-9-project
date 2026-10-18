@@ -241,6 +241,9 @@ function onCanvasClick(event, canvas) {
     // Close any open object information panel
     bus.publish(EVENTS.SIM.CLOSE_OBJECT_INFO);
 
+    // Go to next help walkthrough step (does nothing if not in progress)
+    bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT);
+
     const name = getObjectNameAt(event.clientX, event.clientY, canvas);
 
     if (!name) {
@@ -248,6 +251,7 @@ function onCanvasClick(event, canvas) {
     }
 
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
+
     return true;
 }
 
