@@ -965,7 +965,7 @@ export async function init(name) {
     );
     await setDefaultViewRadii(currentSystem);
     setObjectSize();
-    await updateInnermostPeriapsis(false);
+    await updateInnermostPeriapsis(currentSystem, false);
 
     // Align the system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(currentSystemGroup);
@@ -1109,7 +1109,7 @@ export async function compareToSolarSystem() {
     const canvas = renderer.domElement;
 
     await updateViewRadius(currentSystem, true, habitableZoneMesh?.visible);
-    await updateInnermostPeriapsis(true);
+    await updateInnermostPeriapsis(currentSystem, true);
 
     // Align the solar system's average normal with the up vector (Z-axis)
     alignSystemToCameraUp(solarSystemGroup, true);
@@ -1137,7 +1137,7 @@ export async function hideSolarSystem() {
 
     const canvas = renderer.domElement;
     await updateViewRadius(currentSystem, false, habitableZoneMesh?.visible);
-    await updateInnermostPeriapsis(false);
+    await updateInnermostPeriapsis(currentSystem, false);
     solarSystemGroup.visible = false;
 
     const cameraAndControlsSettings = calculateCameraAndControlsSettings(
@@ -1423,9 +1423,10 @@ function findSmallestPeriapsisStarName(orbitalData) {
  * corresponding object is visible by default, excluding the innermost star and the
  * Sun (if the Solar System is being compared to).
  *
+ * @param {string} currentSystem The name of the current system
  * @param {boolean} comparing Whether the Solar System is being compared to or not
  */
-async function updateInnermostPeriapsis(comparing) {
+async function updateInnermostPeriapsis(currentSystem, comparing) {
     // Don't check the periapsis of the innermost star in the current system
     const systems = [
         {
