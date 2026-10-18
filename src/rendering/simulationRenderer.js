@@ -74,7 +74,10 @@ import {
     setCurrentSystemColours,
     setObjectTypes,
 } from "./objectProperties.js";
-import { createGlowTexture } from "./scene/objects.js";
+import {
+    createGlowTexture,
+    calculateScreenSpaceScale,
+} from "./scene/objects.js";
 import {
     createObjectLabel,
     updateObjectLabelOffsets,
@@ -1476,41 +1479,6 @@ function getOrbitScaleCap(isStar) {
 
     // Objects should always be STAR_SIZE_RATIO smaller than stars
     return isStar ? starSizeCap : starSizeCap / STAR_SIZE_RATIO;
-}
-
-/**
- * Computes a scale factor so the mesh's apparent size on screen stays roughly
- * constant regardless of camera distance.
- *
- * @param {THREE.Object3D} mesh The object mesh (its geometry radius is objectSize)
- * @param {THREE.PerspectiveCamera} camera The active camera
- * @param {number} canvasHeight The renderer's canvas height in pixels
- * @param {number} desiredPixelSize The target on screen diameter in pixels
- * @param {number} minScale The minimum allowed scale factor
- * @param {number} maxScale The maximum allowed scale factor
- * @returns {number} The scale factor to apply to the mesh
- */
-function calculateScreenSpaceScale(
-    mesh,
-    camera,
-    canvasHeight,
-    desiredPixelSize,
-    minScale,
-    maxScale,
-) {
-    const meshWorldPosition = new THREE.Vector3();
-    mesh.getWorldPosition(meshWorldPosition);
-    const distance = camera.position.distanceTo(meshWorldPosition);
-
-    const verticalFovRadians = THREE.MathUtils.degToRad(camera.fov);
-    const worldHeightAtDistance =
-        2 * Math.tan(verticalFovRadians / 2) * distance;
-    const pixelToWorldRatio = worldHeightAtDistance / canvasHeight;
-
-    const desiredWorldDiameter = desiredPixelSize * pixelToWorldRatio;
-    const scale = desiredWorldDiameter / (2 * objectSize);
-
-    return THREE.MathUtils.clamp(scale, minScale, maxScale);
 }
 
 function updateScreenSpaceScales() {
