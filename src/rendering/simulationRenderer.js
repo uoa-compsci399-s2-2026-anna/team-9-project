@@ -63,7 +63,7 @@ import {
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
 import { objectSize, hitboxPadding, setObjectSize } from "./objects.js";
-import { createLabel, updateObjectLabelOffsets } from "./objectLabels.js";
+import { createObjectLabel, updateObjectLabelOffsets } from "./objectLabels.js";
 import {
     habitableZone,
     habitableZoneMesh,
@@ -427,7 +427,7 @@ function createOrUpdateObjectMesh(name, position, group, colour) {
         group.add(mesh);
         objectMeshes.set(name, mesh);
 
-        const label = createLabel(
+        const label = createObjectLabel(
             name,
             colour,
             group === solarSystemGroup ? comparisonLabelOpacity : 1,

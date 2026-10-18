@@ -75,14 +75,14 @@ function getObjectApparentPixelRadius(object) {
 }
 
 /**
- * Creates a label. The font size and family, and the div's background colour
+ * Creates a label for an object. The font size and family, and the div's background colour
  * are set as per the settings state.
  * @param {string} name Object name
  * @param {string} colour CSS colour string of label colour
  * @param {Number} opacity Opacity of label in interval [0, 1]
  * @returns {CSS2DObject} Created label div
  */
-export function createLabel(name, colour, opacity) {
+export function createObjectLabel(name, colour, opacity) {
     const labelDiv = document.createElement("div");
 
     labelDiv.className = "planet-label";
