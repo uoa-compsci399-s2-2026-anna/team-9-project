@@ -25,7 +25,6 @@ import {
     calculateProgressDistance,
     calculateOrbitRotationMatrix,
     calculateApoapsis,
-    calculatePeriapsis,
     calculateAverageNormal,
 } from "./calculations.js";
 import {
@@ -61,7 +60,6 @@ import {
     initScene,
 } from "./scene/scene.js";
 import {
-    getReferenceSystemData,
     setReferenceSystemData,
     getVisibleReferenceOrbitalDataValues,
 } from "./referenceSystemData.js";
@@ -73,6 +71,8 @@ import {
     getCurrentSystemColour,
     setCurrentSystemColours,
     setObjectTypes,
+    innermostPeriapsis,
+    updateInnermostPeriapsis,
 } from "./objectProperties.js";
 import {
     createGlowTexture,
@@ -153,9 +153,6 @@ const minStarScreenSpaceScale = minScreenSpaceScale * STAR_SIZE_RATIO;
 
 // Fraction of the innermost periapsis that an object's on screen radius may occupy
 const MAX_EXTENT_ORBIT_FRACTION = 0.5;
-
-// Periapsis of the innermost default visible orbit
-let innermostPeriapsis = Infinity;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
@@ -1390,80 +1387,6 @@ function resizeRendererToDisplaySize() {
     }
 
     return needResize;
-}
-
-/**
- * For the given orbital data, get the name of the star with the smallest periapsis.
- *
- * @param {Object} orbitalData Map of object name to orbital data
- * @returns The name of the star with the smallest periapsis
- */
-function findSmallestPeriapsisStarName(orbitalData) {
-    let starName = null;
-    let smallestPeriapsis = Infinity;
-
-    for (const [name, orbit] of Object.entries(orbitalData)) {
-        if (objectTypes[name] !== "star") {
-            continue;
-        }
-
-        const periapsis = calculatePeriapsis(orbit.a, orbit.e);
-
-        if (periapsis < smallestPeriapsis) {
-            smallestPeriapsis = periapsis;
-            starName = name;
-        }
-    }
-
-    return starName;
-}
-
-/**
- * Finds the smallest periapsis (closest point to the centre) across all orbits whose
- * corresponding object is visible by default, excluding the innermost star and the
- * Sun (if the Solar System is being compared to).
- *
- * @param {string} currentSystem The name of the current system
- * @param {boolean} comparing Whether the Solar System is being compared to or not
- */
-async function updateInnermostPeriapsis(currentSystem, comparing) {
-    // Don't check the periapsis of the innermost star in the current system
-    const systems = [
-        {
-            system: currentSystem,
-            getExcludedName: (orbitalData) =>
-                findSmallestPeriapsisStarName(orbitalData),
-        },
-    ];
-
-    if (comparing) {
-        // Don't check the periapsis of the Sun
-        systems.push({
-            system: "Solar System",
-            getExcludedName: () => "Sun",
-        });
-    }
-
-    let smallest = Infinity;
-
-    for (const { system, getExcludedName } of systems) {
-        const data = await getReferenceSystemData(system);
-        const excludedName = getExcludedName(data.orbital_data);
-
-        for (const [name, orbit] of Object.entries(data.orbital_data)) {
-            if (
-                name === excludedName ||
-                isObjectHiddenByDefault(system, name)
-            ) {
-                continue;
-            }
-
-            const periapsis = calculatePeriapsis(orbit.a, orbit.e);
-            smallest = Math.min(smallest, periapsis);
-        }
-    }
-
-    innermostPeriapsis = smallest;
 }
 
 /**
