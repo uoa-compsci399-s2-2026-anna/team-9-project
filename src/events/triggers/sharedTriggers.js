@@ -267,3 +267,52 @@ for (const [shortcutEvent, { key }] of Object.entries(shortcuts)) {
         attachKeyPress(key, publish);
     }
 }
+
+const DRAG_THRESHOLD = 5;
+
+/**
+ * Registers a no-drag click event listener to `element`. This fires when a
+ * no-drag click is detected on `element` (i.e. a click where the pointer moves
+ * less than or equal to `DRAG_THRESHOLD`).
+ * @param {HTMLElement} element The element to register this listener to.
+ * @param {(event: Event) => void} callback The callback to execute when a
+ * no-drag click is detected on `element`. This has a parameter of the original
+ * `"pointerup"` event.
+ */
+export function addNoDragClickEventListener(element, callback) {
+    let pointerStart = null;
+    let hasDragged = false;
+
+    element.addEventListener("pointerdown", (event) => {
+        pointerStart = {
+            x: event.clientX,
+            y: event.clientY,
+        };
+    });
+
+    element.addEventListener("pointermove", (event) => {
+        if (!pointerStart || hasDragged) {
+            return;
+        }
+
+        const dx = event.clientX - pointerStart.x;
+        const dy = event.clientY - pointerStart.y;
+
+        if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+            hasDragged = true;
+        }
+    });
+
+    element.addEventListener("pointerup", (event) => {
+        if (!pointerStart) {
+            return;
+        }
+
+        if (!hasDragged) {
+            callback(event);
+        }
+
+        pointerStart = null;
+        hasDragged = false;
+    });
+}
