@@ -356,4 +356,44 @@ export function createOrUpdateOrbitalLine(
     // Rotate the line to match the orbital parameters
     const rotationMatrix = calculateOrbitRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
+
+    let projectionLine = line.userData.projectionLine;
+    if (!projectionLine) {
+        projectionLine = new THREE.LineSegments(
+            new THREE.BufferGeometry(),
+            new THREE.LineBasicMaterial({
+                color: line.material.color,
+                transparent: true,
+                opacity: 0.5,
+                depthWrite: false,
+            }),
+        );
+        projectionLine.renderOrder = line.renderOrder;
+        line.userData.projectionLine = projectionLine;
+        line.add(projectionLine);
+    }
+
+    const referencePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    line.updateWorldMatrix(true, false);
+    const orbitToWorld = line.matrixWorld;
+    const worldToOrbit = orbitToWorld.clone().invert();
+    const projectionPoints = [];
+
+    for (let i = 0; i < points.length; i += 3) {
+        const orbitPoint = new THREE.Vector3(
+            points[i],
+            points[i + 1],
+            points[i + 2],
+        );
+        const projectedWorldPoint = orbitPoint
+            .clone()
+            .applyMatrix4(orbitToWorld);
+        referencePlane.projectPoint(projectedWorldPoint, projectedWorldPoint);
+        const projectedOrbitPoint =
+            projectedWorldPoint.applyMatrix4(worldToOrbit);
+
+        projectionPoints.push(orbitPoint, projectedOrbitPoint);
+    }
+
+    projectionLine.geometry.setFromPoints(projectionPoints);
 }
