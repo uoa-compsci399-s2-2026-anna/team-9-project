@@ -47,6 +47,9 @@
   "labelsShown": {
     "default": true
   },
+  "orbitLineProjectionsShown": {
+    "default": true
+  },
   "hiddenObjects": {
     "default": {
       "Solar System": ["Pluto", "1P/Halley", "3I/ATLAS"]
