@@ -307,10 +307,3 @@ export function addNoDragClickEventListener(element, callback) {
         hasDragged = false;
     });
 }
-
-//TODO: temporary
-document.querySelectorAll(".container").forEach((container) => {
-    addNoDragClickEventListener(container, () => {
-        console.log("NO DRAG CLICK");
-    });
-});
