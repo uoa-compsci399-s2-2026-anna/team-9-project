@@ -3,6 +3,8 @@ import sys
 import os
 import json
 
+# The version of this manager so that the data can be invalidated on update
+SYSTEMS_MANAGER_VERSION = "1.0"
 
 # Resolve base path to the packaged resources folder when frozen,
 # or to the script's own directory otherwise
@@ -28,7 +30,7 @@ def systems_data_from_project():
     """
     Loads system data that is stored in /systems
     """
-    
+
     SYSTEMS_DIR = os.path.join(base_path, "systems")
 
     SYSTEMS_FILENAME = "systems.json"
@@ -49,16 +51,14 @@ def systems_data_from_appdata():
     """
     Loads system data that is updated on launch from appdata cache
     """
-    
+
     roaming_path = os.getenv("APPDATA")
     FILENAME = "systems.json"
     FILEPATH = os.path.join(roaming_path, "OPIS", FILENAME)
 
     if not os.path.exists(FILEPATH):
-        print("Loading old data from ./systems")
         return None
 
-    print("Loading fresh data from systems.json")
 
     return get_file_at_path(FILENAME, FILEPATH)
 
@@ -69,26 +69,42 @@ def get_all_systems_data():
     cached file per device
     """
 
+    # Try get the data from appdata
     systems_data = systems_data_from_appdata()
 
-    if systems_data is None:
+    # If the file did not exist OR the file has an outdated version get it from
+    # the /systems directory
+    if systems_data is None or systems_data["systems data version"] != SYSTEMS_MANAGER_VERSION:
         systems_data = systems_data_from_project()
 
     return systems_data
 
 
 def export_all_systems_data_to_file(orbit_data, all_systems):
+    """
+    Takes the updated orbital data, overwrites the other data and writes it out
+    """
+    
+    # Deepcopy so that we do not edit the original object
     new_systems_data = copy.deepcopy(all_systems)
+
     for system_data in all_systems:
         system_name = system_data["name"].lower()
         current_system = next(
             data for data in new_systems_data if data["name"].lower() == system_name
         )
+
+        # Set the orbits and timestamp to the new versions
         current_system["orbits"] = orbit_data[system_name]["orbits"]
         current_system["timestamp"] = orbit_data[system_name]["timestamp"]
 
-    collated_data = {"systems": new_systems_data}
+    # Add the version to object
+    collated_data = {
+        "systems": new_systems_data,
+        "systems data version": SYSTEMS_MANAGER_VERSION,
+    }
 
+    # Write to file
     roaming_path = os.getenv("APPDATA")
     FILENAME = "systems.json"
     FILEPATH = os.path.join(roaming_path, "OPIS", FILENAME)
