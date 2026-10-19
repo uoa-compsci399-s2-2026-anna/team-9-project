@@ -1,0 +1,45 @@
+{
+    "name": null,
+    "distance": null,
+    "objects": {
+        "OBJECT NAME": {
+            "colour": {
+                "dark": null,
+                "light": null
+            },
+            "type": null,
+            "mass": {
+                "value": null,
+                "uncertainty": null
+            },
+            "temp": {
+                "value": null,
+                "uncertainty": null
+            },
+            "period": {
+                "heliocentric": null,
+                "barycentric": null
+            },
+            "radius": {
+                "value": null,
+                "uncertainty": null
+            }
+        }
+    },
+    "timestamp": null,
+    "habitable zone": {
+        "start": null,
+        "end": null
+    },
+    "orbits": {
+        "OBJECT NAME SAME AS BEFORE": {
+            "m": null,
+            "a": null,
+            "e": null,
+            "inc": null,
+            "Omega": null,
+            "omega": null,
+            "M": null
+        }
+    }
+}
