@@ -763,6 +763,21 @@ export function setOrbitsVisibility(value) {
     }
 }
 
+export function setOrbitLineProjectionsVisibility(value) {
+    for (const [name, orbit] of orbitalLines) {
+        const projectionLine = orbit.children[0];
+
+        if (!projectionLine || orbit.children.length > 1) {
+            console.error(
+                `Orbit line for ${name} has ${orbit.children.length} child(ren)! Each orbit line should have exactly 1 child, which is the projection line.`,
+            );
+            return;
+        }
+
+        projectionLine.visible = value;
+    }
+}
+
 export function setReferenceGridVisibility(value) {
     if (referenceGrid) {
         referenceGrid.visible = value;
