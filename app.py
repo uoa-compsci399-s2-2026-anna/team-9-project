@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from systems import Simulations
-from systems_manager import *
+from configuration_manager import *
 from utility import get_osculating_orbit, get_position_dict
 
 # Prevent internal server errors when adding objects to the simulation
