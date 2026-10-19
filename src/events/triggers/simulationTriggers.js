@@ -248,6 +248,8 @@ resetViewSettings.addEventListener("click", () => {
     }
 });
 
+// Go to next step in help walkthrough if user clicks anywhere on the tooltip
+// itself.
 document
     .querySelectorAll("[data-help-tooltip]")
     .forEach((tooltip) =>
