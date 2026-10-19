@@ -90,16 +90,16 @@ def get_all_systems_data():
     # Try get the data from appdata
     systems_data = systems_data_from_appdata()
 
-    # If the file existed, otherwise *
+    # If the file existed
     if systems_data is not None:
         # Get versions from each systems data file
         appdata_version = systems_data.get("systems data version", "")
 
-        # If they match return the appdata version, otherwise *
+        # If they match return the appdata version, otherwise continue
         if appdata_version == local_version:
             return systems_data
 
-    # Otherwise * load from local ./systems
+    # Otherwise load from local ./systems
     systems_data = systems_data_from_project()
 
     return systems_data
