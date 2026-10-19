@@ -273,7 +273,7 @@ const DRAG_THRESHOLD = 5;
 /**
  * Registers a no-drag click event listener to `element`. This fires when a
  * no-drag click is detected on `element` (i.e. a click where the pointer moves
- * less than or equal to `DRAG_THRESHOLD`.
+ * less than or equal to `DRAG_THRESHOLD`).
  * @param {HTMLElement} element The element to register this listener to.
  * @param {(event: Event) => void} callback The callback to execute when a
  * no-drag click is detected on `element`. This has a parameter of the original
