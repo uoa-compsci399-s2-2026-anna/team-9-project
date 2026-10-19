@@ -231,7 +231,8 @@ function getObjectNameAt(clientX, clientY, canvas) {
 /**
  * Handles when the canvas is clicked on while the user is not moving the camera.
  * Detects if an object was clicked and, if so, fires an event to notify other components
- * that an object was clicked.
+ * that an object was clicked, and publishes an event to go to the next step
+ * in the help walkthrough (if in progress).
  *
  * @param {MouseEvent} event The click event
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
