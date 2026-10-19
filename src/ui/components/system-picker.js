@@ -20,8 +20,9 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
 
     // Do not animate transition on open but do animate on close (the borders
     // rounding is animated on the 'closing' edge)
-    systemInformationButton.classList.toggle("transition-none", showDropdown);
-    systemInformationButton.classList.toggle("transition-all", !showDropdown);
+    systemInformationButton.style.transition = showDropdown
+        ? "none"
+        : "border-radius 0.3s ease-in-out";
 
     systemDropdown.classList.toggle("grid-rows-[1fr]", showDropdown);
     systemDropdown.classList.toggle("grid-rows-[0fr]", !showDropdown);
@@ -44,11 +45,7 @@ bus.subscribe(EVENTS.SIM.SYSTEM_DROPDOWN_TOGGLE, (event) => {
         systemDropdown.addEventListener(
             "transitionend",
             () => {
-                systemInformationButton.classList.remove(
-                    "rounded-b-none",
-                    "transition-all",
-                );
-
+                systemInformationButton.classList.remove("rounded-b-none");
                 systemDropdown.classList.remove("bordered", "border-t-0");
             },
             { once: true },
