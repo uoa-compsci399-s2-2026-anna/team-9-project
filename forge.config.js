@@ -10,7 +10,7 @@ module.exports = {
         // .deb and .rpm makers expect a lowercase executable name
         executableName: process.platform !== "linux" ? "OPIS" : "opis",
         asar: true,
-        extraResource: ["./dist/", "./src/", "./config.json"],
+        extraResource: ["./dist/", "./src/", "./systems/"],
         ignore: [
             /^\/\.git/,
             /^\/\.github/,
