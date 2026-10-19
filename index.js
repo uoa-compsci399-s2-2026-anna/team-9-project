@@ -1,18 +1,18 @@
-const { spawn } = require("child_process");
-const { app, BrowserWindow, ipcMain, nativeTheme } = require("electron");
+const { spawn, spawnSync } = require("child_process");
+const {
+    app,
+    BrowserWindow,
+    ipcMain,
+    nativeTheme,
+    dialog,
+    shell,
+} = require("electron");
+const { autoUpdater } = require("electron-updater");
 const path = require("path");
 const Store = require("electron-store"); // Refer to https://github.com/sindresorhus/electron-store
 const settingsSchema = require("./src/shared/settingsSchema.json");
 const simulationStateSchema = require("./src/shared/simulationStateSchema.json");
 const log = require("electron-log/main");
-
-// Squirrel launches the appplication multiple extra times during install/update/uninstall
-// so it can create/remove the start menu shortcut. This detects those launches,
-// handles the shortcut, and quits the application immediately.
-if (require("electron-squirrel-startup")) {
-    app.quit();
-    return;
-}
 
 // Display name of the application
 const APPLICATION_NAME = "OPIS";
@@ -365,6 +365,14 @@ function hidePageContent(hideScript) {
  * @param {Promise} url - A promise to the entry url to bind the application to
  */
 async function createWindow(python_url) {
+    const iconFile =
+        process.platform === "win32" ? "opis.ico" : "png-sizes/128x128.png";
+    const iconPath = path.join(
+        app.isPackaged ? process.resourcesPath : __dirname,
+        "src/assets/app-icon",
+        iconFile,
+    );
+
     // Create the browser window with specified preferences
     mainWindow = new BrowserWindow({
         width: 800,
@@ -379,9 +387,7 @@ async function createWindow(python_url) {
             contextIsolation: true,
             preload: path.join(__dirname, "preload.js"),
         },
-
-        // Load icon (required for Linux; see https://www.electronforge.io/guides/create-and-add-icons#linux)
-        icon: "src/assets/opis.png",
+        icon: iconPath,
     });
 
     // Hide dev tools if we are running an executable
@@ -473,12 +479,24 @@ async function createWindow(python_url) {
     mainWindow.loadURL(url);
 }
 
+function stopPythonProcess() {
+    if (!pythonProcess || pythonProcess.exitCode !== null) {
+        return;
+    }
+
+    if (process.platform === "win32") {
+        spawnSync("taskkill", ["/pid", String(pythonProcess.pid), "/T", "/F"]);
+    } else {
+        pythonProcess.kill();
+    }
+}
+
 // Handle the application quitting
 app.on("will-quit", () => {
     // Print that it is quitting
     log.info("ELECTRON: App is quitting...");
     // Kill the python process to ensure the port is freed
-    pythonProcess.kill();
+    stopPythonProcess();
 });
 
 // Initialise logger
@@ -500,6 +518,104 @@ log.transports.file.resolvePathFn = (variables) => {
     return path.join(variables.electronDefaultDir, fileName);
 };
 
+const RELEASES_URL =
+    "https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/releases/latest";
+
+function setUpAutoUpdates() {
+    // Updates only apply to packaged builds
+    if (!app.isPackaged) {
+        return;
+    }
+
+    // Unsigned macOS apps can't auto install, so Mac only gets a "go to download page" prompt
+    const canAutoInstall = process.platform !== "darwin";
+
+    autoUpdater.logger = log;
+    autoUpdater.autoDownload = false; // Nothing downloads until the user agrees
+    autoUpdater.autoInstallOnAppQuit = true;
+
+    autoUpdater.on("error", (err) => log.error(`UPDATER: ${err}`));
+
+    autoUpdater.on("update-available", async (info) => {
+        if (!canAutoInstall) {
+            const { response } = await dialog.showMessageBox(mainWindow, {
+                type: "info",
+                buttons: ["Open download page", "Not now"],
+                defaultId: 0,
+                cancelId: 1,
+                message: `A new version of OPIS (${info.version}) is available.`,
+                detail: `You have version ${app.getVersion()}. Download the new version from our releases page and install it over your current one.`,
+            });
+
+            // Check if the user chose to open the download page
+            if (response === 0) {
+                shell.openExternal(RELEASES_URL);
+            }
+
+            return;
+        }
+
+        const { response } = await dialog.showMessageBox(mainWindow, {
+            type: "info",
+            buttons: ["Download update", "Not now"],
+            defaultId: 0,
+            cancelId: 1,
+            message: `A new version of OPIS (${info.version}) is available.`,
+            detail: `You have version ${app.getVersion()}. You can keep using OPIS while it downloads. You'll be asked before anything is installed.`,
+        });
+
+        // Check if the user chose to download the update
+        if (response === 0) {
+            autoUpdater.downloadUpdate();
+        }
+    });
+
+    // Progress bar on the taskbar icon while downloading
+    autoUpdater.on("download-progress", (progress) => {
+        mainWindow?.setProgressBar(progress.percent / 100);
+    });
+
+    autoUpdater.on("update-downloaded", async (info) => {
+        mainWindow?.setProgressBar(-1);
+        const { response } = await dialog.showMessageBox(mainWindow, {
+            type: "info",
+            buttons: ["Restart now", "Later"],
+            defaultId: 0,
+            cancelId: 1,
+            message: `OPIS ${info.version} has finished downloading.`,
+            detail: "OPIS needs to restart to finish updating.",
+        });
+
+        // Check if the user chose to restart OPIS
+        if (response === 0) {
+            stopPythonProcess(); // Release the file locks before the installer runs
+            autoUpdater.quitAndInstall();
+        }
+    });
+
+    autoUpdater
+        .checkForUpdates()
+        .then((result) => {
+            log.info(
+                `UPDATER: Check completed. Current version: ${app.getVersion()}`,
+            );
+
+            if (result) {
+                log.info(
+                    `UPDATER: Latest version reported: ${
+                        result.updateInfo.version
+                    }`,
+                );
+            }
+        })
+        .catch((err) => {
+            log.error(`UPDATER: Check failed: ${err.stack || err}`);
+        });
+}
+
 const url = new Promise(spawnPythonProcess);
 // Wait for electron to be ready, then create the window
-app.whenReady().then(() => createWindow(url));
+app.whenReady().then(() => {
+    createWindow(url);
+    setUpAutoUpdates();
+});

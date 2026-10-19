@@ -19,14 +19,23 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             installer_glob: |
-              out/make/**/*.deb
-              out/make/**/*.rpm
+              out/*.AppImage
+              out/*.deb
+              out/*.rpm
+              out/latest-linux.yml
           - os: windows-latest
             platform: windows
-            installer_glob: out/make/squirrel.windows/**/*.exe
+            installer_glob: |
+              out/*.exe
+              out/*.exe.blockmap
+              out/latest.yml
           - os: macos-latest
             platform: mac
-            installer_glob: out/make/**/*.dmg
+            installer_glob: |
+              out/*.dmg
+              out/*.zip
+              out/*.blockmap
+              out/latest-mac.yml
 
     runs-on: ${{ matrix.os }}
 
@@ -68,6 +77,11 @@ jobs:
 
       - name: Install npm packages
         run: npm ci
+
+      - name: Set version from tag
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: npm version --no-git-tag-version --allow-same-version "${GITHUB_REF_NAME#v}"
 
       - name: Build Tailwind CSS
         run: npm run tailwind
