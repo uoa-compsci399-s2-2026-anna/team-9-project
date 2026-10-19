@@ -194,7 +194,7 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
 /**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
- * 
+ *
  * This function also adds the projection lines (from the orbit to the reference
  * plane) as a child mesh of the orbit line.
  *
