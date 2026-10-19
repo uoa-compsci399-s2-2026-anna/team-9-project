@@ -30,7 +30,7 @@ const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 export const COMPARISON_ORBIT_LINE_OPACITY = 0.8;
-const ORBIT_LINE_PROJECTION_OPACITY = 0.1;
+const ORBIT_LINE_PROJECTION_OPACITY = 0.15;
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -194,6 +194,9 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
 /**
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
+ * 
+ * This function also adds the projection lines (from the orbit to the reference
+ * plane) as a child mesh of the orbit line.
  *
  * The orbital line is coloured to match its object.
  *
