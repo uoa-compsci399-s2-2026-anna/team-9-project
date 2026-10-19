@@ -10,8 +10,6 @@ import {
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 
-// MARK: VARIABLES
-
 const cleanups = new Map();
 const tooltipTargets = new Map();
 
@@ -40,8 +38,6 @@ bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
 document.querySelectorAll("[data-help-tooltip]").forEach(initialiseTooltip);
-
-// MARK: FUNCTIONS
 
 /**
  * Tries to show the next help tooltip or stop walkthrough. Does nothing if
