@@ -2,6 +2,8 @@ import sys
 import os
 import json
 
+system_filename_map = {}
+
 # Resolve base path to the packaged resources folder when frozen,
 # or to the script's own directory otherwise
 if getattr(sys, "frozen", False):
@@ -26,6 +28,8 @@ def get_all_systems_data():
     """
     Load the systems data from the config file
     """
+    global system_filename_map
+
     SYSTEMS_DIR = os.path.join(base_path, "systems")
 
     SYSTEMS_FILENAME = "systems.json"
@@ -36,7 +40,12 @@ def get_all_systems_data():
     for filename in systems_list["filenames"]:
         filepath = os.path.join(SYSTEMS_DIR, filename)
         if os.path.isfile(filepath) and filename.endswith(".json"):
-            systems.append(get_file_at_path(filename, filepath))
+            current_system = get_file_at_path(filename, filepath)
+            systems.append(current_system)
+            current_system_name = current_system["name"].lower()
+            system_filename_map[current_system_name] = filename
+
+    print(system_filename_map)
 
     return {"systems": systems}
 
