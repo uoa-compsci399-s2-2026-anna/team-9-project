@@ -134,7 +134,7 @@ function stopHelpWalkthrough() {
  * is not in progress.
  * @returns {HTMLElement} The tooltip currently being shown
  */
-function getShownTooltip() {
+function getCurrentHelpTooltip() {
     if (shownTooltipIndex === null || !isShowingHelp) {
         return null;
     }
@@ -144,10 +144,10 @@ function getShownTooltip() {
 
 function hideCurrentHelpTooltip() {
     // Clean up and hide currently-shown tooltip
-    const cleanup = cleanups.get(getShownTooltip());
+    const cleanup = cleanups.get(getCurrentHelpTooltip());
     cleanup?.();
-    cleanups.delete(getShownTooltip());
-    getShownTooltip().classList.add("invisible");
+    cleanups.delete(getCurrentHelpTooltip());
+    getCurrentHelpTooltip().classList.add("invisible");
 }
 
 function showPreviousHelpTooltip() {
@@ -165,7 +165,7 @@ function showPreviousHelpTooltip() {
 }
 
 function showCurrentTooltip() {
-    getShownTooltip().classList.remove("invisible");
+    getCurrentHelpTooltip().classList.remove("invisible");
     updateCurrentHelpTooltipProgressText();
 }
 
@@ -198,7 +198,7 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
 function updateCurrentHelpTooltipProgressText() {
     // Query selector all required as we duplicate the tooltip to add the border
     // and background colour.
-    getShownTooltip()
+    getCurrentHelpTooltip()
         .querySelectorAll("[data-progress-text]")
         .forEach((text) => {
             text.textContent = `${shownTooltipIndex + 1}/${helpTooltips.length}`;
