@@ -118,7 +118,7 @@ function stopHelpWalkthrough() {
         tooltip.classList.add("invisible");
     });
 
-    // Clean up all tooltips (canvas resize listeners which update tooltip 
+    // Clean up all tooltips (canvas resize listeners which update tooltip
     // positions when the canvas resizes)
     for (const cleanup of cleanups.values()) {
         cleanup();
@@ -128,6 +128,12 @@ function stopHelpWalkthrough() {
     helpButtonTooltip.textContent = "Help";
 }
 
+
+/**
+ * Returns the tooltip currently being shown, or `null` if the help walkthrough
+ * is not in progress.
+ * @returns {HTMLElement} The tooltip currently being shown
+ */
 function getShownTooltip() {
     if (shownTooltipIndex === null || !isShowingHelp) {
         return null;
