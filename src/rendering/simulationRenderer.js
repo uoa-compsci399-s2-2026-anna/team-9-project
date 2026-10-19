@@ -76,7 +76,12 @@ import {
     createOrUpdateObjectMesh,
 } from "./scene/objects.js";
 import { updateObjectLabelOffsets } from "./scene/objectLabels.js";
-import { shouldShowOrbit, getOrbitLineWidth } from "./scene/orbits.js";
+import {
+    ORBIT_LINE_OPACITY_MODULATION_FUNCTION,
+    ORBIT_LINE_WIDTH_MODULATION_FUNCTION,
+    shouldShowOrbit,
+    getOrbitLineWidth,
+} from "./scene/orbits.js";
 import {
     habitableZone,
     habitableZoneMesh,
@@ -419,22 +424,6 @@ function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
     const rotationMatrix = calculateOrbitRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
-
-const ORBIT_LINE_MIN_OPACITY = 0.2;
-const ORBIT_LINE_MIN_WIDTH = 0.5;
-
-/**
- * A function defining the curve/profile of the opacity/width modulation of
- * the orbit line.
- * @param {Number} distance Proportion of a full revolution this point is from
- * the object.
- * @returns Scale factor betwee 0 and 1 of opacity/line width.
- */
-const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
-
-const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
-    Math.max(ORBIT_LINE_MIN_WIDTH, Math.cos((Math.PI * distance) / 2));
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;

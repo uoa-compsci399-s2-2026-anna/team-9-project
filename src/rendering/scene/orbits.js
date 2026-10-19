@@ -9,6 +9,22 @@ const ORBIT_LINE_WIDTH_PROPORTION = 0.025;
 const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.02;
 const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 
+const ORBIT_LINE_MIN_OPACITY = 0.2;
+const ORBIT_LINE_MIN_WIDTH = 0.5;
+
+/**
+ * A function defining the curve/profile of the opacity/width modulation of
+ * the orbit line.
+ * @param {Number} distance Proportion of a full revolution this point is from
+ * the object.
+ * @returns Scale factor betwee 0 and 1 of opacity/line width.
+ */
+export const ORBIT_LINE_OPACITY_MODULATION_FUNCTION = (distance) =>
+    Math.max(ORBIT_LINE_MIN_OPACITY, 1 - distance);
+
+export const ORBIT_LINE_WIDTH_MODULATION_FUNCTION = (distance) =>
+    Math.max(ORBIT_LINE_MIN_WIDTH, Math.cos((Math.PI * distance) / 2));
+
 /**
  * Determines whether an object's orbit should be visible. An orbit should be visible if
  * orbit lines are set as visible and the object has not been hidden in the current system.
