@@ -26,9 +26,19 @@ def get_all_systems_data():
     """
     Load the systems data from the config file
     """
-    FILENAME = "config.json"
-    FILEPATH = os.path.join(base_path, FILENAME)
-    return get_file_at_path(FILENAME, FILEPATH)
+    SYSTEMS_DIR = os.path.join(base_path, "systems")
+
+    SYSTEMS_FILENAME = "systems.json"
+    SYSTEMS_FILEPATH = os.path.join(SYSTEMS_DIR, SYSTEMS_FILENAME)
+    systems_list = get_file_at_path(SYSTEMS_FILENAME, SYSTEMS_FILEPATH)
+
+    systems = []
+    for filename in systems_list["filenames"]:
+        filepath = os.path.join(SYSTEMS_DIR, filename)
+        if os.path.isfile(filepath) and filename.endswith(".json"):
+            systems.append(get_file_at_path(filename, filepath))
+
+    return {"systems": systems}
 
 
 def get_settings_schema():
