@@ -3,6 +3,10 @@ import sys
 import os
 import json
 
+# The version of the systems file (loaded from file)
+systems_manager_version = None
+
+
 # Resolve base path to the packaged resources folder when frozen,
 # or to the script's own directory otherwise
 if getattr(sys, "frozen", False):
@@ -74,8 +78,11 @@ def get_all_systems_data():
     Load the systems data from either the /systems directory or the systems.json
     cached file per device
     """
+    global systems_manager_version
 
     systems_list = get_systems_data_filemap()
+    local_version = systems_list["systems data version"]
+    systems_manager_version = local_version
 
     # Try get the data from appdata
     systems_data = systems_data_from_appdata()
@@ -84,7 +91,6 @@ def get_all_systems_data():
     if systems_data is not None:
         # Get versions from each systems data file
         appdata_version = systems_data.get("systems data version", "")
-        local_version = systems_list["systems data version"]
 
         # If they match return the appdata version, otherwise *
         if appdata_version == local_version:
@@ -117,7 +123,7 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
     # Add the version to object
     collated_data = {
         "systems": new_systems_data,
-        "systems data version": SYSTEMS_MANAGER_VERSION,
+        "systems data version": systems_manager_version,
     }
 
     # Write to file
