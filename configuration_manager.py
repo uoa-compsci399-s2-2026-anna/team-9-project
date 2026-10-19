@@ -138,12 +138,15 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
         "systems data version": systems_file_version,
     }
 
-    # Write to file
     FILENAME = "systems.json"
     FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
 
-    with open(FILEPATH, "w") as f:
-        json.dump(collated_data, f)
+    try:
+        # Write to file
+        with open(FILEPATH, "w") as f:
+            json.dump(collated_data, f)
+    except:
+        print(f"Failed to write collated data to {FILEPATH}!", file=sys.stderr)
 
 
 def get_settings_schema():
