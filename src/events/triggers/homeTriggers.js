@@ -3,7 +3,6 @@ import { EVENTS } from "../events.js";
 import { addNoDragClickEventListener } from "./sharedTriggers.js";
 
 addNoDragClickEventListener(document, (event) => {
-    console.log(event.target.closest(".container"));
     if (
         event.target.closest(".container") ||
         event.target.closest("[data-button-type]")
