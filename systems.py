@@ -30,6 +30,48 @@ class SimulationData:
         self.objects = objects
         self.reference = reference
 
+    def export_data(self, system_data):
+        num_objects = len(self.objects)
+        system_name = system_data["name"].lower()
+
+        first_object = self.objects[0]
+        orbits = {}
+        orbits[first_object] = {"m": self.sim.particles[0].m}
+
+        old_orbits = system_data["orbits"]
+
+        current_time = get_current_jd_tdb()
+        self.sim.integrate(current_time - sim_initial_jd_tdb[system_name])
+
+        # Skip the center most object as that only has a mass
+        for i in range(1, num_objects):
+            particle = self.sim.particles[i]
+            obj_name = self.objects[i]
+
+            obj = old_orbits[obj_name]
+            if "x" in obj:
+                orbits[obj_name] = {
+                    "m": particle.m,
+                    "x": particle.x,
+                    "y": particle.y,
+                    "z": particle.z,
+                    "vx": particle.vx,
+                    "vy": particle.vy,
+                    "vz": particle.vz,
+                }
+            else:
+                orbits[obj_name] = {
+                    "m": particle.m,
+                    "P": particle.P,
+                    "e": particle.e,
+                    "omega": particle.omega,
+                    "M": particle.M,
+                    "inc": particle.inc,
+                    "Omega": particle.Omega
+                }
+        
+        return orbits, current_time
+
 
 class Simulations:
     """
@@ -126,6 +168,22 @@ class Simulations:
             # If the difference is greater, integrate normally
             sim.integrate(sim_time)
             return sim
+    
+    def export_data(self, all_systems):
+        all_systems_data = {}
+
+        for system_data in all_systems:
+            system_name = system_data["name"].lower()
+            system = self.__sims[system_name]
+
+            orbits, timestamp = system.export_data(system_data)
+
+            all_systems_data[system_name] = {
+                "orbits": orbits,
+                "timestamp": timestamp
+            }
+        
+        return all_systems_data
 
 
 def unix_to_jd_tdb(t: float) -> float:
