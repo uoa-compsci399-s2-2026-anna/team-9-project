@@ -91,7 +91,12 @@ import {
     updateCalendar,
     getElapsedDaysText,
 } from "../ui/simulationCalendar.js";
-import { getTheme, getFontSize, getFontFamily } from "./themes.js";
+import {
+    getTheme,
+    getFontSize,
+    getFontFamily,
+    getFadedColour,
+} from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
@@ -286,22 +291,6 @@ function shouldShowOrbit(
     const isObjectShown = objectVisible ?? !isObjectHiddenInCurrentSystem;
 
     return areOrbitsShown && isObjectShown;
-}
-
-/**
- * Approximate a given opacity by blending the given colour towards the current background.
- * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
- *
- * @param {string} colour The base colour to fade
- * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
- * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background
- * @returns A new colour faded towards the background colour by (1 - opacity)
- */
-function getFadedColour(colour, opacity, isDarkMode = settings.darkMode) {
-    const theme = getTheme(isDarkMode);
-    const backgroundColour = theme.background;
-
-    return new THREE.Color(colour).lerp(backgroundColour, 1 - opacity);
 }
 
 /**

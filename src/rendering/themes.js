@@ -42,3 +42,23 @@ export function getFontSize(size = settings.textSize) {
 export function getFontFamily(chosenFont = settings.font) {
     return fontFamilies[chosenFont] ?? fontFamilies.Default;
 }
+
+/**
+ * Approximate a given opacity by blending the given colour towards the current background.
+ * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
+ *
+ * @param {string} colour The base colour to fade
+ * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
+ * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background
+ * @returns A new colour faded towards the background colour by (1 - opacity)
+ */
+export function getFadedColour(
+    colour,
+    opacity,
+    isDarkMode = settings.darkMode,
+) {
+    const theme = getTheme(isDarkMode);
+    const backgroundColour = theme.background;
+
+    return new THREE.Color(colour).lerp(backgroundColour, 1 - opacity);
+}
