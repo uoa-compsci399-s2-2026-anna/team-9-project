@@ -246,3 +246,9 @@ resetViewSettings.addEventListener("click", () => {
         }
     }
 });
+
+document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+    tooltip.addEventListener("click", () =>
+        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT),
+    );
+});
