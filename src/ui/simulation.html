@@ -87,8 +87,19 @@
         }}
       </div>
 
-      <!-- Grid scale indicator -->
-      <p id="grid-scale-text" class="text-secondary pr-2 text-sm">AU/square</p>
+      <div>
+        <!-- Grid scale indicator -->
+        <p id="grid-scale-text" class="text-secondary pr-2 text-sm">
+          AU/square
+        </p>
+
+        {{
+          help_tooltip(
+            heading_text="Grid scale",
+            body_text="This shows the current scale of the reference grid. It shows the length of each side of each grid square."
+          )
+        }}
+      </div>
 
       {% call container(style="flex gap-2 p-2 pointer-events-auto") %}
         <!-- Compare to solar system button -->
