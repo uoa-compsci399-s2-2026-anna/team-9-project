@@ -15,8 +15,12 @@ def get_base_path():
 
 # The version of the systems file (loaded from file)
 systems_file_version = None
+
+# Path to executable
 base_path = get_base_path()
 
+# Name of the application
+APPLICATION_NAME = "OPIS"
 
 def get_file_at_path(filename, filepath):
     """
@@ -66,7 +70,7 @@ def systems_data_from_appdata():
 
     roaming_path = os.getenv("APPDATA")
     FILENAME = "systems.json"
-    FILEPATH = os.path.join(roaming_path, "OPIS", FILENAME)
+    FILEPATH = os.path.join(roaming_path, APPLICATION_NAME, FILENAME)
 
     if not os.path.exists(FILEPATH):
         return None
