@@ -3,10 +3,6 @@ import sys
 import os
 import json
 
-# The version of the systems file (loaded from file)
-systems_file_version = None
-base_path = get_base_path()
-
 
 def get_base_path():
     # Resolve base path to the packaged resources folder when frozen,
@@ -15,6 +11,11 @@ def get_base_path():
         return os.path.dirname(os.path.dirname(sys.executable))
     else:
         return os.path.dirname(os.path.abspath(__file__))
+
+
+# The version of the systems file (loaded from file)
+systems_file_version = None
+base_path = get_base_path()
 
 
 def get_file_at_path(filename, filepath):
@@ -33,7 +34,7 @@ def get_systems_data_filemap():
     """
     Get the systems.json file in ./systems
     """
-    
+
     SYSTEMS_DIR = os.path.join(base_path, "systems")
 
     SYSTEMS_FILENAME = "systems.json"
@@ -41,6 +42,7 @@ def get_systems_data_filemap():
     systems_list = get_file_at_path(SYSTEMS_FILENAME, SYSTEMS_FILEPATH)
 
     return systems_list
+
 
 def systems_data_from_project(systems_list):
     """
@@ -70,7 +72,6 @@ def systems_data_from_appdata():
 
     if not os.path.exists(FILEPATH):
         return None
-
 
     return get_file_at_path(FILENAME, FILEPATH)
 
@@ -108,7 +109,7 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
     """
     Takes the updated orbital data, overwrites the other data and writes it out
     """
-    
+
     # Deepcopy so that we do not edit the original object
     new_systems_data = copy.deepcopy(all_systems)
 
