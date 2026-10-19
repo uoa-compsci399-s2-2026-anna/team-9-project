@@ -2,6 +2,9 @@ import { bus } from "../eventBus.js";
 import { EVENTS } from "../events.js";
 import { addNoDragClickEventListener } from "./sharedTriggers.js";
 
+// Go to next step of help walkthrough if user clicks anywhere except buttons or
+// containers. The reason this is a no-drag click rather than a simple click
+// event listener is for parity with the simulation page.
 addNoDragClickEventListener(document, (event) => {
     if (
         event.target.closest(".container") ||
