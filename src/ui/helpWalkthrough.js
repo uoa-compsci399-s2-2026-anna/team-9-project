@@ -47,6 +47,7 @@ document.querySelectorAll("[data-help-tooltip]").forEach(initialiseTooltip);
  * @param {Event} event The mouseup event
  */
 function handleMouseUpOnDocument(event) {
+    return;
     const availableSystemsButtons = document.getElementById(
         "available-systems-buttons",
     );
