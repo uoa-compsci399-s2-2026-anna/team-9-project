@@ -294,13 +294,13 @@ export function addNoDragClickEventListener(element, callback) {
         }
     });
 
-    element.addEventListener("pointerup", () => {
+    element.addEventListener("pointerup", (event) => {
         if (!pointerStart) {
             return;
         }
 
         if (!hasDragged) {
-            callback();
+            callback(event);
         }
 
         pointerStart = null;
