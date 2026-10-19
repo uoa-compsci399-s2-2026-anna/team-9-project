@@ -6,6 +6,8 @@ import { addNoDragClickEventListener } from "./sharedTriggers.js";
 // containers. The reason this is a no-drag click rather than a simple click
 // event listener is for parity with the simulation page.
 addNoDragClickEventListener(document, (event) => {
+    // Ignore if clicked a container or a button (button_with_tooltip or
+    // text_button).
     if (
         event.target.closest(".container") ||
         event.target.closest("[data-button-type]")
