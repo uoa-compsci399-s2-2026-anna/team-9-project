@@ -35,10 +35,8 @@ def get_systems_data_filemap():
     Get the systems.json file in ./systems
     """
 
-    SYSTEMS_DIR = os.path.join(base_path, "systems")
-
     SYSTEMS_FILENAME = "systems.json"
-    SYSTEMS_FILEPATH = os.path.join(SYSTEMS_DIR, SYSTEMS_FILENAME)
+    SYSTEMS_FILEPATH = os.path.join(base_path, "systems", SYSTEMS_FILENAME)
     systems_list = get_file_at_path(SYSTEMS_FILENAME, SYSTEMS_FILEPATH)
 
     return systems_list
