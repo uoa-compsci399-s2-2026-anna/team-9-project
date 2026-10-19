@@ -43,7 +43,8 @@ class SimulationData:
         current_time = get_current_jd_tdb()
         self.sim.integrate(current_time - sim_initial_jd_tdb[system_name])
 
-        # Skip the center most object as that only has a mass
+        # Skip the center most object as that only has a mass as it cannot by
+        # defintion have orbital parameters (it has no primary)
         for i in range(1, num_objects):
             particle = self.sim.particles[i]
             obj_name = self.objects[i]
