@@ -128,7 +128,6 @@ function stopHelpWalkthrough() {
     helpButtonTooltip.textContent = "Help";
 }
 
-
 /**
  * Returns the tooltip currently being shown, or `null` if the help walkthrough
  * is not in progress.
