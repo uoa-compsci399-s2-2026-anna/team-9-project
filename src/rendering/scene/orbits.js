@@ -30,6 +30,7 @@ const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 export const COMPARISON_ORBIT_LINE_OPACITY = 0.8;
+const ORBIT_LINE_PROJECTION_OPACITY = 0.2;
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -373,7 +374,7 @@ function createOrUpdateOrbitalLineProjection(line) {
             new THREE.LineBasicMaterial({
                 color: line.material.color,
                 transparent: true,
-                opacity: 0.5,
+                opacity: ORBIT_LINE_PROJECTION_OPACITY,
                 depthWrite: false,
             }),
         );
