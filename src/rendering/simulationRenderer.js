@@ -270,12 +270,19 @@ function onCanvasClick(event, canvas) {
  *
  * The orbital line is coloured to match its object.
  *
+ * @param {string} currentSystem Name of the current system
  * @param {string} name Name of the object associated with the orbital line
  * @param {Object} orbitalData Orbital data for the line
  * @param {THREE.Group} group The group to add the orbital line to
  * @param {string} colour CSS colour string used for this orbit's line
  */
-function createOrUpdateOrbitalLine(name, orbitalData, group, colour) {
+function createOrUpdateOrbitalLine(
+    currentSystem,
+    name,
+    orbitalData,
+    group,
+    colour,
+) {
     // Don't create orbital line in the comparison overlay
     // for objects that are hidden by default in the Solar System
     if (
@@ -480,6 +487,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
         currentSystemData.orbital_data,
     )) {
         createOrUpdateOrbitalLine(
+            currentSystem,
             name,
             orbitalData,
             currentSystemGroup,
@@ -513,6 +521,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
         )) {
             if (name === "Sun") continue; // Skip the Sun for the comparison
             createOrUpdateOrbitalLine(
+                currentSystem,
                 name,
                 orbitalData,
                 solarSystemGroup,
