@@ -203,19 +203,19 @@ function updateCurrentHelpTooltipProgressText() {
 /**
  * Adds the background and outline to `tooltip` by duplicating the element
  * and updating the style accordingly.
- * 
- * This is needed because the help tooltip is comprised of 4 layers: 
+ *
+ * This is needed because the help tooltip is comprised of 4 layers:
  * 1. Arrow (w/ outline) (BOTTOM)
  * 2. Container background (w/ outline)
  * 3. Arrow fill colour (no outline)
  * 4. Content (text, buttons, etc.; no outline) (TOP)
- * 
- * It needs to be order 1-2-3 so that the fill colour (3) appears on top of the 
- * container background (2), to cover 2's outline (so it looks seamless). 
+ *
+ * It needs to be order 1-2-3 so that the fill colour (3) appears on top of the
+ * container background (2), to cover 2's outline (so it looks seamless).
  * And finally 4 has to be at the top because the arrow is just a rotated
  * square, and if 3 was above 4, then the square's fill colour would cover the
  * content.
- * 
+ *
  * This function creates layer #2.
  * @param {HTMLElement} tooltip The tooltip
  */
