@@ -17,11 +17,6 @@ bus.subscribe(EVENTS.SETTINGS.TEXT_SIZE_SELECT, (event) => {
     setSetting("textSize", event.detail.value);
 });
 
-// Object marker size
-bus.subscribe(EVENTS.SETTINGS.OBJECT_MARKER_SIZE_SELECT, (event) => {
-    setSetting("objectMarkerSize", event.detail.value);
-});
-
 // Orbit lines
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
     setSetting("orbitLines", event.detail.value);
