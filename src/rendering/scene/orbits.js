@@ -357,6 +357,15 @@ export function createOrUpdateOrbitalLine(
     const rotationMatrix = calculateOrbitRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
 
+    createOrUpdateOrbitalLineProjection(line);
+}
+
+function createOrUpdateOrbitalLineProjection(line) {
+    /**
+     * Array of points [x, y, z, x, ...] which define `line`.
+     */
+    const points = line.geometry.attributes.position.array;
+
     let projectionLine = line.userData.projectionLine;
     if (!projectionLine) {
         projectionLine = new THREE.LineSegments(
