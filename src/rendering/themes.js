@@ -48,8 +48,8 @@ export function getFontFamily(chosenFont = settings.font) {
  * Used to get the colour for Line2, as Line2 doesn't correctly set the opacity for joints.
  *
  * @param {string} colour The base colour to fade
- * @param {*} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
- * @param {*} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background
+ * @param {number} opacity The desired opacity from 0 (fully background) to 1 (fully colour)
+ * @param {boolean} [isDarkMode=settings.isDarkMode] Whether to fade against the dark or light theme background
  * @returns A new colour faded towards the background colour by (1 - opacity)
  */
 export function getFadedColour(
