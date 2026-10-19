@@ -61,7 +61,9 @@
       class="{{ tooltip_positions[tooltip_position] }} {{ tooltip_aligns[tooltip_align] }} bordered-light control text-secondary pointer-events-none absolute flex items-center px-2 text-center text-nowrap opacity-0 group-hover:opacity-100"
     >
       <span id="{{ tooltip_id }}">{{ tooltip_text }}</span>
-      {% if shortcut %}({{ shortcut.label }}){% endif %}
+      {% if shortcut %}
+        <span class="ml-1">({{ shortcut.label }})</span>
+      {% endif %}
     </div>
   </div>
 {% endmacro %}
