@@ -176,6 +176,7 @@ document
     .querySelectorAll("[data-side-panel-checkbox]")
     .forEach((sidePanelCheckbox) => {
         const toggleEvent = sidePanelCheckbox.dataset.toggleEvent;
+        const parentToggleEvent = sidePanelCheckbox.dataset.parentToggleEvent;
 
         const objectCheckbox = sidePanelCheckbox.querySelector("[data-object]");
         const viewSettingCheckbox =
@@ -197,6 +198,14 @@ document
             // View settings event listeners
             viewSettingCheckbox.addEventListener("change", (event) => {
                 bus.publish(toggleEvent, { value: event.target.checked });
+            });
+
+            // Subscribe to the parent toggle event. If the parent is unchecked,
+            // this checkbox (the child) should be disabled, and vice versa.
+            bus.subscribe(parentToggleEvent, (event) => {
+                const isChecked = event.detail.value;
+
+                viewSettingCheckbox.disabled = !isChecked;
             });
         }
     });
