@@ -6,6 +6,7 @@ import {
     simulationState,
     SIMULATION_SPEED_LIMITS_MS,
 } from "../../shared/simulationState.js";
+import { addNoDragClickEventListener } from "./sharedTriggers.js";
 import { timeToMilliseconds, millisecondsToTime } from "../../utils/utils.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -247,8 +248,10 @@ resetViewSettings.addEventListener("click", () => {
     }
 });
 
-document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-    tooltip.addEventListener("click", () =>
-        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT),
+document
+    .querySelectorAll("[data-help-tooltip]")
+    .forEach((tooltip) =>
+        addNoDragClickEventListener(tooltip, () =>
+            bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT),
+        ),
     );
-});
