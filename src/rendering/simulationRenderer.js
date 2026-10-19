@@ -671,6 +671,10 @@ async function updateSimulation(forceCalendarUpdate = true) {
 
     if (isComparingToSolarSystem) {
         const solarSystemData = allSystemData["Solar System"];
+        if (!solarSystemData) {
+            return;
+        }
+
         const overlayColour =
             comparisonOverlayColour[isDarkMode ? "dark" : "light"];
 
