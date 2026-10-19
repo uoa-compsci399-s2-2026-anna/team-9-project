@@ -5,14 +5,16 @@ import json
 
 # The version of the systems file (loaded from file)
 systems_file_version = None
+base_path = get_base_path()
 
 
-# Resolve base path to the packaged resources folder when frozen,
-# or to the script's own directory otherwise
-if getattr(sys, "frozen", False):
-    base_path = os.path.dirname(os.path.dirname(sys.executable))
-else:
-    base_path = os.path.dirname(os.path.abspath(__file__))
+def get_base_path():
+    # Resolve base path to the packaged resources folder when frozen,
+    # or to the script's own directory otherwise
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(os.path.dirname(sys.executable))
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
 
 
 def get_file_at_path(filename, filepath):

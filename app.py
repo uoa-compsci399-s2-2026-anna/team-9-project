@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from configuration_manager import export_all_systems_data_to_file, get_all_systems_data, get_settings_schema, get_shortcuts, get_simulation_state_schema
+from configuration_manager import export_all_systems_data_to_file, get_all_systems_data, get_base_path, get_settings_schema, get_shortcuts, get_simulation_state_schema
 from systems import Simulations
 from utility import get_osculating_orbit, get_position_dict
 
@@ -19,7 +19,6 @@ from utility import get_osculating_orbit, get_position_dict
 rebound.horizons.SSL_CONTEXT = "unverified"
 
 app = FastAPI()
-templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
 
 config = get_all_systems_data()
 settings_schema = get_settings_schema()
@@ -29,6 +28,8 @@ shortcuts = get_shortcuts()
 # Get the systems in the config
 all_systems = config["systems"]
 
+base_path = get_base_path()
+templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
 app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
