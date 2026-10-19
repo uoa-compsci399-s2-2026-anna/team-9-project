@@ -267,3 +267,50 @@ for (const [shortcutEvent, { key }] of Object.entries(shortcuts)) {
         attachKeyPress(key, publish);
     }
 }
+
+const DRAG_THRESHOLD = 5;
+
+export function addNoDragClickEventListener(element, callback) {
+    let pointerStart = null;
+    let hasDragged = false;
+
+    element.addEventListener("pointerdown", (event) => {
+        pointerStart = {
+            x: event.clientX,
+            y: event.clientY,
+        };
+    });
+
+    element.addEventListener("pointermove", (event) => {
+        if (!pointerStart || hasDragged) {
+            return;
+        }
+
+        const dx = event.clientX - pointerStart.x;
+        const dy = event.clientY - pointerStart.y;
+
+        if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
+            hasDragged = true;
+        }
+    });
+
+    element.addEventListener("pointerup", () => {
+        if (!pointerStart) {
+            return;
+        }
+
+        if (!hasDragged) {
+            callback();
+        }
+
+        pointerStart = null;
+        hasDragged = false;
+    });
+}
+
+//TODO: temporary
+document.querySelectorAll(".container").forEach((container) => {
+    addNoDragClickEventListener(container, () => {
+        console.log("NO DRAG CLICK");
+    });
+});
