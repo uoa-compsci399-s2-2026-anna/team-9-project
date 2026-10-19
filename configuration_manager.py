@@ -3,6 +3,8 @@ import sys
 import os
 import json
 
+from platformdirs import user_data_dir
+
 
 def get_base_path():
     # Resolve base path to the packaged resources folder when frozen,
@@ -21,6 +23,10 @@ base_path = get_base_path()
 
 # Name of the application
 APPLICATION_NAME = "OPIS"
+
+# Path to OPIS' installed directory
+ROAMING_PATH = user_data_dir(APPLICATION_NAME, appauthor=False, roaming=True)
+
 
 def get_file_at_path(filename, filepath):
     """
@@ -68,12 +74,13 @@ def systems_data_from_appdata():
     Loads system data that is updated on launch from appdata cache
     """
 
-    roaming_path = os.getenv("APPDATA")
     FILENAME = "systems.json"
-    FILEPATH = os.path.join(roaming_path, APPLICATION_NAME, FILENAME)
+    FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
 
     if not os.path.exists(FILEPATH):
         return None
+
+    print(f"Got fresh systems data from {FILEPATH}")
 
     return get_file_at_path(FILENAME, FILEPATH)
 
@@ -102,7 +109,7 @@ def get_all_systems_data():
             return systems_data
 
     # Otherwise load from local ./systems
-    systems_data = systems_data_from_project()
+    systems_data = systems_data_from_project(systems_list)
 
     return systems_data
 
@@ -132,9 +139,8 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
     }
 
     # Write to file
-    roaming_path = os.getenv("APPDATA")
     FILENAME = "systems.json"
-    FILEPATH = os.path.join(roaming_path, "OPIS", FILENAME)
+    FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
 
     with open(FILEPATH, "w") as f:
         json.dump(collated_data, f)
