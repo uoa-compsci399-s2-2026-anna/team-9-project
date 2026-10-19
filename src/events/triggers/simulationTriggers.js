@@ -21,9 +21,6 @@ const decreaseSpeedButton = document.getElementById("decrease-speed-button");
 // The simulation speed when the input is empty
 const EMPTY_SPEED_VALUE = 0;
 
-// Step sizes on clicking increase and decrease speed buttons
-const INCREASE_SPEED_STEP = 1;
-const DECREASE_SPEED_STEP = -1;
 
 /**
  * Return whether or not the given speed (value + unit) is within the minimum
@@ -133,7 +130,7 @@ speedAdjuster.addEventListener("input", (event) => {
     publishSimulationSpeed(inputValue);
 });
 
-function adjustSpeedBy(delta) {
+export function adjustSpeedBy(delta) {
     const currentSpeed = parseSpeedValue(speedAdjuster.value);
     const updatedSpeed = clampSpeedToLimits(
         currentSpeed + delta,
@@ -143,12 +140,6 @@ function adjustSpeedBy(delta) {
     speedAdjuster.value = updatedSpeed;
     publishSimulationSpeed(updatedSpeed);
 }
-
-bus.subscribe(EVENTS.SIM.INCREASE_SPEED, () => increaseSpeedButton.click());
-bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () => decreaseSpeedButton.click());
-
-attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(INCREASE_SPEED_STEP));
-attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
 
 speedUnitSelector.addEventListener("change", (event) => {
     const unit = event.target.value;
