@@ -361,6 +361,17 @@ export function createOrUpdateOrbitalLine(
     createOrUpdateOrbitalLineProjection(line);
 }
 
+/**
+ * Creates (if it doesn't exist) or updates the existing orbit line projection
+ * lines. These are the lines which are projected from the orbit line to the
+ * reference plane.
+ * 
+ * This function does this by:
+ * 1. Copying the appearance of `line` (colour, transparency, render order, etc.)
+ * 2. Adding the projection lines as a child of the original line.
+ * 3. Calculating the projection line coordinates in world space
+ * @param {THREE.Mesh} line A meshline representing an orbit line.
+ */
 function createOrUpdateOrbitalLineProjection(line) {
     /**
      * Array of points [x, y, z, x, ...] which define `line`.
