@@ -45,8 +45,6 @@ def get_all_systems_data():
             current_system_name = current_system["name"].lower()
             system_filename_map[current_system_name] = filename
 
-    print(system_filename_map)
-
     return {"systems": systems}
 
 
