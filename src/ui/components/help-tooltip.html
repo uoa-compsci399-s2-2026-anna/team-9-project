@@ -53,10 +53,10 @@
       </div>
 
       {% if body_text %}
-        <span class="text-sm"
-          >{{ body_text }} &ensp;
-          <em class="text-secondary">Click to continue...</em></span
-        >
+        <span class="flex flex-col gap-2 text-sm">
+          <p>{{ body_text }}</p>
+          <em class="text-secondary self-end"> Click to continue...</em>
+        </span>
       {% elif caller %}
         <p class="z-50">{{ caller() }}</p>
       {% endif %}
