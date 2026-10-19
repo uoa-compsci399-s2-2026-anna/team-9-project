@@ -20,8 +20,6 @@ let isShowingHelp = false;
 let helpTooltips = [];
 let shownTooltipIndex = null;
 
-document.addEventListener("mouseup", handleMouseUpOnDocument);
-
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     if (isShowingHelp) {
         stopHelpWalkthrough();
@@ -38,42 +36,6 @@ bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
 bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
 document.querySelectorAll("[data-help-tooltip]").forEach(initialiseTooltip);
-
-/**
- * Tries to show the next help tooltip or stop walkthrough. Does nothing if
- * mouse up on a `.container`, `.flatpickr-calendar`,
- * or `[data-button-type]`. If mouseup on the available systems button in the
- * home page, stops the walkthrough.
- * @param {Event} event The mouseup event
- */
-function handleMouseUpOnDocument(event) {
-    return;
-    const availableSystemsButtons = document.getElementById(
-        "available-systems-buttons",
-    );
-
-    // Stop help walkthrough if clicking the available systems buttons on the
-    // home screen. This prevents showing the next tooltip while the page
-    // changes.
-    if (
-        availableSystemsButtons &&
-        availableSystemsButtons.contains(event.target)
-    ) {
-        stopHelpWalkthrough();
-    }
-
-    if (
-        event.target.closest(".container") ||
-        event.target.closest(".flatpickr-calendar") ||
-        event.target.closest("[data-button-type]") ||
-        // Ignore simulation canvas clicks (this is handled in function onCanvasClick in simulationRenderer.js)
-        event.target.closest("#simulation-canvas")
-    ) {
-        return;
-    }
-
-    showNextHelpTooltipOrStopHelpWalkthrough();
-}
 
 /**
  * Adds `tooltip` to the `helpTooltips` array, taking into account any priority
