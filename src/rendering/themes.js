@@ -9,6 +9,7 @@ const themes = {
         referenceGrid: 0xcccccc,
         habitableZone: "#89f689",
         habitableZoneText: "#043204",
+        comparisonOverlay: "#7d5c12",
     },
     dark: {
         background: new THREE.Color("black"),
@@ -16,6 +17,7 @@ const themes = {
         referenceGrid: 0x555555,
         habitableZone: "#000500",
         habitableZoneText: "#388738",
+        comparisonOverlay: "#c3911c",
     },
 };
 

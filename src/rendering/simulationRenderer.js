@@ -118,14 +118,6 @@ const ORBIT_LINE_WIDTH_PROPORTION = 0.025;
 const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.02;
 const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 
-/**
- * Colour used for every object and orbit belonging to the Solar System when it's shown
- * only as a comparison overlay.
- */
-const comparisonOverlayColour = {
-    dark: "#c3911c",
-    light: "#7d5c12",
-};
 const comparisonOrbitOpacity = 0.8;
 
 // Last known pointer position (in viewport coordinates)
@@ -674,8 +666,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
             return;
         }
 
-        const overlayColour =
-            comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+        const overlayColour = getTheme(isDarkMode).comparisonOverlay;
 
         // The comparison overlay uses a single colour for every object label and orbit
         for (const [name, position] of Object.entries(
@@ -1228,8 +1219,7 @@ export function toggleSimulationDarkMode(isDarkMode) {
     referenceGrid.material.color.set(theme.referenceGrid);
 
     const labelBackground = theme.labelBackground;
-    const overlayColour =
-        comparisonOverlayColour[isDarkMode ? "dark" : "light"];
+    const overlayColour = theme.comparisonOverlay;
 
     for (const [name, objectMesh] of objectMeshes) {
         const isComparisonOverlay = objectMesh.parent === solarSystemGroup;
