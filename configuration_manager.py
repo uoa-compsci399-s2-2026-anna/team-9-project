@@ -62,7 +62,7 @@ def systems_data_from_project(systems_list):
     systems = []
     for filename in systems_list["filenames"]:
         filepath = os.path.join(SYSTEMS_DIR, filename)
-        if os.path.isfile(filepath) and filename.endswith(".json"):
+        if os.path.isfile(filepath):
             current_system = get_file_at_path(filename, filepath)
             systems.append(current_system)
 
