@@ -369,26 +369,55 @@ export function createOrUpdateOrbitalLine(
             }),
         );
         projectionLine.renderOrder = line.renderOrder;
+
+        // Add the projection line as custom user data on the original orbit
+        // line.
         line.userData.projectionLine = projectionLine;
+
+        // Add the projection line as a child of the original orbit line.
         line.add(projectionLine);
     }
 
     const referencePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+
+    // Get orbit line -> world transformation matrix and the inverse.
     line.updateWorldMatrix(true, false);
     const orbitToWorld = line.matrixWorld;
     const worldToOrbit = orbitToWorld.clone().invert();
+
+    /**
+     * Array of the vectors to the points to be rendered for projections from
+     * the orbit line to the reference plane.
+     *
+     * Elements of this alternate between the point on the orbit line, and its
+     * projection on the reference plane.
+     */
     const projectionPoints = [];
 
+    // Build the array of projected points.
     for (let i = 0; i < points.length; i += 3) {
+        /**
+         * The vector to the point in the orbit, in orbit line space coordinates.
+         */
         const orbitPoint = new THREE.Vector3(
             points[i],
             points[i + 1],
             points[i + 2],
         );
-        const projectedWorldPoint = orbitPoint
-            .clone()
-            .applyMatrix4(orbitToWorld);
-        referencePlane.projectPoint(projectedWorldPoint, projectedWorldPoint);
+
+        /**
+         * Vector to the point in the orbit, in world coordinates.
+         */
+        const orbitPointWorld = orbitPoint.clone().applyMatrix4(orbitToWorld);
+
+        /**
+         * Vector to the projection of `orbitPointWorld` on the reference plane,
+         * in world coordinates.
+         */
+        const projectedWorldPoint = new THREE.Vector3();
+        referencePlane.projectPoint(orbitPointWorld, projectedWorldPoint);
+
+        // Transform to convert back to orbit line space coordinates.
         const projectedOrbitPoint =
             projectedWorldPoint.applyMatrix4(worldToOrbit);
 
