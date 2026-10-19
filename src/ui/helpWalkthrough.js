@@ -118,7 +118,8 @@ function stopHelpWalkthrough() {
         tooltip.classList.add("invisible");
     });
 
-    // Clean up all tooltips (resize listeners)
+    // Clean up all tooltips (canvas resize listeners which update tooltip 
+    // positions when the canvas resizes)
     for (const cleanup of cleanups.values()) {
         cleanup();
     }
