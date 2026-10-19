@@ -95,6 +95,7 @@ import { getTheme, getFontSize, getFontFamily } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
+import { addNoDragClickEventListener } from "../events/triggers/sharedTriggers.js";
 
 let timer;
 
@@ -767,55 +768,9 @@ function createControlsChangeHandler(viewRadius) {
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
  */
 function initRaycastingEvents(canvas) {
-    let pointerStart = null;
-    let hasDragged = false;
-    let objectWasClicked = false;
-
-    // Detect when the user holds their mouse down on the canvas
-    canvas.addEventListener("pointerdown", (event) => {
-        pointerStart = {
-            x: event.clientX,
-            y: event.clientY,
-        };
-    });
-
-    canvas.addEventListener("pointermove", (event) => {
-        if (!pointerStart || hasDragged) {
-            return;
-        }
-
-        const dx = event.clientX - pointerStart.x;
-        const dy = event.clientY - pointerStart.y;
-
-        // The user has moved their mouse more than DRAG_THRESHOLD from where they initially held it down
-        if (Math.hypot(dx, dy) > DRAG_THRESHOLD) {
-            hasDragged = true;
-        }
-    });
-
-    canvas.addEventListener("pointerup", (event) => {
-        if (!pointerStart) {
-            return;
-        }
-
-        if (!hasDragged) {
-            objectWasClicked = onCanvasClick(event, canvas);
-        }
-
-        pointerStart = null;
-        hasDragged = false;
-    });
-
-    canvas.addEventListener("click", (event) => {
-        if (objectWasClicked) {
-            // Stop the further propagation of this click event (fired when the object
-            // is clicked) so that the same event isn't intercepted by the event
-            // listener which closes the Object information panel when the user clicks
-            // off the panel.
-            event.stopPropagation();
-            objectWasClicked = false;
-        }
-    });
+    addNoDragClickEventListener(canvas, (event) =>
+        onCanvasClick(event, canvas),
+    );
 
     canvas.addEventListener("pointercancel", () => {
         pointerStart = null;
