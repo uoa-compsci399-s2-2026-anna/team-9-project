@@ -3,9 +3,6 @@ import sys
 import os
 import json
 
-# The version of this manager so that the data can be invalidated on update
-SYSTEMS_MANAGER_VERSION = "1.0"
-
 # Resolve base path to the packaged resources folder when frozen,
 # or to the script's own directory otherwise
 if getattr(sys, "frozen", False):
@@ -26,16 +23,25 @@ def get_file_at_path(filename, filepath):
     raise Exception(f"{filename} does not exist or cannot be read at {filepath}")
 
 
-def systems_data_from_project():
+def get_systems_data_filemap():
     """
-    Loads system data that is stored in /systems
+    Get the systems.json file in ./systems
     """
-
+    
     SYSTEMS_DIR = os.path.join(base_path, "systems")
 
     SYSTEMS_FILENAME = "systems.json"
     SYSTEMS_FILEPATH = os.path.join(SYSTEMS_DIR, SYSTEMS_FILENAME)
     systems_list = get_file_at_path(SYSTEMS_FILENAME, SYSTEMS_FILEPATH)
+
+    return systems_list
+
+def systems_data_from_project(systems_list):
+    """
+    Loads system data that is stored in /systems
+    """
+
+    SYSTEMS_DIR = os.path.join(base_path, "systems")
 
     systems = []
     for filename in systems_list["filenames"]:
@@ -69,13 +75,23 @@ def get_all_systems_data():
     cached file per device
     """
 
+    systems_list = get_systems_data_filemap()
+
     # Try get the data from appdata
     systems_data = systems_data_from_appdata()
 
-    # If the file did not exist OR the file has an outdated version get it from
-    # the /systems directory
-    if systems_data is None or systems_data["systems data version"] != SYSTEMS_MANAGER_VERSION:
-        systems_data = systems_data_from_project()
+    # If the file existed, otherwise *
+    if systems_data is not None:
+        # Get versions from each systems data file
+        appdata_version = systems_data.get("systems data version", "")
+        local_version = systems_list["systems data version"]
+
+        # If they match return the appdata version, otherwise *
+        if appdata_version == local_version:
+            return systems_data
+
+    # Otherwise * load from local ./systems
+    systems_data = systems_data_from_project()
 
     return systems_data
 
