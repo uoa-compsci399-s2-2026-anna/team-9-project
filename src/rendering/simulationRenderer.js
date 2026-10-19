@@ -77,6 +77,7 @@ import {
 } from "./scene/objects.js";
 import { updateObjectLabelOffsets } from "./scene/objectLabels.js";
 import {
+    ORBIT_POINTS_COUNT,
     ORBIT_LINE_OPACITY_MODULATION_FUNCTION,
     ORBIT_LINE_WIDTH_MODULATION_FUNCTION,
     shouldShowOrbit,
@@ -120,8 +121,6 @@ let lastSystemData = null;
 const DRAG_THRESHOLD = 5;
 
 const raycaster = new THREE.Raycaster();
-
-const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
 
 const comparisonOrbitOpacity = 0.8;
 

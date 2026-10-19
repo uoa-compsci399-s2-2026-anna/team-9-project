@@ -4,6 +4,8 @@ import {
 } from "../../shared/simulationState.js";
 import { renderer } from "../renderers.js";
 
+export const ORBIT_POINTS_COUNT = 360; // Number of points to approximate the ellipse
+
 // Orbit line widths as a proportion of the canvas size (the smaller of the canvas width and height)
 const ORBIT_LINE_WIDTH_PROPORTION = 0.025;
 const COMPARISON_ORBIT_LINE_WIDTH_PROPORTION = 0.02;
