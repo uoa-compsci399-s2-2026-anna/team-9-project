@@ -3,7 +3,7 @@ from typing import cast
 import rebound
 from astropy.time import Time
 
-from utility import get_osculating_orbit, get_position_dict
+from utility import get_osculating_orbit, get_position_dict, heartbeat
 
 UNITS = ("AU", "day", "Msun")
 
@@ -136,11 +136,26 @@ def unix_to_jd_tdb(t: float) -> float:
     return Time(time_in_s, format="unix", scale="utc").tdb.jd
 
 
+def jd_tdb_to_unix(t: float) -> float:
+    """
+    Convert JD_TDB timestamp in days to a unix timestamp in milliseconds
+    """
+    time_in_s = Time(t, format="jd", scale="tdb").unix
+    time_in_ms = time_in_s * 1000
+    return round(time_in_ms)
+
 def unix_to_sim_time(system_name: str, t: float) -> float:
     """
     Convert a unix timestamp in milliseconds to a simulation time in days
     """
     return unix_to_jd_tdb(t) - sim_initial_jd_tdb[system_name]
+
+
+def sim_to_unix_time(system_name: str, t: float) -> float:
+    """
+    Convert a simulation time in days to a unix timestamp in milliseconds
+    """
+    return jd_tdb_to_unix(t + sim_initial_jd_tdb[system_name])
 
 
 def get_current_jd_tdb() -> float:
@@ -160,6 +175,7 @@ def init_system(
     # Initialise the simulation
     sim = rebound.Simulation()
     sim.units = UNITS
+    sim.heartbeat = heartbeat
 
     sim_initial_jd_tdb[name] = system_data["timestamp"]
 
