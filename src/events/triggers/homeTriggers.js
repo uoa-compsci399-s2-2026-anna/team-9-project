@@ -15,11 +15,8 @@ addNoDragClickEventListener(document, (event) => {
 
 // Skip help walkthrough when a system button on the home screen is clicked.
 // This prevents the next tooltip from showing before the page changes.
-document
-    .getElementById("available-systems-buttons")
-    .querySelectorAll("a")
-    .forEach((button) => {
-        button.addEventListener("click", () =>
-            bus.publish(EVENTS.HELP_WALKTHROUGH.SKIP_ALL),
-        );
-    });
+document.addEventListener("click", (event) => {
+    if (event.target.closest("#available-systems-buttons > a")) {
+        bus.publish(EVENTS.HELP_WALKTHROUGH.SKIP_ALL);
+    }
+});
