@@ -29,7 +29,7 @@ const ORBIT_LINE_MIN_PIXEL_WIDTH = 1;
 const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
-export const comparisonOrbitOpacity = 0.8;
+export const COMPARISON_ORBIT_LINE_OPACITY = 0.8;
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -244,7 +244,7 @@ export function createOrUpdateOrbitalLine(
         if (group === solarSystemGroup) {
             const comparisonColour = getFadedColour(
                 colour,
-                comparisonOrbitOpacity,
+                COMPARISON_ORBIT_LINE_OPACITY,
             );
 
             material.lineWidth = getOrbitLineWidth(true);

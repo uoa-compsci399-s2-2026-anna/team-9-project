@@ -67,7 +67,7 @@ import {
 } from "./scene/objects.js";
 import { updateObjectLabelOffsets } from "./scene/objectLabels.js";
 import {
-    comparisonOrbitOpacity,
+    COMPARISON_ORBIT_LINE_OPACITY,
     shouldShowOrbit,
     getOrbitLineWidth,
     createOrUpdateOrbitalLine,
@@ -910,7 +910,7 @@ export function toggleSimulationDarkMode(isDarkMode) {
 
     const fadedOverlayColour = getFadedColour(
         overlayColour,
-        comparisonOrbitOpacity,
+        COMPARISON_ORBIT_LINE_OPACITY,
         isDarkMode,
     );
 
