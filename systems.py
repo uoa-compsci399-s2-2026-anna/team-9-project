@@ -49,6 +49,8 @@ class SimulationData:
             obj_name = self.objects[i]
 
             obj = old_orbits[obj_name]
+
+            # Whether the object's orbit is currently defined in cartesian positioning
             if "x" in obj:
                 orbits[obj_name] = {
                     "m": particle.m,
@@ -59,6 +61,7 @@ class SimulationData:
                     "vy": particle.vy,
                     "vz": particle.vz,
                 }
+            # Or it is defined by orbital parameters
             else:
                 orbits[obj_name] = {
                     "m": particle.m,
