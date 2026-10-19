@@ -1,11 +1,9 @@
 import * as THREE from "three";
-import { MeshLineGeometry, MeshLineMaterial } from "three.meshline";
 import {
     simulationState,
     running,
     frozen,
     comparingToSolarSystem,
-    isObjectHiddenByDefault,
     getSimulationSpeedMilliseconds,
     getSimulationTime,
     setSimulationTime,
@@ -16,15 +14,7 @@ import {
     getSystemInfo,
     getMultipleSystemsData,
 } from "../services/simulationServices.js";
-import {
-    TWO_PI,
-    calculateOrbitalPosition,
-    isAngleBetween,
-    calculateProgressDistance,
-    calculateOrbitRotationMatrix,
-    calculateApoapsis,
-    calculateAverageNormal,
-} from "./calculations.js";
+import { calculateApoapsis, calculateAverageNormal } from "./calculations.js";
 import {
     renderer,
     labelRenderer,
@@ -77,12 +67,10 @@ import {
 } from "./scene/objects.js";
 import { updateObjectLabelOffsets } from "./scene/objectLabels.js";
 import {
-    ORBIT_POINTS_COUNT,
-    ORBIT_LINE_WIDTH_MODULATION_FUNCTION,
+    comparisonOrbitOpacity,
     shouldShowOrbit,
     getOrbitLineWidth,
-    createOpaqueOrbitAlphaTexture,
-    updateOrbitAlphaTexture,
+    createOrUpdateOrbitalLine,
 } from "./scene/orbits.js";
 import {
     habitableZone,
@@ -122,8 +110,6 @@ let lastSystemData = null;
 const DRAG_THRESHOLD = 5;
 
 const raycaster = new THREE.Raycaster();
-
-const comparisonOrbitOpacity = 0.8;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
@@ -262,174 +248,6 @@ function onCanvasClick(event, canvas) {
 
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
     return true;
-}
-
-/**
- * If the target orbit does not exist, then its orbital line is created with the given orbital data.
- * If the target orbital line does exist, then it is updated.
- *
- * The orbital line is coloured to match its object.
- *
- * @param {string} currentSystem Name of the current system
- * @param {string} name Name of the object associated with the orbital line
- * @param {Object} orbitalData Orbital data for the line
- * @param {THREE.Group} group The group to add the orbital line to
- * @param {string} colour CSS colour string used for this orbit's line
- */
-function createOrUpdateOrbitalLine(
-    currentSystem,
-    name,
-    orbitalData,
-    group,
-    colour,
-) {
-    // Don't create orbital line in the comparison overlay
-    // for objects that are hidden by default in the Solar System
-    if (
-        comparingToSolarSystem &&
-        group === solarSystemGroup &&
-        isObjectHiddenByDefault("Solar System", name)
-    ) {
-        return;
-    }
-
-    const { a, e, inc, Omega, omega, f } = orbitalData;
-
-    if (e === 1) return; // Parabolic orbits are not supported for now
-
-    const isElliptical = e < 1;
-
-    let line = orbitalLines.get(name);
-
-    if (!line) {
-        const canvas = renderer.domElement;
-        const geometry = new MeshLineGeometry();
-
-        const material = new MeshLineMaterial({
-            // Remain constant size (do not grow in size as user zooms in)
-            sizeAttenuation: false,
-            transparent: true,
-            resolution: new THREE.Vector2(
-                window.innerWidth,
-                window.innerHeight,
-            ),
-        });
-
-        if (group === solarSystemGroup) {
-            const comparisonColour = getFadedColour(
-                colour,
-                comparisonOrbitOpacity,
-            );
-
-            material.lineWidth = getOrbitLineWidth(true);
-            material.color.set(comparisonColour);
-        } else {
-            material.lineWidth = getOrbitLineWidth(false);
-            material.color.set(colour);
-        }
-
-        material.alphaMap = createOpaqueOrbitAlphaTexture();
-        material.useAlphaMap = 1;
-
-        material.resolution.set(canvas.clientWidth, canvas.clientHeight);
-
-        line = new THREE.Mesh(geometry, material);
-
-        // Render above habitable zone to prevent z fighting
-        line.renderOrder = 1;
-
-        if (group === solarSystemGroup) {
-            line.visible = comparingToSolarSystem;
-        } else {
-            line.visible = shouldShowOrbit(name, currentSystem);
-        }
-
-        group.add(line);
-        orbitalLines.set(name, line);
-    }
-
-    // Update the geometry of the line to match the orbital parameters
-    const points = [];
-    let thetaStart = 0;
-    let thetaEnd = TWO_PI;
-
-    // Limit the angle range for hyperbolic orbits to its asymptotes
-    if (!isElliptical) {
-        const thetaLimit = Math.acos(-1 / e);
-        const epsilon = 1e-10; // Avoid rendering issues at the asymptotes
-
-        thetaStart = -thetaLimit + epsilon;
-        thetaEnd = thetaLimit - epsilon;
-    }
-
-    // Calculate the step size for theta.
-    // ORBIT_POINTS_COUNT - 2 is used as:
-    // * A point is added at the object's position
-    // * The last point is added separately
-    const thetaStep = (thetaEnd - thetaStart) / (ORBIT_POINTS_COUNT - 2);
-
-    let objectIndex = 0;
-    for (let i = 0; i < ORBIT_POINTS_COUNT - 2; i++) {
-        const theta = thetaStart + i * thetaStep;
-        const { x, y } = calculateOrbitalPosition(a, e, theta);
-        points.push(x, y, 0);
-
-        if (isAngleBetween(f, theta, theta + thetaStep)) {
-            // Add a point on the exact coordinates of the object to prevent
-            // sampling issues where the object's position falls between points.
-            const { x, y } = calculateOrbitalPosition(a, e, f);
-            points.push(x, y, 0);
-            objectIndex = i + 1;
-        }
-    }
-
-    // Add the last point at the end of the range
-    const { x, y } = calculateOrbitalPosition(a, e, thetaEnd);
-    points.push(x, y, 0);
-
-    /**
-     * Proportion of a full revolution the object is from its starting
-     * point/angle.
-     */
-    const objectProgress = objectIndex / (ORBIT_POINTS_COUNT - 1);
-
-    updateOrbitAlphaTexture(
-        line.material.alphaMap,
-        objectProgress,
-        isElliptical,
-    );
-
-    // Create or update the position attribute and widen the line at the object
-    line.geometry.setPoints(points, (progress) => {
-        /**
-         * setPoints takes a callback which has a `progress` parameter which defines
-         * the progress across the line (as a proportion, in [0, 1]), and returns
-         * the PROPORTION of the original line width as defined for the material
-         * to define the line width at that point (`progress`) along the line.
-         */
-
-        const FULL_WIDTH_PROPORTION = 1;
-
-        if (settings.orbitLines == "Solid") {
-            return FULL_WIDTH_PROPORTION;
-        }
-
-        const distance = calculateProgressDistance(
-            progress,
-            objectProgress,
-            isElliptical,
-        );
-
-        if (settings.orbitLines === "Tapered") {
-            return ORBIT_LINE_WIDTH_MODULATION_FUNCTION(distance);
-        } else {
-            return FULL_WIDTH_PROPORTION;
-        }
-    });
-
-    // Rotate the line to match the orbital parameters
-    const rotationMatrix = calculateOrbitRotationMatrix(Omega, inc, omega);
-    line.quaternion.setFromRotationMatrix(rotationMatrix);
 }
 
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
