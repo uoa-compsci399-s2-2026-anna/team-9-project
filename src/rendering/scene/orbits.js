@@ -404,8 +404,21 @@ function createOrUpdateOrbitalLineProjection(line) {
      */
     const projectionPoints = [];
 
-    // Build the array of projected points.
-    for (let i = 0; i < points.length; i += 3) {
+    /**
+     * The number of dimensions per position coordinate.
+     */
+    const COORDINATES_DIMENSION_COUNT = 3;
+
+    // Build the array of projected points. Here, we ignore the last two xyz
+    // coordinates. This is because `points` contains two 'special' points: one
+    // is the point of the exact position of the object. The other is a duplicated
+    // point on the start/end of the line. Thus, we skip the last two points in
+    // the array to account for this.
+    for (
+        let i = 0;
+        i < points.length - 2 * COORDINATES_DIMENSION_COUNT;
+        i += COORDINATES_DIMENSION_COUNT
+    ) {
         /**
          * The vector to the point in the orbit, in orbit line space coordinates.
          */
