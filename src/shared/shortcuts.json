@@ -18,5 +18,9 @@
   "sim:decrease_speed": {
     "key": "ArrowDown",
     "label": "↓"
+  },
+  "help_walkthrough:skip_all": {
+    "key": "Escape",
+    "label": "Escape"
   }
 }

@@ -6,6 +6,7 @@ import {
     simulationState,
     SIMULATION_SPEED_LIMITS_MS,
 } from "../../shared/simulationState.js";
+import { addNoDragClickEventListener } from "./sharedTriggers.js";
 import { timeToMilliseconds, millisecondsToTime } from "../../utils/utils.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -246,3 +247,17 @@ resetViewSettings.addEventListener("click", () => {
         }
     }
 });
+
+// Go to next step in help walkthrough if user clicks anywhere on the tooltip
+// itself.
+document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) =>
+    addNoDragClickEventListener(tooltip, (event) => {
+        // Do not go to next tooltip if clicking on a button (this is already)
+        // handled by sharedTriggers.js
+        if (event.target.closest("[data-button-type]")) {
+            return;
+        }
+
+        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT);
+    }),
+);
