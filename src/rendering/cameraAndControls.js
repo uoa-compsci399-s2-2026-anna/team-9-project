@@ -228,7 +228,7 @@ const ZOOM_SCALE_FACTOR = 0.5;
  * If an animation is already in progress, the new zoom is measured from that animation's destination.
  * This means that multiple zooms compound.
  *
- * @param {number} distanceMultiplier The factor to scale the zoom distance by. Values below 1 zoom in, 
+ * @param {number} distanceMultiplier The factor to scale the zoom distance by. Values below 1 zoom in,
  * values above 1 zoom out.
  */
 function animateZoom(distanceMultiplier) {
