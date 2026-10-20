@@ -169,7 +169,7 @@ function attachKeyPress(key, callback) {
 
 /**
  * Removes the focus from the active element in the document (if any).
- * 
+ *
  * e.g. removes focus from text boxes, dropdowns, etc.
  */
 function blurActiveElement() {
