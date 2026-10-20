@@ -228,10 +228,10 @@ const ZOOM_SCALE_FACTOR = 0.5;
  * If an animation is already in progress, the new zoom is measured from that animation's destination.
  * This means that multiple zooms compound.
  *
- * @param {number} scale Multiplier applied to the distance between the camera and its target.
- * Values below 1 zoom in, values above 1 zoom out.
+ * @param {number} distanceMultiplier The factor to scale the zoom distance by. Values below 1 zoom in, 
+ * values above 1 zoom out.
  */
-function animateZoom(scale) {
+function animateZoom(distanceMultiplier) {
     const isAnimating = cameraAnimationState.isAnimating;
     const target = isAnimating ? cameraAnimationState.target : controls.target;
     const position = isAnimating
@@ -242,7 +242,7 @@ function animateZoom(scale) {
 
     // Clamp the new distance to within the control's zoom limits
     const distance = THREE.MathUtils.clamp(
-        offset.length() * scale,
+        offset.length() * distanceMultiplier,
         controls.minDistance,
         controls.maxDistance,
     );
