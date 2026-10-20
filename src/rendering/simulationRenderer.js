@@ -883,6 +883,10 @@ export function toggleSimulationDarkMode(isDarkMode) {
                 ? fadedOverlayColour
                 : getCurrentSystemColour(name, isDarkMode),
         );
+
+        orbit.userData.projectionLine?.material.color.copy(
+            orbit.material.color,
+        );
     }
 
     updateHabitableZoneTexture(theme, getFontFamily(settings.font));
