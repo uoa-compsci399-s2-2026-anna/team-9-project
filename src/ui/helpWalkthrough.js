@@ -14,20 +14,11 @@ const cleanups = new Map();
 const tooltipTargets = new Map();
 
 const helpButtonTooltip = document.getElementById("help-button-tooltip");
-const canvas = document.getElementById("simulation-canvas");
 
 let isShowingHelp = false;
-let helpTooltipsToShow = [];
-let shownTooltip = null;
 
-/**
- * Minimum number of pixels mouse must have moved for it to count as a drag
- * (instead of a click).
- */
-const DRAG_THRESHOLD_PX = 5;
-
-let mouseDownStartX = 0;
-let mouseDownStartY = 0;
+let helpTooltips = [];
+let shownTooltipIndex = null;
 
 bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     if (isShowingHelp) {
@@ -37,44 +28,30 @@ bus.subscribe(EVENTS.TOOLBAR.HELP_BUTTON_CLICK, () => {
     }
 });
 bus.subscribe(EVENTS.SETTINGS.OPEN_SETTINGS_MENU, stopHelpWalkthrough);
+bus.subscribe(
+    EVENTS.HELP_WALKTHROUGH.NEXT,
+    showNextHelpTooltipOrStopHelpWalkthrough,
+);
+bus.subscribe(EVENTS.HELP_WALKTHROUGH.PREVIOUS, showPreviousHelpTooltip);
+bus.subscribe(EVENTS.HELP_WALKTHROUGH.SKIP_ALL, stopHelpWalkthrough);
 
-document.addEventListener("mousedown", setMouseDownStartPositionVariables);
-document.addEventListener("click", (event) => {
-    const availableSystemsButtons = document.getElementById(
-        "available-systems-buttons",
-    );
+document.querySelectorAll("[data-help-tooltip]").forEach(initialiseTooltip);
 
-    // Return if not on the home screen.
-    if (!availableSystemsButtons) {
-        return;
+/**
+ * Adds `tooltip` to the `helpTooltips` array, taking into account any priority
+ * it may had (i.e. whether it should be displayed first).
+ * @param {HTMLElement} tooltip The tooltip to add
+ */
+function addTooltipToHelpTooltipsArray(tooltip) {
+    const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
+
+    if (prioritiseOrder) {
+        // Push to front (will be popped off first)
+        helpTooltips.unshift(tooltip);
+    } else {
+        // Push to back
+        helpTooltips.push(tooltip);
     }
-
-    // Stop help walkthrough if clicking the available systems buttons on the
-    // home screen. This prevents showing the next tooltip while the page
-    // changes.
-    if (availableSystemsButtons.contains(event.target)) {
-        stopHelpWalkthrough();
-    }
-
-    showNextHelpTooltipOrStopHelpWalkthrough();
-});
-
-if (canvas) {
-    canvas.addEventListener("click", (event) => {
-        if (isClickEventDrag(event)) {
-            event.preventDefault();
-            return;
-        }
-
-        showNextHelpTooltipOrStopHelpWalkthrough();
-    });
-}
-
-function isClickEventDrag(event) {
-    const deltaX = Math.abs(event.clientX - mouseDownStartX);
-    const deltaY = Math.abs(event.clientY - mouseDownStartY);
-
-    return deltaX > DRAG_THRESHOLD_PX || deltaY > DRAG_THRESHOLD_PX;
 }
 
 /**
@@ -84,41 +61,24 @@ function startHelpWalkthrough() {
     if (isShowingHelp) {
         return;
     }
-    if (helpTooltipsToShow.length != 0) {
-        return;
-    }
 
-    helpButtonTooltip.textContent = "Skip walkthrough";
+    helpButtonTooltip.textContent = "End walkthrough";
 
-    document
-        .querySelectorAll("[data-help-tooltip]")
-        .forEach(setTooltipPosition);
-
-    // Push all tooltips to list.
-    document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
-        const prioritiseOrder = JSON.parse(tooltip.dataset.prioritiseOrder);
-
-        if (prioritiseOrder) {
-            // Push to front (will be popped off first)
-            helpTooltipsToShow.unshift(tooltip);
-        } else {
-            // Push to back
-            helpTooltipsToShow.push(tooltip);
-        }
-    });
-
-    showNextHelpTooltip();
+    isShowingHelp = true;
+    showNextHelpTooltipOrStopHelpWalkthrough();
 }
 
 function stopHelpWalkthrough() {
-    helpTooltipsToShow = [];
     isShowingHelp = false;
+    shownTooltipIndex = null;
 
-    if (shownTooltip) {
-        shownTooltip.classList.add("invisible");
-        shownTooltip = null;
-    }
+    // Hide all tooltips
+    document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) => {
+        tooltip.classList.add("invisible");
+    });
 
+    // Clean up all tooltips (canvas resize listeners which update tooltip
+    // positions when the canvas resizes)
     for (const cleanup of cleanups.values()) {
         cleanup();
     }
@@ -128,19 +88,44 @@ function stopHelpWalkthrough() {
 }
 
 /**
- * Shows the next help tooltip in the help walkthrough.
+ * Returns the tooltip currently being shown, or `null` if the help walkthrough
+ * is not in progress.
+ * @returns {HTMLElement} The tooltip currently being shown
  */
-function showNextHelpTooltip() {
-    if (helpTooltipsToShow.length == 0) {
-        stopHelpWalkthrough();
+function getCurrentHelpTooltip() {
+    if (shownTooltipIndex === null || !isShowingHelp) {
+        return null;
+    }
+
+    return helpTooltips.at(shownTooltipIndex);
+}
+
+function hideCurrentHelpTooltip() {
+    // Clean up and hide currently-shown tooltip
+    const cleanup = cleanups.get(getCurrentHelpTooltip());
+    cleanup?.();
+    cleanups.delete(getCurrentHelpTooltip());
+    getCurrentHelpTooltip().classList.add("invisible");
+}
+
+function showPreviousHelpTooltip() {
+    if (
+        !isShowingHelp ||
+        shownTooltipIndex === 0 ||
+        shownTooltipIndex === null
+    ) {
         return;
     }
 
-    isShowingHelp = true;
+    hideCurrentHelpTooltip();
+    shownTooltipIndex--;
+    showCurrentTooltip();
+}
 
-    // Pop off first element
-    shownTooltip = helpTooltipsToShow.shift();
-    shownTooltip.classList.remove("invisible");
+function showCurrentTooltip() {
+    getCurrentHelpTooltip().classList.remove("invisible");
+    setTooltipPosition(getCurrentHelpTooltip());
+    updateCurrentHelpTooltipProgressText();
 }
 
 /**
@@ -152,12 +137,89 @@ function showNextHelpTooltipOrStopHelpWalkthrough() {
         return;
     }
 
-    const cleanup = cleanups.get(shownTooltip);
-    cleanup?.();
-    cleanups.delete(shownTooltip);
-    shownTooltip.classList.add("invisible");
+    // Update index; hide current tooltip if necessary
+    if (shownTooltipIndex === null) {
+        shownTooltipIndex = 0;
+    } else {
+        hideCurrentHelpTooltip();
+        shownTooltipIndex++;
+    }
 
-    showNextHelpTooltip();
+    // Stop walkthrough if at end
+    if (shownTooltipIndex === helpTooltips.length) {
+        stopHelpWalkthrough();
+        return;
+    }
+
+    showCurrentTooltip();
+}
+
+function updateCurrentHelpTooltipProgressText() {
+    // Query selector all required as we duplicate the tooltip to add the border
+    // and background colour.
+    getCurrentHelpTooltip()
+        .querySelectorAll("[data-progress-text]")
+        .forEach((text) => {
+            text.textContent = `${shownTooltipIndex + 1}/${helpTooltips.length}`;
+        });
+}
+
+/**
+ * Adds the background and outline to `tooltip` by duplicating the element
+ * and updating the style accordingly.
+ *
+ * This is needed because the help tooltip is comprised of 4 layers:
+ * 1. Arrow (w/ outline) (BOTTOM)
+ * 2. Container background (w/ outline)
+ * 3. Arrow fill colour (no outline)
+ * 4. Content (text, buttons, etc.; no outline) (TOP)
+ *
+ * It needs to be order 1-2-3 so that the fill colour (3) appears on top of the
+ * container background (2), to cover 2's outline (so it looks seamless).
+ * And finally 4 has to be at the top because the arrow is just a rotated
+ * square, and if 3 was above 4, then the square's fill colour would cover the
+ * content.
+ *
+ * This function creates layer #2.
+ * @param {HTMLElement} tooltip The tooltip
+ */
+function addTooltipBackgroundAndOutline(tooltip) {
+    const tooltipContent = tooltip.querySelector("[data-tooltip-content]");
+
+    const tooltipBackgroundAndOutline = tooltipContent.cloneNode(true);
+    tooltipBackgroundAndOutline.classList.forEach((className) => {
+        const Z_INDEX_CLASS = /^z-[0-9]+$/;
+        const BORDER_CLASS = /^border-[A-Za-z0-9]+$/;
+        const BACKGROUND_COLOUR_CLASS = /^bg-[A-Za-z0-9]+$/;
+        const ABSOLUTE_CLASS = /^absolute$/;
+
+        if (
+            Z_INDEX_CLASS.test(className) ||
+            BORDER_CLASS.test(className) ||
+            BACKGROUND_COLOUR_CLASS.test(className) ||
+            ABSOLUTE_CLASS.test(className)
+        ) {
+            tooltipBackgroundAndOutline.classList.remove(className);
+        }
+    });
+
+    tooltipBackgroundAndOutline.classList.add("z-10");
+    tooltipBackgroundAndOutline.classList.add("bordered-light");
+    tooltipBackgroundAndOutline.classList.add("relative");
+    tooltipBackgroundAndOutline.classList.add("bg-white");
+    tooltipBackgroundAndOutline.classList.add("dark:bg-zinc-950");
+
+    Array.from(tooltipBackgroundAndOutline.children).forEach((child) => {
+        child.classList.add("invisible");
+    });
+
+    tooltipContent.before(tooltipBackgroundAndOutline);
+}
+
+function initialiseTooltip(tooltip) {
+    addTooltipToHelpTooltipsArray(tooltip);
+    addTooltipBackgroundAndOutline(tooltip);
+    setTooltipPosition(tooltip);
 }
 
 /**
@@ -246,9 +308,4 @@ function remToPx(rem) {
     return (
         rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
     );
-}
-
-function setMouseDownStartPositionVariables(event) {
-    mouseDownStartX = event.clientX;
-    mouseDownStartY = event.clientY;
 }

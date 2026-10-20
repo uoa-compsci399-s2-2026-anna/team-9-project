@@ -1,5 +1,10 @@
+{% from "components/button-with-tooltip.html" import button_with_tooltip with context %}
+
 {%
   macro help_tooltip(
+    heading_text=none,
+    body_text=none,
+
     auto_placement=true,
     placement="top",
     prioritise_order=false
@@ -8,7 +13,7 @@
   <div
     role="tooltip"
     data-help-tooltip
-    class="pointer-events-none invisible absolute top-0 left-0 isolate z-50 w-80"
+    class="fill-primary invisible absolute top-0 left-0 isolate z-50 w-80"
     data-placement="{{ placement }}"
     data-auto-placement="{{ auto_placement | tojson }}"
     data-prioritise-order="{{ prioritise_order | tojson }}"
@@ -25,20 +30,56 @@
       class="control absolute z-20 size-5 min-h-0 rotate-45 rounded-none"
     ></div>
 
-    <!-- Container (for background); z-10 -->
-    <div class="control bordered-light relative z-10 max-w-80 p-2">
-      <p class="invisible text-base">{{ caller() }}</p>
-      <br />
-      <p class="invisible text-sm italic">Click anywhere to continue...</p>
-    </div>
-
-    <!-- Text; z-30 -->
+    <!-- Content; z-30 -->
     <div
-      class="text-primary control absolute top-0 left-0 z-30 max-w-80 border-none bg-transparent p-2 text-base"
+      class="text-primary control absolute top-0 left-0 z-30 flex w-80 flex-col border-none bg-transparent p-4 text-base"
+      data-tooltip-content
     >
-      <p class="z-50">{{ caller() }}</p>
-      <br />
-      <p class="text-secondary text-sm italic">Click to continue...</p>
+      <div class="flex items-center">
+        {% if heading_text %}
+          <span class="font-bold">{{ heading_text }}</span>
+        {% endif %}
+
+        <!-- Skip all button -->
+        <div class="ml-auto">
+          {{
+            button_with_tooltip(
+              tooltip_text="End walkthrough",
+              svg_path="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z",
+              on_click_events=["help_walkthrough:skip_all"],
+              tooltip_align="right"
+            )
+          }}
+        </div>
+      </div>
+
+      {% if body_text %}
+        <span class="flex flex-col gap-2 pr-2 text-sm">
+          <p>{{ body_text | safe }}</p>
+          <em class="text-secondary self-end"> Click to continue</em>
+        </span>
+      {% elif caller %}
+        <p class="z-50">{{ caller() }}</p>
+      {% endif %}
+
+      <div class="pointer-events-auto mt-2 flex items-center justify-end gap-3">
+        <!-- Icons from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
+        <div class="text-secondary mr-auto text-sm" data-progress-text></div>
+        {{
+          button_with_tooltip(
+            tooltip_text="Previous",
+            svg_path="m10.8 12l3.9 3.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.212-.325T8.425 12t.063-.375t.212-.325l4.6-4.6q.275-.275.7-.275t.7.275t.275.7t-.275.7z",
+            on_click_events=["help_walkthrough:previous"]
+          )
+        }}
+        {{
+          button_with_tooltip(
+            tooltip_text="Next",
+            svg_path="M12.6 12L8.7 8.1q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.6 4.6q.15.15.213.325t.062.375t-.062.375t-.213.325l-4.6 4.6q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7z",
+            on_click_events=["help_walkthrough:next"]
+          )
+        }}
+      </div>
     </div>
   </div>
 {% endmacro %}

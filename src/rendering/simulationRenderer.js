@@ -231,7 +231,8 @@ function getObjectNameAt(clientX, clientY, canvas) {
 /**
  * Handles when the canvas is clicked on while the user is not moving the camera.
  * Detects if an object was clicked and, if so, fires an event to notify other components
- * that an object was clicked.
+ * that an object was clicked, and publishes an event to go to the next step
+ * in the help walkthrough (if in progress).
  *
  * @param {MouseEvent} event The click event
  * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
@@ -244,10 +245,15 @@ function onCanvasClick(event, canvas) {
     const name = getObjectNameAt(event.clientX, event.clientY, canvas);
 
     if (!name) {
+        // Go to next help walkthrough step (does nothing if not in progress) only
+        // if user did not click an object
+        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT);
+
         return false;
     }
 
     bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
+
     return true;
 }
 
