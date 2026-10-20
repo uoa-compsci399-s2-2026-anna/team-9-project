@@ -124,6 +124,7 @@ function showPreviousHelpTooltip() {
 
 function showCurrentTooltip() {
     getCurrentHelpTooltip().classList.remove("invisible");
+    setTooltipPosition(getCurrentHelpTooltip());
     updateCurrentHelpTooltipProgressText();
 }
 
