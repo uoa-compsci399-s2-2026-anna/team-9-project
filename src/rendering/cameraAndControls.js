@@ -220,14 +220,47 @@ export function animateCamera() {
     }
 }
 
-const DOLLY_IN_OUT_SCALE_FACTOR = 0.5;
+const ZOOM_SCALE_FACTOR = 0.5;
+
+/**
+ * Animate the camera towards or away from its target along the current viewing direction.
+ *
+ * If an animation is already in progress, the new zoom is measured from that animation's destination.
+ * This means that multiple zooms compound.
+ *
+ * @param {number} distanceMultiplier The factor to scale the zoom distance by. Values below 1 zoom in,
+ * values above 1 zoom out.
+ */
+function animateZoom(distanceMultiplier) {
+    const isAnimating = cameraAnimationState.isAnimating;
+    const target = isAnimating ? cameraAnimationState.target : controls.target;
+    const position = isAnimating
+        ? cameraAnimationState.position
+        : camera.position;
+
+    const offset = position.clone().sub(target);
+
+    // Clamp the new distance to within the control's zoom limits
+    const distance = THREE.MathUtils.clamp(
+        offset.length() * distanceMultiplier,
+        controls.minDistance,
+        controls.maxDistance,
+    );
+
+    cameraAnimationState.target.copy(target);
+    cameraAnimationState.position.copy(
+        target.clone().add(offset.setLength(distance)),
+    );
+
+    // Restart the animation
+    cameraAnimationState.currentStep = 0;
+    cameraAnimationState.isAnimating = true;
+}
 
 export function zoomIn() {
-    cameraAnimationState.isAnimating = false;
-    controls.dollyIn(1 - DOLLY_IN_OUT_SCALE_FACTOR);
+    animateZoom(ZOOM_SCALE_FACTOR);
 }
 
 export function zoomOut() {
-    cameraAnimationState.isAnimating = false;
-    controls.dollyIn(1 + DOLLY_IN_OUT_SCALE_FACTOR);
+    animateZoom(1 / ZOOM_SCALE_FACTOR);
 }
