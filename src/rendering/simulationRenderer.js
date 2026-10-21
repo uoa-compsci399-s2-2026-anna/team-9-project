@@ -291,7 +291,7 @@ async function updateSimulation(forceCalendarUpdate = true) {
             lastFetchedSimulationTime,
         );
 
-        // Publish the LIMIT_REACHED event if the last fetched simulation time as at the simulation time bounds
+        // Publish the LIMIT_REACHED event if the last fetched simulation time is out of bounds (inclusive)
         if (
             lastFetchedSimulationTime <= MIN_SIMULATION_TIME ||
             lastFetchedSimulationTime >= MAX_SIMULATION_TIME
