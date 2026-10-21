@@ -519,7 +519,7 @@ function getFormattedDate() {
     // Get the current time (all values are adjusted for timezone)
     const date = new Date();
 
-    const pad = (num, padAmount=2) => String(num).padStart(padAmount, '0');
+    const pad = (num, padAmount = 2) => String(num).padStart(padAmount, "0");
 
     const year = pad(date.getFullYear(), 4); // YYYY
     const month = pad(date.getMonth() + 1); // Months are 0-indexed MM
@@ -529,7 +529,7 @@ function getFormattedDate() {
     const seconds = pad(date.getSeconds()); // SS
 
     // YYYY-MM-DD_HH-MM-SS
-    return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`
+    return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
 }
 
 // Store the formatted date so only one log is produced per session
