@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from fastapi_filter import FilteredStaticFiles
+from fastapi_filter import SrcFilteredStaticFiles
 from configuration_manager import export_all_systems_data_to_file, get_all_systems_data, get_base_path, get_settings_schema, get_shortcuts, get_simulation_state_schema
 from systems import Simulations
 from utility import get_osculating_orbit, get_position_dict
@@ -31,7 +31,7 @@ all_systems = config["systems"]
 
 base_path = get_base_path()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
-app.mount("/src", FilteredStaticFiles(directory=os.path.join(base_path, "src")), name="src")
+app.mount("/src", SrcFilteredStaticFiles(directory=os.path.join(base_path, "src")), name="src")
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 
