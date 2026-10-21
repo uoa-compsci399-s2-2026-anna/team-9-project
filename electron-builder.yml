@@ -12,7 +12,7 @@ files:
 
 extraResources:
   - { from: dist, to: dist }
-  - { from: src, to: src, filter: [ "**/*", "!**/backend/", "!**/backend/**/*" ]}
+  - { from: src, to: src, filter: ["**/*", "!**/backend/", "!**/backend/**/*"] }
   - { from: systems, to: systems }
 
 publish:
