@@ -4,13 +4,16 @@
     is_checked_initially,
     label_text,
     data_attributes={},
-    toggle_event=None
+    toggle_event=None,
+    parent_toggle_event=None,
+    is_disabled_initially=false
   )
 %}
   <label
-    class="flex items-center gap-2"
+    class="{{ "pl-3 ml-1.5 border-l border-secondary" if parent_toggle_event }} flex items-center gap-2"
     data-side-panel-checkbox
     data-toggle-event="{{ toggle_event }}"
+    data-parent-toggle-event="{{ parent_toggle_event }}"
   >
     <input
       type="checkbox"
@@ -19,6 +22,7 @@
         data-{{ name }}="{{ value }}"
       {% endfor %}
       {{ "checked" if is_checked_initially }}
+      {{ "disabled" if is_disabled_initially }}
     />
     <span class="min-w-0 flex-1 wrap-break-word">{{ label_text }}</span>
 
