@@ -98,7 +98,7 @@ def get_all_systems_data():
     global systems_file_version
 
     systems_list = get_systems_data_filemap()
-    local_version = systems_list["systems data version"]
+    local_version = systems_list["systems_data_version"]
     systems_file_version = local_version
 
     # Try get the data from appdata
@@ -107,7 +107,7 @@ def get_all_systems_data():
     # If the file existed
     if systems_data is not None:
         # Get versions from each systems data file
-        appdata_version = systems_data.get("systems data version", "")
+        appdata_version = systems_data.get("systems_data_version", "")
 
         # If they match return the appdata version, otherwise continue
         if appdata_version == local_version:
