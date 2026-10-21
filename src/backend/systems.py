@@ -72,9 +72,9 @@ class SimulationData:
                     "omega": particle.omega,
                     "M": particle.M,
                     "inc": particle.inc,
-                    "Omega": particle.Omega
+                    "Omega": particle.Omega,
                 }
-        
+
         return orbits, current_time
 
 
@@ -173,7 +173,7 @@ class Simulations:
             # If the difference is greater, integrate normally
             sim.integrate(sim_time)
             return sim
-    
+
     def export_data(self, all_systems):
         all_systems_data = {}
 
@@ -183,11 +183,8 @@ class Simulations:
 
             orbits, timestamp = system.export_data(system_data)
 
-            all_systems_data[system_name] = {
-                "orbits": orbits,
-                "timestamp": timestamp
-            }
-        
+            all_systems_data[system_name] = {"orbits": orbits, "timestamp": timestamp}
+
         return all_systems_data
 
 
