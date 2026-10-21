@@ -258,20 +258,32 @@ function spawnPythonProcess(resolve, reject) {
 
     // Capture standard output from python process
     pythonProcess.stdout.on("data", (data) => {
-        log.info(`${data}`);
+        for (const line of data.toString().split("\n")) {
+            if (!line?.trim()) {
+                continue;
+            }
 
-        // If the data captured is the url to the application
-        if (data.toString().startsWith("http://")) {
-            // Resolve the promise with the url (with no excess whitespace)
-            let url = data.toString().split("\n")[0].trim();
-            log.debug(`ELECTRON: URL to Python process is ${url}`);
-            resolve(url);
+            log.info(`${line}`);
+
+            // If the data captured is the url to the application
+            if (line.startsWith("http://")) {
+                // Resolve the promise with the url (with no excess whitespace)
+                let url = line.trim();
+                log.debug(`ELECTRON: URL to Python process is ${url}`);
+                resolve(url);
+            }
         }
     });
 
     // Capture standard error from pthon process
     pythonProcess.stderr.on("data", (data) => {
-        log.error(`${data}`);
+        for (const line of data.toString().split("\n")) {
+            if (!line?.trim()) {
+                continue;
+            }
+
+            log.error(`${line}`);
+        }
     });
 
     // Handle python process closing

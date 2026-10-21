@@ -13,7 +13,7 @@ files:
 extraResources:
   - { from: dist, to: dist }
   - { from: src, to: src }
-  - config.json
+  - { from: systems, to: systems }
 
 publish:
   provider: github
