@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import os
 import signal
 import time
@@ -22,6 +23,9 @@ from configuration_manager import (
 )
 from systems import Simulations
 from utility import get_osculating_orbit, get_position_dict
+
+# Override the Windows registry's .js MIME type
+mimetypes.add_type("text/javascript", ".js")
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
