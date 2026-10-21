@@ -514,7 +514,10 @@ app.on("will-quit", () => {
 // Initialise logger
 log.initialize();
 
-// Gets the current date formatted as YYYY-MM-DD_HH-MM-SS in the devices local timezone
+/**
+ * Gets the current date formatted in the devices local timezone
+ * @returns The current date in YYYY-MM-DD_HH-MM-SS format
+ */
 function getFormattedDate() {
     // Get the current time (all values are adjusted for timezone)
     const date = new Date();
