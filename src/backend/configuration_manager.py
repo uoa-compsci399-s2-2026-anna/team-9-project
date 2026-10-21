@@ -10,10 +10,10 @@ def get_base_path():
     # Resolve base path to the packaged resources folder when frozen,
     # or to the script's own directory otherwise
     if getattr(sys, "frozen", False):
-        # ./dist/main.exe -> ./
+        # Traverses from (e.g.) ./dist/main.exe to ./
         return os.path.dirname(os.path.dirname(sys.executable))
     else:
-        # ./src/backend/main.py -> ./
+        # Traverses from (e.g.) ./src/backend/main.py to ./
         return os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
