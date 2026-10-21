@@ -32,7 +32,7 @@ import {
     animateCamera,
     animateCameraToFitRadius,
 } from "./cameraAndControls.js";
-import { getObjectNameAt } from "./raycaster.js";
+import { getObjectNameAt, initRaycastingEvents } from "./raycaster.js";
 import {
     viewRadius,
     VIEW_RADIUS_MULTIPLIER,
@@ -96,7 +96,6 @@ import {
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
-import { addNoDragClickEventListener } from "../events/triggers/sharedTriggers.js";
 
 let timer;
 
@@ -113,35 +112,6 @@ const DRAG_THRESHOLD = 5;
 
 // Last known pointer position (in viewport coordinates)
 let pointerPosition = null;
-
-/**
- * Handles when the canvas is clicked on while the user is not moving the camera.
- * Detects if an object was clicked and, if so, fires an event to notify other components
- * that an object was clicked, and publishes an event to go to the next step
- * in the help walkthrough (if in progress).
- *
- * @param {MouseEvent} event The click event
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- * @return Whether or not an object was clicked
- */
-function onCanvasClick(event, canvas) {
-    // Close any open object information panel
-    bus.publish(EVENTS.SIM.CLOSE_OBJECT_INFO);
-
-    const name = getObjectNameAt(event.clientX, event.clientY, canvas);
-
-    if (!name) {
-        // Go to next help walkthrough step (does nothing if not in progress) only
-        // if user did not click an object
-        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT);
-
-        return false;
-    }
-
-    bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
-
-    return true;
-}
 
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
     // Update simulation to redraw orbit lines with new width/opacity profile
@@ -305,27 +275,6 @@ function createControlsChangeHandler(viewRadius) {
         updateReferenceGridScale(camera.position, controls.target);
         flipHabitableZoneTexture(camera.position);
     };
-}
-
-/**
- * Register pointer listeners on the canvas for raycasting. A click is ignored if it was part
- * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
- * objects on the scene.
- *
- * A threshold of DRAG_THRESHOLD px is used so that accidental minute drags don't register
- * as a click.
- *
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- */
-function initRaycastingEvents(canvas) {
-    addNoDragClickEventListener(canvas, (event) =>
-        onCanvasClick(event, canvas),
-    );
-
-    canvas.addEventListener("pointercancel", () => {
-        pointerStart = null;
-        hasDragged = false;
-    });
 }
 
 /**
