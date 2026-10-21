@@ -34,6 +34,8 @@ def get_file_at_path(filename, filepath):
     exist or cannot be read
     """
 
+    print(f"Getting file contents from {filepath}")
+
     try:
         with open(filepath, encoding="utf-8") as f:
             return json.load(f)
