@@ -40,8 +40,9 @@ class SimulationData:
 
         old_orbits = system_data["orbits"]
 
-        current_time = get_current_jd_tdb()
-        self.sim.integrate(current_time - sim_initial_jd_tdb[system_name])
+        # Get the current time of the simulation and convert from sim time to
+        # JD TDB
+        current_time = self.sim.t + sim_initial_jd_tdb[system_name]
 
         # Skip the center most object as that only has a mass as it cannot by
         # defintion have orbital parameters (it has no primary)
