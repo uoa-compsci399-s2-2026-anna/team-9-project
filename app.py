@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import os
 import signal
 import time
@@ -14,6 +15,9 @@ from fastapi.templating import Jinja2Templates
 from configuration_manager import export_all_systems_data_to_file, get_all_systems_data, get_base_path, get_settings_schema, get_shortcuts, get_simulation_state_schema
 from systems import Simulations
 from utility import get_osculating_orbit, get_position_dict
+
+# Override the Windows registry's .js MIME type
+mimetypes.add_type("text/javascript", ".js")
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
