@@ -45,8 +45,11 @@ def get_system_with_name(name: str):
 
 # Initialise simulation states
 sims = Simulations(all_systems)
+print("Collecting updated system data.")
 updated_orbit_data = sims.export_data(all_systems)
+print("Exporting updated system data to file.")
 export_all_systems_data_to_file(updated_orbit_data, all_systems)
+print("Finished exporting system data.")
 
 MS_PER_SECOND = 1000
 
