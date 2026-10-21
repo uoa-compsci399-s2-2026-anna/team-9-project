@@ -119,8 +119,6 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
     const { start, stop } = createRepeater(callback, delayMs, periodMs);
 
     document.addEventListener("keydown", (event) => {
-        blurActiveElement();
-
         if (
             event.key !== key ||
             event.repeat ||
@@ -130,6 +128,8 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
         }
 
         event.preventDefault();
+
+        blurActiveElement();
 
         callback();
         start();
@@ -150,8 +150,6 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
  */
 function attachKeyPress(key, callback) {
     document.addEventListener("keydown", (event) => {
-        blurActiveElement();
-
         // Ignore repeat events fired by the OS and ignore key presses when typing
         if (
             event.key !== key ||
@@ -160,6 +158,8 @@ function attachKeyPress(key, callback) {
         ) {
             return;
         }
+
+        blurActiveElement();
 
         event.preventDefault();
 
