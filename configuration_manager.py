@@ -34,10 +34,11 @@ def get_file_at_path(filename, filepath):
     exist or cannot be read
     """
 
-    with open(filepath, encoding="utf-8") as f:
-        return json.load(f)
-
-    raise Exception(f"{filename} does not exist or cannot be read at {filepath}")
+    try:
+        with open(filepath, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        raise Exception(f"{filename} does not exist or cannot be read at {filepath}\n{e}")
 
 
 def get_systems_data_filemap():
