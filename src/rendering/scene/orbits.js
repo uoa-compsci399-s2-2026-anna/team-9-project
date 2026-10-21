@@ -402,6 +402,8 @@ function createOrUpdateOrbitalLineProjection(line) {
         line.add(projectionLine);
     }
 
+    projectionLine.visible = simulationState.orbitLineProjectionsShown;
+
     const referencePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 
     // Get orbit line -> world transformation matrix and the inverse.

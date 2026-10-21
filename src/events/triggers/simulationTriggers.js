@@ -232,6 +232,7 @@ resetObjects.addEventListener("click", () => {
 const VIEW_SETTING_RESET_MAP = {
     habitableZoneShown: EVENTS.SIM.HABITABLE_ZONE_TOGGLE,
     orbitsShown: EVENTS.SIM.ORBITS_TOGGLE,
+    orbitLineProjectionsShown: EVENTS.SIM.ORBIT_LINE_PROJECTIONS_TOGGLE,
     referenceGridShown: EVENTS.SIM.REFERENCE_GRID_TOGGLE,
     labelsShown: EVENTS.SIM.LABELS_TOGGLE,
 };
