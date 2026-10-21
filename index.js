@@ -514,15 +514,29 @@ app.on("will-quit", () => {
 // Initialise logger
 log.initialize();
 
-// Get date at program execution start
-// Date is in format YYYY-MM-DDTHH:MM:SS.MMMZ
-//                  0^               19^
-const date = new Date().toISOString();
-// Take upto minutes and replace : with - for paths and T with _
-const formattedDate = date
-    .slice(0, 19)
-    .replaceAll(":", "-")
-    .replaceAll("T", "_");
+/**
+ * Gets the current date formatted in the devices local timezone
+ * @returns The current date in YYYY-MM-DD_HH-MM-SS format
+ */
+function getFormattedDate() {
+    // Get the current time (all values are adjusted for timezone)
+    const date = new Date();
+
+    const pad = (num, padAmount = 2) => String(num).padStart(padAmount, "0");
+
+    const year = pad(date.getFullYear(), 4); // YYYY
+    const month = pad(date.getMonth() + 1); // Months are 0-indexed MM
+    const day = pad(date.getDate()); // DD
+    const hours = pad(date.getHours()); // HH
+    const minutes = pad(date.getMinutes()); // MM
+    const seconds = pad(date.getSeconds()); // SS
+
+    // YYYY-MM-DD_HH-MM-SS
+    return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+}
+
+// Store the formatted date so only one log is produced per session
+const formattedDate = getFormattedDate();
 
 // Replace log file name
 log.transports.file.resolvePathFn = (variables) => {
