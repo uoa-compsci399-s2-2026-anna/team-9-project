@@ -13,6 +13,7 @@ files:
 extraResources:
   - { from: dist, to: dist }
   - { from: src, to: src }
+  - { from: systems, to: systems }
   - config.json
 
 publish:
