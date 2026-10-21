@@ -38,7 +38,9 @@
       is_checked_initially=sim_state.orbitLineProjectionsShown,
       label_text="Orbit projections",
       data_attributes={ "setting": "orbit-line-projections" },
-      toggle_event="sim:orbit_line_projections_toggle"
+      toggle_event="sim:orbit_line_projections_toggle",
+      parent_toggle_event="sim:orbits_toggle",
+      is_disabled_initially=not sim_state.orbitsShown
     )
   %}
   {% endcall %}
