@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from fastapi_filter import SrcFilteredStaticFiles
+from static_files_filter import SrcFilteredStaticFiles
 from configuration_manager import (
     export_all_systems_data_to_file,
     get_all_systems_data,
