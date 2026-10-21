@@ -148,6 +148,9 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
     FILENAME = "systems.json"
     FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
 
+    # Force make the path if it does not exist
+    os.makedirs(ROAMING_PATH, exist_ok=True)
+
     try:
         # Write to file
         with open(FILEPATH, "w") as f:
