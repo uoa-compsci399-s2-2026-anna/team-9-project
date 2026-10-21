@@ -10,9 +10,11 @@ def get_base_path():
     # Resolve base path to the packaged resources folder when frozen,
     # or to the script's own directory otherwise
     if getattr(sys, "frozen", False):
+        # ./dist/main.exe -> ./
         return os.path.dirname(os.path.dirname(sys.executable))
     else:
-        return os.path.dirname(os.path.dirname(__file__))
+        # ./src/backend/main.py -> ./
+        return os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 # The version of the systems file (loaded from file)
