@@ -109,8 +109,6 @@ let currentSystem;
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
 
-const DRAG_THRESHOLD = 5;
-
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
     // Update simulation to redraw orbit lines with new width/opacity profile
     updateSimulation();
