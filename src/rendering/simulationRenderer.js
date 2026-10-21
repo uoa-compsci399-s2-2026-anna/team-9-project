@@ -290,6 +290,15 @@ async function updateSimulation(forceCalendarUpdate = true) {
             systems,
             lastFetchedSimulationTime,
         );
+
+        // Publish the LIMIT_REACHED event if the last fetched simulation time is out of bounds (inclusive)
+        if (
+            lastFetchedSimulationTime <= MIN_SIMULATION_TIME ||
+            lastFetchedSimulationTime >= MAX_SIMULATION_TIME
+        ) {
+            bus.publish(EVENTS.SIM.LIMIT_REACHED);
+        }
+
         updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
         gettingSystemData = false;
         lastSystemData = allSystemData;
@@ -534,22 +543,16 @@ export async function init(name) {
 
 /**
  * Clamp a simulation time so it stays between the minimum and maximum simulation times.
- * Publishes LIMIT_REACHED if the time had to be clamped
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    const clampedTime = THREE.MathUtils.clamp(
+    return THREE.MathUtils.clamp(
         time,
         MIN_SIMULATION_TIME,
         MAX_SIMULATION_TIME,
     );
-
-    if (clampedTime !== time) {
-        bus.publish(EVENTS.SIM.LIMIT_REACHED);
-    }
-    return clampedTime;
 }
 
 export function stepForward() {
