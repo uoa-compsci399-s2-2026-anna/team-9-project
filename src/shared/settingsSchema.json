@@ -20,13 +20,6 @@
       { "value": "Larger", "label": "Larger" }
     ]
   },
-  "objectMarkerSize": {
-    "default": "Default",
-    "options": [
-      { "value": "Default", "label": "Default" },
-      { "value": "Larger", "label": "Larger" }
-    ]
-  },
   "orbitLines": {
     "default": "Tapered",
     "options": [

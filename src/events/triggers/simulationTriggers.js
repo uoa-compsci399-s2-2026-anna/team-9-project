@@ -6,7 +6,7 @@ import {
     simulationState,
     SIMULATION_SPEED_LIMITS_MS,
 } from "../../shared/simulationState.js";
-import { attachHoldRepeat } from "./sharedTriggers.js";
+import { addNoDragClickEventListener } from "./sharedTriggers.js";
 import { timeToMilliseconds, millisecondsToTime } from "../../utils/utils.js";
 
 const canvas = document.getElementById("simulation-canvas");
@@ -144,11 +144,13 @@ function adjustSpeedBy(delta) {
     publishSimulationSpeed(updatedSpeed);
 }
 
-bus.subscribe(EVENTS.SIM.INCREASE_SPEED, () => increaseSpeedButton.click());
-bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () => decreaseSpeedButton.click());
+bus.subscribe(EVENTS.SIM.INCREASE_SPEED, () =>
+    adjustSpeedBy(INCREASE_SPEED_STEP),
+);
 
-attachHoldRepeat(increaseSpeedButton, () => adjustSpeedBy(INCREASE_SPEED_STEP));
-attachHoldRepeat(decreaseSpeedButton, () => adjustSpeedBy(DECREASE_SPEED_STEP));
+bus.subscribe(EVENTS.SIM.DECREASE_SPEED, () =>
+    adjustSpeedBy(DECREASE_SPEED_STEP),
+);
 
 speedUnitSelector.addEventListener("change", (event) => {
     const unit = event.target.value;
@@ -230,6 +232,7 @@ resetObjects.addEventListener("click", () => {
 const VIEW_SETTING_RESET_MAP = {
     habitableZoneShown: EVENTS.SIM.HABITABLE_ZONE_TOGGLE,
     orbitsShown: EVENTS.SIM.ORBITS_TOGGLE,
+    orbitLineProjectionsShown: EVENTS.SIM.ORBIT_LINE_PROJECTIONS_TOGGLE,
     referenceGridShown: EVENTS.SIM.REFERENCE_GRID_TOGGLE,
     labelsShown: EVENTS.SIM.LABELS_TOGGLE,
 };
@@ -245,3 +248,17 @@ resetViewSettings.addEventListener("click", () => {
         }
     }
 });
+
+// Go to next step in help walkthrough if user clicks anywhere on the tooltip
+// itself.
+document.querySelectorAll("[data-help-tooltip]").forEach((tooltip) =>
+    addNoDragClickEventListener(tooltip, (event) => {
+        // Do not go to next tooltip if clicking on a button (this is already)
+        // handled by sharedTriggers.js
+        if (event.target.closest("[data-button-type]")) {
+            return;
+        }
+
+        bus.publish(EVENTS.HELP_WALKTHROUGH.NEXT);
+    }),
+);

@@ -80,7 +80,7 @@ function createRepeater(callback, delayMs, periodMs) {
  * @param {() => void} callback The callback to invoke on click and, if
  * enabled, on each repeat while the button is held down
  */
-export function attachHoldRepeat(button, callback) {
+function attachHoldRepeat(button, callback) {
     button.addEventListener("click", callback);
 
     const buttonType = button.closest("[data-button-type]");

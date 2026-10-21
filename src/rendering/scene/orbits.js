@@ -30,6 +30,7 @@ const ORBIT_LINE_MIN_OPACITY = 0.2;
 const ORBIT_LINE_MIN_WIDTH = 0.5;
 
 export const COMPARISON_ORBIT_LINE_OPACITY = 0.8;
+const ORBIT_LINE_PROJECTION_OPACITY = 0.15;
 
 const RGBA_CHANNEL_COUNT = 4;
 const RGBA_MAX_VALUE = 255;
@@ -194,6 +195,9 @@ function updateOrbitAlphaTexture(texture, objectProgress, isElliptical = true) {
  * If the target orbit does not exist, then its orbital line is created with the given orbital data.
  * If the target orbital line does exist, then it is updated.
  *
+ * This function also adds the projection lines (from the orbit to the reference
+ * plane) as a child mesh of the orbit line.
+ *
  * The orbital line is coloured to match its object.
  *
  * @param {string} currentSystem Name of the current system
@@ -356,4 +360,108 @@ export function createOrUpdateOrbitalLine(
     // Rotate the line to match the orbital parameters
     const rotationMatrix = calculateOrbitRotationMatrix(Omega, inc, omega);
     line.quaternion.setFromRotationMatrix(rotationMatrix);
+
+    createOrUpdateOrbitalLineProjection(line);
+}
+
+/**
+ * Creates (if it doesn't exist) or updates the existing orbit line projection
+ * lines. These are the lines which are projected from the orbit line to the
+ * reference plane.
+ *
+ * This function does this by:
+ * 1. Copying the appearance of `line` (colour, transparency, render order, etc.)
+ * 2. Adding the projection lines as a child of the original line.
+ * 3. Calculating the projection line coordinates in world space
+ * @param {THREE.Mesh} line A meshline representing an orbit line.
+ */
+function createOrUpdateOrbitalLineProjection(line) {
+    /**
+     * Array of points [x, y, z, x, ...] which define `line`.
+     */
+    const points = line.geometry.attributes.position.array;
+
+    let projectionLine = line.userData.projectionLine;
+    if (!projectionLine) {
+        projectionLine = new THREE.LineSegments(
+            new THREE.BufferGeometry(),
+            new THREE.LineBasicMaterial({
+                color: line.material.color,
+                transparent: true,
+                opacity: ORBIT_LINE_PROJECTION_OPACITY,
+                depthWrite: false,
+            }),
+        );
+        projectionLine.renderOrder = line.renderOrder;
+
+        // Add the projection line as custom user data on the original orbit
+        // line.
+        line.userData.projectionLine = projectionLine;
+
+        // Add the projection line as a child of the original orbit line.
+        line.add(projectionLine);
+    }
+
+    projectionLine.visible = simulationState.orbitLineProjectionsShown;
+
+    const referencePlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+
+    // Get orbit line -> world transformation matrix and the inverse.
+    line.updateWorldMatrix(true, false);
+    const orbitToWorld = line.matrixWorld;
+    const worldToOrbit = orbitToWorld.clone().invert();
+
+    /**
+     * Array of the vectors to the points to be rendered for projections from
+     * the orbit line to the reference plane.
+     *
+     * Elements of this alternate between the point on the orbit line, and its
+     * projection on the reference plane.
+     */
+    const projectionPoints = [];
+
+    /**
+     * The number of dimensions per position coordinate.
+     */
+    const COORDINATES_DIMENSION_COUNT = 3;
+
+    // Build the array of projected points. Here, we ignore the last two xyz
+    // coordinates. This is because `points` contains two 'special' points: one
+    // is the point of the exact position of the object. The other is a duplicated
+    // point on the start/end of the line. Thus, we skip the last two points in
+    // the array to account for this.
+    for (
+        let i = 0;
+        i < points.length - 2 * COORDINATES_DIMENSION_COUNT;
+        i += COORDINATES_DIMENSION_COUNT
+    ) {
+        /**
+         * The vector to the point in the orbit, in orbit line space coordinates.
+         */
+        const orbitPoint = new THREE.Vector3(
+            points[i],
+            points[i + 1],
+            points[i + 2],
+        );
+
+        /**
+         * Vector to the point in the orbit, in world coordinates.
+         */
+        const orbitPointWorld = orbitPoint.clone().applyMatrix4(orbitToWorld);
+
+        /**
+         * Vector to the projection of `orbitPointWorld` on the reference plane,
+         * in world coordinates.
+         */
+        const projectedWorldPoint = new THREE.Vector3();
+        referencePlane.projectPoint(orbitPointWorld, projectedWorldPoint);
+
+        // Transform to convert back to orbit line space coordinates.
+        const projectedOrbitPoint =
+            projectedWorldPoint.applyMatrix4(worldToOrbit);
+
+        projectionPoints.push(orbitPoint, projectedOrbitPoint);
+    }
+
+    projectionLine.geometry.setFromPoints(projectionPoints);
 }
