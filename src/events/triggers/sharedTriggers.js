@@ -119,6 +119,8 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
     const { start, stop } = createRepeater(callback, delayMs, periodMs);
 
     document.addEventListener("keydown", (event) => {
+        blurActiveElement();
+
         if (
             event.key !== key ||
             event.repeat ||
@@ -148,6 +150,8 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
  */
 function attachKeyPress(key, callback) {
     document.addEventListener("keydown", (event) => {
+        blurActiveElement();
+
         // Ignore repeat events fired by the OS and ignore key presses when typing
         if (
             event.key !== key ||
@@ -161,6 +165,17 @@ function attachKeyPress(key, callback) {
 
         callback();
     });
+}
+
+/**
+ * Removes the focus from the active element in the document (if any).
+ *
+ * e.g. removes focus from text boxes, dropdowns, etc.
+ */
+function blurActiveElement() {
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
 }
 
 /**
