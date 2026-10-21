@@ -12,7 +12,7 @@ def get_base_path():
     if getattr(sys, "frozen", False):
         return os.path.dirname(os.path.dirname(sys.executable))
     else:
-        return os.path.dirname(os.path.abspath(__file__))
+        return os.path.dirname(os.path.dirname(__file__))
 
 
 # The version of the systems file (loaded from file)
