@@ -60,6 +60,8 @@ def systems_data_from_project(systems_list):
     Loads system data that is stored in ./systems
     """
 
+    print("Getting systems data from ./systems")
+
     SYSTEMS_DIR = os.path.join(base_path, "systems")
 
     systems = []
@@ -83,7 +85,7 @@ def systems_data_from_appdata():
     if not os.path.exists(FILEPATH):
         return None
 
-    print(f"Got fresh systems data from {FILEPATH}")
+    print(f"Got systems data from {FILEPATH}")
 
     return get_file_at_path(FILENAME, FILEPATH)
 
@@ -110,6 +112,8 @@ def get_all_systems_data():
         # If they match return the appdata version, otherwise continue
         if appdata_version == local_version:
             return systems_data
+        
+        print("Appdata version mismatch! Systems data has been updated since last update.")
 
     # Otherwise load from local ./systems
     systems_data = systems_data_from_project(systems_list)
