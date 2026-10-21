@@ -54,7 +54,7 @@ def get_systems_data_filemap():
 
 def systems_data_from_project(systems_list):
     """
-    Loads system data that is stored in /systems
+    Loads system data that is stored in ./systems
     """
 
     SYSTEMS_DIR = os.path.join(base_path, "systems")
@@ -87,7 +87,7 @@ def systems_data_from_appdata():
 
 def get_all_systems_data():
     """
-    Load the systems data from either the /systems directory or the systems.json
+    Load the systems data from either the ./systems directory or the systems.json
     cached file per device
     """
     global systems_file_version
