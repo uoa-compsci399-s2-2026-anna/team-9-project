@@ -212,7 +212,7 @@ function spawnPythonProcess(resolve, reject) {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
             processPath = ".\\.venv\\Scripts\\python.exe";
-            args = ["-u", ".\\backend_src\\main.py"];
+            args = ["-u", ".\\src\\backend\\main.py"];
         } else {
             // If we are running an executable
             processPath = ".\\dist\\main.exe";
@@ -229,7 +229,7 @@ function spawnPythonProcess(resolve, reject) {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
             processPath = "./.venv/bin/python";
-            args = ["-u", "./backend_src/main.py"];
+            args = ["-u", "./src/backend/main.py"];
         } else {
             // If we are runnning an executable
             processPath = "./dist/main";
