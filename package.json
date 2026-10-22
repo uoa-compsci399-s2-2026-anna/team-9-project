@@ -8,10 +8,10 @@
   "desktopName": "opis.desktop",
   "license": "MIT",
   "devDependencies": {
-    "prettier": "^3.9.6",
-    "prettier-plugin-jinja-template": "^2.2.0",
-    "prettier-plugin-tailwindcss": "^0.8.1",
-    "tailwindcss": "^4.3.3"
+    "prettier": "3.9.6",
+    "prettier-plugin-jinja-template": "2.2.0",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "tailwindcss": "4.3.3"
   },
   "overrides": {
     "tar": "7.5.21"
@@ -28,11 +28,11 @@
     "main": "uv run main.py"
   },
   "dependencies": {
-    "electron": "^43.3.0",
-    "electron-builder": "^26.15.3",
-    "@floating-ui/dom": "^1.8.0",
-    "electron-log": "^5.4.4",
-    "electron-store": "^8.2.0",
-    "electron-updater": "^6.8.9"
+    "electron": "43.3.0",
+    "electron-builder": "26.15.3",
+    "@floating-ui/dom": "1.8.0",
+    "electron-log": "5.4.4",
+    "electron-store": "8.2.0",
+    "electron-updater": "6.8.9"
   }
 }
