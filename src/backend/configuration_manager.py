@@ -148,7 +148,7 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
     # Add the version to object
     collated_data = {
         "systems": new_systems_data,
-        "systems data version": systems_file_version,
+        "systems_data_version": systems_file_version,
     }
 
     FILENAME = "systems.json"
