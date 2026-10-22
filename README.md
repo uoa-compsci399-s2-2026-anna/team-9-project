@@ -12,9 +12,26 @@ For pre-built installers for Windows, macOS, and Linux, see the OPIS [releases](
 
 #### Packages and Dependencies
 
-It is recommended to use node.js version `24.20.0`.
+node.js version `24.22.1` and npm version `12.2.1` is required to be able to run OPIS. See [Node Version Manager](https://www.nvmnode.com/) on installing or updating node.
 
-node.js version `>=22.0.0` is required to be able to run OPIS. See [Node Version Manager](https://www.nvmnode.com/) on installing or updating node.
+```sh
+nvm install 24.22.1
+nvm use 24.22.1
+
+# Either globally install this npm version
+npm install -g npm@12.2.1
+# *OR* locally install the npm version:
+npm install --save-dev npm@12.2.1
+```
+
+Note: `.npmrc` is responsible for strictly enforcing node and npm versions.
+
+Python version `3.15.x` (any patch version) is required to be able to run OPIS. See [uv](https://docs.astral.sh/uv/) on updating Python.
+
+```sh
+uv python install 3.15
+uv python pin
+```
 
 To install all required packages using [npm](https://www.npmjs.com) and [uv](https://docs.astral.sh/uv/), run:
 
@@ -22,6 +39,8 @@ To install all required packages using [npm](https://www.npmjs.com) and [uv](htt
 npm install
 uv sync
 ```
+
+Alternatively run `./scripts/linux_dependencies_install.sh` or `./scripts/windows_dependencies_install.bat` to install and update package and language versions
 
 ### Building and running
 
