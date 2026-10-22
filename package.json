@@ -24,8 +24,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run tailwind && electron . dev",
     "bin": "electron .",
-    "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && touch ./dist/main.exe",
-    "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && echo \"\" > .\\dist\\main",
+    "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound ./src/backend/main.py && touch ./dist/main.exe",
+    "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound .\\src\\backend\\main.py && echo \"\" > .\\dist\\main",
     "make": "electron-builder --publish never",
     "main": "uv run main.py"
   },

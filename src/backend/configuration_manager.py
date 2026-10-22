@@ -10,9 +10,11 @@ def get_base_path():
     # Resolve base path to the packaged resources folder when frozen,
     # or to the script's own directory otherwise
     if getattr(sys, "frozen", False):
+        # Traverses from (e.g.) ./dist/main.exe to ./
         return os.path.dirname(os.path.dirname(sys.executable))
     else:
-        return os.path.dirname(os.path.abspath(__file__))
+        # Traverses from (e.g.) ./src/backend/main.py to ./
+        return os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 # The version of the systems file (loaded from file)
@@ -40,7 +42,9 @@ def get_file_at_path(filename, filepath):
         with open(filepath, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
-        raise Exception(f"{filename} does not exist or cannot be read at {filepath}\n{e}")
+        raise Exception(
+            f"{filename} does not exist or cannot be read at {filepath}\n{e}"
+        )
 
 
 def get_systems_data_filemap():
@@ -112,8 +116,10 @@ def get_all_systems_data():
         # If they match return the appdata version, otherwise continue
         if appdata_version == local_version:
             return systems_data
-        
-        print("Appdata version mismatch! Systems data has been updated since last update.")
+
+        print(
+            "Appdata version mismatch! Systems data has been updated since last update."
+        )
 
     # Otherwise load from local ./systems
     systems_data = systems_data_from_project(systems_list)
