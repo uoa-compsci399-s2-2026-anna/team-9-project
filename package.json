@@ -7,6 +7,10 @@
   "author": "Team 9 JEDEJ",
   "desktopName": "opis.desktop",
   "license": "MIT",
+  "engines": {
+    "node": "24.22.1",
+    "npm": "12.2.1"
+  },
   "devDependencies": {
     "prettier": "3.9.6",
     "prettier-plugin-jinja-template": "2.2.0",
