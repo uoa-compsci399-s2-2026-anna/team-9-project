@@ -76,13 +76,13 @@ nvm use 24.22.1
 Install and use the npm version:
 
 - Global npm installation (Preferred):
-    - ```sh
-      npm install -g npm@12.2.1
-      ```
+  - ```sh
+    npm install -g npm@12.2.1
+    ```
 - Local npm installation:
-    - ```sh
-      npm install --save-dev npm@12.2.1
-      ```
+  - ```sh
+    npm install --save-dev npm@12.2.1
+    ```
 
 Note: `.npmrc` is responsible for strictly enforcing node and npm versions.
 
