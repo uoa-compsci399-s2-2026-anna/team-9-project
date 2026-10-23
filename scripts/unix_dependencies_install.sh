@@ -45,7 +45,7 @@ if ! command -v nvm &> /dev/null; then
 	fi
 
 	# If the command is still not installed
-	if ! command -v nvm &> /dev/null then
+	if ! command -v nvm &> /dev/null; then
 		echo "Please restart your bash session"
 		exit 0
 	fi
@@ -65,7 +65,7 @@ if ! command -v uv &> /dev/null; then
 	fi
 
 	# If the command is still not installed
-	if ! command -v uv &> /dev/null then
+	if ! command -v uv &> /dev/null; then
 		echo "Please restart your bash session"
 		exit 0
 	fi
