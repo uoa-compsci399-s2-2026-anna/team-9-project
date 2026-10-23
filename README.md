@@ -6,7 +6,22 @@ COMPSCI 399 project repository for Team 9 - JEDEJ
 
 ### Releases
 
-For pre-built installers for Windows, macOS, and Linux, see the OPIS [releases](https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/releases).
+For pre-built installers for Windows, macOS, and Linux, see the [latest release](https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/releases/latest) of OPIS.
+
+#### Publishing releases
+
+OPIS releases follow [semantic versioning](https://semver.org/). To publish a release (e.g., `v2.1.3`), it is recommended to first bump the version in `package.json` and `pyproject.toml` to `2.1.3`. Afterwards, run `npm install` and `uv sync` to update the lockfiles, and commit the changes.
+
+Then, from the current commit, create and push a version tag:
+
+```
+git tag v2.1.3
+git push origin v2.1.3
+```
+
+#### Auto-updater
+
+OPIS features an auto-updater. When the application launches, users are notified if a new version is available and can install it directly. Auto-updating is not available on macOS as OPIS is not signed with an Apple Developer certificate, so macOS users need to download new versions manually.
 
 ### Installing locally
 
