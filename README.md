@@ -22,9 +22,9 @@ Required:
 Strongly Recommended:
 
 - [Node Version Manager](https://www.nvmnode.com/) (any version)
-  - Note: the Linux script referenced below will automatically install it
+  - Note: the Unix script referenced below will automatically install it
 
-Run `./scripts/linux_dependencies_install.sh` or
+Run `./scripts/unix_dependencies_install.sh` or
 `./scripts/windows_dependencies_install.bat` to install and update package and
 language versions.
 [Node Version Manager](https://www.nvmnode.com/) and
