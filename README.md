@@ -17,7 +17,6 @@ Then, from the current commit, create and push a version tag:
 ```
 git tag v2.1.3
 git push origin v2.1.3
-git push
 ```
 
 #### Auto-updater
