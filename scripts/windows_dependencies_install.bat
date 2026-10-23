@@ -5,7 +5,8 @@ where nvm >nul 2>nul
 
 if %errorlevel% neq 0 (
     echo nvm is not installed.
-    echo Please install it and try again (may require a restart).
+    echo Please install it and try again (may require a full restart).
+    echo Opening https://www.nvmnode.com/
     start "" "https://www.nvmnode.com/"
     pause
     exit /b 1
@@ -16,7 +17,8 @@ where uv >nul 2>nul
 
 if %errorlevel% neq 0 (
     echo uv is not installed.
-    echo Please install it and try again (may require a restart).
+    echo Please install it and try again (may require a full restart).
+    echo Opening https://docs.astral.sh/uv/
     start "" "https://docs.astral.sh/uv/"
     pause
     exit /b 1
