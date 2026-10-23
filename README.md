@@ -24,7 +24,14 @@ Strongly Recommended:
 - [Node Version Manager](https://www.nvmnode.com/) (any version)
   - Note: the Unix script referenced below will automatically install it
 
-##### Installation by Script
+Choose one of the following methods to install the required tool and package
+versions:
+
+- [Installation by script](#1-installation-by-script) (Easiest)
+- [Installation by commands](#2-installation-by-commands)
+- [Manual Installation](#3-manual-installation) (Not recommended and hardest)
+
+##### 1. Installation by Script
 
 Windows:
 
@@ -40,7 +47,7 @@ Unix (macOS / linux):
   - If `nvm` is installed but it cannot find it set the environment variable
     `$`
 
-##### Installation by Commands
+##### 2. Installation by Commands
 
 Node version manager is required to do this.
 
@@ -81,7 +88,7 @@ npm install
 uv sync
 ```
 
-##### Manual Installation
+##### 3. Manual Installation
 
 This is highly unrecommended but if preferred (or using something like NixOS)
 follow guides to install the correct node.js, npm, and Python versions and uv.
