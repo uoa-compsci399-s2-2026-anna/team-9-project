@@ -25,12 +25,16 @@ if ! command -v nvm &> /dev/null; then
 	echo "nvm is not installed"
 	install_pkg nvm
 	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | sh
+	echo "Please restart your bash session"
+	exit 0
 fi
 
 if ! command -v uv &> /dev/null; then
 	echo "uv is not installed"
 	install_pkg uv
 	curl -LsSf https://astral.sh/uv/install.sh | sh
+	echo "Please restart your bash session"
+	exit 0
 fi
 
 nvm install 24.22.1

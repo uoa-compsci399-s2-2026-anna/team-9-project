@@ -12,12 +12,26 @@ For pre-built installers for Windows, macOS, and Linux, see the OPIS [releases](
 
 #### Packages and Dependencies
 
-node.js version `24.22.1` and npm version `12.2.1` is required to be able to run
-OPIS.
+Required:
 
-Although it is not required, [Node Version Manager](https://www.nvmnode.com/)
-(any version) is strongly recommended for setting up your development
-environment.
+- node.js version `24.22.1`
+- npm version `12.2.1`
+- Python version `3.15.x` (any patch version)
+- [uv](https://docs.astral.sh/uv/) (any version)
+
+Strongly Recommended:
+
+- [Node Version Manager](https://www.nvmnode.com/) (any version)
+  - Note: the Linux script referenced below will automatically install it
+
+Run `./scripts/linux_dependencies_install.sh` or
+`./scripts/windows_dependencies_install.bat` to install and update package and
+language versions.
+[Node Version Manager](https://www.nvmnode.com/) and
+[uv](https://docs.astral.sh/uv/) must be pre-installed on Windows before running
+the script.
+
+Alternatively, manually install the correct node and npm versions or run:
 
 ```sh
 nvm install 24.22.1
@@ -31,28 +45,19 @@ npm install --save-dev npm@12.2.1
 
 Note: `.npmrc` is responsible for strictly enforcing node and npm versions.
 
-Python version `3.15.x` (any patch version) is required to be able to run OPIS.
-See [uv](https://docs.astral.sh/uv/) (any version) on updating Python.
+Manually install the correct Python version or run:
 
 ```sh
 uv python install 3.15
 uv python pin
 ```
 
-To install all required packages using [npm](https://www.npmjs.com) and
-[uv](https://docs.astral.sh/uv/), run:
+Finally, install all required packages by runnning:
 
 ```sh
 npm install
 uv sync
 ```
-
-Alternatively run `./scripts/linux_dependencies_install.sh` or
-`./scripts/windows_dependencies_install.bat` to install and update package and
-language versions.
-[Node Version Manager](https://www.nvmnode.com/) and
-[uv](https://docs.astral.sh/uv/) must be pre-installed on Windows before running
-the script.
 
 ### Building and running
 
