@@ -42,9 +42,9 @@ Strongly Recommended:
 Choose one of the following methods to install the required tool and package
 versions:
 
-- [Installation by script](#1-installation-by-script) (Easiest)
-- [Installation by commands](#2-installation-by-commands)
-- [Manual Installation](#3-manual-installation) (Not recommended and hardest)
+1. [Installation by script](#1-installation-by-script) (Easiest)
+2. [Installation by commands](#2-installation-by-commands)
+3. [Manual Installation](#3-manual-installation) (Not recommended and hardest)
 
 ##### 1. Installation by Script
 
@@ -75,17 +75,14 @@ nvm use 24.22.1
 
 Install and use the npm version:
 
-Global npm installation (Preferred):
-
-```sh
-npm install -g npm@12.2.1
-```
-
-Local npm installation:
-
-```sh
-npm install --save-dev npm@12.2.1
-```
+- Global npm installation (Preferred):
+    - ```sh
+      npm install -g npm@12.2.1
+      ```
+- Local npm installation:
+    - ```sh
+      npm install --save-dev npm@12.2.1
+      ```
 
 Note: `.npmrc` is responsible for strictly enforcing node and npm versions.
 
