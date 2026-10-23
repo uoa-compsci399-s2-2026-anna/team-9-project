@@ -24,28 +24,48 @@ Strongly Recommended:
 - [Node Version Manager](https://www.nvmnode.com/) (any version)
   - Note: the Unix script referenced below will automatically install it
 
-Run `./scripts/unix_dependencies_install.sh` or
-`./scripts/windows_dependencies_install.bat` to install and update package and
-language versions.
-[Node Version Manager](https://www.nvmnode.com/) and
-[uv](https://docs.astral.sh/uv/) must be pre-installed on Windows before running
-the script.
+##### Installation by Script
 
-Alternatively, manually install the correct node and npm versions or run:
+Windows:
+
+- Run `./scripts/windows_dependencies_install.bat`
+  - [Node Version Manager](https://www.nvmnode.code/) and
+    [uv](https://docs.astral.sh/uv/) must be pre-installed and the script will
+    do nothing if not installed (and in path)
+
+Unix (macOS / linux):
+
+- Run `./scripts/unix_dependencies_install.sh`
+  - Will automatically install `nvm` and `uv` if not installed
+  - If `nvm` is installed but it cannot find it set the environment variable
+    `$`
+
+##### Installation by Commands
+
+Node version manager is required to do this.
+
+Install and use the node version:
 
 ```sh
 nvm install 24.22.1
 nvm use 24.22.1
+```
 
-# Either globally install this npm version
+Install and use the npm version:
+
+Global npm installation (Preferred):
+```sh
 npm install -g npm@12.2.1
-# *OR* locally install the npm version:
+```
+
+Local npm installation:
+```sh
 npm install --save-dev npm@12.2.1
 ```
 
 Note: `.npmrc` is responsible for strictly enforcing node and npm versions.
 
-Manually install the correct Python version or run:
+Install and use the Python version:
 
 ```sh
 uv python install 3.15
@@ -53,6 +73,18 @@ uv python pin
 ```
 
 Finally, install all required packages by runnning:
+
+```sh
+npm install
+uv sync
+```
+
+##### Manual Installation
+
+This is highly unrecommended but if preferred (or using something like NixOS)
+follow guides to install the correct node.js, npm, and Python versions and uv.
+
+Then install all required packages by running:
 
 ```sh
 npm install
