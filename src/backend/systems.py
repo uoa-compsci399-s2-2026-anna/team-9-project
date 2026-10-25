@@ -92,7 +92,9 @@ class Simulations:
 
         for system_data in all_systems:
             system_name = system_data["name"].lower()
-            self.__sims[system_name] = init_system(system_data, system_name, now_jd_tdb, not reference_data_exists)
+            self.__sims[system_name] = init_system(
+                system_data, system_name, now_jd_tdb, not reference_data_exists
+            )
 
             if reference_data_exists:
                 # Get the reference data for this system
@@ -144,7 +146,10 @@ class Simulations:
         # Keep the original reference data
         reference_data = self.__sims[system_name].reference
         self.__sims[system_name] = init_system(
-            system_data, system_name, time_to_integrate_to, generate_reference_data=False
+            system_data,
+            system_name,
+            time_to_integrate_to,
+            generate_reference_data=False,
         )
         # Set it back to the original reference data
         self.__sims[system_name].reference = reference_data
@@ -226,7 +231,10 @@ def get_current_jd_tdb() -> float:
 
 
 def init_system(
-    system_data: dict, name: str, time_to_integrate_to: float, generate_reference_data: bool
+    system_data: dict,
+    name: str,
+    time_to_integrate_to: float,
+    generate_reference_data: bool,
 ) -> SimulationData:
     """
     Initialises the given system and integrates it to the given JD TDB time
@@ -276,7 +284,9 @@ def init_system(
     # Only generate the reference data if we need to
     if generate_reference_data:
         # Gather positions
-        positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+        positions = {
+            objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)
+        }
 
         # Gather orbital data for each object
         orbital_data = {
