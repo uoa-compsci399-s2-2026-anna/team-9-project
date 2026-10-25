@@ -93,7 +93,10 @@ class Simulations:
         for system_data in all_systems:
             system_name = system_data["name"].lower()
             self.__sims[system_name] = init_system(
-                system_data, system_name, now_jd_tdb, not reference_data_exists
+                system_data,
+                system_name,
+                now_jd_tdb,
+                generate_reference_data=not reference_data_exists,
             )
 
             if reference_data_exists:
