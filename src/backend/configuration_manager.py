@@ -65,7 +65,7 @@ def get_systems_data_filemap():
     return systems_list
 
 
-def systems_data_from_project(systems_list = None):
+def systems_data_from_project(systems_list=None):
     """
     Loads system data that is stored in ./systems
     """
