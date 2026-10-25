@@ -22,6 +22,7 @@ from configuration_manager import (
     get_settings_schema,
     get_shortcuts,
     get_simulation_state_schema,
+    systems_data_from_project,
 )
 from systems import Simulations
 from utility import get_osculating_orbit, get_position_dict
@@ -34,14 +35,16 @@ rebound.horizons.SSL_CONTEXT = "unverified"
 
 app = FastAPI()
 
-config = get_all_systems_data()
+all_systems = get_all_systems_data()["systems"]
 reference_data = get_reference_data_from_appdata()
 settings_schema = get_settings_schema()
 sim_state_schema = get_simulation_state_schema()
 shortcuts = get_shortcuts()
 
-# Get the systems in the config
-all_systems = config["systems"]
+# If the reference frame was not persisted use ./systems/ data instead to ensure it is always generated from here
+if reference_data is None:
+    print("Overwriting systems data with local data for the reference frame.")
+    all_systems = systems_data_from_project()["systems"]
 
 base_path = get_base_path()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))

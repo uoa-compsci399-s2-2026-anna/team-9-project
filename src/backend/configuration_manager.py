@@ -65,12 +65,15 @@ def get_systems_data_filemap():
     return systems_list
 
 
-def systems_data_from_project(systems_list):
+def systems_data_from_project(systems_list = None):
     """
     Loads system data that is stored in ./systems
     """
 
     print("Getting systems data from ./systems")
+
+    if systems_list is None:
+        systems_list = get_systems_data_filemap()
 
     SYSTEMS_DIR = os.path.join(base_path, "systems")
 
