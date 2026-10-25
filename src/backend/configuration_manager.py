@@ -32,6 +32,9 @@ APPLICATION_NAME = "OPIS"
 # Path to OPIS' installed directory
 ROAMING_PATH = user_data_dir(APPLICATION_NAME, appauthor=False, roaming=True)
 
+# Filename for the persisted system's reference data
+SYSTEMS_REFERENCE_DATA = "systems_reference_data.json"
+
 
 def get_file_at_path(filename, filepath):
     """
@@ -167,6 +170,27 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
             json.dump(collated_data, f)
     except:
         print(f"Failed to write collated data to {FILEPATH}!", file=sys.stderr)
+
+
+def get_reference_data_from_appdata():
+    """
+    Loads the reference data from appdata cache
+    """
+    FILENAME = SYSTEMS_REFERENCE_DATA
+    FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
+
+    if not os.path.exists(FILEPATH):
+        return None
+
+    print(f"Got reference data from {FILEPATH}")
+
+    reference_data = get_file_at_path(FILENAME, FILEPATH)
+
+    # If the version does not match return None so it is recreated
+    if systems_file_version != reference_data[VERSION_KEY]:
+        return None
+
+    return reference_data
 
 
 def get_settings_schema():
