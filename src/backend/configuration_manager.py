@@ -20,6 +20,9 @@ def get_base_path():
 # The version of the systems file (loaded from file)
 systems_file_version = None
 
+# The name of the systems file version key
+VERSION_KEY = "systems_data_version"
+
 # Path to executable
 base_path = get_base_path()
 
@@ -102,7 +105,7 @@ def get_all_systems_data():
     global systems_file_version
 
     systems_list = get_systems_data_filemap()
-    local_version = systems_list["systems_data_version"]
+    local_version = systems_list[VERSION_KEY]
     systems_file_version = local_version
 
     # Try get the data from appdata
@@ -111,7 +114,7 @@ def get_all_systems_data():
     # If the file existed
     if systems_data is not None:
         # Get versions from each systems data file
-        appdata_version = systems_data.get("systems_data_version", "")
+        appdata_version = systems_data.get(VERSION_KEY, "")
 
         # If they match return the appdata version, otherwise continue
         if appdata_version == local_version:
@@ -148,8 +151,9 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
     # Add the version to object
     collated_data = {
         "systems": new_systems_data,
-        "systems_data_version": systems_file_version,
     }
+
+    collated_data[VERSION_KEY] = systems_file_version
 
     FILENAME = "systems.json"
     FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
