@@ -85,13 +85,20 @@ class Simulations:
 
     __sims: dict[str, SimulationData] = {}
 
-    def __init__(self, all_systems: list[dict]):
+    def __init__(self, all_systems: list[dict], reference_data: dict | None):
         # Get the current JD TDB time so that we can pre-integrate the systems to now
         now_jd_tdb: float = get_current_jd_tdb()
 
         for system_data in all_systems:
             system_name = system_data["name"].lower()
             self.__sims[system_name] = init_system(system_data, system_name, now_jd_tdb)
+
+            if reference_data is not None:
+                # Get the reference data for this system
+                current_systems_reference = reference_data.get(system_name, None)
+                if current_systems_reference is not None:
+                    # Override the reference frame with the given frame
+                    self.__sims[system_name].reference = current_systems_reference
 
     def stop_all(self):
         for sim in self.__sims.values():
