@@ -190,7 +190,7 @@ def get_reference_data_from_appdata():
     if systems_file_version != reference_data[VERSION_KEY]:
         return None
 
-    return reference_data
+    return reference_data["reference_data"]
 
 
 def export_all_reference_data_to_file(exported_reference_data):

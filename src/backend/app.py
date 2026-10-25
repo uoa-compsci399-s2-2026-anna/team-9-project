@@ -61,7 +61,7 @@ def get_system_with_name(name: str):
 
 
 # Initialise simulation states
-sims = Simulations(all_systems, reference_data["reference_data"])
+sims = Simulations(all_systems, reference_data)
 print("Collecting updated system data.")
 updated_orbit_data, exported_reference_data = sims.export_data(all_systems)
 print("Exporting updated system data to file.")
