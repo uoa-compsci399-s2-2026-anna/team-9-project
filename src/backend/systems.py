@@ -183,6 +183,7 @@ class Simulations:
 
     def export_data(self, all_systems):
         all_systems_data = {}
+        reference_data = {}
 
         for system_data in all_systems:
             system_name = system_data["name"].lower()
@@ -192,7 +193,9 @@ class Simulations:
 
             all_systems_data[system_name] = {"orbits": orbits, "timestamp": timestamp}
 
-        return all_systems_data
+            reference_data[system_name] = system.reference
+
+        return all_systems_data, reference_data
 
 
 def unix_to_jd_tdb(t: float) -> float:

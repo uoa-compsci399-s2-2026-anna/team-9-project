@@ -14,6 +14,7 @@ from fastapi.templating import Jinja2Templates
 
 from static_files_filter import SrcFilteredStaticFiles
 from configuration_manager import (
+    export_all_reference_data_to_file,
     export_all_systems_data_to_file,
     get_all_systems_data,
     get_base_path,
@@ -62,10 +63,16 @@ def get_system_with_name(name: str):
 # Initialise simulation states
 sims = Simulations(all_systems, reference_data["reference_data"])
 print("Collecting updated system data.")
-updated_orbit_data = sims.export_data(all_systems)
+updated_orbit_data, exported_reference_data = sims.export_data(all_systems)
 print("Exporting updated system data to file.")
 export_all_systems_data_to_file(updated_orbit_data, all_systems)
 print("Finished exporting system data.")
+
+# Only export reference data to file IF it did not exist or the version was mismatched
+if reference_data is None:
+    print("Exported reference data to file.")
+    export_all_reference_data_to_file(exported_reference_data)
+    print("Finished exported reference data to file.")
 
 MS_PER_SECOND = 1000
 
