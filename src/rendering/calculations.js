@@ -166,7 +166,12 @@ export function calculateCameraDistance(fov, viewRadius) {
  */
 export function calculateAverageNormal(orbitalDataValues) {
     const averageNormal = new THREE.Vector3();
-    let reference = null;
+
+    let referenceNormal = null;
+
+    // Normals pointing in the same and opposite direction as the reference normal
+    const sameDirectionNormals = [];
+    const oppositeDirectionNormals = [];
 
     for (const { inc, Omega } of orbitalDataValues) {
         const normal = new THREE.Vector3(
@@ -177,16 +182,35 @@ export function calculateAverageNormal(orbitalDataValues) {
         );
 
         // Use the first normal vector as a reference.
-        // Subsequent normal vectors are negated if they point opposite to it.
-        // Note: This has undesirable effects if the first orbital plane differs significantly from the others
-        // TODO: Consider a more robust approach
-        if (reference && normal.dot(reference) < 0) {
-            normal.negate();
-        } else if (!reference) {
-            reference = normal.clone();
+        // Compare the direction of subsequent normal vectors to the reference normal.
+        if (!referenceNormal) {
+            referenceNormal = normal.clone();
+            sameDirectionNormals.push(normal);
+        } else {
+            if (normal.dot(referenceNormal) < 0) {
+                oppositeDirectionNormals.push(normal);
+            } else {
+                sameDirectionNormals.push(normal);
+            }
         }
+    }
 
-        averageNormal.add(normal);
+    // If there are fewer normals pointing in the opposite direction as the reference normal, negate them.
+    // Else, negate the normals pointing in the same direction as the reference normal.
+    if (oppositeDirectionNormals.length < sameDirectionNormals.length) {
+        for (const normal of oppositeDirectionNormals) {
+            averageNormal.add(normal.negate());
+        }
+        for (const normal of sameDirectionNormals) {
+            averageNormal.add(normal);
+        }
+    } else {
+        for (const normal of oppositeDirectionNormals) {
+            averageNormal.add(normal);
+        }
+        for (const normal of sameDirectionNormals) {
+            averageNormal.add(normal.negate());
+        }
     }
 
     return averageNormal.normalize();
