@@ -44,7 +44,10 @@ shortcuts = get_shortcuts()
 # If the reference frame was not persisted use ./systems/ data instead to ensure it is always generated from here
 if reference_data is None:
     print("Overwriting systems data with local data for the reference frame.")
-    all_systems = systems_data_from_project()["systems"]
+    systems_data = systems_data_from_project()
+    # If the data has already been fetched do not overwrite
+    if systems_data is not None:
+        all_systems = systems_data["systems"]
 
 base_path = get_base_path()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))

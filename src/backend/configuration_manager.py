@@ -35,6 +35,9 @@ ROAMING_PATH = user_data_dir(APPLICATION_NAME, appauthor=False, roaming=True)
 # Filename for the persisted system's reference data
 SYSTEMS_REFERENCE_DATA_FILENAME = "systems_reference_data.json"
 
+# Whether the systems data has already been fetched locally
+local_systems_data_already_fetched = False
+
 
 def get_file_at_path(filename, filepath):
     """
@@ -69,6 +72,12 @@ def systems_data_from_project(systems_list=None):
     """
     Loads system data that is stored in ./systems
     """
+    global local_systems_data_already_fetched
+
+    # Do not fetch the data again if it has already been fetched
+    if local_systems_data_already_fetched:
+        print("Data has already been fetched from ./systems. Will not overwrite.")
+        return None
 
     print("Getting systems data from ./systems")
 
@@ -83,6 +92,8 @@ def systems_data_from_project(systems_list=None):
         if os.path.isfile(filepath):
             current_system = get_file_at_path(filename, filepath)
             systems.append(current_system)
+
+    local_systems_data_already_fetched = True
 
     return {"systems": systems}
 
