@@ -70,7 +70,7 @@ print("Finished exporting system data.")
 
 # Only export reference data to file IF it did not exist or the version was mismatched
 if reference_data is None:
-    print("Exported reference data to file.")
+    print("Exporting reference data to file...")
     export_all_reference_data_to_file(exported_reference_data)
     print("Finished exported reference data to file.")
 
