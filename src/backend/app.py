@@ -17,6 +17,7 @@ from configuration_manager import (
     export_all_systems_data_to_file,
     get_all_systems_data,
     get_base_path,
+    get_reference_data_from_appdata,
     get_settings_schema,
     get_shortcuts,
     get_simulation_state_schema,
@@ -33,6 +34,7 @@ rebound.horizons.SSL_CONTEXT = "unverified"
 app = FastAPI()
 
 config = get_all_systems_data()
+reference_data = get_reference_data_from_appdata()
 settings_schema = get_settings_schema()
 sim_state_schema = get_simulation_state_schema()
 shortcuts = get_shortcuts()
