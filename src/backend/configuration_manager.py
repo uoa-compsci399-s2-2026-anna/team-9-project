@@ -188,6 +188,9 @@ def get_reference_data_from_appdata():
 
     # If the version does not match return None so it is recreated
     if systems_file_version != reference_data[VERSION_KEY]:
+        print(
+            "Appdata version mismatch! Systems or reference data has been updated since last update."
+        )
         return None
 
     return reference_data["reference_data"]
