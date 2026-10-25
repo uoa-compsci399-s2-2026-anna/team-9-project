@@ -88,12 +88,13 @@ class Simulations:
     def __init__(self, all_systems: list[dict], reference_data: dict | None):
         # Get the current JD TDB time so that we can pre-integrate the systems to now
         now_jd_tdb: float = get_current_jd_tdb()
+        reference_data_exists = reference_data is not None
 
         for system_data in all_systems:
             system_name = system_data["name"].lower()
-            self.__sims[system_name] = init_system(system_data, system_name, now_jd_tdb)
+            self.__sims[system_name] = init_system(system_data, system_name, now_jd_tdb, not reference_data_exists)
 
-            if reference_data is not None:
+            if reference_data_exists:
                 # Get the reference data for this system
                 current_systems_reference = reference_data.get(system_name, None)
                 if current_systems_reference is not None:
@@ -140,9 +141,13 @@ class Simulations:
         if time_to_integrate_to is None:
             time_to_integrate_to = get_current_jd_tdb()
 
+        # Keep the original reference data
+        reference_data = self.__sims[system_name].reference
         self.__sims[system_name] = init_system(
-            system_data, system_name, time_to_integrate_to
+            system_data, system_name, time_to_integrate_to, generate_reference_data=False
         )
+        # Set it back to the original reference data
+        self.__sims[system_name].reference = reference_data
 
     def quick_integrate(self, t: float, system_data: dict) -> rebound.Simulation:
         """
@@ -221,7 +226,7 @@ def get_current_jd_tdb() -> float:
 
 
 def init_system(
-    system_data: dict, name: str, time_to_integrate_to: float
+    system_data: dict, name: str, time_to_integrate_to: float, generate_reference_data: bool
 ) -> SimulationData:
     """
     Initialises the given system and integrates it to the given JD TDB time
@@ -268,15 +273,19 @@ def init_system(
 
     sim.move_to_com()
 
-    # Gather positions
-    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+    # Only generate the reference data if we need to
+    if generate_reference_data:
+        # Gather positions
+        positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
 
-    # Gather orbital data for each object
-    orbital_data = {
-        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
-    }
+        # Gather orbital data for each object
+        orbital_data = {
+            objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+        }
 
-    reference = {"positions": positions, "orbital_data": orbital_data}
+        reference = {"positions": positions, "orbital_data": orbital_data}
+    else:
+        reference = None
 
     # Pre-emptively integrate sim to the given time
     sim_time = time_to_integrate_to - system_data["timestamp"]
