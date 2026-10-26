@@ -173,8 +173,8 @@ Log files are written to:
 - on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
   Where `<date>` is in `YYYY-MM-DD_HH-MM-SS` format
 
-[uv]: https://docs.astral.sh/uv/
-[nvm]: https://www.nvmnode.com/
+[uv]: https://docs.astral.sh/uv/#installation
+[nvm]: https://www.nvmnode.com/guide/installation.html
 [node]: https://nodejs.org/en/download
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
