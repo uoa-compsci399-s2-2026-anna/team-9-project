@@ -59,8 +59,8 @@ Unix (macOS / linux):
 
 - Run `./scripts/unix_dependencies_install.sh`
   - Will automatically install [`nvm`][nvm] and [`uv`][uv] if not installed
-  - If [`nvm`][nvm] is installed but it cannot find it set the environment
-    variable `$NVM_DIR`
+  - If [`nvm`][nvm] is installed but the script cannot find `nvm` set the
+    bash variable `$NVM_DIR` to the path to where `nvm` is installed
 
 ##### 2. Installation by Commands
 
