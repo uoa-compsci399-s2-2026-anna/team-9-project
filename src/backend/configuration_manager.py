@@ -39,7 +39,7 @@ SYSTEMS_REFERENCE_DATA_FILENAME = "systems_reference_data.json"
 local_systems_data_already_fetched = False
 
 
-def get_file_at_path(filename, filepath):
+def get_file_at_path(filename, filepath) -> dict:
     """
     Opens the file at the given path and gives a nice exception if it does not
     exist or cannot be read
@@ -56,7 +56,7 @@ def get_file_at_path(filename, filepath):
         )
 
 
-def get_systems_data_filemap():
+def get_systems_data_filemap() -> dict:
     """
     Get the systems.json file in ./systems
     """
@@ -68,9 +68,10 @@ def get_systems_data_filemap():
     return systems_list
 
 
-def systems_data_from_project(systems_list=None):
+def systems_data_from_project(systems_list=None) -> dict | None:
     """
     Loads system data that is stored in ./systems
+    Returns None if the data has already been fetched to prevent multiple reads of the same file.
     """
     global local_systems_data_already_fetched
 
@@ -98,9 +99,10 @@ def systems_data_from_project(systems_list=None):
     return {"systems": systems}
 
 
-def systems_data_from_appdata():
+def systems_data_from_appdata() -> dict | None:
     """
     Loads system data that is updated on launch from appdata cache
+    Returns None if file does not exist
     """
 
     FILENAME = "systems.json"
@@ -114,10 +116,9 @@ def systems_data_from_appdata():
     return get_file_at_path(FILENAME, FILEPATH)
 
 
-def get_all_systems_data():
+def get_all_systems_data() -> dict:
     """
-    Load the systems data from either the ./systems directory or the systems.json
-    cached file per device
+    Load the systems data from either the ./systems directory or the systems.json persisted file per device
     """
     global systems_file_version
 
@@ -186,9 +187,11 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
         print(f"Failed to write collated data to {FILEPATH}!", file=sys.stderr)
 
 
-def get_reference_data_from_appdata():
+def get_reference_data_from_appdata() -> dict | None:
     """
     Loads the reference data from appdata cache
+    Returns None if the file does not exist or the version in the file does not
+    match the version in systems.json (meaning the system data has been updated).
     """
     FILENAME = SYSTEMS_REFERENCE_DATA_FILENAME
     FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
