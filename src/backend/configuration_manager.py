@@ -39,7 +39,7 @@ SYSTEMS_REFERENCE_DATA_FILENAME = "systems_reference_data.json"
 local_systems_data_already_fetched = False
 
 
-def get_file_at_path(filename, filepath) -> dict:
+def get_file_at_path(filename: str, filepath: str) -> dict:
     """
     Opens the file at the given path and gives a nice exception if it does not
     exist or cannot be read
@@ -68,7 +68,7 @@ def get_systems_data_filemap() -> dict:
     return systems_list
 
 
-def systems_data_from_project(systems_list=None) -> dict | None:
+def systems_data_from_project(systems_list: dict | None = None) -> dict | None:
     """
     Loads system data that is stored in ./systems
     Returns None if the data has already been fetched to prevent multiple reads of the same file.
@@ -148,7 +148,7 @@ def get_all_systems_data() -> dict:
     return systems_data
 
 
-def export_all_systems_data_to_file(orbit_data, all_systems):
+def export_all_systems_data_to_file(orbit_data: dict, all_systems: dict):
     """
     Takes the updated orbital data, overwrites the other data and writes it out
     """
@@ -213,7 +213,7 @@ def get_reference_data_from_appdata() -> dict | None:
     return reference_data["reference_data"]
 
 
-def export_all_reference_data_to_file(exported_reference_data):
+def export_all_reference_data_to_file(exported_reference_data: dict):
     """
     Write the reference data to appdata file.
     """
