@@ -51,8 +51,9 @@ versions:
 Windows:
 
 - Run `./scripts/windows_dependencies_install.bat`
-  - [Node Version Manager][nvm] and [uv][uv] must be pre-installed and the
-    script will do nothing if not installed (and in path)
+  - [Node Version Manager][nvm] and [uv][uv] must be pre-installed and if they
+    are not installed (and in the path environment variable) the script will not
+    update or install the packages
 
 Unix (macOS / linux):
 
