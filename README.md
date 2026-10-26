@@ -85,7 +85,8 @@ Install and use the [npm][npm] version `12.2.1`:
     ```
 
 Note: `.npmrc` is responsible for strictly enforcing [node][node] and [npm][npm]
-versions.
+versions. Deleting it will allow for any version of `node` and `npm` to be used
+so do so at your own risk.
 
 Install and use the [Python][python] version `3.15`:
 
