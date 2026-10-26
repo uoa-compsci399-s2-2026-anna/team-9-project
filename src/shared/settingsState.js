@@ -58,11 +58,8 @@ export function setSetting(key, value) {
 
 /**
  * Reset the settings state to the default settings.
- * Refresh the current application page to reflect this change.
  */
 export function resetSettingsState() {
     Object.assign(settings, defaultSettings);
     persist();
-    // Refresh the current page
-    window.applicationAPI.refresh();
 }

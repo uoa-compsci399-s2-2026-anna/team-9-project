@@ -26,8 +26,3 @@ bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, (event) => {
 bus.subscribe(EVENTS.TOOLBAR.DARK_MODE_TOGGLE, (event) => {
     setSetting("darkMode", event.detail.enterDarkMode);
 });
-
-// Reset settings
-bus.subscribe(EVENTS.SETTINGS.RESET_ALL_SETTINGS, () => {
-    resetSettingsState();
-});
