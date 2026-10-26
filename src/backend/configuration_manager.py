@@ -20,6 +20,9 @@ def get_base_path():
 # The version of the systems file (loaded from file)
 systems_file_version = None
 
+# The name of the systems file version key
+VERSION_KEY = "systems_data_version"
+
 # Path to executable
 base_path = get_base_path()
 
@@ -29,8 +32,14 @@ APPLICATION_NAME = "OPIS"
 # Path to OPIS' installed directory
 ROAMING_PATH = user_data_dir(APPLICATION_NAME, appauthor=False, roaming=True)
 
+# Filename for the persisted system's reference data
+SYSTEMS_REFERENCE_DATA_FILENAME = "systems_reference_data.json"
 
-def get_file_at_path(filename, filepath):
+# Whether the systems data has already been fetched locally
+local_systems_data_already_fetched = False
+
+
+def get_file_at_path(filename: str, filepath: str) -> dict:
     """
     Opens the file at the given path and gives a nice exception if it does not
     exist or cannot be read
@@ -47,7 +56,7 @@ def get_file_at_path(filename, filepath):
         )
 
 
-def get_systems_data_filemap():
+def get_systems_data_filemap() -> dict:
     """
     Get the systems.json file in ./systems
     """
@@ -59,12 +68,22 @@ def get_systems_data_filemap():
     return systems_list
 
 
-def systems_data_from_project(systems_list):
+def systems_data_from_project(systems_list: dict | None = None) -> dict | None:
     """
     Loads system data that is stored in ./systems
+    Returns None if the data has already been fetched to prevent multiple reads of the same file.
     """
+    global local_systems_data_already_fetched
+
+    # Do not fetch the data again if it has already been fetched
+    if local_systems_data_already_fetched:
+        print("Data has already been fetched from ./systems. Will not overwrite.")
+        return None
 
     print("Getting systems data from ./systems")
+
+    if systems_list is None:
+        systems_list = get_systems_data_filemap()
 
     SYSTEMS_DIR = os.path.join(base_path, "systems")
 
@@ -75,12 +94,15 @@ def systems_data_from_project(systems_list):
             current_system = get_file_at_path(filename, filepath)
             systems.append(current_system)
 
+    local_systems_data_already_fetched = True
+
     return {"systems": systems}
 
 
-def systems_data_from_appdata():
+def systems_data_from_appdata() -> dict | None:
     """
     Loads system data that is updated on launch from appdata cache
+    Returns None if file does not exist
     """
 
     FILENAME = "systems.json"
@@ -94,15 +116,14 @@ def systems_data_from_appdata():
     return get_file_at_path(FILENAME, FILEPATH)
 
 
-def get_all_systems_data():
+def get_all_systems_data() -> dict:
     """
-    Load the systems data from either the ./systems directory or the systems.json
-    cached file per device
+    Load the systems data from either the ./systems directory or the systems.json persisted file per device
     """
     global systems_file_version
 
     systems_list = get_systems_data_filemap()
-    local_version = systems_list["systems_data_version"]
+    local_version = systems_list[VERSION_KEY]
     systems_file_version = local_version
 
     # Try get the data from appdata
@@ -111,7 +132,7 @@ def get_all_systems_data():
     # If the file existed
     if systems_data is not None:
         # Get versions from each systems data file
-        appdata_version = systems_data.get("systems_data_version", "")
+        appdata_version = systems_data.get(VERSION_KEY, "")
 
         # If they match return the appdata version, otherwise continue
         if appdata_version == local_version:
@@ -127,7 +148,7 @@ def get_all_systems_data():
     return systems_data
 
 
-def export_all_systems_data_to_file(orbit_data, all_systems):
+def export_all_systems_data_to_file(orbit_data: dict, all_systems: dict):
     """
     Takes the updated orbital data, overwrites the other data and writes it out
     """
@@ -148,10 +169,59 @@ def export_all_systems_data_to_file(orbit_data, all_systems):
     # Add the version to object
     collated_data = {
         "systems": new_systems_data,
-        "systems_data_version": systems_file_version,
     }
 
+    collated_data[VERSION_KEY] = systems_file_version
+
     FILENAME = "systems.json"
+    FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
+
+    # Force make the path if it does not exist
+    os.makedirs(ROAMING_PATH, exist_ok=True)
+
+    try:
+        # Write to file
+        with open(FILEPATH, "w") as f:
+            json.dump(collated_data, f)
+    except:
+        print(f"Failed to write collated data to {FILEPATH}!", file=sys.stderr)
+
+
+def get_reference_data_from_appdata() -> dict | None:
+    """
+    Loads the reference data from appdata cache
+    Returns None if the file does not exist or the version in the file does not
+    match the version in systems.json (meaning the system data has been updated).
+    """
+    FILENAME = SYSTEMS_REFERENCE_DATA_FILENAME
+    FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
+
+    if not os.path.exists(FILEPATH):
+        return None
+
+    print(f"Got reference data from {FILEPATH}")
+
+    reference_data = get_file_at_path(FILENAME, FILEPATH)
+
+    # If the version does not match return None so it is recreated
+    if systems_file_version != reference_data[VERSION_KEY]:
+        print(
+            "Appdata version mismatch! Systems or reference data has been updated since last update."
+        )
+        return None
+
+    return reference_data["reference_data"]
+
+
+def export_all_reference_data_to_file(exported_reference_data: dict):
+    """
+    Write the reference data to appdata file.
+    """
+
+    collated_data = {"reference_data": exported_reference_data}
+    collated_data[VERSION_KEY] = systems_file_version
+
+    FILENAME = SYSTEMS_REFERENCE_DATA_FILENAME
     FILEPATH = os.path.join(ROAMING_PATH, FILENAME)
 
     # Force make the path if it does not exist
