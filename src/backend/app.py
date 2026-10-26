@@ -14,12 +14,15 @@ from fastapi.templating import Jinja2Templates
 
 from static_files_filter import SrcFilteredStaticFiles
 from configuration_manager import (
+    export_all_reference_data_to_file,
     export_all_systems_data_to_file,
     get_all_systems_data,
     get_base_path,
+    get_reference_data_from_appdata,
     get_settings_schema,
     get_shortcuts,
     get_simulation_state_schema,
+    systems_data_from_project,
 )
 from systems import Simulations
 from utility import get_osculating_orbit, get_position_dict
@@ -32,13 +35,19 @@ rebound.horizons.SSL_CONTEXT = "unverified"
 
 app = FastAPI()
 
-config = get_all_systems_data()
+all_systems = get_all_systems_data()["systems"]
+reference_data = get_reference_data_from_appdata()
 settings_schema = get_settings_schema()
 sim_state_schema = get_simulation_state_schema()
 shortcuts = get_shortcuts()
 
-# Get the systems in the config
-all_systems = config["systems"]
+# If the reference frame was not persisted use ./systems/ data instead to ensure it is always generated from here
+if reference_data is None:
+    print("Overwriting systems data with local data for the reference frame.")
+    systems_data = systems_data_from_project()
+    # If the data has already been fetched do not overwrite
+    if systems_data is not None:
+        all_systems = systems_data["systems"]
 
 base_path = get_base_path()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
@@ -58,12 +67,18 @@ def get_system_with_name(name: str):
 
 
 # Initialise simulation states
-sims = Simulations(all_systems)
+sims = Simulations(all_systems, reference_data)
 print("Collecting updated system data.")
-updated_orbit_data = sims.export_data(all_systems)
+exported_orbit_data, exported_reference_data = sims.export_data(all_systems)
 print("Exporting updated system data to file.")
-export_all_systems_data_to_file(updated_orbit_data, all_systems)
+export_all_systems_data_to_file(exported_orbit_data, all_systems)
 print("Finished exporting system data.")
+
+# Only export reference data to file IF it did not exist or the version was mismatched
+if reference_data is None:
+    print("Exporting reference data to file...")
+    export_all_reference_data_to_file(exported_reference_data)
+    print("Finished exported reference data to file.")
 
 MS_PER_SECOND = 1000
 
