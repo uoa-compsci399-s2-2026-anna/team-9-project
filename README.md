@@ -66,14 +66,14 @@ Unix (macOS / linux):
 
 Node version manager is required to do this.
 
-Install and use the [node][node] version:
+Install and use the [node][node] version `24.22.1`:
 
 ```sh
 nvm install 24.22.1
 nvm use 24.22.1
 ```
 
-Install and use the [npm][npm] version:
+Install and use the [npm][npm] version `12.2.1`:
 
 - Global installation (Preferred):
   - ```sh
@@ -87,7 +87,7 @@ Install and use the [npm][npm] version:
 Note: `.npmrc` is responsible for strictly enforcing [node][node] and [npm][npm]
 versions.
 
-Install and use the [Python][python] version:
+Install and use the [Python][python] version `3.15`:
 
 ```sh
 uv python install 3.15
