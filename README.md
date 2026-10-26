@@ -104,8 +104,8 @@ uv sync
 ##### 3. Manual Installation
 
 This is highly unrecommended but if preferred (or using something like NixOS)
-follow guides to install the correct [node.js][node], [npm][npm], and
-[Python][python] versions and [uv][uv].
+follow the publicly avaliable guides to install the correct [node.js][node],
+[npm][npm], and [Python][python] versions and [uv][uv].
 
 Then install all required packages by running:
 
