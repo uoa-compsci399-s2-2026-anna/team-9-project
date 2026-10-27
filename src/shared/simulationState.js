@@ -241,6 +241,14 @@ export function isObjectHiddenByDefault(system, objectName) {
 }
 
 /**
+ * Reset the simulation state to the default state.
+ */
+export function resetSimulationState() {
+    Object.assign(simulationState, defaultSimulationState);
+    persist();
+}
+
+/**
  * The running, frozen, and comparingToSolarSystem states only exist for the current simulation session, and are reset when the
  * simulation is loaded again.
  */
