@@ -177,6 +177,28 @@ Log files are written to:
 - on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
   Where `<date>` is in `YYYY-MM-DD_HH-MM-SS` format
 
+## Future Plan
+
+### Arbitrary planetary systems
+
+Currently, only the Solar System, Kepler-16, and TRAPPIST-1 are supported. This could be extended to support other systems by creating an automated data pipeline to retrieve data for arbitrary systems from a reliable source. The most promising source so far is [exoplanet.eu]("https://exoplanet.eu"), though some orbital parameters are missing. A possible solution, while not ideal, would be to have reasonable default values for these parameters.
+
+### Object following
+
+This feature would allow the user to select an object in the simulation for the camera to lock on to and follow. This allows objects to be more easily observed while the simulation is playing. This could be implemented by locking the camera's target onto an object's position when the user double clicks it in the simulation, or by some other method.
+
+### Proportional object sizes
+
+Non-stellar objects are currently all rendered to be the same size, while stars are rendered double the size, both irrespective of their true sizes. Scaling rendered objects to be proportional to each other based off their true sizes would improve the realism of the simulations.
+
+### Automated tests
+
+Currently, there are no automated tests implemented in the codebase. Adding this would be important for future maintainability and help prevent regressions in behaviour as OPIS evolves. Unit tests and integration tests could be added to verify frontend, rendering, and backend logic, using test frameworks like [Jest](https://jestjs.io/) and [pytest](https://docs.pytest.org/en/stable/).
+
+### Developer-facing documentation
+
+While the codebase is well-structured, self-documenting, and has plenty of explanatory comments, there is a lack of developer-facing documentation. This could be added within a `docs/` folder, outlining the architcture, key components of the application, as well as the code structure, which would help new developers become familiarised with the codebase more easily. This documentation could subsequently also be hosted on a static site if required.
+
 [uv]: https://docs.astral.sh/uv/#installation
 [nvm]: https://www.nvmnode.com/guide/installation.html
 [node]: https://nodejs.org/en/download
