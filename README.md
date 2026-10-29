@@ -40,9 +40,9 @@ Strongly recommended:
 Choose one of the following methods to install the required tool and package
 versions:
 
-- [Installation by script](#1-installation-by-script) (Easiest)
-- [Installation by commands](#2-installation-by-commands)
-- [Manual installation](#3-manual-installation) (Not recommended and hardest)
+- [Installation by script](#installation-by-script) (Easiest)
+- [Installation by commands](#installation-by-commands)
+- [Manual installation](#manual-installation) (Not recommended and hardest)
 
 #### Installation by script
 
