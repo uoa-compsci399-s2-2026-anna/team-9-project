@@ -3,7 +3,7 @@ name = "opis"
 version = "1.1.9"
 description = "OPIS: Orbital Planetary Interactive Simulator—A project for the ASTRO 100/G Lab"
 readme = "README.md"
-requires-python = "==3.15.*"
+requires-python = "==3.12.*"
 dependencies = [
     "astropy==8.0.1",
     "fastapi[standard]==0.141.1",
