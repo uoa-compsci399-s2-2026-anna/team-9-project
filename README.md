@@ -42,7 +42,7 @@ versions:
 
 1. [Installation by script](#1-installation-by-script) (Easiest)
 2. [Installation by commands](#2-installation-by-commands)
-3. [Manual Installation](#3-manual-installation) (Not recommended and hardest)
+3. [Manual installation](#3-manual-installation) (Not recommended and hardest)
 
 #### 1. Installation by script
 
