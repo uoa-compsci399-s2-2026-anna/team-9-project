@@ -31,7 +31,7 @@ Required:
 
 - [node.js][node] version `24.22.1`
 - [npm][npm] version `12.2.1`
-- [Python][python] version `3.15.x` (any patch version)
+- [Python][python] version `3.12.x` (any patch version)
 - [uv][uv] (any version)
 
 Strongly Recommended:
@@ -88,10 +88,10 @@ Note: `.npmrc` is responsible for strictly enforcing [node][node] and [npm][npm]
 versions. Deleting it will allow for any version of `node` and `npm` to be used
 so do so at your own risk.
 
-Install and use the [Python][python] version `3.15`:
+Install and use the [Python][python] version `3.12`:
 
 ```sh
-uv python install 3.15
+uv python install 3.12
 uv python pin
 ```
 

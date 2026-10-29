@@ -76,6 +76,6 @@ nvm use 24.22.1
 npm install -g npm@12.2.1
 npm install
 
-uv python install 3.15
+uv python install 3.12
 uv python pin
 uv sync
