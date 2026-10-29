@@ -187,7 +187,7 @@ This feature would allow the user to select an object in the simulation for the 
 
 ### Proportional object sizes
 
-Non-stellar objects are currently sized uniformly with each other, while stars are double the size. Scaling objects to be proportional to each other using their true sizes would improve the realism of the simulations.
+Non-stellar objects are currently all rendered to be the same size (regardless of their true size), while stars are rendered double the size (also irrespective of their true sizes). Scaling rendered objects to be proportional to each other based off their true sizes would improve the realism of the simulations.
 
 ### Automated tests
 
