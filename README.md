@@ -102,7 +102,7 @@ uv sync
 
 #### Manual installation
 
-This is highly unrecommended but if preferred (or using something like NixOS)
+This is highly inadvised but if preferred (or using something like NixOS)
 follow the publicly avaliable guides to install the
 [required](#packages-and-dependencies) [node.js][node], [npm][npm], and
 [Python][python] versions and [uv][uv].
