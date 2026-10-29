@@ -32,7 +32,7 @@ Required:
 - [Python][python] version `3.12.x` (any patch version)
 - [uv][uv] (any version)
 
-Strongly Recommended:
+Strongly recommended:
 
 - [Node Version Manager][nvm] (any version)
   - Note: the Unix script referenced below will automatically install it
