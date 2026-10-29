@@ -160,11 +160,18 @@ ipcMain.on("app:refresh", () => {
     }
 
     const currentUrl = new URL(mainWindow.webContents.getURL());
+
     // Include the current settings in the search parameters
     currentUrl.searchParams.set(
         "settings",
         JSON.stringify(store.get("settings") || {}),
     );
+
+    // Include the current simulation state in the search parameters if the user is on the simulation page
+    if (currentUrl.pathname.startsWith("/simulation/")) {
+        currentUrl.searchParams.set("state", JSON.stringify(simulationState));
+    }
+
     mainWindow.loadURL(currentUrl.toString());
 });
 
