@@ -51,7 +51,7 @@ versions:
 Windows:
 
 - Run `./scripts/windows_dependencies_install.bat`
-  - [Node Version Manager][nvm] and [uv][uv] must be pre-installed and if they
+  - [Node Version Manager][nvm] and [uv][uv] must be pre-installed. If they
     are not installed (and in the path environment variable) the script will not
     update or install the packages
 
@@ -64,7 +64,7 @@ Unix (macOS / linux):
 
 ##### 2. Installation by Commands
 
-Node version manager is required to do this.
+Node version manager is required for this method.
 
 Install and use the [node][node] version `24.22.1`:
 
@@ -105,8 +105,9 @@ uv sync
 ##### 3. Manual Installation
 
 This is highly unrecommended but if preferred (or using something like NixOS)
-follow the publicly avaliable guides to install the correct [node.js][node],
-[npm][npm], and [Python][python] versions and [uv][uv].
+follow the publicly avaliable guides to install the
+[required](#packages-and-dependencies) [node.js][node], [npm][npm], and
+[Python][python] versions and [uv][uv].
 
 Then install all required packages by running:
 
