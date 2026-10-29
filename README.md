@@ -183,11 +183,11 @@ Currently, only the Solar System, Kepler-16, and TRAPPIST-1 are supported. This 
 
 ### Object following
 
-This feature would allow the user to select an object in the simulation for the camera to lock on to and follow. This allows objects to be more easily observed while the simulation is playing. This could be implemented by locking the camera onto an object when the user double clicks it in the simulation, or by some other method.
+This feature would allow the user to select an object in the simulation for the camera to lock on to and follow. This allows objects to be more easily observed while the simulation is playing. This could be implemented by locking the camera's target onto an object's position when the user double clicks it in the simulation, or by some other method.
 
 ### Proportional object sizes
 
-Non-stellar objects are currently all rendered to be the same size (regardless of their true size), while stars are rendered double the size (also irrespective of their true sizes). Scaling rendered objects to be proportional to each other based off their true sizes would improve the realism of the simulations.
+Non-stellar objects are currently all rendered to be the same size, while stars are rendered double the size, both irrespective of their true sizes. Scaling rendered objects to be proportional to each other based off their true sizes would improve the realism of the simulations.
 
 ### Automated tests
 
