@@ -2,6 +2,10 @@
 
 COMPSCI 399 project repository for Team 9 - JEDEJ
 
+### Project management
+
+OPIS is managed through [GitHub Projects](https://github.com/orgs/uoa-compsci399-s2-2026-anna/projects/2/views/6).
+
 ## Install and setup
 
 ### Releases
