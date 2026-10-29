@@ -24,14 +24,16 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-nvm install 24.22.1
-nvm use 24.22.1
-npm install -g npm@12.2.1
-npm install
+echo Updating node and npm
+call nvm install 24.22.1
+call nvm use 24.22.1
+call npm install -g npm@12.2.1
+call npm install
 
-uv python install 3.12
-uv python pin
-uv sync
+echo Updating python and uv
+call uv python install 3.12
+call uv python pin
+call uv sync
 
 echo Done updating and installing utilities and packages
 pause
