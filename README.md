@@ -40,11 +40,11 @@ Strongly recommended:
 Choose one of the following methods to install the required tool and package
 versions:
 
-1. [Installation by script](#1-installation-by-script) (Easiest)
-2. [Installation by commands](#2-installation-by-commands)
-3. [Manual installation](#3-manual-installation) (Not recommended and hardest)
+- [Installation by script](#1-installation-by-script) (Easiest)
+- [Installation by commands](#2-installation-by-commands)
+- [Manual installation](#3-manual-installation) (Not recommended and hardest)
 
-#### 1. Installation by script
+#### Installation by script
 
 Windows:
 
@@ -60,7 +60,7 @@ Unix (macOS / linux):
   - If [`nvm`][nvm] is installed but the script cannot find `nvm` set the
     bash variable `$NVM_DIR` to the path to where `nvm` is installed
 
-#### 2. Installation by commands
+#### Installation by commands
 
 Node version manager is required for this method.
 
@@ -100,7 +100,7 @@ npm install
 uv sync
 ```
 
-#### 3. Manual installation
+#### Manual installation
 
 This is highly unrecommended but if preferred (or using something like NixOS)
 follow the publicly avaliable guides to install the
