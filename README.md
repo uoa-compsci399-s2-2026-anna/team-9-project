@@ -21,7 +21,7 @@ git push origin v2.1.3
 
 OPIS features an auto-updater. When the application launches, users are notified if a new version is available and can install it directly. Auto-updating is not available on macOS as OPIS is not signed with an Apple Developer certificate, so macOS users need to download new versions manually.
 
-## Local installation
+## Installing locally
 
 ### Packages and Dependencies
 
