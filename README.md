@@ -179,7 +179,7 @@ Log files are written to:
 
 ### Arbitrary planetary systems
 
-Currently, only the Solar System, Kepler-16, and TRAPPIST-1 are supported. This could be extended to support other systems by creating an automated data pipeline to retrieve data for arbitrary systems from a reliable source.
+Currently, only the Solar System, Kepler-16, and TRAPPIST-1 are supported. This could be extended to support other systems by creating an automated data pipeline to retrieve data for arbitrary systems from a reliable source. The most promising source so far is [exoplanet.eu]("https://exoplanet.eu"), though some orbital parameters are missing. A possible solution, while not ideal, would be to have reasonable default values for these parameters.
 
 ### Object following
 
