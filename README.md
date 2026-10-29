@@ -23,7 +23,7 @@ OPIS features an auto-updater. When the application launches, users are notified
 
 ## Installing locally
 
-### Packages and Dependencies
+### Packages and dependencies
 
 Required:
 
@@ -44,7 +44,7 @@ versions:
 2. [Installation by commands](#2-installation-by-commands)
 3. [Manual Installation](#3-manual-installation) (Not recommended and hardest)
 
-#### 1. Installation by Script
+#### 1. Installation by script
 
 Windows:
 
@@ -60,7 +60,7 @@ Unix (macOS / linux):
   - If [`nvm`][nvm] is installed but the script cannot find `nvm` set the
     bash variable `$NVM_DIR` to the path to where `nvm` is installed
 
-#### 2. Installation by Commands
+#### 2. Installation by commands
 
 Node version manager is required for this method.
 
@@ -100,7 +100,7 @@ npm install
 uv sync
 ```
 
-#### 3. Manual Installation
+#### 3. Manual installation
 
 This is highly unrecommended but if preferred (or using something like NixOS)
 follow the publicly avaliable guides to install the
