@@ -183,6 +183,14 @@ Log files are written to:
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
 
+## Usage Examples
+
+OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
+
+Additionally, a demo video showcasing typical usage is also available:
+
+https://github.com/user-attachments/assets/2c91ffc8-cf50-424d-8236-5cc9693f5231.mp4
+
 ## Acknowledgements
 
 We would like to thank our client [Dr. Larissa Markwardt](https://profiles.auckland.ac.nz/larissa-markwardt), our course coordinator [Anna Trofimova](https://profiles.auckland.ac.nz/anna-trofimova), and our GTA [Jack Haddad](https://profiles.auckland.ac.nz/jack-haddad) for their guidance and support throughout the development of OPIS.
