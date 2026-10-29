@@ -1,4 +1,4 @@
-# team-9-project
+# OPIS
 
 COMPSCI 399 project repository for Team 9 - JEDEJ
 
