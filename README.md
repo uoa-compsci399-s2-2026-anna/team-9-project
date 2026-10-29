@@ -184,3 +184,7 @@ Log files are written to:
 [node]: https://nodejs.org/en/download
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
+
+## Acknowledgements
+
+We would like to thank our client [Dr. Larissa Markwardt](https://profiles.auckland.ac.nz/larissa-markwardt), our course coordinator [Anna Trofimova](https://profiles.auckland.ac.nz/anna-trofimova), and our GTA [Jack Haddad](https://profiles.auckland.ac.nz/jack-haddad) for their guidance and support throughout the development of OPIS.
