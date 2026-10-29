@@ -185,7 +185,9 @@ Log files are written to:
 
 OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
 
-Additionally, a demo video showcasing typical usage is also available [here](https://youtu.be/4xJDFYLcwu8).
+Additionally, a demo video showcasing typical usage is also available:
+
+https://github.com/user-attachments/assets/2c91ffc8-cf50-424d-8236-5cc9693f5231.mp4
 
 ## Acknowledgements
 
