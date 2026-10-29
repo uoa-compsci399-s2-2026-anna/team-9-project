@@ -114,9 +114,9 @@ npm install
 uv sync
 ```
 
-### Building and running
+## Building and running
 
-#### Running OPIS
+### Running OPIS
 
 To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 
@@ -124,7 +124,7 @@ To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 npm run dev
 ```
 
-#### Running Tailwind
+### Running Tailwind
 
 To automatically run [Tailwind](https://tailwindcss.com) on file changes:
 
