@@ -2,10 +2,10 @@
 
 install_pkg() {
 	while true; do
-		read -p "Do you wish to install $1? (y/n): " -e 1 -r
+		read -r -p "Do you wish to install $1? (y/n): " response
 		echo
 
-		case "$REPLY" in
+		case "$response" in
 			[Yy]* )
 				echo "Installing $1..."
 				break
