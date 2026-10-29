@@ -21,11 +21,9 @@ git push origin v2.1.3
 
 OPIS features an auto-updater. When the application launches, users are notified if a new version is available and can install it directly. Auto-updating is not available on macOS as OPIS is not signed with an Apple Developer certificate, so macOS users need to download new versions manually.
 
-## Install and setup
+## Local installation
 
-### Installing locally
-
-#### Packages and Dependencies
+### Packages and Dependencies
 
 Required:
 
@@ -46,7 +44,7 @@ versions:
 2. [Installation by commands](#2-installation-by-commands)
 3. [Manual Installation](#3-manual-installation) (Not recommended and hardest)
 
-##### 1. Installation by Script
+#### 1. Installation by Script
 
 Windows:
 
@@ -62,7 +60,7 @@ Unix (macOS / linux):
   - If [`nvm`][nvm] is installed but the script cannot find `nvm` set the
     bash variable `$NVM_DIR` to the path to where `nvm` is installed
 
-##### 2. Installation by Commands
+#### 2. Installation by Commands
 
 Node version manager is required for this method.
 
@@ -102,7 +100,7 @@ npm install
 uv sync
 ```
 
-##### 3. Manual Installation
+#### 3. Manual Installation
 
 This is highly unrecommended but if preferred (or using something like NixOS)
 follow the publicly avaliable guides to install the
