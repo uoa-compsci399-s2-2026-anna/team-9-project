@@ -2,13 +2,11 @@
 
 COMPSCI 399 project repository for Team 9 - JEDEJ
 
-## Install and setup
-
-### Releases
+## Releases
 
 For pre-built installers for Windows, macOS, and Linux, see the [latest release](https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/releases/latest) of OPIS.
 
-#### Publishing releases
+### Publishing releases
 
 OPIS releases follow [semantic versioning](https://semver.org/). To publish a release (e.g., `v2.1.3`), it is recommended to first bump the version in `package.json` and `pyproject.toml` to `2.1.3`. Afterwards, run `npm install` and `uv sync` to update the lockfiles, and commit the changes.
 
@@ -19,13 +17,13 @@ git tag v2.1.3
 git push origin v2.1.3
 ```
 
-#### Auto-updater
+### Auto-updater
 
 OPIS features an auto-updater. When the application launches, users are notified if a new version is available and can install it directly. Auto-updating is not available on macOS as OPIS is not signed with an Apple Developer certificate, so macOS users need to download new versions manually.
 
-### Installing locally
+## Installing locally
 
-#### Packages and Dependencies
+### Packages and dependencies
 
 Required:
 
@@ -34,7 +32,7 @@ Required:
 - [Python][python] version `3.12.x` (any patch version)
 - [uv][uv] (any version)
 
-Strongly Recommended:
+Strongly recommended:
 
 - [Node Version Manager][nvm] (any version)
   - Note: the Unix script referenced below will automatically install it
@@ -42,11 +40,11 @@ Strongly Recommended:
 Choose one of the following methods to install the required tool and package
 versions:
 
-1. [Installation by script](#1-installation-by-script) (Easiest)
-2. [Installation by commands](#2-installation-by-commands)
-3. [Manual Installation](#3-manual-installation) (Not recommended and hardest)
+- [Installation by script](#installation-by-script) (Easiest)
+- [Installation by commands](#installation-by-commands)
+- [Manual installation](#manual-installation) (Not recommended and hardest)
 
-##### 1. Installation by Script
+#### Installation by script
 
 Windows:
 
@@ -62,7 +60,7 @@ Unix (macOS / linux):
   - If [`nvm`][nvm] is installed but the script cannot find `nvm` set the
     bash variable `$NVM_DIR` to the path to where `nvm` is installed
 
-##### 2. Installation by Commands
+#### Installation by commands
 
 Node version manager is required for this method.
 
@@ -102,9 +100,9 @@ npm install
 uv sync
 ```
 
-##### 3. Manual Installation
+#### Manual installation
 
-This is highly unrecommended but if preferred (or using something like NixOS)
+This is highly inadvised but if preferred (or using something like NixOS)
 follow the publicly avaliable guides to install the
 [required](#packages-and-dependencies) [node.js][node], [npm][npm], and
 [Python][python] versions and [uv][uv].
@@ -116,9 +114,9 @@ npm install
 uv sync
 ```
 
-### Building and running
+## Building and running
 
-#### Running OPIS
+### Running OPIS
 
 To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 
@@ -126,7 +124,7 @@ To run OPIS with [Electron](https://www.electronjs.org/docs/latest/), run:
 npm run dev
 ```
 
-#### Running Tailwind
+### Running Tailwind
 
 To automatically run [Tailwind](https://tailwindcss.com) on file changes:
 
