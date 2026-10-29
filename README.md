@@ -186,3 +186,7 @@ Log files are written to:
 OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
 
 Additionally, a demo video showcasing typical usage is also available [here](https://youtu.be/4xJDFYLcwu8).
+
+## Acknowledgements
+
+We would like to thank our client [Dr. Larissa Markwardt](https://profiles.auckland.ac.nz/larissa-markwardt), our course coordinator [Anna Trofimova](https://profiles.auckland.ac.nz/anna-trofimova), and our GTA [Jack Haddad](https://profiles.auckland.ac.nz/jack-haddad) for their guidance and support throughout the development of OPIS.
