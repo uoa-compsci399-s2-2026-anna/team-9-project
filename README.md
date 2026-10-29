@@ -180,3 +180,9 @@ Log files are written to:
 [node]: https://nodejs.org/en/download
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
+
+## Usage Examples
+
+OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
+
+Additionally, a demo video showcasing typical usage is also available [here](https://youtu.be/4xJDFYLcwu8).
