@@ -183,7 +183,7 @@ Currently, only the Solar System, Kepler-16, and TRAPPIST-1 are supported. This 
 
 ### Object following
 
-This feature would allow the simulation camera target to track the position of an object, and would allow objects to be observed more easily while the simulation is playing.
+This feature would allow the user to select an object in the simulation for the camera to lock on to and follow. This allows objects to be more easily observed while the simulation is playing. This could be implemented by locking the camera onto an object when the user double clicks it in the simulation, or by some other method.
 
 ### Proportional object sizes
 
