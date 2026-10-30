@@ -20,9 +20,17 @@ See the [OPIS final report](https://typst.app/project/rfb79TAkaQyVZ0BE6JymaN) fo
 
 <img width="80%" alt="image" src="https://github.com/user-attachments/assets/521d9ae3-9908-4fc3-84bc-bf24b06cf0d0" />
 
-### Project management
+## Project management
 
 OPIS is managed through [GitHub Projects](https://github.com/orgs/uoa-compsci399-s2-2026-anna/projects/2/views/6).
+
+## Usage examples
+
+OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
+
+Additionally, a demo video showcasing typical usage is also available ([YouTube link](https://youtu.be/4xJDFYLcwu8)):
+
+https://github.com/user-attachments/assets/2c91ffc8-cf50-424d-8236-5cc9693f5231.mp4
 
 ## Releases
 
@@ -262,14 +270,6 @@ While the codebase is well-structured, self-documenting, and has plenty of expla
 [rebound]: https://rebound.hanno-rein.de/
 [threejs]: https://threejs.org/
 [floatingui]: https://floating-ui.com/
-
-## Usage examples
-
-OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
-
-Additionally, a demo video showcasing typical usage is also available ([YouTube link](https://youtu.be/4xJDFYLcwu8)):
-
-https://github.com/user-attachments/assets/2c91ffc8-cf50-424d-8236-5cc9693f5231.mp4
 
 ## Acknowledgements
 
