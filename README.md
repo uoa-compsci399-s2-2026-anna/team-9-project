@@ -30,7 +30,7 @@ For pre-built installers for Windows, macOS, and Linux, see the [latest release]
 
 ### Publishing releases
 
-OPIS releases follow [semantic versioning](https://semver.org/). To publish a release (e.g., `v2.1.3`), it is recommended to first bump the version in `package.json` and `pyproject.toml` to `2.1.3`. Afterwards, run `npm install` and `uv sync` to update the lockfiles, and commit the changes.
+OPIS releases follow [semantic versioning](https://semver.org/). To publish a release (e.g., `v2.1.3`), it is recommended to first bump the version in `package.json` and `pyproject.toml` to `2.1.3`. Afterwards, run `npm install` and `uv sync` to update the lock files, and commit the changes.
 
 Then, from the current commit, create and push a version tag:
 
