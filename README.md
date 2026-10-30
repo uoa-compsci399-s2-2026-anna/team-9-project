@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/uoa-compsci399-s2-2026-anna/team-9-project/58288d48060d0423ac64b911eb642a2893c06793/src/assets/logo-purple.svg" width="200rem">
+
 # OPIS
 
 OPIS (Orbital Planetary Interactive Simulator) is an orbital visualisation tool for the ASTRO 100 course at the University of Auckland, developed as a part of the computer science capstone course COMPSCI 399.
