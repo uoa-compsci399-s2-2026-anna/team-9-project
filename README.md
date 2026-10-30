@@ -30,7 +30,7 @@ For pre-built installers for Windows, macOS, and Linux, see the [latest release]
 
 ### Publishing releases
 
-OPIS releases follow [semantic versioning](https://semver.org/). To publish a release (e.g., `v2.1.3`), it is recommended to first bump the version in `package.json` and `pyproject.toml` to `2.1.3`. Afterwards, run `npm install` and `uv sync` to update the lockfiles, and commit the changes.
+OPIS releases follow [semantic versioning](https://semver.org/). To publish a release (e.g., `v2.1.3`), it is recommended to first bump the version in `package.json` and `pyproject.toml` to `2.1.3`. Afterwards, run `npm install` and `uv sync` to update the lock files, and commit the changes.
 
 Then, from the current commit, create and push a version tag:
 
@@ -115,7 +115,7 @@ uv python install 3.12
 uv python pin
 ```
 
-Finally, install all required packages by runnning:
+Finally, install all required packages by running:
 
 ```sh
 npm install
@@ -124,8 +124,8 @@ uv sync
 
 #### Manual installation
 
-This is highly inadvised but if preferred (or using something like NixOS)
-follow the publicly avaliable guides to install the
+This is highly inadvisable but if preferred (or using something like NixOS)
+follow the publicly available guides to install the
 [required](#packages-and-dependencies) [node.js][node], [npm][npm], and
 [Python][python] versions and [uv][uv].
 
@@ -195,7 +195,7 @@ Log files are written to:
 - on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
   Where `<date>` is in `YYYY-MM-DD_HH-MM-SS` format
 
-## Future Plan
+## Future plans
 
 ### Arbitrary planetary systems
 
@@ -215,7 +215,7 @@ Currently, there are no automated tests implemented in the codebase. Adding this
 
 ### Developer-facing documentation
 
-While the codebase is well-structured, self-documenting, and has plenty of explanatory comments, there is a lack of developer-facing documentation. This could be added within a `docs/` folder, outlining the architcture, key components of the application, as well as the code structure, which would help new developers become familiarised with the codebase more easily. This documentation could subsequently also be hosted on a static site if required.
+While the codebase is well-structured, self-documenting, and has plenty of explanatory comments, there is a lack of developer-facing documentation. This could be added within a `docs/` folder, outlining the architecture, key components of the application, as well as the code structure, which would help new developers become familiarised with the codebase more easily. This documentation could subsequently also be hosted on a static site if required.
 
 [uv]: https://docs.astral.sh/uv/#installation
 [nvm]: https://www.nvmnode.com/guide/installation.html
@@ -223,11 +223,11 @@ While the codebase is well-structured, self-documenting, and has plenty of expla
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
 
-## Usage Examples
+## Usage examples
 
 OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
 
-Additionally, a demo video showcasing typical usage is also available:
+Additionally, a demo video showcasing typical usage is also available ([YouTube link](https://youtu.be/4xJDFYLcwu8)):
 
 https://github.com/user-attachments/assets/2c91ffc8-cf50-424d-8236-5cc9693f5231.mp4
 
