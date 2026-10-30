@@ -195,7 +195,7 @@ Log files are written to:
 - on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
   Where `<date>` is in `YYYY-MM-DD_HH-MM-SS` format
 
-## Future Plan
+## Future plans
 
 ### Arbitrary planetary systems
 
@@ -223,7 +223,7 @@ While the codebase is well-structured, self-documenting, and has plenty of expla
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
 
-## Usage Examples
+## Usage examples
 
 OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
 
