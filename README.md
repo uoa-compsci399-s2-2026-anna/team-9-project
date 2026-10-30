@@ -195,6 +195,38 @@ Log files are written to:
 - on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
   Where `<date>` is in `YYYY-MM-DD_HH-MM-SS` format
 
+## Technologies
+
+### Languages
+
+| Language   | Version |
+| ---------- | ------- |
+| HTML       | 5       |
+| Python     | 3.12    |
+| JavaScript | N/A     |
+| CSS        | N/A     |
+
+### Libraries
+
+| Language     | Version |
+| ------------ | ------- |
+| Tailwind CSS | 4.3.3   |
+| node.js      | 24.22.1 |
+| Uvicorn      | 0.52.1  |
+| Jinja        | 3.1.6   |
+| FastAPI      | 0.141.1 |
+| Electron     | 43.3.0  |
+| REBOUND      | 5.2.2   |
+| Three.js     | 0.185.1 |
+| Floating UI  | 1.8.0   |
+
+### Development tools
+
+| Language | Version |
+| -------- | ------- |
+| uv       | N/A     |
+| npm      | 12.2.1  |
+
 ## Future plans
 
 ### Arbitrary planetary systems
