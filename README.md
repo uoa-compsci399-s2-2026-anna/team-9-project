@@ -18,6 +18,8 @@ OPIS also features a suite of accessibility settings for dyslexia and vision imp
 
 See the [OPIS final report](https://typst.app/project/rfb79TAkaQyVZ0BE6JymaN) for more information.
 
+<img width="80%" alt="image" src="https://github.com/user-attachments/assets/521d9ae3-9908-4fc3-84bc-bf24b06cf0d0" />
+
 ## Install and setup
 
 ### Releases
