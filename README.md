@@ -125,7 +125,7 @@ uv sync
 #### Manual installation
 
 This is highly inadvisable but if preferred (or using something like NixOS)
-follow the publicly avaliable guides to install the
+follow the publicly available guides to install the
 [required](#packages-and-dependencies) [node.js][node], [npm][npm], and
 [Python][python] versions and [uv][uv].
 
@@ -215,7 +215,7 @@ Currently, there are no automated tests implemented in the codebase. Adding this
 
 ### Developer-facing documentation
 
-While the codebase is well-structured, self-documenting, and has plenty of explanatory comments, there is a lack of developer-facing documentation. This could be added within a `docs/` folder, outlining the architcture, key components of the application, as well as the code structure, which would help new developers become familiarised with the codebase more easily. This documentation could subsequently also be hosted on a static site if required.
+While the codebase is well-structured, self-documenting, and has plenty of explanatory comments, there is a lack of developer-facing documentation. This could be added within a `docs/` folder, outlining the architecture, key components of the application, as well as the code structure, which would help new developers become familiarised with the codebase more easily. This documentation could subsequently also be hosted on a static site if required.
 
 [uv]: https://docs.astral.sh/uv/#installation
 [nvm]: https://www.nvmnode.com/guide/installation.html
