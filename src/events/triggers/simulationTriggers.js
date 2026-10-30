@@ -234,6 +234,9 @@ resetObjects.addEventListener("click", () => {
             value: isShown,
         });
     }
+
+    // Reset to the default view
+    bus.publish(EVENTS.SIM.RESET_VIEW);
 });
 
 // Handle resetting view settings to defaults
