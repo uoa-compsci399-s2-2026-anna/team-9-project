@@ -215,7 +215,7 @@ function spawnPythonProcess(resolve, reject) {
     // OS Dependent
     let processPath = "";
     let args = [];
-    if (platform == "win32") {
+    if (platform === "win32") {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
             processPath = ".\\.venv\\Scripts\\python.exe";
@@ -503,7 +503,7 @@ function stopPythonProcess() {
         return;
     }
 
-    if (process.platform == "win32") {
+    if (process.platform === "win32") {
         // Windows specific task killing
         spawnSync("taskkill", ["/pid", String(pythonProcess.pid), "/T", "/F"]);
     } else {
