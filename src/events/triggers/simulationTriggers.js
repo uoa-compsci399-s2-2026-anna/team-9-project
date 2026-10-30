@@ -235,6 +235,7 @@ resetObjects.addEventListener("click", () => {
             name: objectName,
             value: isShown,
         });
+        anyVisibilityChanged = true;
     }
 
     // Reset to the default view if any object's visibility was changed
