@@ -503,11 +503,10 @@ function stopPythonProcess() {
         return;
     }
 
-    if (process.platform === "win32") {
-        spawnSync("taskkill", ["/pid", String(pythonProcess.pid), "/T", "/F"]);
-    } else {
-        pythonProcess.kill();
-    }
+		// Send Ctrl+Z signal to kill REBOUND
+    pythonProcess.kill("SIGTSTP");
+		// Send Ctrl+C signal to kill Python
+    pythonProcess.kill("SIGKILL");
 }
 
 // Handle the application quitting
