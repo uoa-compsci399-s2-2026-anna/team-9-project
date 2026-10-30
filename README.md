@@ -1,6 +1,24 @@
-# team-9-project
+<img src="https://raw.githubusercontent.com/uoa-compsci399-s2-2026-anna/team-9-project/58288d48060d0423ac64b911eb642a2893c06793/src/assets/logo-purple.svg" width="200rem">
 
-COMPSCI 399 project repository for Team 9 - JEDEJ
+# OPIS
+
+OPIS (Orbital Planetary Interactive Simulator) is an orbital visualisation tool for the ASTRO 100 course at the University of Auckland, developed as a part of the computer science capstone course COMPSCI 399.
+
+OPIS allows users to view and interact with the three included planetary systems (the Solar System, Kepler-16, and TRAPPIST-1) in three dimensions. OPIS accurately simulates the positions of objects in these systems using the Python library REBOUND.
+
+OPIS also features a suite of accessibility settings for dyslexia and vision impairments.
+
+## Key features
+
+- Zoom, orbit, pan simulation in 3D
+- Switch between included planetary systems
+- Play and pause simulation playback, and adjust playback speed
+- Jump to an arbitrary date to see the positions of objects at that time
+- Show and hide objects
+
+See the [OPIS final report](https://typst.app/project/rfb79TAkaQyVZ0BE6JymaN) for more information.
+
+<img width="80%" alt="image" src="https://github.com/user-attachments/assets/521d9ae3-9908-4fc3-84bc-bf24b06cf0d0" />
 
 ### Project management
 
