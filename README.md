@@ -208,24 +208,24 @@ Log files are written to:
 
 ### Libraries
 
-| Language     | Version |
-| ------------ | ------- |
-| Tailwind CSS | 4.3.3   |
-| node.js      | 24.22.1 |
-| Uvicorn      | 0.52.1  |
-| Jinja        | 3.1.6   |
-| FastAPI      | 0.141.1 |
-| Electron     | 43.3.0  |
-| REBOUND      | 5.2.2   |
-| Three.js     | 0.185.1 |
-| Floating UI  | 1.8.0   |
+| Language                  | Version |
+| ------------------------- | ------- |
+| [Tailwind CSS][tailwind]  | 4.3.3   |
+| [node.js][node]           | 24.22.1 |
+| [Uvicorn][uvicorn]        | 0.52.1  |
+| [Jinja][jinja]            | 3.1.6   |
+| [FastAPI][fastapi]        | 0.141.1 |
+| [Electron][electron]      | 43.3.0  |
+| [REBOUND][rebound]        | 5.2.2   |
+| [Three.js][threejs]       | 0.185.1 |
+| [Floating UI][floatingui] | 1.8.0   |
 
 ### Development tools
 
-| Language | Version |
-| -------- | ------- |
-| uv       | N/A     |
-| npm      | 12.2.1  |
+| Language   | Version |
+| ---------- | ------- |
+| [uv][uv]   | N/A     |
+| [npm][npm] | 12.2.1  |
 
 ## Future plans
 
@@ -254,6 +254,14 @@ While the codebase is well-structured, self-documenting, and has plenty of expla
 [node]: https://nodejs.org/en/download
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
+[tailwind]: https://tailwindcss.com/docs/installation/using-vite
+[uvicorn]: https://uvicorn.dev
+[jinja]: https://jinja.palletsprojects.com/en/stable/
+[fastapi]: https://fastapi.tiangolo.com
+[electron]: https://www.electronjs.org
+[rebound]: https://rebound.hanno-rein.de/
+[threejs]: https://threejs.org/
+[floatingui]: https://floating-ui.com/
 
 ## Usage examples
 
