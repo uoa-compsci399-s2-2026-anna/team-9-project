@@ -166,7 +166,7 @@ npm run watch
 
 The final executable lives in the `./out/team-9-project-OS-ARCH/` folder, **not** the `./dist/` folder.
 
-Tested with node.js version `v24.20.0`. Certain later versions of node.js may not work.
+Tested with node.js version `v24.22.1`. Certain later versions of node.js may not work.
 
 ### Linux/macOS
 
