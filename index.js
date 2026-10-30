@@ -58,6 +58,8 @@ const WINDOW_BACKGROUND_COLOUR = {
 
 const SYSTEM_PREFERS_DARK = nativeTheme.shouldUseDarkColors;
 
+let pythonBaseURL;
+
 /**
  * Decide whether dark mode should be used based on the persisted settings state.
  * Fallback to the system default if no valid preference has been persisted.
@@ -276,6 +278,7 @@ function spawnPythonProcess(resolve, reject) {
             if (line.startsWith("http://")) {
                 // Resolve the promise with the url (with no excess whitespace)
                 let url = line.trim();
+									pythonBaseURL = url;
                 log.debug(`ELECTRON: URL to Python process is ${url}`);
                 resolve(url);
             }
@@ -502,6 +505,10 @@ function stopPythonProcess() {
     if (!pythonProcess || pythonProcess.exitCode !== null) {
         return;
     }
+
+		const killURL = new URL(pythonBaseURL);
+		killURL.pathname = '/kill';
+		await fetch(killURL);
 
     if (process.platform === "win32") {
         // Windows specific task killing
