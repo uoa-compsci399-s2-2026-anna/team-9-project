@@ -224,6 +224,8 @@ document.querySelectorAll("[data-panel]").forEach((panel) => {
 const resetObjects = document.getElementById("reset-objects");
 
 resetObjects.addEventListener("click", () => {
+    let anyVisibilityChanged = false;
+
     // Get and publish the necessary object visibility changes to reset to the default state
     for (const { objectName, isShown } of getObjectVisibilityChanges(
         currentSystem,
@@ -233,10 +235,13 @@ resetObjects.addEventListener("click", () => {
             name: objectName,
             value: isShown,
         });
+        anyVisibilityChanged = true;
     }
 
-    // Reset to the default view
-    bus.publish(EVENTS.SIM.RESET_VIEW);
+    // Reset to the default view if any object's visibility was changed
+    if (anyVisibilityChanged) {
+        bus.publish(EVENTS.SIM.RESET_VIEW);
+    }
 });
 
 // Handle resetting view settings to defaults
