@@ -28,6 +28,7 @@ echo Updating node and npm
 call nvm install 24.22.1
 call nvm use 24.22.1
 call npm install -g npm@12.2.1
+call nvm reshim
 call npm install
 
 echo Updating python and uv
