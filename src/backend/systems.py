@@ -30,6 +30,53 @@ class SimulationData:
         self.objects = objects
         self.reference = reference
 
+    def export_data(self, system_data):
+        num_objects = len(self.objects)
+        system_name = system_data["name"].lower()
+
+        first_object = self.objects[0]
+        orbits = {}
+        orbits[first_object] = {"m": self.sim.particles[0].m}
+
+        old_orbits = system_data["orbits"]
+
+        # Get the current time of the simulation and convert from sim time to
+        # JD TDB
+        current_time = self.sim.t + sim_initial_jd_tdb[system_name]
+
+        # Skip the center most object as that only has a mass as it cannot by
+        # defintion have orbital parameters (it has no primary)
+        for i in range(1, num_objects):
+            particle = self.sim.particles[i]
+            obj_name = self.objects[i]
+
+            obj = old_orbits[obj_name]
+
+            # Whether the object's orbit is currently defined in cartesian positioning
+            if "x" in obj:
+                orbits[obj_name] = {
+                    "m": particle.m,
+                    "x": particle.x,
+                    "y": particle.y,
+                    "z": particle.z,
+                    "vx": particle.vx,
+                    "vy": particle.vy,
+                    "vz": particle.vz,
+                }
+            # Or it is defined by orbital parameters
+            else:
+                orbits[obj_name] = {
+                    "m": particle.m,
+                    "P": particle.P,
+                    "e": particle.e,
+                    "omega": particle.omega,
+                    "M": particle.M,
+                    "inc": particle.inc,
+                    "Omega": particle.Omega,
+                }
+
+        return orbits, current_time
+
 
 class Simulations:
     """
@@ -38,13 +85,26 @@ class Simulations:
 
     __sims: dict[str, SimulationData] = {}
 
-    def __init__(self, all_systems: list[dict]):
+    def __init__(self, all_systems: list[dict], reference_data: dict | None):
         # Get the current JD TDB time so that we can pre-integrate the systems to now
         now_jd_tdb: float = get_current_jd_tdb()
+        reference_data_exists = reference_data is not None
 
         for system_data in all_systems:
             system_name = system_data["name"].lower()
-            self.__sims[system_name] = init_system(system_data, system_name, now_jd_tdb)
+            self.__sims[system_name] = init_system(
+                system_data,
+                system_name,
+                now_jd_tdb,
+                generate_reference_data=not reference_data_exists,
+            )
+
+            if reference_data_exists:
+                # Get the reference data for this system
+                current_systems_reference = reference_data.get(system_name, None)
+                if current_systems_reference is not None:
+                    # Override the reference frame with the given frame
+                    self.__sims[system_name].reference = current_systems_reference
 
     def stop_all(self):
         for sim in self.__sims.values():
@@ -86,9 +146,16 @@ class Simulations:
         if time_to_integrate_to is None:
             time_to_integrate_to = get_current_jd_tdb()
 
+        # Keep the original reference data
+        reference_data = self.__sims[system_name].reference
         self.__sims[system_name] = init_system(
-            system_data, system_name, time_to_integrate_to
+            system_data,
+            system_name,
+            time_to_integrate_to,
+            generate_reference_data=False,
         )
+        # Set it back to the original reference data
+        self.__sims[system_name].reference = reference_data
 
     def quick_integrate(self, t: float, system_data: dict) -> rebound.Simulation:
         """
@@ -127,6 +194,22 @@ class Simulations:
             sim.integrate(sim_time)
             return sim
 
+    def export_data(self, all_systems):
+        all_systems_data = {}
+        reference_data = {}
+
+        for system_data in all_systems:
+            system_name = system_data["name"].lower()
+            system = self.__sims[system_name]
+
+            orbits, timestamp = system.export_data(system_data)
+
+            all_systems_data[system_name] = {"orbits": orbits, "timestamp": timestamp}
+
+            reference_data[system_name] = system.reference
+
+        return all_systems_data, reference_data
+
 
 def unix_to_jd_tdb(t: float) -> float:
     """
@@ -151,7 +234,10 @@ def get_current_jd_tdb() -> float:
 
 
 def init_system(
-    system_data: dict, name: str, time_to_integrate_to: float
+    system_data: dict,
+    name: str,
+    time_to_integrate_to: float,
+    generate_reference_data: bool,
 ) -> SimulationData:
     """
     Initialises the given system and integrates it to the given JD TDB time
@@ -198,15 +284,21 @@ def init_system(
 
     sim.move_to_com()
 
-    # Gather positions
-    positions = {objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)}
+    # Only generate the reference data if we need to
+    if generate_reference_data:
+        # Gather positions
+        positions = {
+            objects[i]: get_position_dict(p) for i, p in enumerate(sim.particles)
+        }
 
-    # Gather orbital data for each object
-    orbital_data = {
-        objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
-    }
+        # Gather orbital data for each object
+        orbital_data = {
+            objects[i]: get_osculating_orbit(sim, i) for i in range(len(sim.particles))
+        }
 
-    reference = {"positions": positions, "orbital_data": orbital_data}
+        reference = {"positions": positions, "orbital_data": orbital_data}
+    else:
+        reference = None
 
     # Pre-emptively integrate sim to the given time
     sim_time = time_to_integrate_to - system_data["timestamp"]

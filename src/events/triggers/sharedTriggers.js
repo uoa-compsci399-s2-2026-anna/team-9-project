@@ -129,6 +129,8 @@ function attachKeyHoldRepeat(key, callback, { delayMs, periodMs }) {
 
         event.preventDefault();
 
+        blurActiveElement();
+
         callback();
         start();
     });
@@ -157,10 +159,23 @@ function attachKeyPress(key, callback) {
             return;
         }
 
+        blurActiveElement();
+
         event.preventDefault();
 
         callback();
     });
+}
+
+/**
+ * Removes the focus from the active element in the document (if any).
+ *
+ * e.g. removes focus from text boxes, dropdowns, etc.
+ */
+function blurActiveElement() {
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
 }
 
 /**

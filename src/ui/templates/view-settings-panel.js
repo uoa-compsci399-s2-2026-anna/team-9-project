@@ -9,6 +9,7 @@ import { EVENTS } from "/src/events/events.js";
 const VIEW_SETTING_EVENT_TO_DATA_SETTING = {
     [EVENTS.SIM.HABITABLE_ZONE_TOGGLE]: "habitable-zone",
     [EVENTS.SIM.ORBITS_TOGGLE]: "orbits",
+    [EVENTS.SIM.ORBIT_LINE_PROJECTIONS_TOGGLE]: "orbit-line-projections",
     [EVENTS.SIM.REFERENCE_GRID_TOGGLE]: "reference-grid",
     [EVENTS.SIM.LABELS_TOGGLE]: "labels",
 };

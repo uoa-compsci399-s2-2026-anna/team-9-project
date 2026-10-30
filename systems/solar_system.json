@@ -1,0 +1,390 @@
+{
+  "name": "Solar System",
+  "objects": {
+    "Sun": {
+      "colour": {
+        "dark": "#d68811",
+        "light": "#d08f2e"
+      },
+      "type": "star",
+      "mass": {
+        "value": 1988410e24,
+        "uncertainty": null
+      },
+      "temp": {
+        "value": 5772,
+        "uncertainty": null
+      },
+      "period": {
+        "heliocentric": null,
+        "barycentric": 116223663.71796323
+      },
+      "radius": {
+        "value": 695700e3,
+        "uncertainty": null
+      }
+    },
+    "Mercury": {
+      "colour": {
+        "dark": "#777777",
+        "light": "#555555"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 0.330103e24,
+        "uncertainty": 0.000021e24
+      },
+      "temp": {
+        "value": 440,
+        "uncertainty": null
+      },
+      "period": {
+        "heliocentric": 7600506.108745869,
+        "barycentric": 7779139.861870074
+      },
+      "radius": {
+        "value": 2439.4e3,
+        "uncertainty": 0.1e3
+      }
+    },
+    "Venus": {
+      "colour": {
+        "dark": "#d5864e",
+        "light": "#915122"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 4.86731e24,
+        "uncertainty": 0.00023e24
+      },
+      "temp": {
+        "value": 735,
+        "uncertainty": null
+      },
+      "period": {
+        "heliocentric": 19414279.092994414,
+        "barycentric": 19524614.41573109
+      },
+      "radius": {
+        "value": 6051.8e3,
+        "uncertainty": 1.0e3
+      }
+    },
+    "Earth": {
+      "colour": {
+        "dark": "#44a1de",
+        "light": "#1b6698"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 5.97217e24,
+        "uncertainty": 0.00028e24
+      },
+      "temp": {
+        "value": 287.6,
+        "uncertainty": null
+      },
+      "period": {
+        "heliocentric": 31557941.47476088,
+        "barycentric": 31453055.48834181
+      },
+      "radius": {
+        "value": 6371.0084e3,
+        "uncertainty": 0.0001e3
+      }
+    },
+    "Mars": {
+      "colour": {
+        "dark": "#d16e5a",
+        "light": "#b52f20"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 0.641691e24,
+        "uncertainty": 0.00003e24
+      },
+      "temp": {
+        "value": 210,
+        "uncertainty": null
+      },
+      "period": {
+        "heliocentric": 59351570.03760191,
+        "barycentric": 58523100.14321529
+      },
+      "radius": {
+        "value": 3389.5e3,
+        "uncertainty": 0.2e3
+      }
+    },
+    "Jupiter": {
+      "colour": {
+        "dark": "#e1812e",
+        "light": "#a15717"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 1898.125e24,
+        "uncertainty": 0.088e24
+      },
+      "temp": {
+        "value": 165,
+        "uncertainty": 5
+      },
+      "period": {
+        "heliocentric": 374310838.3730772,
+        "barycentric": 374532508.4173894
+      },
+      "radius": {
+        "value": 69911e3,
+        "uncertainty": 6e3
+      }
+    },
+    "Saturn": {
+      "colour": {
+        "dark": "#b89176",
+        "light": "#7d5a40"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 568.317e24,
+        "uncertainty": 0.026e24
+      },
+      "temp": {
+        "value": 134,
+        "uncertainty": 4
+      },
+      "period": {
+        "heliocentric": 929887174.4656689,
+        "barycentric": 928964304.9739162
+      },
+      "radius": {
+        "value": 58232e3,
+        "uncertainty": 6e3
+      }
+    },
+    "Uranus": {
+      "colour": {
+        "dark": "#4ca5bb",
+        "light": "#2d6978"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 86.8099e24,
+        "uncertainty": 0.004e24
+      },
+      "temp": {
+        "value": 76,
+        "uncertainty": 2
+      },
+      "period": {
+        "heliocentric": 2651712543.2336035,
+        "barycentric": 2650982259.29526
+      },
+      "radius": {
+        "value": 25362e3,
+        "uncertainty": 7e3
+      }
+    },
+    "Neptune": {
+      "colour": {
+        "dark": "#8296e2",
+        "light": "#3756d0"
+      },
+      "type": "planet",
+      "mass": {
+        "value": 102.4092e24,
+        "uncertainty": 0.0048e24
+      },
+      "temp": {
+        "value": 72,
+        "uncertainty": 2
+      },
+      "period": {
+        "heliocentric": 5201682073.478828,
+        "barycentric": 5201681889.844421
+      },
+      "radius": {
+        "value": 24622e3,
+        "uncertainty": 19e3
+      }
+    },
+    "Pluto": {
+      "colour": {
+        "dark": "#b19574",
+        "light": "#755d42"
+      },
+      "type": "dwarf planet",
+      "mass": {
+        "value": 13024.6e18,
+        "uncertainty": 6.0e18
+      },
+      "temp": {
+        "value": 31,
+        "uncertainty": 7
+      },
+      "period": {
+        "heliocentric": 7825970150.623974,
+        "barycentric": 7825970150.623974
+      },
+      "radius": {
+        "value": 1188.3e3,
+        "uncertainty": 1.6e3
+      }
+    },
+    "1P/Halley": {
+      "colour": {
+        "dark": "#8f9ba4",
+        "light": "#57636b"
+      },
+      "type": "comet",
+      "mass": {
+        "value": 2.2e14,
+        "uncertainty": 9.0e13
+      },
+      "temp": {
+        "value": null,
+        "uncertainty": null
+      },
+      "period": {
+        "heliocentric": 2414694808.9982038,
+        "barycentric": 2414694808.9982038
+      },
+      "radius": {
+        "value": 5.5e3,
+        "uncertainty": null
+      }
+    },
+    "3I/ATLAS": {
+      "colour": {
+        "dark": "#e275ac",
+        "light": "#b3266c"
+      },
+      "type": "comet",
+      "mass": {
+        "value": 4.4e10,
+        "uncertainty": null
+      },
+      "temp": {
+        "value": null,
+        "uncertainty": null
+      },
+      "period": {
+        "heliocentric": null,
+        "barycentric": null
+      },
+      "radius": {
+        "value": 1.3e3,
+        "uncertainty": 0.2e3
+      }
+    }
+  },
+  "timestamp": 2461296.8260264564,
+  "habitable zone": {
+    "start": 0.836,
+    "end": 1.656
+  },
+  "orbits": {
+    "Sun": {
+      "m": 1.0
+    },
+    "Mercury": {
+      "m": 1.6601208254808336e-7,
+      "a": 0.3870973985848499,
+      "e": 0.20563890439325508,
+      "inc": 0.12223196934976896,
+      "omega": 0.5096617475526735,
+      "Omega": 0.8429472418995633,
+      "M": 2.1384860170872066
+    },
+    "Venus": {
+      "m": 2.447838287784771e-6,
+      "a": 0.7233354964782993,
+      "e": 0.006769623365068622,
+      "inc": 0.059242447617081216,
+      "omega": 0.958449767324022,
+      "Omega": 1.3370297941736307,
+      "M": 3.3886597437347747
+    },
+    "Earth": {
+      "m": 3.0404326489511185e-6,
+      "a": 0.9999965075710088,
+      "e": 0.01664825246097795,
+      "inc": 6.0519300981813916e-5,
+      "omega": 5.038402287577288,
+      "Omega": 3.0433858243722427,
+      "M": 4.344075965621595
+    },
+    "Mars": {
+      "m": 3.2271560828978514e-7,
+      "a": 1.5236348357562666,
+      "e": 0.09341785860173311,
+      "inc": 0.03224442929478486,
+      "omega": 5.002559308045401,
+      "Omega": 0.8636102720690918,
+      "M": 1.564285692985405
+    },
+    "Jupiter": {
+      "m": 0.0009547919099366768,
+      "a": 5.202584877423337,
+      "e": 0.04826043388081054,
+      "inc": 0.0227522806615129,
+      "omega": 4.7745876484795255,
+      "Omega": 1.7543764025688358,
+      "M": 1.9299647847138797
+    },
+    "Saturn": {
+      "m": 0.0002858856700231729,
+      "a": 9.54389717363745,
+      "e": 0.054568049298326225,
+      "inc": 0.04341554603445406,
+      "omega": 5.907013434406016,
+      "Omega": 1.9826605067246192,
+      "M": 4.961807406945421
+    },
+    "Uranus": {
+      "m": 4.366249613200406e-5,
+      "a": 19.192410373820945,
+      "e": 0.047237248655843306,
+      "inc": 0.013474521898923425,
+      "omega": 1.6916933116821333,
+      "Omega": 1.2917043642237431,
+      "M": 4.480205031175839
+    },
+    "Neptune": {
+      "m": 5.151383772628957e-5,
+      "a": 30.075663000715306,
+      "e": 0.008755084524686919,
+      "inc": 0.03089658448297113,
+      "omega": 4.757558260179197,
+      "Omega": 2.3000514400154746,
+      "M": 5.564798406820777
+    },
+    "Pluto": {
+      "m": 7.350478973122079e-9,
+      "a": 39.489181544498706,
+      "e": 0.24902192047396934,
+      "inc": 0.29916040316605863,
+      "omega": 1.9857418165471472,
+      "Omega": 1.925114956560387,
+      "M": 0.9356193632529397
+    },
+    "1P/Halley": {
+      "m": 0.0,
+      "a": 18.03131942027159,
+      "e": 0.9677691046911818,
+      "inc": 2.828471441172976,
+      "omega": 1.9553094728116598,
+      "Omega": 1.0324870163701358,
+      "M": 3.3502084051015477
+    },
+    "3I/ATLAS": {
+      "m": 0.0,
+      "x": -2.5224379974459,
+      "y": 10.91968641054002,
+      "z": -0.6003767752612652,
+      "vx": -0.002986051634824335,
+      "vy": 0.03407158341890483,
+      "vz": -0.002116601737490373
+    }
+  }
+}

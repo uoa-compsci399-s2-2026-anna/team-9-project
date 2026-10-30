@@ -32,6 +32,10 @@ bus.subscribe(EVENTS.SIM.ORBITS_TOGGLE, (event) => {
     setSimulationState("orbitsShown", event.detail.value);
 });
 
+bus.subscribe(EVENTS.SIM.ORBIT_LINE_PROJECTIONS_TOGGLE, (event) => {
+    setSimulationState("orbitLineProjectionsShown", event.detail.value);
+});
+
 bus.subscribe(EVENTS.SIM.REFERENCE_GRID_TOGGLE, (event) => {
     setSimulationState("referenceGridShown", event.detail.value);
 });

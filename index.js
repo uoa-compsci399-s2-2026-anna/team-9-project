@@ -160,11 +160,18 @@ ipcMain.on("app:refresh", () => {
     }
 
     const currentUrl = new URL(mainWindow.webContents.getURL());
+
     // Include the current settings in the search parameters
     currentUrl.searchParams.set(
         "settings",
         JSON.stringify(store.get("settings") || {}),
     );
+
+    // Include the current simulation state in the search parameters if the user is on the simulation page
+    if (currentUrl.pathname.startsWith("/simulation/")) {
+        currentUrl.searchParams.set("state", JSON.stringify(simulationState));
+    }
+
     mainWindow.loadURL(currentUrl.toString());
 });
 
@@ -212,7 +219,7 @@ function spawnPythonProcess(resolve, reject) {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
             processPath = ".\\.venv\\Scripts\\python.exe";
-            args = ["-u", "main.py"];
+            args = ["-u", ".\\src\\backend\\main.py"];
         } else {
             // If we are running an executable
             processPath = ".\\dist\\main.exe";
@@ -229,7 +236,7 @@ function spawnPythonProcess(resolve, reject) {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
             processPath = "./.venv/bin/python";
-            args = ["-u", "main.py"];
+            args = ["-u", "./src/backend/main.py"];
         } else {
             // If we are runnning an executable
             processPath = "./dist/main";
@@ -258,20 +265,32 @@ function spawnPythonProcess(resolve, reject) {
 
     // Capture standard output from python process
     pythonProcess.stdout.on("data", (data) => {
-        log.info(`${data}`);
+        for (const line of data.toString().split("\n")) {
+            if (!line?.trim()) {
+                continue;
+            }
 
-        // If the data captured is the url to the application
-        if (data.toString().startsWith("http://")) {
-            // Resolve the promise with the url (with no excess whitespace)
-            let url = data.toString().split("\n")[0].trim();
-            log.debug(`ELECTRON: URL to Python process is ${url}`);
-            resolve(url);
+            log.info(`${line}`);
+
+            // If the data captured is the url to the application
+            if (line.startsWith("http://")) {
+                // Resolve the promise with the url (with no excess whitespace)
+                let url = line.trim();
+                log.debug(`ELECTRON: URL to Python process is ${url}`);
+                resolve(url);
+            }
         }
     });
 
     // Capture standard error from pthon process
     pythonProcess.stderr.on("data", (data) => {
-        log.error(`${data}`);
+        for (const line of data.toString().split("\n")) {
+            if (!line?.trim()) {
+                continue;
+            }
+
+            log.error(`${line}`);
+        }
     });
 
     // Handle python process closing
@@ -502,15 +521,29 @@ app.on("will-quit", () => {
 // Initialise logger
 log.initialize();
 
-// Get date at program execution start
-// Date is in format YYYY-MM-DDTHH:MM:SS.MMMZ
-//                  0^               19^
-const date = new Date().toISOString();
-// Take upto minutes and replace : with - for paths and T with _
-const formattedDate = date
-    .slice(0, 19)
-    .replaceAll(":", "-")
-    .replaceAll("T", "_");
+/**
+ * Gets the current date formatted in the devices local timezone
+ * @returns The current date in YYYY-MM-DD_HH-MM-SS format
+ */
+function getFormattedDate() {
+    // Get the current time (all values are adjusted for timezone)
+    const date = new Date();
+
+    const pad = (num, padAmount = 2) => String(num).padStart(padAmount, "0");
+
+    const year = pad(date.getFullYear(), 4); // YYYY
+    const month = pad(date.getMonth() + 1); // Months are 0-indexed MM
+    const day = pad(date.getDate()); // DD
+    const hours = pad(date.getHours()); // HH
+    const minutes = pad(date.getMinutes()); // MM
+    const seconds = pad(date.getSeconds()); // SS
+
+    // YYYY-MM-DD_HH-MM-SS
+    return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+}
+
+// Store the formatted date so only one log is produced per session
+const formattedDate = getFormattedDate();
 
 // Replace log file name
 log.transports.file.resolvePathFn = (variables) => {

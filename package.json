@@ -7,13 +7,17 @@
   "author": "Team 9 JEDEJ",
   "desktopName": "opis.desktop",
   "license": "MIT",
+  "engines": {
+    "node": "v24.22.1",
+    "npm": "12.2.1"
+  },
   "devDependencies": {
-    "electron": "^43.3.0",
-    "electron-builder": "^26.15.3",
-    "prettier": "^3.9.6",
-    "prettier-plugin-jinja-template": "^2.2.0",
-    "prettier-plugin-tailwindcss": "^0.8.1",
-    "tailwindcss": "^4.3.3"
+    "electron": "43.3.0",
+    "electron-builder": "26.15.3",
+    "prettier": "3.9.6",
+    "prettier-plugin-jinja-template": "2.2.0",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "tailwindcss": "4.3.3"
   },
   "overrides": {
     "tar": "7.5.21"
@@ -24,15 +28,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run tailwind && electron . dev",
     "bin": "electron .",
-    "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && touch ./dist/main.exe",
-    "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound main.py && echo \"\" > .\\dist\\main",
+    "package-py-unix": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound ./src/backend/main.py && touch ./dist/main.exe",
+    "package-py-win": "uv run --with pyinstaller pyinstaller --onefile --nowindow --clean --hidden-import=app --hidden-import=librebound .\\src\\backend\\main.py && echo \"\" > .\\dist\\main",
     "make": "electron-builder --publish never",
     "main": "uv run main.py"
   },
   "dependencies": {
-    "@floating-ui/dom": "^1.8.0",
-    "electron-log": "^5.4.4",
-    "electron-store": "^8.2.0",
-    "electron-updater": "^6.8.9"
+    "@floating-ui/dom": "1.8.0",
+    "electron-log": "5.4.4",
+    "electron-store": "8.2.0",
+    "electron-updater": "6.8.9"
   }
 }

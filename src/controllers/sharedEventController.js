@@ -1,5 +1,7 @@
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
+import { resetSettingsState } from "../shared/settingsState.js";
+import { resetSimulationState } from "../shared/simulationState.js";
 
 // Show/hide loader
 const loaderElement = document.getElementById("loader");
@@ -21,4 +23,16 @@ bus.subscribe(EVENTS.SHARED.SET_LOADER_VISIBLE, (event) => {
     } else if (!enableLoader) {
         loaderElement.style.visibility = "hidden";
     }
+});
+
+/**
+ * Reset all settings and simulation state.
+ * Afterwards, refresh the current application page to reflect this change.
+ */
+bus.subscribe(EVENTS.SETTINGS.RESET_ALL_SETTINGS, () => {
+    resetSettingsState();
+    resetSimulationState();
+
+    // Refresh the current page
+    window.applicationAPI.refresh();
 });

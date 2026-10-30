@@ -1,7 +1,7 @@
 import json
+import mimetypes
 import os
 import signal
-import sys
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
@@ -12,42 +12,48 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from static_files_filter import SrcFilteredStaticFiles
+from configuration_manager import (
+    export_all_reference_data_to_file,
+    export_all_systems_data_to_file,
+    get_all_systems_data,
+    get_base_path,
+    get_reference_data_from_appdata,
+    get_settings_schema,
+    get_shortcuts,
+    get_simulation_state_schema,
+    systems_data_from_project,
+)
 from systems import Simulations
 from utility import get_osculating_orbit, get_position_dict
+
+# Override the Windows registry's .js MIME type
+mimetypes.add_type("text/javascript", ".js")
 
 # Prevent internal server errors when adding objects to the simulation
 rebound.horizons.SSL_CONTEXT = "unverified"
 
-# Resolve base path to the packaged resources folder when frozen,
-# or to the script's own directory otherwise
-if getattr(sys, "frozen", False):
-    base_path = os.path.dirname(os.path.dirname(sys.executable))
-else:
-    base_path = os.path.dirname(os.path.abspath(__file__))
-
 app = FastAPI()
+
+all_systems = get_all_systems_data()["systems"]
+reference_data = get_reference_data_from_appdata()
+settings_schema = get_settings_schema()
+sim_state_schema = get_simulation_state_schema()
+shortcuts = get_shortcuts()
+
+# If the reference frame was not persisted use ./systems/ data instead to ensure it is always generated from here
+if reference_data is None:
+    print("Overwriting systems data with local data for the reference frame.")
+    systems_data = systems_data_from_project()
+    # If the data has already been fetched do not overwrite
+    if systems_data is not None:
+        all_systems = systems_data["systems"]
+
+base_path = get_base_path()
 templates = Jinja2Templates(directory=os.path.join(base_path, "src", "ui"))
-
-# Load the config file
-with open(os.path.join(base_path, "config.json")) as f:
-    config = json.load(f)
-
-# Get the systems in the config
-all_systems = config["systems"]
-
-# Load the settings schema
-with open(os.path.join(base_path, "src", "shared", "settingsSchema.json")) as f:
-    settings_schema = json.load(f)
-
-# Load the sim state schema
-with open(os.path.join(base_path, "src", "shared", "simulationStateSchema.json")) as f:
-    sim_state_schema = json.load(f)
-
-# Load the keyboard shortcuts
-with open(os.path.join(base_path, "src", "shared", "shortcuts.json"), encoding="utf-8") as f:
-    shortcuts = json.load(f)
-
-app.mount("/src", StaticFiles(directory=os.path.join(base_path, "src")), name="src")
+app.mount(
+    "/src", SrcFilteredStaticFiles(directory=os.path.join(base_path, "src")), name="src"
+)
 app.mount("/dist", StaticFiles(directory=os.path.join(base_path, "dist")), name="dist")
 
 
@@ -61,7 +67,18 @@ def get_system_with_name(name: str):
 
 
 # Initialise simulation states
-sims = Simulations(all_systems)
+sims = Simulations(all_systems, reference_data)
+print("Collecting updated system data.")
+exported_orbit_data, exported_reference_data = sims.export_data(all_systems)
+print("Exporting updated system data to file.")
+export_all_systems_data_to_file(exported_orbit_data, all_systems)
+print("Finished exporting system data.")
+
+# Only export reference data to file IF it did not exist or the version was mismatched
+if reference_data is None:
+    print("Exporting reference data to file...")
+    export_all_reference_data_to_file(exported_reference_data)
+    print("Finished exported reference data to file.")
 
 MS_PER_SECOND = 1000
 
@@ -70,9 +87,10 @@ TIMEZONE_MAP = {
     "UTC": "UTC",
 }
 
+
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
     """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone.
-    
+
     Adds the time onto the unix epoch instead of passing it to datetime.fromtimestamp
     which causes issues for times pre-1970 on Windows
     """
@@ -83,14 +101,15 @@ def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
 
     try:
         sim_date = (
-            datetime.fromtimestamp(0, tz=timezone.utc) +
-            timedelta(milliseconds=simulation_time_ms)
+            datetime.fromtimestamp(0, tz=timezone.utc)
+            + timedelta(milliseconds=simulation_time_ms)
         ).astimezone(time_zone)
     except (ValueError, OverflowError):
         return ""
 
     # Build the year separately so years below 1000 keep their leading zeroes
     return f"{sim_date.strftime('%d-%m')}-{sim_date.year:04d} {sim_date.strftime('%I:%M %p')}"
+
 
 @app.get("/")
 async def home(

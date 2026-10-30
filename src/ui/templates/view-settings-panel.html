@@ -6,7 +6,9 @@
 
     toggle_event="sim:view_settings_panel_toggle",
     min_h=None,
-    help_tooltip_content="<strong>View settings panel.</strong> Click here to adjust the simulation's view settings, including toggling the habitable zone and other simulation features."
+
+    help_tooltip_heading_text="View settings panel",
+    help_tooltip_body_text="Click here to adjust the simulation's view settings, including toggling the habitable zone and other simulation features."
   )
 %}
   {%
@@ -27,6 +29,18 @@
       label_text="Orbits",
       data_attributes={ "setting": "orbits" },
       toggle_event="sim:orbits_toggle"
+    )
+  %}
+  {% endcall %}
+
+  {%
+    call side_panel_checkbox(
+      is_checked_initially=sim_state.orbitLineProjectionsShown,
+      label_text="Orbit projections",
+      data_attributes={ "setting": "orbit-line-projections" },
+      toggle_event="sim:orbit_line_projections_toggle",
+      parent_toggle_event="sim:orbits_toggle",
+      is_disabled_initially=not sim_state.orbitsShown
     )
   %}
   {% endcall %}

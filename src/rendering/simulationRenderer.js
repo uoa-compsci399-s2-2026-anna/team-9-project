@@ -32,6 +32,8 @@ import {
     animateCamera,
     animateCameraToFitRadius,
 } from "./cameraAndControls.js";
+import { initRaycastingEvents } from "./raycaster.js";
+import { initHoverCursor, updateHoverCursor } from "./cursor.js";
 import {
     viewRadius,
     VIEW_RADIUS_MULTIPLIER,
@@ -95,7 +97,6 @@ import {
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
 import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
-import { addNoDragClickEventListener } from "../events/triggers/sharedTriggers.js";
 
 let timer;
 
@@ -107,149 +108,6 @@ let currentSystem;
 
 let gettingSystemData = false; // Flag to prevent multiple concurrent backend requests
 let lastSystemData = null;
-
-const DRAG_THRESHOLD = 5;
-
-const raycaster = new THREE.Raycaster();
-
-// Last known pointer position (in viewport coordinates)
-let pointerPosition = null;
-
-/**
- * Convert a viewport position into normalised device coordinates (NDC) for the given canvas.
- * NDC range from -1 to 1 on both axes.
- *
- * @param {number} clientX The x position in viewport coordinates
- * @param {number} clientY The y position in viewport coordinates
- * @param {HTMLCanvasElement} canvas The canvas to normalise against
- * @returns {THREE.Vector2} The position in NDC
- */
-function getNormalisedDeviceCoordinates(clientX, clientY, canvas) {
-    const rect = canvas.getBoundingClientRect();
-
-    return new THREE.Vector2(
-        ((clientX - rect.left) / rect.width) * 2 - 1,
-        -((clientY - rect.top) / rect.height) * 2 + 1,
-    );
-}
-
-/**
- * Finds the label at the given screen coordinates and returns the name of the object that
- * the label belongs to. If several labels overlap, then the object name corresponding to
- * the closest label to the camera is returned.
- *
- * @param {number} clientX The x position in viewport coordinates
- * @param {number} clientY The y position in viewport coordinates
- * @returns {string|null} The name of the object owning the closest label at the given
- * coordinates, or null if no labels were found at this coordinates.
- */
-function getLabelNameAt(clientX, clientY) {
-    let closestName = null;
-    let closestDistanceSquared = Infinity;
-    const labelWorldPosition = new THREE.Vector3();
-
-    for (const [name, label] of objectLabels) {
-        // Skip any labels whose objects are not visible
-        const mesh = objectMeshes.get(name);
-        if (!mesh.visible || !mesh.parent.visible) {
-            continue;
-        }
-
-        const rect = label.element.getBoundingClientRect();
-        // Check whether the given point is inside the label's bounding rectangle
-        const isOverLabel =
-            clientX >= rect.left &&
-            clientX <= rect.right &&
-            clientY >= rect.top &&
-            clientY <= rect.bottom;
-
-        if (!isOverLabel) {
-            continue;
-        }
-
-        label.getWorldPosition(labelWorldPosition);
-        const labelDistanceSquared =
-            camera.position.distanceToSquared(labelWorldPosition);
-
-        if (labelDistanceSquared < closestDistanceSquared) {
-            closestDistanceSquared = labelDistanceSquared;
-            closestName = name;
-        }
-    }
-
-    return closestName;
-}
-
-/**
- * Determines which object in the scene is at the given coordinates (if any). Checks are made
- * in the following order and the first match is returned:
- * 1. The object's own mesh (hitboxes excluded)
- * 2. The object's HTML label
- * 3. The object's hitbox (a child of the object's mesh)
- *
- * @param {number} clientX The x position in viewport coordinates
- * @param {number} clientY The y position in viewport coordinates
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- * @returns {string|null} The name of the object at the given coordinates, or null if no
- * object was found at these coordinates.
- */
-function getObjectNameAt(clientX, clientY, canvas) {
-    // The three.js raycaster expects NDC coordinates
-    const mouseNdc = getNormalisedDeviceCoordinates(clientX, clientY, canvas);
-
-    // Create a ray from the camera through the mouse's position on the screen
-    raycaster.setFromCamera(mouseNdc, camera);
-
-    // Get all the meshes for all of the visible objects in the scene
-    const meshes = Array.from(objectMeshes.values()).filter(
-        (mesh) => mesh.visible && mesh.parent.visible,
-    );
-
-    // Check whether the ray intersects any object meshes (excludes hitboxes)
-    let meshHits = raycaster.intersectObjects(meshes, false);
-    if (meshHits.length > 0) {
-        // Return the name of the nearest object the ray intersected
-        return meshHits[0].object.userData.name;
-    }
-
-    // Get the label name at the given coordinates (if any)
-    const labelName = getLabelNameAt(clientX, clientY);
-    if (labelName) {
-        return labelName;
-    }
-
-    // Check whether the ray intersects any hitboxes (by checking children of objects)
-    const hitboxHits = raycaster.intersectObjects(meshes, true);
-
-    if (hitboxHits.length > 0) {
-        return hitboxHits[0].object.parent.userData.name;
-    }
-
-    return null;
-}
-
-/**
- * Handles when the canvas is clicked on while the user is not moving the camera.
- * Detects if an object was clicked and, if so, fires an event to notify other components
- * that an object was clicked.
- *
- * @param {MouseEvent} event The click event
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- * @return Whether or not an object was clicked
- */
-function onCanvasClick(event, canvas) {
-    // Close any open object information panel
-    bus.publish(EVENTS.SIM.CLOSE_OBJECT_INFO);
-
-    const name = getObjectNameAt(event.clientX, event.clientY, canvas);
-
-    if (!name) {
-        return false;
-    }
-
-    bus.publish(EVENTS.SIM.OBJECT_CLICK, { objectName: name });
-    return true;
-}
 
 bus.subscribe(EVENTS.SETTINGS.ORBIT_LINES_SELECT, () => {
     // Update simulation to redraw orbit lines with new width/opacity profile
@@ -284,6 +142,15 @@ async function updateSimulation(forceCalendarUpdate = true) {
             systems,
             lastFetchedSimulationTime,
         );
+
+        // Publish the LIMIT_REACHED event if the last fetched simulation time is out of bounds (inclusive)
+        if (
+            lastFetchedSimulationTime <= MIN_SIMULATION_TIME ||
+            lastFetchedSimulationTime >= MAX_SIMULATION_TIME
+        ) {
+            bus.publish(EVENTS.SIM.LIMIT_REACHED);
+        }
+
         updateCalendar(lastFetchedSimulationTime, forceCalendarUpdate);
         gettingSystemData = false;
         lastSystemData = allSystemData;
@@ -407,54 +274,6 @@ function createControlsChangeHandler(viewRadius) {
 }
 
 /**
- * Register pointer listeners on the canvas for raycasting. A click is ignored if it was part
- * of a camera drag, so that moving around and orienting the scene doesn't accidentally select
- * objects on the scene.
- *
- * A threshold of DRAG_THRESHOLD px is used so that accidental minute drags don't register
- * as a click.
- *
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- */
-function initRaycastingEvents(canvas) {
-    addNoDragClickEventListener(canvas, (event) =>
-        onCanvasClick(event, canvas),
-    );
-
-    canvas.addEventListener("pointercancel", () => {
-        pointerStart = null;
-        hasDragged = false;
-    });
-}
-
-/**
- * Track the pointer over the canvas so the cursor can be updated every frame.
- *
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- */
-function initHoverCursor(canvas) {
-    // Store the pointer position whenever it moves over the canvas
-    canvas.addEventListener("pointermove", (event) => {
-        pointerPosition = { x: event.clientX, y: event.clientY };
-    });
-}
-
-/**
- * Set the cursor to a pointer if an object is under the last known pointer
- * position, and to the default cursor otherwise. This is called every frame.
- *
- * @param {HTMLCanvasElement} canvas The canvas the scene is rendered on
- */
-function updateHoverCursor(canvas) {
-    const name =
-        pointerPosition &&
-        getObjectNameAt(pointerPosition.x, pointerPosition.y, canvas);
-
-    // `name` is null if there is no object at the current pointer position
-    canvas.style.cursor = name ? "pointer" : "default";
-}
-
-/**
  * Initialise the timer for the simulation renderer.
  */
 function initTimer() {
@@ -528,22 +347,16 @@ export async function init(name) {
 
 /**
  * Clamp a simulation time so it stays between the minimum and maximum simulation times.
- * Publishes LIMIT_REACHED if the time had to be clamped
  *
  * @param {number} time Time in milliseconds since Unix epoch
  * @returns {number} The clamped time
  */
 function clampSimulationTime(time) {
-    const clampedTime = THREE.MathUtils.clamp(
+    return THREE.MathUtils.clamp(
         time,
         MIN_SIMULATION_TIME,
         MAX_SIMULATION_TIME,
     );
-
-    if (clampedTime !== time) {
-        bus.publish(EVENTS.SIM.LIMIT_REACHED);
-    }
-    return clampedTime;
 }
 
 export function stepForward() {
@@ -757,6 +570,21 @@ export function setOrbitsVisibility(value) {
     }
 }
 
+export function setOrbitLineProjectionsVisibility(value) {
+    for (const [name, orbit] of orbitalLines) {
+        const projectionLine = orbit.children[0];
+
+        if (!projectionLine || orbit.children.length > 1) {
+            console.error(
+                `Orbit line for ${name} has ${orbit.children.length} child(ren)! Each orbit line should have exactly 1 child, which is the projection line.`,
+            );
+            return;
+        }
+
+        projectionLine.visible = value;
+    }
+}
+
 export function setReferenceGridVisibility(value) {
     if (referenceGrid) {
         referenceGrid.visible = value;
@@ -876,6 +704,10 @@ export function toggleSimulationDarkMode(isDarkMode) {
             isComparisonOverlay
                 ? fadedOverlayColour
                 : getCurrentSystemColour(name, isDarkMode),
+        );
+
+        orbit.userData.projectionLine?.material.color.copy(
+            orbit.material.color,
         );
     }
 
