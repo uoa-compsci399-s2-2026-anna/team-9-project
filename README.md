@@ -216,7 +216,7 @@ Log files are written to:
 
 ### Libraries
 
-| Language                  | Version |
+| Library                   | Version |
 | ------------------------- | ------- |
 | [Tailwind CSS][tailwind]  | 4.3.3   |
 | [node.js][node]           | 24.22.1 |
@@ -230,7 +230,7 @@ Log files are written to:
 
 ### Development tools
 
-| Language   | Version |
+| Tool       | Version |
 | ---------- | ------- |
 | [uv][uv]   | N/A     |
 | [npm][npm] | 12.2.1  |
