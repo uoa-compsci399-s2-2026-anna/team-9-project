@@ -503,9 +503,9 @@ function stopPythonProcess() {
         return;
     }
 
-		// Send Ctrl+Z signal to kill REBOUND
+    // Send Ctrl+Z signal to kill REBOUND
     pythonProcess.kill("SIGTSTP");
-		// Send Ctrl+C signal to kill Python
+    // Send Ctrl+C signal to kill Python
     pythonProcess.kill("SIGKILL");
 }
 
