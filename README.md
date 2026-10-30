@@ -20,9 +20,17 @@ See the [OPIS final report](https://typst.app/project/rfb79TAkaQyVZ0BE6JymaN) fo
 
 <img width="80%" alt="image" src="https://github.com/user-attachments/assets/521d9ae3-9908-4fc3-84bc-bf24b06cf0d0" />
 
-### Project management
+## Project management
 
 OPIS is managed through [GitHub Projects](https://github.com/orgs/uoa-compsci399-s2-2026-anna/projects/2/views/6).
+
+## Usage examples
+
+OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
+
+Additionally, a demo video showcasing typical usage is also available ([YouTube link](https://youtu.be/4xJDFYLcwu8)):
+
+https://github.com/user-attachments/assets/2c91ffc8-cf50-424d-8236-5cc9693f5231.mp4
 
 ## Releases
 
@@ -195,6 +203,38 @@ Log files are written to:
 - on Windows: `%USERPROFILE%\AppData\Roaming\{app name}\logs\<date>_main.log`
   Where `<date>` is in `YYYY-MM-DD_HH-MM-SS` format
 
+## Technologies
+
+### Languages
+
+| Language   | Version |
+| ---------- | ------- |
+| HTML       | 5       |
+| Python     | 3.12    |
+| JavaScript | N/A     |
+| CSS        | N/A     |
+
+### Libraries
+
+| Language                  | Version |
+| ------------------------- | ------- |
+| [Tailwind CSS][tailwind]  | 4.3.3   |
+| [node.js][node]           | 24.22.1 |
+| [Uvicorn][uvicorn]        | 0.52.1  |
+| [Jinja][jinja]            | 3.1.6   |
+| [FastAPI][fastapi]        | 0.141.1 |
+| [Electron][electron]      | 43.3.0  |
+| [REBOUND][rebound]        | 5.2.2   |
+| [Three.js][threejs]       | 0.185.1 |
+| [Floating UI][floatingui] | 1.8.0   |
+
+### Development tools
+
+| Language   | Version |
+| ---------- | ------- |
+| [uv][uv]   | N/A     |
+| [npm][npm] | 12.2.1  |
+
 ## Future plans
 
 ### Arbitrary planetary systems
@@ -222,14 +262,14 @@ While the codebase is well-structured, self-documenting, and has plenty of expla
 [node]: https://nodejs.org/en/download
 [npm]: https://www.npmjs.com/
 [python]: https://www.python.org/downloads/
-
-## Usage examples
-
-OPIS includes a guided walkthrough to help users explore its features and learn how to use the application.
-
-Additionally, a demo video showcasing typical usage is also available ([YouTube link](https://youtu.be/4xJDFYLcwu8)):
-
-https://github.com/user-attachments/assets/2c91ffc8-cf50-424d-8236-5cc9693f5231.mp4
+[tailwind]: https://tailwindcss.com/docs/installation/using-vite
+[uvicorn]: https://uvicorn.dev
+[jinja]: https://jinja.palletsprojects.com/en/stable/
+[fastapi]: https://fastapi.tiangolo.com
+[electron]: https://www.electronjs.org
+[rebound]: https://rebound.hanno-rein.de/
+[threejs]: https://threejs.org/
+[floatingui]: https://floating-ui.com/
 
 ## Acknowledgements
 
