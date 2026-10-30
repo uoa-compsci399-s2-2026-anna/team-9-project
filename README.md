@@ -115,7 +115,7 @@ uv python install 3.12
 uv python pin
 ```
 
-Finally, install all required packages by runnning:
+Finally, install all required packages by running:
 
 ```sh
 npm install
