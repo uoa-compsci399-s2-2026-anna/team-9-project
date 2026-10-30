@@ -16,7 +16,7 @@ OPIS also features a suite of accessibility settings for dyslexia and vision imp
 - Jump to an arbitrary date to see the positions of objects at that time
 - Show and hide objects
 
-See the [OPIS final report](https://typst.app/project/rfb79TAkaQyVZ0BE6JymaN) for more information.
+See the [OPIS final report](https://github.com/uoa-compsci399-s2-2026-anna/team-9-project/blob/778a25859549f15a50cfae111cc99a6499427f7b/docs/OPIS%20Final%20Report.pdf) for more information.
 
 <img width="80%" alt="image" src="https://github.com/user-attachments/assets/521d9ae3-9908-4fc3-84bc-bf24b06cf0d0" />
 
