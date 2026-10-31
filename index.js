@@ -58,6 +58,8 @@ const WINDOW_BACKGROUND_COLOUR = {
 
 const SYSTEM_PREFERS_DARK = nativeTheme.shouldUseDarkColors;
 
+let pythonBaseURL;
+
 /**
  * Decide whether dark mode should be used based on the persisted settings state.
  * Fallback to the system default if no valid preference has been persisted.
@@ -215,7 +217,7 @@ function spawnPythonProcess(resolve, reject) {
     // OS Dependent
     let processPath = "";
     let args = [];
-    if (platform == "win32") {
+    if (platform === "win32") {
         if (isDev) {
             // If the dev flag is set (and should run using python venv)
             processPath = ".\\.venv\\Scripts\\python.exe";
@@ -276,6 +278,7 @@ function spawnPythonProcess(resolve, reject) {
             if (line.startsWith("http://")) {
                 // Resolve the promise with the url (with no excess whitespace)
                 let url = line.trim();
+									pythonBaseURL = url;
                 log.debug(`ELECTRON: URL to Python process is ${url}`);
                 resolve(url);
             }
@@ -503,10 +506,20 @@ function stopPythonProcess() {
         return;
     }
 
+		const killURL = new URL(pythonBaseURL);
+		killURL.pathname = '/kill';
+		await fetch(killURL);
+
     if (process.platform === "win32") {
+        // Windows specific task killing
         spawnSync("taskkill", ["/pid", String(pythonProcess.pid), "/T", "/F"]);
     } else {
-        pythonProcess.kill();
+        // UNIX task killing
+
+        // Send Ctrl+Z signal to kill REBOUND
+        pythonProcess.kill("SIGTSTP");
+        // Send Ctrl+C signal to kill Python
+        pythonProcess.kill("SIGKILL");
     }
 }
 
