@@ -3,8 +3,8 @@ import { EVENTS } from "../events/events.js";
 import { settings } from "../shared/settingsState.js";
 import {
     timeToMilliseconds,
-    toZonedLocalDate,
-    fromZonedLocalDate,
+    millisecondsToZonedLocalDate,
+    zonedLocalDateToMilliseconds,
     TIMEZONE_MAP,
     FALLBACK_TIME_ZONE,
     MIN_SIMULATION_TIME,
@@ -50,8 +50,10 @@ const FlatpickrInstance = flatpickr(calendarInput, {
         requestAnimationFrame(() => {
             instance.hourElement?.blur();
         });
+
         const timeZone = calendarInput.dataset.timezone;
-        const epochMs = fromZonedLocalDate(selectedDates[0], timeZone);
+        const epochMs = zonedLocalDateToMilliseconds(selectedDates[0], timeZone);
+
         bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
             time: epochMs,
         });
@@ -258,10 +260,10 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
         MAX_SIMULATION_TIME,
     );
 
-    FlatpickrInstance.set("minDate", toZonedLocalDate(minTime, timeZone));
-    FlatpickrInstance.set("maxDate", toZonedLocalDate(maxTime, timeZone));
+    FlatpickrInstance.set("minDate", millisecondsToZonedLocalDate(minTime, timeZone));
+    FlatpickrInstance.set("maxDate", millisecondsToZonedLocalDate(maxTime, timeZone));
 
-    FlatpickrInstance.setDate(toZonedLocalDate(simulationTime, timeZone));
+    FlatpickrInstance.setDate(millisecondsToZonedLocalDate(simulationTime, timeZone));
 
     updateElapsedDaysText(simulationTime, timeZone);
 }

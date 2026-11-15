@@ -94,32 +94,36 @@ export const MAX_SIMULATION_TIME = (() => {
 })();
 
 /**
- * TODO
- * @param {*} epochMs
- * @param {*} timeZone
- * @returns
+ * Converts milliseconds since epoch to a date in the given time zone.
+ *
+ * @param {number} epochMs Milliseconds since epoch
+ * @param {string} timeZone The time zone (e.g., "UTC", "NZT")
+ * @returns {Date} The date in the given time zone
  */
-export function toZonedLocalDate(epochMs, timeZone) {
+export function millisecondsToZonedLocalDate(epochMs, timeZone) {
     const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
     const dt = DateTime.fromMillis(epochMs, { zone });
 
-    const date = new Date(0);
+    const date = new Date();
+    // Luxon's months are 1-indexed (1 to 12) but JS months are 0-indexed (0 to 11)
     date.setFullYear(dt.year, dt.month - 1, dt.day);
     date.setHours(dt.hour, dt.minute, dt.second, dt.millisecond);
     return date;
 }
 
 /**
- * TODO
- * @param {*} date
- * @param {*} timeZone
- * @returns
+ * Converts a date in the given time zone to milliseconds since epoch.
+ *
+ * @param {Date} date The date to convert
+ * @param {string} timeZone The time zone (e.g., "UTC", "NZT")
+ * @returns {number} Milliseconds since epoch
  */
-export function fromZonedLocalDate(date, timeZone) {
+export function zonedLocalDateToMilliseconds(date, timeZone) {
     const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
     return DateTime.fromObject(
         {
             year: date.getFullYear(),
+            // JS months are 0-indexed (0 to 11) but Luxon's are 1-indexed (1 to 12)
             month: date.getMonth() + 1,
             day: date.getDate(),
             hour: date.getHours(),
