@@ -88,27 +88,61 @@ TIMEZONE_MAP = {
 }
 
 
+# def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
+#     """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone.
+
+#     Adds the time onto the unix epoch instead of passing it to datetime.fromtimestamp
+#     which causes issues for times pre-1970 on Windows
+#     """
+#     if timezone_key is None:
+#         raise ValueError("Invalid timezone")
+#     time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
+#     time_zone = ZoneInfo(time_zone_name)
+
+#     try:
+#         sim_date = (
+#             datetime.fromtimestamp(0, tz=timezone.utc)
+#             + timedelta(milliseconds=simulation_time_ms)
+#         ).astimezone(time_zone)
+#     except (ValueError, OverflowError):
+#         return ""
+
+#     # Build the year separately so years below 1000 keep their leading zeroes
+#     return f"{sim_date.strftime('%d-%m')}-{sim_date.year:04d} {sim_date.strftime('%I:%M %p')}"
+
+import math
+
+MS_PER_DAY = 86_400_000
+YEARS_PER_GREGORIAN_CYCLE = 400
+MS_PER_GREGORIAN_CYCLE = 146_097 * MS_PER_DAY  # 400 years is exactly 146,097 days
+
+
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
     """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone.
 
-    Adds the time onto the unix epoch instead of passing it to datetime.fromtimestamp
-    which causes issues for times pre-1970 on Windows
+    datetime only supports years 1 to 9999, so the time is always wrapped into the
+    400-year window starting at the unix epoch (1970 to 2369), formatted, and the
+    year is shifted back by the same number of whole cycles. This is exact because
+    the Gregorian calendar repeats every 400 years.
     """
     if timezone_key is None:
         raise ValueError("Invalid timezone")
-    time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
-    time_zone = ZoneInfo(time_zone_name)
+    time_zone = ZoneInfo(TIMEZONE_MAP.get(timezone_key, "UTC"))
 
     try:
+        cycles = math.floor(simulation_time_ms / MS_PER_GREGORIAN_CYCLE)
+        wrapped_ms = simulation_time_ms - cycles * MS_PER_GREGORIAN_CYCLE
         sim_date = (
             datetime.fromtimestamp(0, tz=timezone.utc)
-            + timedelta(milliseconds=simulation_time_ms)
+            + timedelta(milliseconds=wrapped_ms)
         ).astimezone(time_zone)
-    except (ValueError, OverflowError):
+    except (ValueError, OverflowError):  # inf or NaN
         return ""
 
+    year = sim_date.year + cycles * YEARS_PER_GREGORIAN_CYCLE
+
     # Build the year separately so years below 1000 keep their leading zeroes
-    return f"{sim_date.strftime('%d-%m')}-{sim_date.year:04d} {sim_date.strftime('%I:%M %p')}"
+    return f"{sim_date.strftime('%d-%m')}-{year:04d} {sim_date.strftime('%I:%M %p')}"
 
 
 @app.get("/")
@@ -166,6 +200,8 @@ async def simulation(
         system_name, time.time() * MS_PER_SECOND
     )
     simulation_date = format_sim_date(sim_time_ms, settings_state.get("timeZone"))
+    print("DATE:")
+    print(simulation_date)
 
     # Get the elapsed days text for the system (e.g., "10 days from today")
     elapsed_days_fallback_text = sim_state_schema["elapsedDaysTexts"]["fallbackText"]
@@ -190,6 +226,7 @@ async def simulation(
             "sim_speed": sim_speed,
             "sim_speed_unit": sim_speed_unit,
             "sim_date": simulation_date,
+            "sim_time_ms": sim_time_ms,
             "elapsed_days_text": elapsed_days_text,
             "systems": all_systems,
             "current_system": current_system,

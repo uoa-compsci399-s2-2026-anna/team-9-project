@@ -88,37 +88,46 @@ export const MIN_SIMULATION_TIME = (() => {
 // Latest simulation time allowed is 31 December 9999 00:00 (UTC)
 export const MAX_SIMULATION_TIME = (() => {
     const date = new Date(0);
-    date.setUTCFullYear(9999, 11, 31);
+    date.setUTCFullYear(275759, 11, 31);
     date.setUTCHours(0, 0, 0, 0);
     return date.getTime();
 })();
 
 /**
- * Converts a datetime string into an epoch timestamp, using the given
- * time zone to interpret it.
- * @param {string} dateString A date/time string in "dd-MM-yyyy hh:mm a" format
- * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
- * @returns {number} Epoch time in milliseconds
+ * TODO
+ * @param {*} epochMs
+ * @param {*} timeZone
+ * @returns
  */
-export function convertToEpoch(dateString, timeZone) {
-    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
-    return DateTime.fromFormat(dateString, "dd-MM-yyyy hh:mm a", {
-        zone: formattedTimeZone,
-    }).toMillis();
+export function toZonedLocalDate(epochMs, timeZone) {
+    const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
+    const dt = DateTime.fromMillis(epochMs, { zone });
+
+    const date = new Date(0);
+    date.setFullYear(dt.year, dt.month - 1, dt.day);
+    date.setHours(dt.hour, dt.minute, dt.second, dt.millisecond);
+    return date;
 }
 
 /**
- * Formats an epoch timestamp as a string in the given time zone;
- * the inverse of `convertToEpoch`.
- * @param {number} epochMs Epoch time in milliseconds
- * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
- * @returns {string} The formatted date string as "dd-MM-yyyy hh:mm a"
+ * TODO
+ * @param {*} date
+ * @param {*} timeZone
+ * @returns
  */
-export function formatInTimeZone(epochMs, timeZone) {
-    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
-    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat(
-        "dd-MM-yyyy hh:mm a",
-    );
+export function fromZonedLocalDate(date, timeZone) {
+    const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
+    return DateTime.fromObject(
+        {
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate(),
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+            second: date.getSeconds(),
+        },
+        { zone },
+    ).toMillis();
 }
 
 /**

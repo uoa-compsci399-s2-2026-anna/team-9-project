@@ -3,8 +3,8 @@ import { EVENTS } from "../events/events.js";
 import { settings } from "../shared/settingsState.js";
 import {
     timeToMilliseconds,
-    convertToEpoch,
-    formatInTimeZone,
+    toZonedLocalDate,
+    fromZonedLocalDate,
     TIMEZONE_MAP,
     FALLBACK_TIME_ZONE,
     MIN_SIMULATION_TIME,
@@ -26,6 +26,8 @@ let lastSimulationTime = null;
 // Initialise Flatpickr on every calendar input
 const calendarInput = document.querySelector(".calendar");
 
+const DATE_PATTERN = /^(\d{1,2})-(\d{1,2})-(\d+) (\d{1,2}):(\d{2}) (AM|PM)$/i;
+
 const FlatpickrInstance = flatpickr(calendarInput, {
     enableTime: true,
     dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
@@ -34,7 +36,7 @@ const FlatpickrInstance = flatpickr(calendarInput, {
         // Stop the year being typed over or deleted
         instance.currentYearElement.readOnly = true;
     },
-    onChange: (selectedDates, dateStr, instance) => {
+    onChange: (selectedDates, _dateStr, instance) => {
         // If the calender has no date selected, restore the current
         // simulation time rather than publishing an empty date
         if (selectedDates.length === 0) {
@@ -49,10 +51,43 @@ const FlatpickrInstance = flatpickr(calendarInput, {
             instance.hourElement?.blur();
         });
         const timeZone = calendarInput.dataset.timezone;
-        const epochMs = convertToEpoch(dateStr, timeZone);
+        const epochMs = fromZonedLocalDate(selectedDates[0], timeZone);
         bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
             time: epochMs,
         });
+    },
+    // Date -> String
+    formatDate: (date, format, locale) => {
+        // TODO: test if removing this breaks the inner thing in the calendar
+        if (format !== "d-m-Y G:i K") {
+            return flatpickr.formatDate(date, format, locale);
+        }
+        return (
+            flatpickr.formatDate(date, "d-m-", locale) +
+            String(date.getFullYear()).padStart(4, "0") + // TODO: consider whether this makes sense to do?
+            flatpickr.formatDate(date, " G:i K", locale)
+        );
+    },
+    // String -> Date
+    parseDate: (dateStr, format) => {
+        if (format !== "d-m-Y G:i K") {
+            return flatpickr.parseDate(dateStr, format);
+        }
+
+        const match = DATE_PATTERN.exec(dateStr.trim());
+        if (!match) {
+            return undefined;
+        }
+
+        const [, day, month, year, hour, minute, meridiem] = match;
+        const isPm = meridiem.toUpperCase() === "PM";
+        const hours24 = (Number(hour) % 12) + (isPm ? 12 : 0);
+
+        // setFullYear avoids the Date constructor mapping years 0 to 99 onto 1900 to 1999
+        const date = new Date(2000, 0, 1, 0, 0, 0, 0);
+        date.setFullYear(Number(year), Number(month) - 1, Number(day));
+        date.setHours(hours24, Number(minute), 0, 0);
+        return date;
     },
 });
 
@@ -223,9 +258,10 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
         MAX_SIMULATION_TIME,
     );
 
-    FlatpickrInstance.set("minDate", formatInTimeZone(minTime, timeZone));
-    FlatpickrInstance.set("maxDate", formatInTimeZone(maxTime, timeZone));
+    FlatpickrInstance.set("minDate", toZonedLocalDate(minTime, timeZone));
+    FlatpickrInstance.set("maxDate", toZonedLocalDate(maxTime, timeZone));
 
-    FlatpickrInstance.setDate(formatInTimeZone(simulationTime, timeZone));
+    FlatpickrInstance.setDate(toZonedLocalDate(simulationTime, timeZone));
+
     updateElapsedDaysText(simulationTime, timeZone);
 }
