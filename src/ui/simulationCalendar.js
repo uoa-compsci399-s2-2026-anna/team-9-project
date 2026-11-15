@@ -27,6 +27,7 @@ let lastSimulationTime = null;
 const calendarInput = document.querySelector(".calendar");
 
 const DATE_FORMAT = "d-m-Y G:i K"; // Format: "dd-MM-yyyy hh:mm a"
+// Matches "{day}-{month}-{year} {hour}:{minute} {AM/PM}"
 const DATE_PATTERN = /^(\d{1,2})-(\d{1,2})-(\d+) (\d{1,2}):(\d{2}) (AM|PM)$/i;
 
 const FlatpickrInstance = flatpickr(calendarInput, {
