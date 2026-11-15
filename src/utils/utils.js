@@ -85,7 +85,8 @@ export const MIN_SIMULATION_TIME = (() => {
     return date.getTime();
 })();
 
-// Latest simulation time allowed is 31 December 9999 00:00 (UTC)
+// Latest simulation time allowed is 31 December 275759 00:00 (UTC)
+// This is since JavaScript's date API can only handle dates up to the year 275760
 export const MAX_SIMULATION_TIME = (() => {
     const date = new Date(0);
     date.setUTCFullYear(275759, 11, 31);
