@@ -1,5 +1,6 @@
 import json
 import mimetypes
+import math
 import os
 import signal
 import time
@@ -87,28 +88,37 @@ TIMEZONE_MAP = {
     "UTC": "UTC",
 }
 
+MS_PER_DAY = 86_400_000
+YEARS_PER_GREGORIAN_CYCLE = 400
+MS_PER_GREGORIAN_CYCLE = 146_097 * MS_PER_DAY   # 400 years is 146,097 days
+
 
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
-    """Formats a simulation time as a "dd-MM-yyyy hh:mm a" string, in the given time zone.
+    """Formats a simulation time as a date string in the given time zone.
 
-    Adds the time onto the unix epoch instead of passing it to datetime.fromtimestamp
-    which causes issues for times pre-1970 on Windows
+    datetime only supports years 1 to 9999, so whole 400-year cycles are removed from
+    the time, the date is formatted, then the cycles are added back onto the year.
+    This works since the Gregorian calendar repeats every 400 years.
     """
     if timezone_key is None:
         raise ValueError("Invalid timezone")
-    time_zone_name = TIMEZONE_MAP.get(timezone_key, "UTC")
-    time_zone = ZoneInfo(time_zone_name)
+    time_zone = ZoneInfo(TIMEZONE_MAP.get(timezone_key, "UTC"))
 
     try:
+        # Remove whole 400-year cycles so the year is within datetime's range (1 to 9999)
+        cycles, shifted_epoch_ms = divmod(simulation_time_ms, MS_PER_GREGORIAN_CYCLE)
         sim_date = (
-            datetime.fromtimestamp(0, tz=timezone.utc)
-            + timedelta(milliseconds=simulation_time_ms)
+            datetime.fromtimestamp(timestamp=0, tz=timezone.utc)
+            + timedelta(milliseconds=shifted_epoch_ms)
         ).astimezone(time_zone)
-    except (ValueError, OverflowError):
+    except ValueError:
         return ""
 
-    # Build the year separately so years below 1000 keep their leading zeroes
-    return f"{sim_date.strftime('%d-%m')}-{sim_date.year:04d} {sim_date.strftime('%I:%M %p')}"
+    # Restore the years removed by the shift (400 per cycle)
+    year = sim_date.year + int(cycles) * YEARS_PER_GREGORIAN_CYCLE
+
+    # Pad the year to 4 digits
+    return f"{sim_date.strftime('%d-%m')}-{year:04d} {sim_date.strftime('%I:%M %p')}"
 
 
 @app.get("/")
@@ -190,6 +200,7 @@ async def simulation(
             "sim_speed": sim_speed,
             "sim_speed_unit": sim_speed_unit,
             "sim_date": simulation_date,
+            "sim_time_ms": sim_time_ms,
             "elapsed_days_text": elapsed_days_text,
             "systems": all_systems,
             "current_system": current_system,

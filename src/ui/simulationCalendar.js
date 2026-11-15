@@ -3,8 +3,8 @@ import { EVENTS } from "../events/events.js";
 import { settings } from "../shared/settingsState.js";
 import {
     timeToMilliseconds,
-    convertToEpoch,
-    formatInTimeZone,
+    millisecondsToZonedLocalDate,
+    zonedLocalDateToMilliseconds,
     TIMEZONE_MAP,
     FALLBACK_TIME_ZONE,
     MIN_SIMULATION_TIME,
@@ -26,15 +26,19 @@ let lastSimulationTime = null;
 // Initialise Flatpickr on every calendar input
 const calendarInput = document.querySelector(".calendar");
 
+const DATE_FORMAT = "d-m-Y G:i K"; // Format: "dd-MM-yyyy hh:mm a"
+// Matches "{day}-{month}-{year} {hour}:{minute} {AM/PM}"
+const DATE_PATTERN = /^(\d{1,2})-(\d{1,2})-(\d+) (\d{1,2}):(\d{2}) (AM|PM)$/i;
+
 const FlatpickrInstance = flatpickr(calendarInput, {
     enableTime: true,
-    dateFormat: "d-m-Y G:i K", // Format: "dd-MM-yyyy hh:mm a"
+    dateFormat: DATE_FORMAT,
     allowInput: false,
     onReady: (_selectedDates, _dateStr, instance) => {
         // Stop the year being typed over or deleted
         instance.currentYearElement.readOnly = true;
     },
-    onChange: (selectedDates, dateStr, instance) => {
+    onChange: (selectedDates, _dateStr, instance) => {
         // If the calender has no date selected, restore the current
         // simulation time rather than publishing an empty date
         if (selectedDates.length === 0) {
@@ -48,11 +52,54 @@ const FlatpickrInstance = flatpickr(calendarInput, {
         requestAnimationFrame(() => {
             instance.hourElement?.blur();
         });
+
         const timeZone = calendarInput.dataset.timezone;
-        const epochMs = convertToEpoch(dateStr, timeZone);
+        const epochMs = zonedLocalDateToMilliseconds(
+            selectedDates[0],
+            timeZone,
+        );
+
         bus.publish(EVENTS.SIM.CALENDAR_CHANGE, {
             time: epochMs,
         });
+    },
+    // Converts a Date object to a string to display
+    formatDate: (date, format, locale) => {
+        // Only handle the calendar's own format
+        if (format !== DATE_FORMAT) {
+            return flatpickr.formatDate(date, format, locale);
+        }
+
+        // Year is formatted separately because flatpickr's "Y" doesn't handle years past 9999
+        return (
+            flatpickr.formatDate(date, "d-m-", locale) +
+            String(date.getFullYear()).padStart(4, "0") + // Pad the year to 4 digits
+            flatpickr.formatDate(date, " G:i K", locale)
+        );
+    },
+    // Converts string to a Date object
+    parseDate: (dateStr, format) => {
+        // Only handle the calendar's own format
+        if (format !== DATE_FORMAT) {
+            return flatpickr.parseDate(dateStr, format);
+        }
+
+        const match = DATE_PATTERN.exec(dateStr.trim());
+        if (!match) {
+            return undefined;
+        }
+
+        const [, day, month, year, hour, minute, meridiem] = match;
+        const isPm = meridiem.toUpperCase() === "PM";
+        // Convert 12-hour time to 24-hour time
+        const hours24 = (Number(hour) % 12) + (isPm ? 12 : 0);
+
+        // Use setFullYear because the Date constructor maps years 0 to 99 onto 1900 to 1999
+        const date = new Date();
+        // JS months are 0-indexed (0 to 11) but the displayed months are 1-indexed (1 to 12)
+        date.setFullYear(Number(year), Number(month) - 1, Number(day));
+        date.setHours(hours24, Number(minute), 0, 0);
+        return date;
     },
 });
 
@@ -223,9 +270,18 @@ export function updateCalendar(simulationTime, forceUpdate = false) {
         MAX_SIMULATION_TIME,
     );
 
-    FlatpickrInstance.set("minDate", formatInTimeZone(minTime, timeZone));
-    FlatpickrInstance.set("maxDate", formatInTimeZone(maxTime, timeZone));
+    FlatpickrInstance.set(
+        "minDate",
+        millisecondsToZonedLocalDate(minTime, timeZone),
+    );
+    FlatpickrInstance.set(
+        "maxDate",
+        millisecondsToZonedLocalDate(maxTime, timeZone),
+    );
 
-    FlatpickrInstance.setDate(formatInTimeZone(simulationTime, timeZone));
+    FlatpickrInstance.setDate(
+        millisecondsToZonedLocalDate(simulationTime, timeZone),
+    );
+
     updateElapsedDaysText(simulationTime, timeZone);
 }

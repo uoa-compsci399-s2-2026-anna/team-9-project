@@ -85,40 +85,54 @@ export const MIN_SIMULATION_TIME = (() => {
     return date.getTime();
 })();
 
-// Latest simulation time allowed is 31 December 9999 00:00 (UTC)
+// Latest simulation time allowed is 31 December 275759 00:00 (UTC)
+// This is since JavaScript's date API can only handle dates up to the year 275760
 export const MAX_SIMULATION_TIME = (() => {
     const date = new Date(0);
-    date.setUTCFullYear(9999, 11, 31);
+    date.setUTCFullYear(275759, 11, 31);
     date.setUTCHours(0, 0, 0, 0);
     return date.getTime();
 })();
 
 /**
- * Converts a datetime string into an epoch timestamp, using the given
- * time zone to interpret it.
- * @param {string} dateString A date/time string in "dd-MM-yyyy hh:mm a" format
- * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
- * @returns {number} Epoch time in milliseconds
+ * Converts milliseconds since epoch to a date in the given time zone.
+ *
+ * @param {number} epochMs Milliseconds since epoch
+ * @param {string} timeZone The time zone (e.g., "UTC", "NZT")
+ * @returns {Date} The date in the given time zone
  */
-export function convertToEpoch(dateString, timeZone) {
-    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
-    return DateTime.fromFormat(dateString, "dd-MM-yyyy hh:mm a", {
-        zone: formattedTimeZone,
-    }).toMillis();
+export function millisecondsToZonedLocalDate(epochMs, timeZone) {
+    const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
+    const dt = DateTime.fromMillis(epochMs, { zone });
+
+    const date = new Date();
+    // Luxon's months are 1-indexed (1 to 12) but JS months are 0-indexed (0 to 11)
+    date.setFullYear(dt.year, dt.month - 1, dt.day);
+    date.setHours(dt.hour, dt.minute, dt.second, dt.millisecond);
+    return date;
 }
 
 /**
- * Formats an epoch timestamp as a string in the given time zone;
- * the inverse of `convertToEpoch`.
- * @param {number} epochMs Epoch time in milliseconds
- * @param {string} timeZone The application's time zone setting (e.g., "UTC", "NZT")
- * @returns {string} The formatted date string as "dd-MM-yyyy hh:mm a"
+ * Converts a date in the given time zone to milliseconds since epoch.
+ *
+ * @param {Date} date The date to convert
+ * @param {string} timeZone The time zone (e.g., "UTC", "NZT")
+ * @returns {number} Milliseconds since epoch
  */
-export function formatInTimeZone(epochMs, timeZone) {
-    const formattedTimeZone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
-    return DateTime.fromMillis(epochMs, { zone: formattedTimeZone }).toFormat(
-        "dd-MM-yyyy hh:mm a",
-    );
+export function zonedLocalDateToMilliseconds(date, timeZone) {
+    const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
+    return DateTime.fromObject(
+        {
+            year: date.getFullYear(),
+            // JS months are 0-indexed (0 to 11) but Luxon's are 1-indexed (1 to 12)
+            month: date.getMonth() + 1,
+            day: date.getDate(),
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+            second: date.getSeconds(),
+        },
+        { zone },
+    ).toMillis();
 }
 
 /**
