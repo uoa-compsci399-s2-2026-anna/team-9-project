@@ -63,7 +63,7 @@ const FlatpickrInstance = flatpickr(calendarInput, {
             time: epochMs,
         });
     },
-    // Converts a Date object to a string to display 
+    // Converts a Date object to a string to display
     formatDate: (date, format, locale) => {
         // Only handle the calendar's own format
         if (format !== DATE_FORMAT) {
