@@ -74,6 +74,35 @@ export const TIMEZONE_MAP = {
     NZT: "Pacific/Auckland",
 };
 
+/**
+ * Adds an amount of time to a time in milliseconds since Unix epoch.
+ *
+ * Hours, days, and weeks always have the same length, so they are converted
+ * to milliseconds and added. Months and years vary in length (28 to 31 days,
+ * 365 or 366 days), so they are added using the calendar in the given time zone.
+ *
+ * @param {number} epochMs Time in milliseconds since Unix epoch
+ * @param {number} amount The amount of time to add
+ * @param {TimeUnit} unit The unit of `amount`
+ * @param {string} timeZone The time zone (e.g., "UTC", "NZT")
+ * @returns {number} The new time in milliseconds since Unix epoch
+ */
+export function addTime(epochMs, amount, unit, timeZone) {
+    if (unit !== "month" && unit !== "year") {
+        return epochMs + timeToMilliseconds(amount, unit);
+    }
+
+    const zone = TIMEZONE_MAP[timeZone] ?? FALLBACK_TIME_ZONE;
+    const result = DateTime.fromMillis(epochMs, { zone })
+        .plus({ [`${unit}s`]: amount })
+        .toMillis();
+
+    // If the result is too far in the future for Luxon to handle, add the time in milliseconds
+    return Number.isFinite(result)
+        ? result
+        : epochMs + timeToMilliseconds(amount, unit);
+}
+
 // Fallback time zone
 export const FALLBACK_TIME_ZONE = "UTC";
 

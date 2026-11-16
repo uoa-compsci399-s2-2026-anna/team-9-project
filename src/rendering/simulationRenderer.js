@@ -96,7 +96,11 @@ import {
 } from "./themes.js";
 import { bus } from "../events/eventBus.js";
 import { EVENTS } from "../events/events.js";
-import { MIN_SIMULATION_TIME, MAX_SIMULATION_TIME } from "../utils/utils.js";
+import {
+    MIN_SIMULATION_TIME,
+    MAX_SIMULATION_TIME,
+    addTime,
+} from "../utils/utils.js";
 
 let timer;
 
@@ -359,18 +363,29 @@ function clampSimulationTime(time) {
     );
 }
 
-export function stepForward() {
+/**
+ * Step the simulation time forward or backward by one simulation speed increment.
+ *
+ * @param {1|-1} direction 1 to step forward, -1 to step backward
+ */
+function step(direction) {
     currentSimulationTime = clampSimulationTime(
-        currentSimulationTime + getSimulationSpeedMilliseconds(currentSystem),
+        addTime(
+            currentSimulationTime,
+            direction * simulationState.simulationSpeed[currentSystem],
+            simulationState.simulationSpeedUnit[currentSystem],
+            settings.timeZone,
+        ),
     );
     updateSimulation();
 }
 
+export function stepForward() {
+    step(1);
+}
+
 export function stepBack() {
-    currentSimulationTime = clampSimulationTime(
-        currentSimulationTime - getSimulationSpeedMilliseconds(currentSystem),
-    );
-    updateSimulation();
+    step(-1);
 }
 
 export function resetSimulationTimeToNow() {
