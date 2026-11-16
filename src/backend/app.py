@@ -97,7 +97,7 @@ EPOCH = datetime.fromtimestamp(0, tz=timezone.utc)
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
     """Formats a simulation time as a date string in the given time zone.
 
-    datetime only supports years 1 to 9999, so for times outside that range, whole
+    datetime only supports years 1 to 9999, so for dates outside that range, whole
     400-year cycles are removed from the time, the date is formatted, then the
     cycles are added back onto the year. This works since the Gregorian calendar
     repeats every 400 years.
