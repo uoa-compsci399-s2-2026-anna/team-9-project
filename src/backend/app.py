@@ -113,7 +113,7 @@ def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
             sim_date = (EPOCH + timedelta(milliseconds=simulation_time_ms)).astimezone(
                 time_zone
             )
-        except OverflowError:   # Handle dates beyond the year 9999
+        except OverflowError:   # Handle dates outside years 1 to 9999
             # Remove whole 400-year cycles so the year is within datetime's range (1 to 9999)
             window_start_ms = time.time() * MS_PER_SECOND
             cycles, ms_into_window = divmod(
