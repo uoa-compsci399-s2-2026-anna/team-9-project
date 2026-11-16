@@ -91,26 +91,38 @@ TIMEZONE_MAP = {
 MS_PER_DAY = 86_400_000
 YEARS_PER_GREGORIAN_CYCLE = 400
 MS_PER_GREGORIAN_CYCLE = 146_097 * MS_PER_DAY   # 400 years is 146,097 days
+EPOCH = datetime.fromtimestamp(0, tz=timezone.utc)
 
 
 def format_sim_date(simulation_time_ms: float, timezone_key: str | None) -> str:
     """Formats a simulation time as a date string in the given time zone.
 
-    datetime only supports years 1 to 9999, so whole 400-year cycles are removed from
-    the time, the date is formatted, then the cycles are added back onto the year.
-    This works since the Gregorian calendar repeats every 400 years.
+    datetime only supports years 1 to 9999, so for dates outside that range, whole
+    400-year cycles are removed from the time, the date is formatted, then the
+    cycles are added back onto the year. This works since the Gregorian calendar
+    repeats every 400 years.
     """
     if timezone_key is None:
         raise ValueError("Invalid timezone")
     time_zone = ZoneInfo(TIMEZONE_MAP.get(timezone_key, "UTC"))
 
+    cycles = 0
+
     try:
-        # Remove whole 400-year cycles so the year is within datetime's range (1 to 9999)
-        cycles, shifted_epoch_ms = divmod(simulation_time_ms, MS_PER_GREGORIAN_CYCLE)
-        sim_date = (
-            datetime.fromtimestamp(timestamp=0, tz=timezone.utc)
-            + timedelta(milliseconds=shifted_epoch_ms)
-        ).astimezone(time_zone)
+        try:
+            sim_date = (EPOCH + timedelta(milliseconds=simulation_time_ms)).astimezone(
+                time_zone
+            )
+        except OverflowError:   # Handle dates outside years 1 to 9999
+            # Remove whole 400-year cycles so the year is within datetime's range (1 to 9999)
+            window_start_ms = time.time() * MS_PER_SECOND
+            cycles, ms_into_window = divmod(
+                simulation_time_ms - window_start_ms, MS_PER_GREGORIAN_CYCLE
+            )
+            shifted_epoch_ms = window_start_ms + ms_into_window
+            sim_date = (
+                EPOCH + timedelta(milliseconds=shifted_epoch_ms)
+            ).astimezone(time_zone)
     except ValueError:
         return ""
 
